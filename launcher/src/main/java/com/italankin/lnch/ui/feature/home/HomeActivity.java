@@ -13,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +29,26 @@ import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.PackageModel;
 import com.italankin.lnch.ui.base.AppActivity;
+import com.italankin.lnch.ui.util.SwapItemHelper;
 
 import java.util.List;
 
-public class HomeActivity extends AppActivity implements IHomeView, PackageModelAdapter.Listener {
+public class HomeActivity extends AppActivity implements IHomeView,
+        SwapItemHelper.Callback,
+        PackageModelAdapter.Listener {
 
     @InjectPresenter
     HomePresenter presenter;
 
     private CoordinatorLayout root;
     private RecyclerView list;
+    private ItemTouchHelper touchHelper;
 
     private PackageManager pm;
     private FrameLayout progressContainer;
     private BroadcastReceiver br;
+
+    private boolean editMode = false;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -94,6 +101,8 @@ public class HomeActivity extends AppActivity implements IHomeView, PackageModel
     private void setupList() {
         list = findViewById(R.id.list);
         RecyclerView.LayoutManager layoutManager = getFlexboxLayoutManager();
+        touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
+        touchHelper.attachToRecyclerView(list);
         list.setLayoutManager(layoutManager);
     }
 
@@ -103,7 +112,6 @@ public class HomeActivity extends AppActivity implements IHomeView, PackageModel
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         return layoutManager;
     }
-
 
     private RecyclerView.LayoutManager getGridLayoutManager() {
         return new GridLayoutManager(this, 2);
@@ -168,10 +176,22 @@ public class HomeActivity extends AppActivity implements IHomeView, PackageModel
 
     @Override
     public void onItemLongClick(int position, PackageModel item) {
-        Uri uri = Uri.fromParts("package", item.packageName, null);
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
-        if (intent.resolveActivity(pm) != null) {
-            startActivity(intent);
+        if (editMode) {
+            View view = list.getLayoutManager().findViewByPosition(position);
+            touchHelper.startDrag(list.getChildViewHolder(view));
+        } else {
+            Uri uri = Uri.fromParts("package", item.packageName, null);
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
+            if (intent.resolveActivity(pm) != null) {
+                startActivity(intent);
+            }
         }
     }
+
+    @Override
+    public void onItemMove(int from, int to) {
+        presenter.swap(from, to);
+        list.getAdapter().notifyItemMoved(from, to);
+    }
 }
+

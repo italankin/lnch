@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<IHomeView> {
@@ -43,6 +45,11 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     private final Context context;
     private final PackageManager pm;
     private final Preferences preferences = new Preferences();
+
+    private List<PackageModel> apps;
+
+    private final PublishSubject<List<PackageModel>> updates = PublishSubject.create();
+    private Subscription updatesSub;
 
     @Inject
     HomePresenter(Context context, PackageManager pm) {
@@ -79,7 +86,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 .subscribe(new State<List<PackageModel>>() {
                     @Override
                     protected void onNext(IHomeView viewState, List<PackageModel> list) {
+                        apps = list;
                         viewState.onAppsLoaded(list);
+                        subscribeForUpdates();
                     }
 
                     @Override
@@ -88,6 +97,19 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                     }
                 });
         subs.add(s);
+    }
+
+    void swap(int from, int to) {
+        if (from < to) {
+            for (int i = from; i < to; i++) {
+                swap(apps, i, i + 1);
+            }
+        } else {
+            for (int i = from; i > to; i--) {
+                swap(apps, i, i - 1);
+            }
+        }
+        updates.onNext(apps);
     }
 
     private File getPrefs() {
@@ -128,8 +150,19 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                                 apps.add(item);
                             } else {
                                 PackageModel item = createItem(pm, ri);
-                                item.order = apps.size();
+                                item.order = -1;
                                 apps.add(item);
+                            }
+                        }
+                        // update order values
+                        int offset = 0;
+                        for (int i = 0, s = apps.size(); i < s; i++) {
+                            PackageModel item = apps.get(i);
+                            if (item.order < 0) {
+                                item.order = i == 0 ? 0 : apps.get(i - 1).order + 1;
+                                offset++;
+                            } else {
+                                item.order += offset;
                             }
                         }
                         Collections.sort(apps, PackageModel.CMP_ORDER);
@@ -158,6 +191,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     }
 
     private void writeToDisk(List<PackageModel> apps) {
+        Log.d("HomePresenter", "writeToDisk");
         Map<String, PackageModel> map = new LinkedHashMap<>(apps.size());
         for (PackageModel app : apps) {
             map.put(app.packageName, app);
@@ -181,6 +215,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     }
 
     private Map<String, PackageModel> readFromDisk() {
+        Log.d("HomePresenter", "readFromDisk");
         Gson gson = new Gson();
         Type type = new TypeToken<LinkedHashMap<String, PackageModel>>() {
         }.getType();
@@ -190,5 +225,27 @@ public class HomePresenter extends AppPresenter<IHomeView> {
             Log.e("LoadAppsTask", "readFromDisk:", e);
             return null;
         }
+    }
+
+    private static void swap(List<PackageModel> list, int i1, int i2) {
+        PackageModel left = list.get(i1);
+        PackageModel right = list.get(i2);
+        int tmp = left.order;
+        left.order = right.order;
+        right.order = tmp;
+        Collections.swap(list, i1, i2);
+    }
+
+    private void subscribeForUpdates() {
+        if (updatesSub != null && !updatesSub.isUnsubscribed()) {
+            return;
+        }
+        updatesSub = updates
+                .debounce(2, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::writeToDisk, throwable -> {
+                    Log.e("HomePresenter", "error receiving updates:", throwable);
+                });
+        subs.add(updatesSub);
     }
 }
