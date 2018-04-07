@@ -28,7 +28,7 @@ public class PackageModel {
     public int color;
 
     @SerializedName("customColor")
-    public Integer customColor = -1;
+    public Integer customColor;
 
     @SerializedName("order")
     public int order;
