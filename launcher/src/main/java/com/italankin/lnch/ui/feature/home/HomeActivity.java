@@ -4,22 +4,27 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -41,14 +46,21 @@ public class HomeActivity extends AppActivity implements IHomeView,
     HomePresenter presenter;
 
     private CoordinatorLayout root;
+    private ViewGroup searchBar;
+    private AutoCompleteTextView editSearch;
+    private View btnSettings;
     private RecyclerView list;
-    private ItemTouchHelper touchHelper;
 
-    private PackageManager pm;
+    private InputMethodManager inputMethodManager;
+    private BroadcastReceiver packageUpdatesReceiver;
+    private Handler handler;
+
     private FrameLayout progressContainer;
-    private BroadcastReceiver br;
 
     private boolean editMode = false;
+
+    private TopBarBehavior searchBarBehavior;
+    private ItemTouchHelper touchHelper;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -59,47 +71,56 @@ public class HomeActivity extends AppActivity implements IHomeView,
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        pm = getPackageManager();
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        handler = new Handler(getMainLooper());
+
+        setupWindow();
 
         setContentView(R.layout.activity_launcher);
+        root = findViewById(R.id.root);
+        list = findViewById(R.id.list);
+        searchBar = findViewById(R.id.search_bar);
+        editSearch = findViewById(R.id.edit_search);
+        btnSettings = findViewById(R.id.btn_settings);
+
         setupRoot();
         setupList();
+        setupSearchBar();
+
+        registerReceiver();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                presenter.loadApps();
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        filter.addDataScheme("package");
-        registerReceiver(br, filter);
+    protected void onDestroy() {
+        super.onDestroy();
+        if (packageUpdatesReceiver != null) {
+            unregisterReceiver(packageUpdatesReceiver);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchBarBehavior.isShown()) {
+            searchBarBehavior.hide();
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+        if (searchBarBehavior.isShown()) {
+            searchBarBehavior.hide();
+        } else if (Intent.ACTION_MAIN.equals(intent.getAction())) {
             list.smoothScrollToPosition(0);
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(br);
+    private void setupWindow() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
+                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
     }
 
     private void setupList() {
-        list = findViewById(R.id.list);
         RecyclerView.LayoutManager layoutManager = getFlexboxLayoutManager();
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
@@ -125,9 +146,55 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     private void setupRoot() {
-        root = findViewById(R.id.root);
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    }
+
+    private void setupSearchBar() {
+        searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
+            @Override
+            public void onShow() {
+                editSearch.requestFocus();
+                inputMethodManager.showSoftInput(editSearch, 0);
+            }
+
+            @Override
+            public void onHide() {
+                editSearch.setText("");
+                inputMethodManager.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+                editSearch.clearFocus();
+            }
+        });
+        searchBarBehavior.setEnabled(!editMode);
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchBar.getLayoutParams();
+        lp.setBehavior(searchBarBehavior);
+        searchBar.setLayoutParams(lp);
+
+        editSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
+                if (adapter.getCount() > 0) {
+                    presenter.startApp(this, adapter.getItem(0));
+                } else {
+                    String query = editSearch.getText().toString().trim();
+                    presenter.startSearch(this, query);
+                }
+                editSearch.setText("");
+                searchBarBehavior.hide();
+            }
+            return true;
+        });
+        editSearch.setOnItemClickListener((parent, view, position, id) -> {
+            editSearch.setText("");
+            SearchAdapter adapter = (SearchAdapter) parent.getAdapter();
+            presenter.startApp(this, adapter.getItem(position));
+            searchBarBehavior.hide();
+        });
+        editSearch.setThreshold(1);
+
+        btnSettings.setOnClickListener(v -> {
+            setEditMode(true);
+        });
     }
 
     @Override
@@ -156,21 +223,25 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     public void onAppsLoaded(List<PackageModel> appList) {
         hideProgress();
-        PackageModelAdapter adapter = new PackageModelAdapter(this, appList, this);
+        PackageModelAdapter adapter = (PackageModelAdapter) list.getAdapter();
+        if (adapter == null) {
+            adapter = new PackageModelAdapter(this, this);
+        }
+        adapter.setDataset(appList);
         list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
+        editSearch.setAdapter(new SearchAdapter(appList));
     }
 
     @Override
-    public void onBackPressed() {
-        // TODO stub
+    public void showError(Throwable e) {
+        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onItemClick(int position, PackageModel item) {
-        Intent intent = pm.getLaunchIntentForPackage(item.packageName);
-        if (intent != null && intent.resolveActivity(pm) != null) {
-            startActivity(intent);
+        if (!editMode) {
+            presenter.startApp(this, item);
         }
     }
 
@@ -180,18 +251,53 @@ public class HomeActivity extends AppActivity implements IHomeView,
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));
         } else {
-            Uri uri = Uri.fromParts("package", item.packageName, null);
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
-            if (intent.resolveActivity(pm) != null) {
-                startActivity(intent);
-            }
+            presenter.startAppSettings(this, item);
         }
     }
 
     @Override
     public void onItemMove(int from, int to) {
-        presenter.swap(from, to);
+        presenter.swapItems(from, to);
         list.getAdapter().notifyItemMoved(from, to);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Private
+    ///////////////////////////////////////////////////////////////////////////
+
+    private void registerReceiver() {
+        packageUpdatesReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                handler.postDelayed(() -> presenter.loadApps(), 1000);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addDataScheme("package");
+        registerReceiver(packageUpdatesReceiver, filter);
+    }
+
+    private void setEditMode(boolean value) {
+        editMode = value;
+        searchBarBehavior.hide();
+        searchBarBehavior.setEnabled(!editMode);
+        if (editMode) {
+            Snackbar snackbar = Snackbar.make(root, R.string.edit_mode_hint, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.edit_mode_exit, v -> {
+                setEditMode(false);
+                snackbar.dismiss();
+            });
+            snackbar.show();
+            int bottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,
+                    getResources().getDisplayMetrics());
+            list.setPadding(0, 0, 0, bottom);
+        } else {
+            list.setPadding(0, 0, 0, 0);
+        }
     }
 }
 

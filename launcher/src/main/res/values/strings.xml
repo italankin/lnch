@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">lnch</string>
+
+    <string name="hint_search">Search</string>
+
+    <string name="edit_mode_hint">Edit mode enabled</string>
+    <string name="edit_mode_exit">Exit</string>
 </resources>

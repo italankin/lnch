@@ -15,13 +15,18 @@ import java.util.List;
 
 class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     private final LayoutInflater inflater;
-    private final List<PackageModel> dataset;
+    private List<PackageModel> dataset;
     private final Listener listener;
 
-    PackageModelAdapter(Context context, List<PackageModel> dataset, Listener listener) {
+    PackageModelAdapter(Context context, Listener listener) {
         this.inflater = LayoutInflater.from(context);
-        this.dataset = dataset != null ? dataset : Collections.emptyList();
         this.listener = listener;
+        setHasStableIds(true);
+    }
+
+    public void setDataset(List<PackageModel> newDataset) {
+        dataset = newDataset != null ? newDataset : Collections.emptyList();
+        notifyDataSetChanged();
     }
 
     @Override

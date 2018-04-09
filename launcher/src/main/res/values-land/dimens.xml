@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="apps_list_start">0dp</dimen>
-    <dimen name="apps_list_top">24dp</dimen>
-    <dimen name="apps_list_end">48dp</dimen>
-    <dimen name="apps_list_bottom">0dp</dimen>
-</resources>

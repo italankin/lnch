@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -43,7 +45,7 @@ import rx.subjects.PublishSubject;
 public class HomePresenter extends AppPresenter<IHomeView> {
 
     private final Context context;
-    private final PackageManager pm;
+    private final PackageManager packageManager;
     private final Preferences preferences = new Preferences();
 
     private List<PackageModel> apps;
@@ -52,9 +54,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     private Subscription updatesSub;
 
     @Inject
-    HomePresenter(Context context, PackageManager pm) {
+    HomePresenter(Context context, PackageManager packageManager) {
         this.context = context;
-        this.pm = pm;
+        this.packageManager = packageManager;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         Subscription s = Observable
                 .fromCallable(() -> {
                     Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
-                    return pm.queryIntentActivities(intent, 0);
+                    return packageManager.queryIntentActivities(intent, 0);
                 })
                 .subscribeOn(Schedulers.computation())
                 .flatMap(infoList -> {
@@ -93,34 +95,61 @@ public class HomePresenter extends AppPresenter<IHomeView> {
 
                     @Override
                     protected void onError(IHomeView viewState, Throwable e) {
-                        // TODO
+                        viewState.showError(e);
                     }
                 });
         subs.add(s);
     }
 
-    void swap(int from, int to) {
+    void swapItems(int from, int to) {
         if (from < to) {
             for (int i = from; i < to; i++) {
-                swap(apps, i, i + 1);
+                swapOrder(apps, i, i + 1);
             }
         } else {
             for (int i = from; i > to; i--) {
-                swap(apps, i, i - 1);
+                swapOrder(apps, i, i - 1);
             }
         }
         updates.onNext(apps);
     }
 
+    void startSearch(Context context, String query) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.google.com/search?q=" + query));
+        if (intent.resolveActivity(packageManager) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+    void startApp(Context context, PackageModel item) {
+        Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
+        if (intent != null && intent.resolveActivity(packageManager) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+    void startAppSettings(Context context, PackageModel item) {
+        Uri uri = Uri.fromParts("package", item.packageName, null);
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
+        if (intent.resolveActivity(packageManager) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Private
+    ///////////////////////////////////////////////////////////////////////////
+
     private File getPrefs() {
-        return new File(context.getFilesDir(), "prefs.json");
+        return new File(context.getFilesDir(), "packages.json");
     }
 
     private Observable<List<PackageModel>> loadFromPm(List<ResolveInfo> infoList) {
         return Observable.fromCallable(() -> {
             List<PackageModel> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
-                apps.add(createItem(pm, infoList.get(i)));
+                apps.add(createItem(packageManager, infoList.get(i)));
             }
             Collections.sort(apps, PackageModel.CMP_NAME_ASC);
             for (int i = 0, s = apps.size(); i < s; i++) {
@@ -141,15 +170,15 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                             if (map.containsKey(packageName)) {
                                 PackageModel item = map.get(packageName);
                                 item.packageName = packageName;
-                                int versionCode = getVersionCode(pm, packageName);
+                                int versionCode = getVersionCode(packageManager, packageName);
                                 if (item.versionCode != versionCode) {
                                     item.versionCode = versionCode;
-                                    item.label = preferences.label.get(pm, ri);
-                                    item.color = preferences.color.get(pm, ri);
+                                    item.label = preferences.label.get(packageManager, ri);
+                                    item.color = preferences.color.get(packageManager, ri);
                                 }
                                 apps.add(item);
                             } else {
-                                PackageModel item = createItem(pm, ri);
+                                PackageModel item = createItem(packageManager, ri);
                                 item.order = -1;
                                 apps.add(item);
                             }
@@ -210,7 +239,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 fw.close();
             }
         } catch (IOException e) {
-            Log.e("LoadAppsTask", "writeToDisk:", e);
+            Log.e("HomePresenter", "writeToDisk:", e);
         }
     }
 
@@ -222,12 +251,12 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         try {
             return gson.fromJson(new FileReader(getPrefs()), type);
         } catch (FileNotFoundException e) {
-            Log.e("LoadAppsTask", "readFromDisk:", e);
+            Log.e("HomePresenter", "readFromDisk:", e);
             return null;
         }
     }
 
-    private static void swap(List<PackageModel> list, int i1, int i2) {
+    private static void swapOrder(List<PackageModel> list, int i1, int i2) {
         PackageModel left = list.get(i1);
         PackageModel right = list.get(i2);
         int tmp = left.order;
