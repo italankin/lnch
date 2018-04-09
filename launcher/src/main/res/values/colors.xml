@@ -5,4 +5,5 @@
     <color name="accent">#f9a825</color>
     <color name="status_bar">#8000</color>
     <color name="navigation_bar">#8000</color>
+    <color name="launcher_background">#212121</color>
 </resources>
