@@ -77,7 +77,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 })
                 .subscribeOn(Schedulers.computation())
                 .flatMap(infoList -> {
-                    Observable<List<AppItem>> fromPm = loadFromPm(infoList);
+                    Observable<List<AppItem>> fromPm = loadFromList(infoList);
                     if (!getPrefs().exists()) {
                         return fromPm;
                     } else {
@@ -148,7 +148,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         return new File(context.getFilesDir(), "packages.json");
     }
 
-    private Observable<List<AppItem>> loadFromPm(List<LauncherActivityInfo> infoList) {
+    private Observable<List<AppItem>> loadFromList(List<LauncherActivityInfo> infoList) {
         return Observable.fromCallable(() -> {
             List<AppItem> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
