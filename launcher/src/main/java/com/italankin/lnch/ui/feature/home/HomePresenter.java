@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.model.PackageModel;
+import com.italankin.lnch.model.AppItem;
 import com.italankin.lnch.model.provider.Preferences;
 import com.italankin.lnch.ui.base.AppPresenter;
 
@@ -50,9 +50,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     private final PackageManager packageManager;
     private final Preferences preferences = new Preferences();
 
-    private List<PackageModel> apps;
+    private List<AppItem> apps;
 
-    private final PublishSubject<List<PackageModel>> updates = PublishSubject.create();
+    private final PublishSubject<List<AppItem>> updates = PublishSubject.create();
     private Subscription updatesSub;
 
     @Inject
@@ -77,7 +77,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 })
                 .subscribeOn(Schedulers.computation())
                 .flatMap(infoList -> {
-                    Observable<List<PackageModel>> fromPm = loadFromPm(infoList);
+                    Observable<List<AppItem>> fromPm = loadFromPm(infoList);
                     if (!getPrefs().exists()) {
                         return fromPm;
                     } else {
@@ -88,9 +88,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 })
                 .doOnNext(this::writeToDisk)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<PackageModel>>() {
+                .subscribe(new State<List<AppItem>>() {
                     @Override
-                    protected void onNext(IHomeView viewState, List<PackageModel> list) {
+                    protected void onNext(IHomeView viewState, List<AppItem> list) {
                         apps = list;
                         viewState.onAppsLoaded(list);
                         subscribeForUpdates();
@@ -125,14 +125,14 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         }
     }
 
-    void startApp(Context context, PackageModel item) {
+    void startApp(Context context, AppItem item) {
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
         if (intent != null && intent.resolveActivity(packageManager) != null) {
             context.startActivity(intent);
         }
     }
 
-    void startAppSettings(Context context, PackageModel item) {
+    void startAppSettings(Context context, AppItem item) {
         Uri uri = Uri.fromParts("package", item.packageName, null);
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
         if (intent.resolveActivity(packageManager) != null) {
@@ -148,13 +148,13 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         return new File(context.getFilesDir(), "packages.json");
     }
 
-    private Observable<List<PackageModel>> loadFromPm(List<LauncherActivityInfo> infoList) {
+    private Observable<List<AppItem>> loadFromPm(List<LauncherActivityInfo> infoList) {
         return Observable.fromCallable(() -> {
-            List<PackageModel> apps = new ArrayList<>(16);
+            List<AppItem> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
                 apps.add(createItem(packageManager, infoList.get(i)));
             }
-            Collections.sort(apps, PackageModel.CMP_NAME_ASC);
+            Collections.sort(apps, AppItem.CMP_NAME_ASC);
             for (int i = 0, s = apps.size(); i < s; i++) {
                 apps.get(i).order = i;
             }
@@ -162,16 +162,16 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         });
     }
 
-    private Observable<List<PackageModel>> loadFromFile(List<LauncherActivityInfo> infoList) {
+    private Observable<List<AppItem>> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Observable
                 .create(emitter -> {
-                    Map<String, PackageModel> map = readFromDisk();
+                    Map<String, AppItem> map = readFromDisk();
                     if (map != null) {
-                        List<PackageModel> apps = new ArrayList<>(map.size());
+                        List<AppItem> apps = new ArrayList<>(map.size());
                         for (LauncherActivityInfo info : infoList) {
                             String packageName = info.getApplicationInfo().packageName;
                             if (map.containsKey(packageName)) {
-                                PackageModel item = map.get(packageName);
+                                AppItem item = map.get(packageName);
                                 item.packageName = packageName;
                                 int versionCode = getVersionCode(packageManager, packageName);
                                 if (item.versionCode != versionCode) {
@@ -181,7 +181,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                                 }
                                 apps.add(item);
                             } else {
-                                PackageModel item = createItem(packageManager, info);
+                                AppItem item = createItem(packageManager, info);
                                 item.order = -1;
                                 apps.add(item);
                             }
@@ -189,7 +189,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                         // update order values
                         int offset = 0;
                         for (int i = 0, s = apps.size(); i < s; i++) {
-                            PackageModel item = apps.get(i);
+                            AppItem item = apps.get(i);
                             if (item.order < 0) {
                                 item.order = i == 0 ? 0 : (apps.get(i - 1).order + 1);
                                 offset++;
@@ -197,7 +197,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                                 item.order += offset;
                             }
                         }
-                        Collections.sort(apps, PackageModel.CMP_ORDER);
+                        Collections.sort(apps, AppItem.CMP_ORDER);
                         emitter.onNext(apps);
                     }
                     emitter.onCompleted();
@@ -205,8 +205,8 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     }
 
     @NonNull
-    private PackageModel createItem(PackageManager pm, LauncherActivityInfo info) {
-        PackageModel item = new PackageModel(info.getApplicationInfo().packageName);
+    private AppItem createItem(PackageManager pm, LauncherActivityInfo info) {
+        AppItem item = new AppItem(info.getApplicationInfo().packageName);
         item.versionCode = getVersionCode(pm, info.getApplicationInfo().packageName);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
@@ -222,10 +222,10 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         }
     }
 
-    private void writeToDisk(List<PackageModel> apps) {
+    private void writeToDisk(List<AppItem> apps) {
         Log.d("HomePresenter", "writeToDisk");
-        Map<String, PackageModel> map = new LinkedHashMap<>(apps.size());
-        for (PackageModel app : apps) {
+        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
+        for (AppItem app : apps) {
             map.put(app.packageName, app);
         }
         try {
@@ -246,10 +246,10 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         }
     }
 
-    private Map<String, PackageModel> readFromDisk() {
+    private Map<String, AppItem> readFromDisk() {
         Log.d("HomePresenter", "readFromDisk");
         Gson gson = new Gson();
-        Type type = new TypeToken<LinkedHashMap<String, PackageModel>>() {
+        Type type = new TypeToken<LinkedHashMap<String, AppItem>>() {
         }.getType();
         try {
             return gson.fromJson(new FileReader(getPrefs()), type);
@@ -259,9 +259,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         }
     }
 
-    private static void swapOrder(List<PackageModel> list, int i1, int i2) {
-        PackageModel left = list.get(i1);
-        PackageModel right = list.get(i2);
+    private static void swapOrder(List<AppItem> list, int i1, int i2) {
+        AppItem left = list.get(i1);
+        AppItem right = list.get(i2);
         int tmp = left.order;
         left.order = right.order;
         right.order = tmp;

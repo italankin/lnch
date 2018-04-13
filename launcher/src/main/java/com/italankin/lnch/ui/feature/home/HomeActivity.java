@@ -32,7 +32,7 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.PackageModel;
+import com.italankin.lnch.model.AppItem;
 import com.italankin.lnch.ui.base.AppActivity;
 import com.italankin.lnch.ui.util.SwapItemHelper;
 
@@ -221,7 +221,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<PackageModel> appList) {
+    public void onAppsLoaded(List<AppItem> appList) {
         hideProgress();
         PackageModelAdapter adapter = (PackageModelAdapter) list.getAdapter();
         if (adapter == null) {
@@ -239,14 +239,14 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void onItemClick(int position, PackageModel item) {
+    public void onItemClick(int position, AppItem item) {
         if (!editMode) {
             presenter.startApp(this, item);
         }
     }
 
     @Override
-    public void onItemLongClick(int position, PackageModel item) {
+    public void onItemLongClick(int position, AppItem item) {
         if (editMode) {
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));

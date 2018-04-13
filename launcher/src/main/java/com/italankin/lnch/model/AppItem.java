@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
 
-public class PackageModel {
-    public static final Comparator<PackageModel> CMP_NAME_ASC = new NameComparator(true);
-    public static final Comparator<PackageModel> CMP_NAME_DESC = new NameComparator(false);
-    public static final Comparator<PackageModel> CMP_ORDER = new OrderComparator();
+public class AppItem {
+    public static final Comparator<AppItem> CMP_NAME_ASC = new NameComparator(true);
+    public static final Comparator<AppItem> CMP_NAME_DESC = new NameComparator(false);
+    public static final Comparator<AppItem> CMP_ORDER = new OrderComparator();
 
     @Expose(serialize = false, deserialize = false)
     public String packageName;
@@ -34,10 +34,10 @@ public class PackageModel {
     public int order;
 
     @Keep
-    public PackageModel() {
+    public AppItem() {
     }
 
-    public PackageModel(String packageName) {
+    public AppItem(String packageName) {
         this.packageName = packageName;
     }
 
@@ -56,7 +56,7 @@ public class PackageModel {
     }
 }
 
-class NameComparator implements Comparator<PackageModel> {
+class NameComparator implements Comparator<AppItem> {
     private final boolean asc;
 
     NameComparator(boolean asc) {
@@ -64,15 +64,15 @@ class NameComparator implements Comparator<PackageModel> {
     }
 
     @Override
-    public int compare(PackageModel lhs, PackageModel rhs) {
+    public int compare(AppItem lhs, AppItem rhs) {
         int compare = String.CASE_INSENSITIVE_ORDER.compare(lhs.label, rhs.label);
         return asc ? compare : -compare;
     }
 }
 
-class OrderComparator implements Comparator<PackageModel> {
+class OrderComparator implements Comparator<AppItem> {
     @Override
-    public int compare(PackageModel o1, PackageModel o2) {
+    public int compare(AppItem o1, AppItem o2) {
         return o1.order > o2.order ? 1 : (o1.order == o2.order ? 0 : -1);
     }
 }

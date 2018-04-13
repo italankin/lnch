@@ -8,14 +8,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.PackageModel;
+import com.italankin.lnch.model.AppItem;
 
 import java.util.Collections;
 import java.util.List;
 
 class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     private final LayoutInflater inflater;
-    private List<PackageModel> dataset;
+    private List<AppItem> dataset;
     private final Listener listener;
 
     PackageModelAdapter(Context context, Listener listener) {
@@ -24,7 +24,7 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
         setHasStableIds(true);
     }
 
-    public void setDataset(List<PackageModel> newDataset) {
+    public void setDataset(List<AppItem> newDataset) {
         dataset = newDataset != null ? newDataset : Collections.emptyList();
         notifyDataSetChanged();
     }
@@ -56,7 +56,7 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
 
     @Override
     public void onBindViewHolder(PackageModelViewHolder holder, int position) {
-        PackageModel item = dataset.get(position);
+        AppItem item = dataset.get(position);
         holder.label.setText(item.getLabel());
         holder.label.setTextColor(item.getColor());
     }
@@ -72,9 +72,9 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     }
 
     public interface Listener {
-        void onItemClick(int position, PackageModel item);
+        void onItemClick(int position, AppItem item);
 
-        void onItemLongClick(int position, PackageModel item);
+        void onItemLongClick(int position, AppItem item);
     }
 }
 

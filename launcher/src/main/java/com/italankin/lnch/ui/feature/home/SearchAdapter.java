@@ -9,7 +9,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.PackageModel;
+import com.italankin.lnch.model.AppItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,14 +18,14 @@ import java.util.Locale;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
     private final Filter filter;
-    private List<PackageModel> filtered = new ArrayList<>(0);
+    private List<AppItem> filtered = new ArrayList<>(0);
 
-    public SearchAdapter(List<PackageModel> dataset) {
+    public SearchAdapter(List<AppItem> dataset) {
         this.filter = new SearchFilter(dataset) {
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 //noinspection unchecked
-                filtered = (List<PackageModel>) results.values;
+                filtered = (List<AppItem>) results.values;
                 notifyDataSetChanged();
             }
         };
@@ -37,7 +37,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public PackageModel getItem(int position) {
+    public AppItem getItem(int position) {
         return filtered.get(position);
     }
 
@@ -57,7 +57,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        PackageModel item = getItem(position);
+        AppItem item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
         return convertView;
@@ -86,9 +86,9 @@ abstract class SearchFilter extends Filter {
         EMPTY.count = 0;
     }
 
-    private final List<PackageModel> dataset;
+    private final List<AppItem> dataset;
 
-    public SearchFilter(List<PackageModel> dataset) {
+    public SearchFilter(List<AppItem> dataset) {
         this.dataset = dataset;
     }
 
@@ -104,11 +104,11 @@ abstract class SearchFilter extends Filter {
             return EMPTY;
         }
         String s = constraint.toString();
-        List<PackageModel> values = new ArrayList<>(8);
-        List<PackageModel> matchCustomLabel = new ArrayList<>(2);
-        List<PackageModel> matchLabel = new ArrayList<>(2);
-        List<PackageModel> matchPackageName = new ArrayList<>(2);
-        for (PackageModel item : dataset) {
+        List<AppItem> values = new ArrayList<>(8);
+        List<AppItem> matchCustomLabel = new ArrayList<>(2);
+        List<AppItem> matchLabel = new ArrayList<>(2);
+        List<AppItem> matchPackageName = new ArrayList<>(2);
+        for (AppItem item : dataset) {
             if (startsWith(item.customLabel, s) || startsWith(item.label, s)) {
                 values.add(item);
                 continue;
