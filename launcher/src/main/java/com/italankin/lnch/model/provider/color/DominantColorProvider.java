@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.provider.color;
 
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.pm.LauncherActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,8 +11,8 @@ import android.util.TypedValue;
 
 public class DominantColorProvider implements ColorProvider {
     @Override
-    public Integer get(PackageManager pm, ResolveInfo ri) {
-        Bitmap bitmap = getIconBitmap(ri.loadIcon(pm));
+    public Integer get(LauncherActivityInfo info) {
+        Bitmap bitmap = getIconBitmap(info.getIcon(0));
         Palette palette = Palette.from(bitmap).generate();
         int dominant = palette.getDominantColor(Color.WHITE);
         float[] hsv = new float[3];

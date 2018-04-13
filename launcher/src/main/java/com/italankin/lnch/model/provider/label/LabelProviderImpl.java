@@ -1,11 +1,10 @@
 package com.italankin.lnch.model.provider.label;
 
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.pm.LauncherActivityInfo;
 
 public class LabelProviderImpl implements LabelProvider {
     @Override
-    public String get(PackageManager pm, ResolveInfo ri) {
-        return ri.loadLabel(pm).toString();
+    public String get(LauncherActivityInfo info) {
+        return info.getLabel().toString();
     }
 }

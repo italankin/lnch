@@ -1,13 +1,12 @@
 package com.italankin.lnch.model.provider.label;
 
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.pm.LauncherActivityInfo;
 
 import java.util.Locale;
 
 public class LowercaseLabelProvider extends LabelProviderImpl {
     @Override
-    public String get(PackageManager pm, ResolveInfo ri) {
-        return super.get(pm, ri).toLowerCase(Locale.getDefault());
+    public String get(LauncherActivityInfo info) {
+        return super.get(info).toLowerCase(Locale.getDefault());
     }
 }

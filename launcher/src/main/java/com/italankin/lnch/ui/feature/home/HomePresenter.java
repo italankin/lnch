@@ -2,10 +2,12 @@ package com.italankin.lnch.ui.feature.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Process;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -69,8 +71,9 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         getViewState().showProgress();
         Subscription s = Observable
                 .fromCallable(() -> {
-                    Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
-                    return packageManager.queryIntentActivities(intent, 0);
+                    LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+                    //noinspection ConstantConditions
+                    return launcherApps.getActivityList(null, Process.myUserHandle());
                 })
                 .subscribeOn(Schedulers.computation())
                 .flatMap(infoList -> {
@@ -145,7 +148,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         return new File(context.getFilesDir(), "packages.json");
     }
 
-    private Observable<List<PackageModel>> loadFromPm(List<ResolveInfo> infoList) {
+    private Observable<List<PackageModel>> loadFromPm(List<LauncherActivityInfo> infoList) {
         return Observable.fromCallable(() -> {
             List<PackageModel> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
@@ -159,26 +162,26 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         });
     }
 
-    private Observable<List<PackageModel>> loadFromFile(List<ResolveInfo> infoList) {
+    private Observable<List<PackageModel>> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Observable
                 .create(emitter -> {
                     Map<String, PackageModel> map = readFromDisk();
                     if (map != null) {
                         List<PackageModel> apps = new ArrayList<>(map.size());
-                        for (ResolveInfo ri : infoList) {
-                            String packageName = ri.activityInfo.packageName;
+                        for (LauncherActivityInfo info : infoList) {
+                            String packageName = info.getApplicationInfo().packageName;
                             if (map.containsKey(packageName)) {
                                 PackageModel item = map.get(packageName);
                                 item.packageName = packageName;
                                 int versionCode = getVersionCode(packageManager, packageName);
                                 if (item.versionCode != versionCode) {
                                     item.versionCode = versionCode;
-                                    item.label = preferences.label.get(packageManager, ri);
-                                    item.color = preferences.color.get(packageManager, ri);
+                                    item.label = preferences.label.get(info);
+                                    item.color = preferences.color.get(info);
                                 }
                                 apps.add(item);
                             } else {
-                                PackageModel item = createItem(packageManager, ri);
+                                PackageModel item = createItem(packageManager, info);
                                 item.order = -1;
                                 apps.add(item);
                             }
@@ -188,7 +191,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                         for (int i = 0, s = apps.size(); i < s; i++) {
                             PackageModel item = apps.get(i);
                             if (item.order < 0) {
-                                item.order = i == 0 ? 0 : apps.get(i - 1).order + 1;
+                                item.order = i == 0 ? 0 : (apps.get(i - 1).order + 1);
                                 offset++;
                             } else {
                                 item.order += offset;
@@ -202,11 +205,11 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     }
 
     @NonNull
-    private PackageModel createItem(PackageManager pm, ResolveInfo ri) {
-        PackageModel item = new PackageModel(ri.activityInfo.packageName);
-        item.versionCode = getVersionCode(pm, ri.activityInfo.packageName);
-        item.label = preferences.label.get(pm, ri);
-        item.color = preferences.color.get(pm, ri);
+    private PackageModel createItem(PackageManager pm, LauncherActivityInfo info) {
+        PackageModel item = new PackageModel(info.getApplicationInfo().packageName);
+        item.versionCode = getVersionCode(pm, info.getApplicationInfo().packageName);
+        item.label = preferences.label.get(info);
+        item.color = preferences.color.get(info);
         return item;
     }
 
