@@ -145,9 +145,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void show() {
-        if (shown) {
-            return;
-        }
         dragInProgress = false;
         shown = true;
         topView.animate()
@@ -170,9 +167,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void hide() {
-        if (!shown) {
-            return;
-        }
         dragInProgress = false;
         shown = false;
         topView.animate()
