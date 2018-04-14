@@ -13,12 +13,12 @@ import com.italankin.lnch.model.AppItem;
 import java.util.Collections;
 import java.util.List;
 
-class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
+class AppItemAdapter extends RecyclerView.Adapter<AppItemViewHolder> {
     private final LayoutInflater inflater;
     private List<AppItem> dataset;
     private final Listener listener;
 
-    PackageModelAdapter(Context context, Listener listener) {
+    AppItemAdapter(Context context, Listener listener) {
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
         setHasStableIds(true);
@@ -30,9 +30,9 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     }
 
     @Override
-    public PackageModelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_package, parent, false);
-        PackageModelViewHolder holder = new PackageModelViewHolder(view);
+    public AppItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.item_app, parent, false);
+        AppItemViewHolder holder = new AppItemViewHolder(view);
         view.setOnClickListener(v -> {
             if (listener != null) {
                 int pos = holder.getAdapterPosition();
@@ -55,7 +55,7 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(PackageModelViewHolder holder, int position) {
+    public void onBindViewHolder(AppItemViewHolder holder, int position) {
         AppItem item = dataset.get(position);
         holder.label.setText(item.getLabel());
         holder.label.setTextColor(item.getColor());
@@ -78,10 +78,10 @@ class PackageModelAdapter extends RecyclerView.Adapter<PackageModelViewHolder> {
     }
 }
 
-class PackageModelViewHolder extends RecyclerView.ViewHolder {
+class AppItemViewHolder extends RecyclerView.ViewHolder {
     final TextView label;
 
-    PackageModelViewHolder(View itemView) {
+    AppItemViewHolder(View itemView) {
         super(itemView);
         label = itemView.findViewById(R.id.label);
     }

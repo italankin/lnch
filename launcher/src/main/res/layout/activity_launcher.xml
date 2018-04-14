@@ -52,7 +52,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:visibility="invisible"
-        tools:listitem="@layout/item_package"
+        tools:listitem="@layout/item_app"
         tools:translationY="64dp"
         tools:visibility="visible" />
 

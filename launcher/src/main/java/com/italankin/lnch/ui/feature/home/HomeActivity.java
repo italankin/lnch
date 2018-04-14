@@ -42,7 +42,7 @@ import java.util.List;
 
 public class HomeActivity extends AppActivity implements IHomeView,
         SwapItemHelper.Callback,
-        PackageModelAdapter.Listener {
+        AppItemAdapter.Listener {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -237,9 +237,9 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     public void onAppsLoaded(List<AppItem> items, List<ISearchable> fallbacks) {
         hideProgress();
-        PackageModelAdapter adapter = (PackageModelAdapter) list.getAdapter();
+        AppItemAdapter adapter = (AppItemAdapter) list.getAdapter();
         if (adapter == null) {
-            adapter = new PackageModelAdapter(this, this);
+            adapter = new AppItemAdapter(this, this);
         }
         adapter.setDataset(items);
         list.setAdapter(adapter);
