@@ -10,6 +10,7 @@ import android.view.View;
 public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 200;
+    private static final float DRAG_RESISTANCE = 0.55f;
 
     private View topView;
     private View bottomView;
@@ -110,7 +111,8 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     private void onDrag(int dy) {
-        float cty = topView.getTranslationY() - dy;
+        int actual = (int) (dy * (1 - DRAG_RESISTANCE));
+        float cty = topView.getTranslationY() - actual;
         if (cty < -maxOffset) {
             cty = -maxOffset;
         } else if (cty > 0) {
@@ -118,7 +120,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         }
         topView.setTranslationY(cty);
         topView.setAlpha(1 - Math.abs(cty) / maxOffset);
-        float tty = bottomView.getTranslationY() - dy;
+        float tty = bottomView.getTranslationY() - actual;
         if (tty < 0) {
             tty = 0;
         } else if (tty > maxOffset) {
@@ -136,7 +138,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                 hide();
             }
         } else {
-            if (abs < maxOffset * .75f) {
+            if (abs < maxOffset * .50f) {
                 show();
             } else {
                 hide();
