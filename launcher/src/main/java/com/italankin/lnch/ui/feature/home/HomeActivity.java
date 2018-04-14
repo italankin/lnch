@@ -194,23 +194,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
         });
     }
 
-    private void onFireSearch(int pos) {
-        if (editSearch.getText().length() > 0) {
-            SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
-            if (adapter.getCount() > 0) {
-                ISearchable item = adapter.getItem(pos);
-                if (item instanceof AppItem) {
-                    presenter.startApp(this, (AppItem) item);
-                } else if (item instanceof GoogleSearchable) {
-                    String query = editSearch.getText().toString().trim();
-                    presenter.startSearch(this, query);
-                }
-            }
-            editSearch.setText("");
-        }
-        searchBarBehavior.hide();
-    }
-
     @Override
     public void showProgress() {
         if (progressContainer != null) {
@@ -293,6 +276,23 @@ public class HomeActivity extends AppActivity implements IHomeView,
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
         filter.addDataScheme("package");
         registerReceiver(packageUpdatesReceiver, filter);
+    }
+
+    private void onFireSearch(int pos) {
+        if (editSearch.getText().length() > 0) {
+            SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
+            if (adapter.getCount() > 0) {
+                ISearchable item = adapter.getItem(pos);
+                if (item instanceof AppItem) {
+                    presenter.startApp(this, (AppItem) item);
+                } else if (item instanceof GoogleSearchable) {
+                    String query = editSearch.getText().toString().trim();
+                    presenter.startSearch(this, query);
+                }
+            }
+            editSearch.setText("");
+        }
+        searchBarBehavior.hide();
     }
 
     private void setEditMode(boolean value) {
