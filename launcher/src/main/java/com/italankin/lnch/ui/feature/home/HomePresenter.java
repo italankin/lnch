@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -51,6 +50,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     private final Preferences preferences = new Preferences();
 
     private List<AppItem> apps;
+    private volatile int appsHash;
 
     private final PublishSubject<List<AppItem>> updates = PublishSubject.create();
     private Subscription updatesSub;
@@ -92,6 +92,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                     @Override
                     protected void onNext(IHomeView viewState, List<AppItem> list) {
                         apps = list;
+                        appsHash = apps.hashCode();
                         viewState.onAppsLoaded(list);
                         subscribeForUpdates();
                     }
@@ -114,7 +115,6 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 swapOrder(apps, i, i - 1);
             }
         }
-        updates.onNext(apps);
     }
 
     void startSearch(Context context, String query) {
@@ -138,6 +138,10 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         if (intent.resolveActivity(packageManager) != null) {
             context.startActivity(intent);
         }
+    }
+
+    void saveState() {
+        updates.onNext(apps);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -273,9 +277,10 @@ public class HomePresenter extends AppPresenter<IHomeView> {
             return;
         }
         updatesSub = updates
-                .debounce(2, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::writeToDisk, throwable -> {
+                .filter(items -> items.hashCode() != appsHash)
+                .doOnNext(this::writeToDisk)
+                .subscribe(items -> appsHash = items.hashCode(), throwable -> {
                     Log.e("HomePresenter", "error receiving updates:", throwable);
                 });
         subs.add(updatesSub);

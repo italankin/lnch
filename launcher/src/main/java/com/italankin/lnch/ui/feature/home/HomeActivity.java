@@ -28,9 +28,9 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.AppItem;
 import com.italankin.lnch.ui.base.AppActivity;
@@ -91,6 +91,12 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        presenter.saveState();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (packageUpdatesReceiver != null) {
@@ -141,7 +147,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     private RecyclerView.LayoutManager getFlexboxLayoutManager() {
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+        layoutManager.setAlignItems(AlignItems.FLEX_START);
         return layoutManager;
     }
 
@@ -172,14 +178,16 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
         editSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
-                if (adapter.getCount() > 0) {
-                    presenter.startApp(this, adapter.getItem(0));
-                } else {
-                    String query = editSearch.getText().toString().trim();
-                    presenter.startSearch(this, query);
+                if (editSearch.getText().length() > 0) {
+                    SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
+                    if (adapter.getCount() > 0) {
+                        presenter.startApp(this, adapter.getItem(0));
+                    } else {
+                        String query = editSearch.getText().toString().trim();
+                        presenter.startSearch(this, query);
+                    }
+                    editSearch.setText("");
                 }
-                editSearch.setText("");
                 searchBarBehavior.hide();
             }
             return true;
