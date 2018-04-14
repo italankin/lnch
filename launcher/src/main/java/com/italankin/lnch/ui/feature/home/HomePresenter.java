@@ -19,6 +19,8 @@ import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.AppItem;
 import com.italankin.lnch.model.provider.Preferences;
+import com.italankin.lnch.model.searchable.GoogleSearchable;
+import com.italankin.lnch.model.searchable.ISearchable;
 import com.italankin.lnch.ui.base.AppPresenter;
 
 import java.io.File;
@@ -44,6 +46,9 @@ import rx.subjects.PublishSubject;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<IHomeView> {
+
+    private static final List<ISearchable> SEARCH_FALLBACKS =
+            Collections.singletonList(new GoogleSearchable());
 
     private final Context context;
     private final PackageManager packageManager;
@@ -93,7 +98,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                     protected void onNext(IHomeView viewState, List<AppItem> list) {
                         apps = list;
                         appsHash = apps.hashCode();
-                        viewState.onAppsLoaded(list);
+                        viewState.onAppsLoaded(list, SEARCH_FALLBACKS);
                         subscribeForUpdates();
                     }
 

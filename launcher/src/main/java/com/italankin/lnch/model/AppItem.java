@@ -1,13 +1,15 @@
 package com.italankin.lnch.model;
 
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.italankin.lnch.model.searchable.ISearchable;
 
 import java.util.Comparator;
 
-public class AppItem {
+public class AppItem implements ISearchable {
     public static final Comparator<AppItem> CMP_NAME_ASC = new NameComparator(true);
     public static final Comparator<AppItem> CMP_NAME_DESC = new NameComparator(false);
     public static final Comparator<AppItem> CMP_ORDER = new OrderComparator();
@@ -41,6 +43,7 @@ public class AppItem {
         this.packageName = packageName;
     }
 
+    @Override
     public String getLabel() {
         if (customLabel != null) {
             return customLabel;
@@ -48,11 +51,30 @@ public class AppItem {
         return label;
     }
 
+    @Override
     public int getColor() {
         if (customColor != null) {
             return customColor;
         }
         return color;
+    }
+
+    @NonNull
+    @Override
+    public Match filter(String constraint) {
+        if (ISearchable.startsWith(customLabel, constraint)) {
+            return Match.STARTS_WITH;
+        }
+        if (ISearchable.contains(customLabel, constraint)) {
+            return Match.CONTAINS;
+        }
+        if (ISearchable.startsWith(label, constraint)) {
+            return Match.STARTS_WITH;
+        }
+        if (ISearchable.contains(label, constraint)) {
+            return Match.CONTAINS;
+        }
+        return Match.NONE;
     }
 }
 

@@ -33,6 +33,8 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.model.searchable.GoogleSearchable;
+import com.italankin.lnch.model.searchable.ISearchable;
 import com.italankin.lnch.ui.base.AppActivity;
 import com.italankin.lnch.ui.util.SwapItemHelper;
 
@@ -178,31 +180,35 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
         editSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                if (editSearch.getText().length() > 0) {
-                    SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
-                    if (adapter.getCount() > 0) {
-                        presenter.startApp(this, adapter.getItem(0));
-                    } else {
-                        String query = editSearch.getText().toString().trim();
-                        presenter.startSearch(this, query);
-                    }
-                    editSearch.setText("");
-                }
-                searchBarBehavior.hide();
+                onFireSearch(0);
             }
             return true;
         });
         editSearch.setOnItemClickListener((parent, view, position, id) -> {
-            editSearch.setText("");
-            SearchAdapter adapter = (SearchAdapter) parent.getAdapter();
-            presenter.startApp(this, adapter.getItem(position));
-            searchBarBehavior.hide();
+            onFireSearch(position);
         });
         editSearch.setThreshold(1);
 
         btnSettings.setOnClickListener(v -> {
             setEditMode(true);
         });
+    }
+
+    private void onFireSearch(int pos) {
+        if (editSearch.getText().length() > 0) {
+            SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
+            if (adapter.getCount() > 0) {
+                ISearchable item = adapter.getItem(pos);
+                if (item instanceof AppItem) {
+                    presenter.startApp(this, (AppItem) item);
+                } else if (item instanceof GoogleSearchable) {
+                    String query = editSearch.getText().toString().trim();
+                    presenter.startSearch(this, query);
+                }
+            }
+            editSearch.setText("");
+        }
+        searchBarBehavior.hide();
     }
 
     @Override
@@ -229,16 +235,16 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppItem> appList) {
+    public void onAppsLoaded(List<AppItem> items, List<ISearchable> fallbacks) {
         hideProgress();
         PackageModelAdapter adapter = (PackageModelAdapter) list.getAdapter();
         if (adapter == null) {
             adapter = new PackageModelAdapter(this, this);
         }
-        adapter.setDataset(appList);
+        adapter.setDataset(items);
         list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
-        editSearch.setAdapter(new SearchAdapter(appList));
+        editSearch.setAdapter(new SearchAdapter(items, fallbacks));
     }
 
     @Override

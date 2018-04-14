@@ -1,5 +1,6 @@
 package com.italankin.lnch.ui.feature.home;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,23 +10,22 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.model.searchable.ISearchable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
     private final Filter filter;
-    private List<AppItem> filtered = new ArrayList<>(0);
+    private List<? extends ISearchable> filtered = new ArrayList<>(0);
 
-    public SearchAdapter(List<AppItem> dataset) {
-        this.filter = new SearchFilter(dataset) {
+    public SearchAdapter(List<? extends ISearchable> dataset, List<? extends ISearchable> fallbacks) {
+        this.filter = new SearchFilter(dataset, fallbacks) {
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 //noinspection unchecked
-                filtered = (List<AppItem>) results.values;
+                filtered = (List<ISearchable>) results.values;
                 notifyDataSetChanged();
             }
         };
@@ -37,7 +37,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public AppItem getItem(int position) {
+    public ISearchable getItem(int position) {
         return filtered.get(position);
     }
 
@@ -57,7 +57,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        AppItem item = getItem(position);
+        ISearchable item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
         return convertView;
@@ -86,10 +86,12 @@ abstract class SearchFilter extends Filter {
         EMPTY.count = 0;
     }
 
-    private final List<AppItem> dataset;
+    private final List<? extends ISearchable> dataset;
+    private final List<? extends ISearchable> fallbacks;
 
-    public SearchFilter(List<AppItem> dataset) {
+    public SearchFilter(List<? extends ISearchable> dataset, List<? extends ISearchable> fallbacks) {
         this.dataset = dataset;
+        this.fallbacks = fallbacks;
     }
 
     @Override
@@ -104,42 +106,43 @@ abstract class SearchFilter extends Filter {
             return EMPTY;
         }
         String s = constraint.toString();
-        List<AppItem> values = new ArrayList<>(8);
-        List<AppItem> matchCustomLabel = new ArrayList<>(2);
-        List<AppItem> matchLabel = new ArrayList<>(2);
-        List<AppItem> matchPackageName = new ArrayList<>(2);
-        for (AppItem item : dataset) {
-            if (startsWith(item.customLabel, s) || startsWith(item.label, s)) {
-                values.add(item);
-                continue;
-            }
-            if (contains(item.customLabel, s)) {
-                matchCustomLabel.add(item);
-                continue;
-            }
-            if (contains(item.label, s)) {
-                matchLabel.add(item);
-                continue;
-            }
-            if (contains(item.packageName, s)) {
-                matchPackageName.add(item);
+        List<Matched> matched = new ArrayList<>(dataset.size());
+        // search apps
+        for (ISearchable item : dataset) {
+            ISearchable.Match match = item.filter(s);
+            if (match != ISearchable.Match.NONE) {
+                matched.add(new Matched(item, match));
             }
         }
-        values.addAll(matchCustomLabel);
-        values.addAll(matchLabel);
-        values.addAll(matchPackageName);
-        results.values = values;
-        results.count = values.size();
+        // search other sources
+        for (ISearchable fallback : fallbacks) {
+            ISearchable.Match match = fallback.filter(s);
+            if (match != ISearchable.Match.NONE) {
+                matched.add(new Matched(fallback, match));
+            }
+        }
+        Collections.sort(matched);
+        List<ISearchable> result = new ArrayList<>(matched.size());
+        for (Matched m : matched) {
+            result.add(m.what);
+        }
+        results.values = result;
+        results.count = result.size();
         return results;
     }
+}
 
-    private boolean contains(String s1, String s2) {
-        return s1 != null && s2 != null && s1.toLowerCase(Locale.getDefault())
-                .contains(s2.toLowerCase(Locale.getDefault()));
+class Matched implements Comparable<Matched> {
+    ISearchable what;
+    ISearchable.Match by;
+
+    Matched(ISearchable what, ISearchable.Match by) {
+        this.by = by;
+        this.what = what;
     }
 
-    private boolean startsWith(String s1, String s2) {
-        return s1 != null && s2 != null && s1.toLowerCase(Locale.getDefault())
-                .startsWith(s2.toLowerCase(Locale.getDefault()));
+    @Override
+    public int compareTo(@NonNull Matched o) {
+        return by.compareTo(o.by);
     }
 }
