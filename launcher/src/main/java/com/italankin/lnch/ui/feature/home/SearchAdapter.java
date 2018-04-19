@@ -22,9 +22,9 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     public SearchAdapter(List<? extends ISearchable> dataset, List<? extends ISearchable> fallbacks) {
         this.filter = new SearchFilter(dataset, fallbacks) {
+            @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                //noinspection unchecked
                 filtered = (List<ISearchable>) results.values;
                 notifyDataSetChanged();
             }
