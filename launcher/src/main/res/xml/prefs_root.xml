@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Home">
+        <Preference
+            android:key="@string/prefs_search"
+            android:title="@string/title_settings_search" />
+        <Preference
+            android:key="@string/prefs_apps_visibility"
+            android:title="@string/title_settings_apps_visibility" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/edit_mode_prefs_title">
+        <Preference
+            android:key="@string/prefs_edit_mode"
+            android:title="@string/edit_mode_prefs_hint" />
+    </PreferenceCategory>
+</PreferenceScreen>

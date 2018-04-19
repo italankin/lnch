@@ -3,7 +3,8 @@
     <color name="primary">#212121</color>
     <color name="primary_dark">#212121</color>
     <color name="accent">#f9a825</color>
-    <color name="status_bar">#8000</color>
+    <color name="status_bar">#bf811d</color>
+    <color name="status_bar_launcher">#8000</color>
     <color name="navigation_bar">#8000</color>
     <color name="launcher_background">#212121</color>
 </resources>

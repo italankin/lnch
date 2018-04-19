@@ -24,5 +24,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.feature.settings.SettingsActivity"
+            android:label="@string/title_settings"
+            android:launchMode="singleInstance"
+            android:theme="@style/PreferenceTheme" />
     </application>
 </manifest>

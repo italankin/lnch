@@ -3,6 +3,12 @@
 
     <string name="hint_search">Search</string>
 
-    <string name="edit_mode_hint">Edit mode enabled</string>
-    <string name="edit_mode_exit">Exit</string>
+    <string name="edit_mode_hint">Edit mode</string>
+    <string name="edit_mode_exit">Exit edit mode</string>
+    <string name="edit_mode_prefs_title">Edit mode</string>
+    <string name="edit_mode_prefs_hint">Enter edit mode</string>
+
+    <string name="title_settings">Settings</string>
+    <string name="title_settings_search">Search</string>
+    <string name="title_settings_apps_visibility">Apps visibility</string>
 </resources>

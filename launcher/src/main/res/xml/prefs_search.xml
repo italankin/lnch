@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="@string/prefs_search_show_soft_keyboard"
+        android:summaryOff="Keyboard will NOT open when search bar appears"
+        android:summaryOn="Keyboard will open when search bar appears"
+        android:title="Automatically show keyboard" />
+</PreferenceScreen>

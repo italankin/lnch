@@ -36,6 +36,7 @@ import com.italankin.lnch.model.AppItem;
 import com.italankin.lnch.model.searchable.GoogleSearchable;
 import com.italankin.lnch.model.searchable.ISearchable;
 import com.italankin.lnch.ui.base.AppActivity;
+import com.italankin.lnch.ui.feature.settings.SettingsActivity;
 import com.italankin.lnch.ui.util.SwapItemHelper;
 
 import java.util.List;
@@ -43,6 +44,15 @@ import java.util.List;
 public class HomeActivity extends AppActivity implements IHomeView,
         SwapItemHelper.Callback,
         AppItemAdapter.Listener {
+
+    private static final String EXTRA_EDIT_MODE = "edit_mode";
+
+    public static Intent getEnterEditModeIntent(Context context) {
+        Intent intent = new Intent(context, HomeActivity.class);
+        intent.putExtra(EXTRA_EDIT_MODE, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
 
     @InjectPresenter
     HomePresenter presenter;
@@ -75,6 +85,8 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         handler = new Handler(getMainLooper());
+
+        editMode = getIntent().getBooleanExtra(EXTRA_EDIT_MODE, editMode);
 
         setupWindow();
 
@@ -110,16 +122,20 @@ public class HomeActivity extends AppActivity implements IHomeView,
     public void onBackPressed() {
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
+        } else {
+            list.smoothScrollToPosition(0);
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (searchBarBehavior.isShown()) {
+        if (intent.hasExtra(EXTRA_EDIT_MODE)) {
+            setEditMode(intent.getBooleanExtra(EXTRA_EDIT_MODE, false));
+        } else if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-            list.smoothScrollToPosition(0);
+//            list.smoothScrollToPosition(0);
         }
     }
 
@@ -162,7 +178,9 @@ public class HomeActivity extends AppActivity implements IHomeView,
         searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
-                editSearch.requestFocus();
+                if (daggerService().main().getAppPrefs().searchShowSoftKeyboard()) {
+                    editSearch.requestFocus();
+                }
                 inputMethodManager.showSoftInput(editSearch, 0);
             }
 
@@ -190,7 +208,13 @@ public class HomeActivity extends AppActivity implements IHomeView,
         editSearch.setThreshold(1);
 
         btnSettings.setOnClickListener(v -> {
+            searchBarBehavior.hide();
+            Intent intent = SettingsActivity.getStartIntent(this);
+            startActivity(intent);
+        });
+        btnSettings.setOnLongClickListener(v -> {
             setEditMode(true);
+            return true;
         });
     }
 
