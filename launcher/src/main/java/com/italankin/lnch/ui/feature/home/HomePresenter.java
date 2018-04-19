@@ -177,6 +177,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                     Map<String, AppItem> map = readFromDisk();
                     if (map != null) {
                         List<AppItem> apps = new ArrayList<>(map.size());
+                        List<AppItem> newApps = new ArrayList<>(8);
                         for (LauncherActivityInfo info : infoList) {
                             String packageName = info.getApplicationInfo().packageName;
                             if (map.containsKey(packageName)) {
@@ -192,18 +193,18 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                             } else {
                                 AppItem item = createItem(packageManager, info);
                                 item.order = -1;
-                                apps.add(item);
+                                newApps.add(item);
                             }
                         }
                         // update order values
-                        int offset = 0;
-                        for (int i = 0, s = apps.size(); i < s; i++) {
-                            AppItem item = apps.get(i);
-                            if (item.order < 0) {
-                                item.order = i == 0 ? 0 : (apps.get(i - 1).order + 1);
-                                offset++;
-                            } else {
-                                item.order += offset;
+                        if (newApps.size() > 0) {
+                            int order = 0;
+                            if (apps.size() > 0) {
+                                order = apps.get(apps.size() - 1).order + 1;
+                            }
+                            for (int i = 0, s = newApps.size(); i < s; i++) {
+                                AppItem item = newApps.get(i);
+                                item.order = order + i;
                             }
                         }
                         Collections.sort(apps, AppItem.CMP_ORDER);
