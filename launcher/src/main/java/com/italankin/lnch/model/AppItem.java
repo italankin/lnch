@@ -35,6 +35,9 @@ public class AppItem implements ISearchable {
     @SerializedName("order")
     public int order;
 
+    @SerializedName("hidden")
+    public boolean hidden;
+
     @Keep
     public AppItem() {
     }
