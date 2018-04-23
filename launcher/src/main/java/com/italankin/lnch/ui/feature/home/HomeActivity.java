@@ -135,7 +135,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         } else if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-//            list.smoothScrollToPosition(0);
+            list.smoothScrollToPosition(0);
         }
     }
 
