@@ -178,10 +178,14 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                     if (map != null) {
                         List<AppItem> apps = new ArrayList<>(map.size());
                         List<AppItem> newApps = new ArrayList<>(8);
+                        int order = 0;
                         for (LauncherActivityInfo info : infoList) {
                             String packageName = info.getApplicationInfo().packageName;
                             if (map.containsKey(packageName)) {
                                 AppItem item = map.get(packageName);
+                                if (item.order > order) {
+                                    order = item.order;
+                                }
                                 item.packageName = packageName;
                                 int versionCode = getVersionCode(packageManager, packageName);
                                 if (item.versionCode != versionCode) {
@@ -191,20 +195,15 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                                 }
                                 apps.add(item);
                             } else {
-                                AppItem item = createItem(packageManager, info);
-                                item.order = -1;
-                                newApps.add(item);
+                                newApps.add(createItem(packageManager, info));
                             }
                         }
                         // update order values
                         if (newApps.size() > 0) {
-                            int order = 0;
-                            if (apps.size() > 0) {
-                                order = apps.get(apps.size() - 1).order + 1;
-                            }
                             for (int i = 0, s = newApps.size(); i < s; i++) {
                                 AppItem item = newApps.get(i);
-                                item.order = order + i;
+                                item.order = ++order;
+                                apps.add(item);
                             }
                         }
                         Collections.sort(apps, AppItem.CMP_ORDER);
