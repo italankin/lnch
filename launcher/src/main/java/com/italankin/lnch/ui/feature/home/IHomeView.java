@@ -5,7 +5,7 @@ import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.model.AppItem;
-import com.italankin.lnch.model.searchable.ISearchable;
+import com.italankin.lnch.model.repository.search.ISearchRepository;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ interface IHomeView extends MvpView {
     void hideProgress();
 
     @StateStrategyType(value = SingleStateStrategy.class)
-    void onAppsLoaded(List<AppItem> appList, List<ISearchable> fallbacks);
+    void onAppsLoaded(List<AppItem> appList, ISearchRepository searchRepository);
 
     @StateStrategyType(value = OneExecutionStateStrategy.class)
     void showError(Throwable e);

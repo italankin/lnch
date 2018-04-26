@@ -1,31 +1,34 @@
 package com.italankin.lnch.ui.feature.home;
 
-import android.support.annotation.NonNull;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.searchable.ISearchable;
+import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.search.match.IMatch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
-    private final Filter filter;
-    private List<? extends ISearchable> filtered = new ArrayList<>(0);
 
-    public SearchAdapter(List<? extends ISearchable> dataset, List<? extends ISearchable> fallbacks) {
-        this.filter = new SearchFilter(dataset, fallbacks) {
+    private final Filter filter;
+
+    private List<? extends IMatch> dataset = new ArrayList<>(0);
+
+    public SearchAdapter(ISearchRepository searchRepository) {
+        this.filter = new SearchFilter(searchRepository) {
             @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                filtered = (List<ISearchable>) results.values;
+                dataset = (List<IMatch>) results.values;
                 notifyDataSetChanged();
             }
         };
@@ -33,17 +36,17 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        return filtered.size();
+        return dataset.size();
     }
 
     @Override
-    public ISearchable getItem(int position) {
-        return filtered.get(position);
+    public IMatch getItem(int position) {
+        return dataset.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return filtered.get(position).hashCode();
+        return dataset.get(position).hashCode();
     }
 
     @Override
@@ -51,15 +54,21 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         ViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(R.layout.item_searchable, parent, false);
-            holder = new ViewHolder((TextView) convertView);
+            convertView = inflater.inflate(R.layout.item_search_match, parent, false);
+            holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        ISearchable item = getItem(position);
+        IMatch item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
+        Drawable icon = item.getIcon();
+        if (icon != null) {
+            holder.image.setImageDrawable(icon);
+        } else {
+            holder.image.setImageResource(item.getIconResource());
+        }
         return convertView;
     }
 
@@ -70,79 +79,28 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private static class ViewHolder {
         final TextView text;
+        final ImageView image;
 
-        public ViewHolder(TextView text) {
-            this.text = text;
+        public ViewHolder(View itemView) {
+            this.text = itemView.findViewById(R.id.text);
+            this.image = itemView.findViewById(R.id.image);
         }
     }
 }
 
 abstract class SearchFilter extends Filter {
-    private static final FilterResults EMPTY;
+    private final ISearchRepository searchRepository;
 
-    static {
-        EMPTY = new FilterResults();
-        EMPTY.values = Collections.emptyList();
-        EMPTY.count = 0;
-    }
-
-    private final List<? extends ISearchable> dataset;
-    private final List<? extends ISearchable> fallbacks;
-
-    public SearchFilter(List<? extends ISearchable> dataset, List<? extends ISearchable> fallbacks) {
-        this.dataset = dataset;
-        this.fallbacks = fallbacks;
+    public SearchFilter(ISearchRepository searchRepository) {
+        this.searchRepository = searchRepository;
     }
 
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         FilterResults results = new FilterResults();
-        if (constraint == null) {
-            results.values = new ArrayList<>(dataset);
-            results.count = dataset.size();
-            return results;
-        }
-        if (constraint.length() == 0) {
-            return EMPTY;
-        }
-        String s = constraint.toString();
-        List<Matched> matched = new ArrayList<>(dataset.size());
-        // search apps
-        for (ISearchable item : dataset) {
-            ISearchable.Match match = item.filter(s);
-            if (match != ISearchable.Match.NONE) {
-                matched.add(new Matched(item, match));
-            }
-        }
-        // search other sources
-        for (ISearchable fallback : fallbacks) {
-            ISearchable.Match match = fallback.filter(s);
-            if (match != ISearchable.Match.NONE) {
-                matched.add(new Matched(fallback, match));
-            }
-        }
-        Collections.sort(matched);
-        List<ISearchable> result = new ArrayList<>(matched.size());
-        for (Matched m : matched) {
-            result.add(m.what);
-        }
-        results.values = result;
-        results.count = result.size();
+        List<? extends IMatch> matches = searchRepository.search(constraint);
+        results.values = matches;
+        results.count = matches.size();
         return results;
-    }
-}
-
-class Matched implements Comparable<Matched> {
-    ISearchable what;
-    ISearchable.Match by;
-
-    Matched(ISearchable what, ISearchable.Match by) {
-        this.by = by;
-        this.what = what;
-    }
-
-    @Override
-    public int compareTo(@NonNull Matched o) {
-        return by.compareTo(o.by);
     }
 }

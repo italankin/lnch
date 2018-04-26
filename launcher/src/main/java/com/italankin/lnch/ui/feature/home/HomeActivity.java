@@ -33,8 +33,8 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.AppItem;
-import com.italankin.lnch.model.searchable.GoogleSearchable;
-import com.italankin.lnch.model.searchable.ISearchable;
+import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.ui.base.AppActivity;
 import com.italankin.lnch.ui.feature.settings.SettingsActivity;
 import com.italankin.lnch.ui.util.SwapItemHelper;
@@ -242,7 +242,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppItem> items, List<ISearchable> fallbacks) {
+    public void onAppsLoaded(List<AppItem> items, ISearchRepository searchRepository) {
         hideProgress();
         AppItemAdapter adapter = (AppItemAdapter) list.getAdapter();
         if (adapter == null) {
@@ -251,7 +251,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         adapter.setDataset(items);
         list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
-        editSearch.setAdapter(new SearchAdapter(items, fallbacks));
+        editSearch.setAdapter(new SearchAdapter(searchRepository));
     }
 
     @Override
@@ -306,12 +306,10 @@ public class HomeActivity extends AppActivity implements IHomeView,
         if (editSearch.getText().length() > 0) {
             SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
             if (adapter.getCount() > 0) {
-                ISearchable item = adapter.getItem(pos);
-                if (item instanceof AppItem) {
-                    presenter.startApp(this, (AppItem) item);
-                } else if (item instanceof GoogleSearchable) {
-                    String query = editSearch.getText().toString().trim();
-                    presenter.startSearch(this, query);
+                IMatch item = adapter.getItem(pos);
+                Intent intent = item.getIntent();
+                if (intent != null && intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
                 }
             }
             editSearch.setText("");

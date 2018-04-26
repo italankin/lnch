@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     private void showFragment(Fragment fragment, @StringRes int title) {
         fragmentManager
                 .beginTransaction()
-                .setCustomAnimations(0, 0,
+                .setCustomAnimations(R.animator.fragment_in, R.animator.fragment_out,
                         R.animator.fragment_in, R.animator.fragment_out)
                 .replace(R.id.container, fragment)
                 .setBreadCrumbTitle(title)
