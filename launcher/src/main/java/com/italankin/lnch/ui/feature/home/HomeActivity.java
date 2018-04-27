@@ -198,8 +198,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
             Intent intent = SettingsActivity.getStartIntent(this);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivityForResult(intent, REQUEST_CODE_SETTINGS);
         });
         btnSettings.setOnLongClickListener(v -> {
