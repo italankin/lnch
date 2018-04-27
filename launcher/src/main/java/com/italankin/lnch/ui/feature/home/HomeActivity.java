@@ -14,7 +14,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -77,7 +76,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     private boolean editMode = false;
 
     private TopBarBehavior searchBarBehavior;
-    private ItemTouchHelper touchHelper;
+//    private ItemTouchHelper touchHelper;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -158,8 +157,8 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     private void setupList() {
-        touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
-        touchHelper.attachToRecyclerView(list);
+//        touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
+//        touchHelper.attachToRecyclerView(list);
     }
 
     private void setupRoot() {
@@ -263,8 +262,9 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     public void onItemLongClick(int position, AppItem item) {
         if (editMode) {
-            View view = list.getLayoutManager().findViewByPosition(position);
-            touchHelper.startDrag(list.getChildViewHolder(view));
+            // TODO
+//            View view = list.getLayoutManager().findViewByPosition(position);
+//            touchHelper.startDrag(list.getChildViewHolder(view));
         } else {
             startAppSettings(item);
         }
