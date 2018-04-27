@@ -48,15 +48,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
         SwapItemHelper.Callback,
         AppItemAdapter.Listener {
 
-    public static Intent getEnterEditModeIntent(Context context) {
-        Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(EXTRA_EDIT_MODE, true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return intent;
-    }
-
-    private static final String EXTRA_EDIT_MODE = "edit_mode";
-
     private static final int REQUEST_CODE_SETTINGS = 1;
 
     @InjectPresenter
@@ -90,8 +81,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         packageManager = getPackageManager();
-
-        editMode = getIntent().getBooleanExtra(EXTRA_EDIT_MODE, editMode);
 
         setupWindow();
 
@@ -135,9 +124,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.hasExtra(EXTRA_EDIT_MODE)) {
-            setEditMode(intent.getBooleanExtra(EXTRA_EDIT_MODE, false));
-        } else if (searchBarBehavior.isShown()) {
+        if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else if (Intent.ACTION_MAIN.equals(intent.getAction())) {
             list.smoothScrollToPosition(0);
@@ -146,8 +133,16 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_SETTINGS && resultCode == SettingsActivity.RESULT_CHANGED) {
-            presenter.reloadApps();
+        if (requestCode == REQUEST_CODE_SETTINGS) {
+            switch (resultCode) {
+                case SettingsActivity.RESULT_CHANGED:
+                    presenter.reloadApps();
+                    return;
+                case SettingsActivity.RESULT_EDIT_MODE:
+                    presenter.reloadAppsNow();
+                    setEditMode(true);
+                    return;
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

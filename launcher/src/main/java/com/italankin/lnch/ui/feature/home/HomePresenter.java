@@ -60,6 +60,10 @@ public class HomePresenter extends AppPresenter<IHomeView> {
         subs.add(s);
     }
 
+    void reloadAppsNow() {
+        appsRepository.reload();
+    }
+
     void swapItems(int from, int to) {
         appsRepository.swapAppsOrder(from, to);
     }

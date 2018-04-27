@@ -14,7 +14,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.ui.feature.home.HomeActivity;
 
 import timber.log.Timber;
 
@@ -22,6 +21,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int RESULT_CHANGED = RESULT_FIRST_USER;
+    public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER + 1;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -79,8 +79,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
     @Override
     public void launchEditMode() {
-        Intent intent = HomeActivity.getEnterEditModeIntent(this);
-        startActivity(intent);
+        setResult(RESULT_EDIT_MODE);
+        finish();
     }
 
     @Override
