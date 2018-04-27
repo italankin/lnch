@@ -75,7 +75,7 @@ public class LauncherAppsRepository implements IAppsRepository {
     @Override
     public Observable<List<AppItem>> updates() {
         try {
-            return updates.map(ArrayList::new);
+            return updates;
         } finally {
             if (!updates.hasValue()) {
                 reload();
@@ -85,7 +85,7 @@ public class LauncherAppsRepository implements IAppsRepository {
 
     @Override
     public List<AppItem> getApps() {
-        return new ArrayList<>(updates.getValue());
+        return updates.getValue();
     }
 
     @Override
