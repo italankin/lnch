@@ -18,7 +18,7 @@ interface IHomeView extends MvpView {
     void hideProgress();
 
     @StateStrategyType(value = SingleStateStrategy.class)
-    void onAppsLoaded(List<AppItem> appList, ISearchRepository searchRepository);
+    void onAppsLoaded(List<AppItem> appList, ISearchRepository searchRepository, String layout);
 
     @StateStrategyType(value = OneExecutionStateStrategy.class)
     void showError(Throwable e);

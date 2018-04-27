@@ -4,4 +4,5 @@
     <string name="prefs_search">search</string>
     <string name="prefs_apps_visibility">apps_visibility</string>
     <string name="prefs_search_show_soft_keyboard">search_show_soft_keyboard</string>
+    <string name="prefs_home_layout">home_layout</string>
 </resources>

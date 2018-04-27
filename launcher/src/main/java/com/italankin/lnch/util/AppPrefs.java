@@ -18,4 +18,8 @@ public class AppPrefs {
     public boolean searchShowSoftKeyboard() {
         return prefs.getBoolean(context.getString(R.string.prefs_search_show_soft_keyboard), true);
     }
+
+    public String homeLayout() {
+        return prefs.getString(context.getString(R.string.prefs_home_layout), null);
+    }
 }

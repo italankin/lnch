@@ -1,12 +1,11 @@
 package com.italankin.lnch.ui.base;
 
-import android.util.Log;
-
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
 
 import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
     protected final CompositeSubscription subs = new CompositeSubscription();
@@ -31,7 +30,7 @@ public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
 
         @Override
         public void onError(Throwable e) {
-            Log.e(AppPresenter.this.getClass().getSimpleName(), "State.onError:", e);
+            Timber.e(e, "State.onError:");
             onError(getViewState(), e);
         }
 

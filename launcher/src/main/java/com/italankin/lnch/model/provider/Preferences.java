@@ -7,6 +7,10 @@ import com.italankin.lnch.model.provider.label.UppercaseLabelProvider;
 
 public class Preferences {
 
+    public static final String LAYOUT_FLEX = "flex";
+    public static final String LAYOUT_GRID = "grid";
+    public static final String LAYOUT_LINEAR = "linear";
+
     public LabelProvider label = new UppercaseLabelProvider();
     public ColorProvider color = new DominantColorProvider();
 

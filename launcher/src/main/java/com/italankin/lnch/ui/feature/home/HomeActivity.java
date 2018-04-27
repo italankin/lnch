@@ -4,14 +4,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -33,6 +35,7 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.model.provider.Preferences;
 import com.italankin.lnch.model.repository.search.ISearchRepository;
 import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.ui.base.AppActivity;
@@ -45,14 +48,14 @@ public class HomeActivity extends AppActivity implements IHomeView,
         SwapItemHelper.Callback,
         AppItemAdapter.Listener {
 
-    private static final String EXTRA_EDIT_MODE = "edit_mode";
-
     public static Intent getEnterEditModeIntent(Context context) {
         Intent intent = new Intent(context, HomeActivity.class);
         intent.putExtra(EXTRA_EDIT_MODE, true);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
     }
+
+    private static final String EXTRA_EDIT_MODE = "edit_mode";
 
     @InjectPresenter
     HomePresenter presenter;
@@ -65,7 +68,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
     private InputMethodManager inputMethodManager;
     private BroadcastReceiver packageUpdatesReceiver;
-    private Handler handler;
+    private PackageManager packageManager;
 
     private FrameLayout progressContainer;
 
@@ -84,7 +87,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         super.onCreate(savedInstanceState);
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        handler = new Handler(getMainLooper());
+        packageManager = getPackageManager();
 
         editMode = getIntent().getBooleanExtra(EXTRA_EDIT_MODE, editMode);
 
@@ -145,28 +148,8 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     private void setupList() {
-        RecyclerView.LayoutManager layoutManager = getFlexboxLayoutManager();
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
-        list.setLayoutManager(layoutManager);
-    }
-
-    private RecyclerView.LayoutManager getStaggeredGridLayoutManager() {
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,
-                StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        return layoutManager;
-    }
-
-    private RecyclerView.LayoutManager getGridLayoutManager() {
-        return new GridLayoutManager(this, 2);
-    }
-
-    private RecyclerView.LayoutManager getFlexboxLayoutManager() {
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-        layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setAlignItems(AlignItems.FLEX_START);
-        return layoutManager;
     }
 
     private void setupRoot() {
@@ -242,13 +225,14 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppItem> items, ISearchRepository searchRepository) {
+    public void onAppsLoaded(List<AppItem> items, ISearchRepository searchRepository, String layout) {
         hideProgress();
         AppItemAdapter adapter = (AppItemAdapter) list.getAdapter();
         if (adapter == null) {
             adapter = new AppItemAdapter(this, this);
         }
         adapter.setDataset(items);
+        list.setLayoutManager(getLayoutManager(layout));
         list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
         editSearch.setAdapter(new SearchAdapter(searchRepository));
@@ -262,7 +246,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     public void onItemClick(int position, AppItem item) {
         if (!editMode) {
-            presenter.startApp(this, item);
+            startApp(item);
         }
     }
 
@@ -272,7 +256,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));
         } else {
-            presenter.startAppSettings(this, item);
+            startAppSettings(item);
         }
     }
 
@@ -285,6 +269,22 @@ public class HomeActivity extends AppActivity implements IHomeView,
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
+
+    void startApp(AppItem item) {
+        Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
+        if (intent != null && intent.resolveActivity(packageManager) != null) {
+            startActivity(intent);
+        }
+    }
+
+    void startAppSettings(AppItem item) {
+        Uri uri = Uri.fromParts("package", item.packageName, null);
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent);
+        }
+    }
 
     private void registerReceiver() {
         packageUpdatesReceiver = new BroadcastReceiver() {
@@ -334,6 +334,32 @@ public class HomeActivity extends AppActivity implements IHomeView,
         } else {
             list.setPadding(0, 0, 0, 0);
         }
+    }
+
+    private RecyclerView.LayoutManager getLayoutManager(String layout) {
+        switch (layout) {
+            case Preferences.LAYOUT_GRID:
+                return getGridLayoutManager();
+            case Preferences.LAYOUT_LINEAR:
+                return getLinearLayoutManager();
+            case Preferences.LAYOUT_FLEX:
+        }
+        return getFlexboxLayoutManager();
+    }
+
+    private RecyclerView.LayoutManager getGridLayoutManager() {
+        return new GridLayoutManager(this, 2);
+    }
+
+    private RecyclerView.LayoutManager getLinearLayoutManager() {
+        return new LinearLayoutManager(this);
+    }
+
+    private RecyclerView.LayoutManager getFlexboxLayoutManager() {
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setAlignItems(AlignItems.FLEX_START);
+        return layoutManager;
     }
 }
 

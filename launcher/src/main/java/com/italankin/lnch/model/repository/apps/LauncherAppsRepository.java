@@ -6,7 +6,6 @@ import android.content.pm.LauncherApps;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Process;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +31,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 public class LauncherAppsRepository implements IAppsRepository {
     private final Context context;
@@ -49,20 +49,8 @@ public class LauncherAppsRepository implements IAppsRepository {
 
     @Override
     public void reload() {
-        // TODO
-        Observable
-                .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
+        loadAll()
                 .subscribeOn(Schedulers.computation())
-                .flatMap(infoList -> {
-                    Observable<List<AppItem>> fromPm = loadFromList(infoList);
-                    if (!getPrefs().exists()) {
-                        return fromPm;
-                    } else {
-                        return loadFromFile(infoList)
-                                .switchIfEmpty(fromPm)
-                                .onErrorResumeNext(fromPm);
-                    }
-                })
                 .doOnNext(this::writeToDisk)
                 .concatMapIterable(appItems -> appItems)
                 .filter(appItem -> !appItem.hidden)
@@ -75,7 +63,7 @@ public class LauncherAppsRepository implements IAppsRepository {
 
                     @Override
                     public void onError(Throwable e) {
-                        // TODO
+                        Timber.e(e);
                     }
 
                     @Override
@@ -87,7 +75,7 @@ public class LauncherAppsRepository implements IAppsRepository {
     @Override
     public Observable<List<AppItem>> updates() {
         try {
-            return updates;
+            return updates.map(ArrayList::new);
         } finally {
             if (!updates.hasValue()) {
                 reload();
@@ -97,12 +85,73 @@ public class LauncherAppsRepository implements IAppsRepository {
 
     @Override
     public List<AppItem> getApps() {
-        return updates.getValue();
+        return new ArrayList<>(updates.getValue());
+    }
+
+    @Override
+    public void swapAppsOrder(int from, int to) {
+        List<AppItem> list = getApps();
+        if (list == null) {
+            return;
+        }
+        AppItem left = list.get(from);
+        AppItem right = list.get(to);
+        int tmp = left.order;
+        left.order = right.order;
+        right.order = tmp;
+        Collections.swap(list, from, to);
+    }
+
+    @Override
+    public void writeChanges() {
+        loadAll()
+                .subscribeOn(Schedulers.computation())
+                .map(this::mapByPackageName)
+                .doOnNext(apps -> {
+                    List<AppItem> items = updates.getValue();
+                    if (items != null) {
+                        for (AppItem item : items) {
+                            if (apps.containsKey(item.packageName)) {
+                                apps.put(item.packageName, item);
+                            }
+                        }
+                    }
+                })
+                .subscribe(new Observer<Map<String, AppItem>>() {
+                    @Override
+                    public void onNext(Map<String, AppItem> apps) {
+                        writeToDisk(apps);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                    }
+                });
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
+
+    private Observable<List<AppItem>> loadAll() {
+        return Observable
+                .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
+                .flatMap(infoList -> {
+                    Observable<List<AppItem>> fromPm = loadFromList(infoList);
+                    if (!getPrefs().exists()) {
+                        return fromPm;
+                    } else {
+                        return loadFromFile(infoList)
+                                .switchIfEmpty(fromPm)
+                                .onErrorResumeNext(fromPm);
+                    }
+                });
+    }
 
     private Observable<List<AppItem>> loadFromList(List<LauncherActivityInfo> infoList) {
         return Observable.fromCallable(() -> {
@@ -177,12 +226,8 @@ public class LauncherAppsRepository implements IAppsRepository {
         }
     }
 
-    private void writeToDisk(List<AppItem> apps) {
-        Log.d("LauncherAppsRepository", "writeToDisk");
-        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
-        for (AppItem app : apps) {
-            map.put(app.packageName, app);
-        }
+    private void writeToDisk(Map<String, AppItem> map) {
+        Timber.d("writeToDisk");
         try {
             FileWriter fw = new FileWriter(getPrefs());
             try {
@@ -197,19 +242,31 @@ public class LauncherAppsRepository implements IAppsRepository {
                 fw.close();
             }
         } catch (IOException e) {
-            Log.e("LauncherAppsRepository", "writeToDisk:", e);
+            Timber.e(e, "writeToDisk:");
         }
     }
 
+    private void writeToDisk(List<AppItem> apps) {
+        writeToDisk(mapByPackageName(apps));
+    }
+
+    private Map<String, AppItem> mapByPackageName(List<AppItem> apps) {
+        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
+        for (AppItem app : apps) {
+            map.put(app.packageName, app);
+        }
+        return map;
+    }
+
     private Map<String, AppItem> readFromDisk() {
-        Log.d("LauncherAppsRepository", "readFromDisk");
+        Timber.d("readFromDisk");
         Gson gson = new Gson();
         Type type = new TypeToken<LinkedHashMap<String, AppItem>>() {
         }.getType();
         try {
             return gson.fromJson(new FileReader(getPrefs()), type);
         } catch (FileNotFoundException e) {
-            Log.e("LauncherAppsRepository", "readFromDisk:", e);
+            Timber.e(e, "readFromDisk:");
             return null;
         }
     }

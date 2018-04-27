@@ -4,6 +4,11 @@
         <Preference
             android:key="@string/prefs_search"
             android:title="@string/title_settings_search" />
+        <ListPreference
+            android:defaultValue="flex"
+            android:entryValues="@array/home_layouts"
+            android:key="@string/prefs_home_layout"
+            android:title="@string/title_settings_home_layout" />
         <Preference
             android:key="@string/prefs_apps_visibility"
             android:title="@string/title_settings_apps_visibility" />

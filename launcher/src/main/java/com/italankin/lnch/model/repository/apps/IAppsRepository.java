@@ -17,4 +17,8 @@ public interface IAppsRepository {
 
     List<AppItem> getApps();
 
+    void swapAppsOrder(int from, int to);
+
+    void writeChanges();
+
 }
