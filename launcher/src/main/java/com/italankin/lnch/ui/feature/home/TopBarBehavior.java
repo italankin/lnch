@@ -100,7 +100,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (velocityY > 0 && shown) {
+        if (velocityY > 0) {
             hide();
         }
         return false;
