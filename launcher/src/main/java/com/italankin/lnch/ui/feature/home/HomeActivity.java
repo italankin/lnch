@@ -11,10 +11,13 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -250,7 +254,9 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
     @Override
     public void onItemClick(int position, AppItem item) {
-        if (!editMode) {
+        if (editMode) {
+            customizeApp(position, item);
+        } else {
             startApp(item);
         }
     }
@@ -331,6 +337,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
             snackbar.setAction(R.string.edit_mode_exit, v -> {
                 setEditMode(false);
                 snackbar.dismiss();
+                presenter.saveState();
             });
             snackbar.show();
             int bottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,
@@ -369,6 +376,48 @@ public class HomeActivity extends AppActivity implements IHomeView,
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setAlignItems(AlignItems.FLEX_START);
         return layoutManager;
+    }
+
+    private void customizeApp(int position, AppItem item) {
+        CharSequence[] items = {
+                "Rename",
+                "Hide",
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(item.getLabel())
+                .setItems(items, (d, w) -> {
+                    switch (w) {
+                        case 0:
+                            renameApp(position, item);
+                            break;
+                        case 1:
+                            hideApp(item);
+                            break;
+                    }
+                })
+                .show();
+    }
+
+    private void renameApp(int position, AppItem item) {
+        EditText editText = new AppCompatEditText(this);
+        editText.setText(item.customLabel);
+        editText.setSelectAllOnFocus(true);
+        new AlertDialog.Builder(this)
+                .setTitle(item.getLabel())
+                .setView(editText)
+                .setPositiveButton("Rename", (dialog1, which) -> {
+                    String label = editText.getText().toString().trim();
+                    if (!TextUtils.isEmpty(label)) {
+                        item.customLabel = label;
+                        list.getAdapter().notifyItemChanged(position);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void hideApp(AppItem item) {
+        item.hidden = true;
     }
 }
 

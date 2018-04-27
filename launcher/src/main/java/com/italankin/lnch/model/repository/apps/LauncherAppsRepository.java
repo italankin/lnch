@@ -124,6 +124,7 @@ public class LauncherAppsRepository implements IAppsRepository {
                     @Override
                     public void onNext(Map<String, AppItem> apps) {
                         writeToDisk(apps);
+                        reload();
                     }
 
                     @Override
