@@ -94,12 +94,15 @@ public class LauncherAppsRepository implements IAppsRepository {
         if (list == null) {
             return;
         }
-        AppItem left = list.get(from);
-        AppItem right = list.get(to);
-        int tmp = left.order;
-        left.order = right.order;
-        right.order = tmp;
-        Collections.swap(list, from, to);
+        if (from < to) {
+            for (int i = from; i < to; i++) {
+                swapOrder(list, i, i + 1);
+            }
+        } else {
+            for (int i = from; i > to; i--) {
+                swapOrder(list, i, i - 1);
+            }
+        }
     }
 
     @Override
@@ -273,5 +276,14 @@ public class LauncherAppsRepository implements IAppsRepository {
 
     private File getPrefs() {
         return new File(context.getFilesDir(), "packages.json");
+    }
+
+    private static void swapOrder(List<AppItem> list, int from, int to) {
+        AppItem left = list.get(from);
+        AppItem right = list.get(to);
+        int tmp = left.order;
+        left.order = right.order;
+        right.order = tmp;
+        Collections.swap(list, from, to);
     }
 }
