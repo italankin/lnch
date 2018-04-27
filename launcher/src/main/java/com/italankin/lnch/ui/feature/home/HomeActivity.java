@@ -290,7 +290,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         packageUpdatesReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                handler.postDelayed(() -> presenter.loadApps(), 1000);
+                presenter.reloadApps();
             }
         };
         IntentFilter filter = new IntentFilter();

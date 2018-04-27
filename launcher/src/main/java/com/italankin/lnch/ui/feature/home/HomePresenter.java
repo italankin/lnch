@@ -14,9 +14,11 @@ import com.italankin.lnch.ui.base.AppPresenter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -55,6 +57,12 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                         viewState.showError(e);
                     }
                 });
+        subs.add(s);
+    }
+
+    void reloadApps() {
+        Subscription s = Observable.timer(1, TimeUnit.SECONDS)
+                .subscribe(any -> appsRepository.reload());
         subs.add(s);
     }
 
