@@ -16,7 +16,10 @@ import android.support.v7.widget.Toolbar;
 import com.italankin.lnch.R;
 import com.italankin.lnch.ui.feature.home.HomeActivity;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsRootFragment.Callbacks {
+import timber.log.Timber;
+
+public class SettingsActivity extends AppCompatActivity implements SettingsRootFragment.Callbacks,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int RESULT_CHANGED = RESULT_FIRST_USER;
 
@@ -31,10 +34,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         super.onCreate(savedInstanceState);
 
         setResult(RESULT_CANCELED);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
-            setResult(RESULT_CHANGED);
-        });
+        preferences.registerOnSharedPreferenceChangeListener(this);
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(() -> {
@@ -58,6 +60,13 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
                     .add(R.id.container, new SettingsRootFragment())
                     .commit();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private CharSequence getFragmentTitle() {
@@ -93,5 +102,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
                 .setBreadCrumbTitle(title)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Timber.d("onSharedPreferenceChanged: key=%s", key);
+        setResult(RESULT_CHANGED);
     }
 }

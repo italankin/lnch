@@ -57,6 +57,8 @@ public class HomeActivity extends AppActivity implements IHomeView,
 
     private static final String EXTRA_EDIT_MODE = "edit_mode";
 
+    private static final int REQUEST_CODE_SETTINGS = 1;
+
     @InjectPresenter
     HomePresenter presenter;
 
@@ -142,6 +144,14 @@ public class HomeActivity extends AppActivity implements IHomeView,
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_SETTINGS && resultCode == SettingsActivity.RESULT_CHANGED) {
+            presenter.reloadApps();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void setupWindow() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
                 WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
@@ -193,7 +203,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
             Intent intent = SettingsActivity.getStartIntent(this);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE_SETTINGS);
         });
         btnSettings.setOnLongClickListener(v -> {
             setEditMode(true);
@@ -337,14 +347,18 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     private RecyclerView.LayoutManager getLayoutManager(String layout) {
+        if (layout == null) {
+            layout = Preferences.LAYOUT_FLEX;
+        }
         switch (layout) {
             case Preferences.LAYOUT_GRID:
                 return getGridLayoutManager();
             case Preferences.LAYOUT_LINEAR:
                 return getLinearLayoutManager();
             case Preferences.LAYOUT_FLEX:
+            default:
+                return getFlexboxLayoutManager();
         }
-        return getFlexboxLayoutManager();
     }
 
     private RecyclerView.LayoutManager getGridLayoutManager() {

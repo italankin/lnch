@@ -6,6 +6,7 @@
             android:title="@string/title_settings_search" />
         <ListPreference
             android:defaultValue="flex"
+            android:entries="@array/home_layout_desc"
             android:entryValues="@array/home_layouts"
             android:key="@string/prefs_home_layout"
             android:title="@string/title_settings_home_layout" />
