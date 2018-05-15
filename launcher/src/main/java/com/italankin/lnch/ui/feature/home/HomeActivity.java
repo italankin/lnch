@@ -103,14 +103,11 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        presenter.saveState();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (isFinishing()) {
+            presenter.saveState();
+        }
         if (packageUpdatesReceiver != null) {
             unregisterReceiver(packageUpdatesReceiver);
         }
