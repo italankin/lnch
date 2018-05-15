@@ -2,6 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Home">
         <Preference
+            android:key="@string/prefs_wallpaper"
+            android:title="Wallpaper" />
+        <Preference
             android:key="@string/prefs_search"
             android:title="@string/title_settings_search" />
         <ListPreference

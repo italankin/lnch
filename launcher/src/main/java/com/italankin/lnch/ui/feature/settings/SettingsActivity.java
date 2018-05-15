@@ -93,6 +93,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         showFragment(new AppsVisibilityFragment(), R.string.title_settings_apps_visibility);
     }
 
+    @Override
+    public void showWallpapersSelector() {
+        Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
+        startActivity(intent);
+    }
+
     private void showFragment(Fragment fragment, @StringRes int title) {
         fragmentManager
                 .beginTransaction()

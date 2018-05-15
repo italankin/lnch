@@ -42,6 +42,12 @@ public class SettingsRootFragment extends AppPreferenceFragment {
             }
             return true;
         });
+        findPreference(R.string.prefs_wallpaper).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showWallpapersSelector();
+            }
+            return true;
+        });
         findPreference(R.string.prefs_apps_visibility).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showAppsVisibilityPreferences();
@@ -56,5 +62,7 @@ public class SettingsRootFragment extends AppPreferenceFragment {
         void showSearchPreferences();
 
         void showAppsVisibilityPreferences();
+
+        void showWallpapersSelector();
     }
 }
