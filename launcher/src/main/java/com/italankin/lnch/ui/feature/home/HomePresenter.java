@@ -12,16 +12,22 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<IHomeView> {
 
+    private static final Object NOTIFICATION = new Object();
+
     private final IAppsRepository appsRepository;
     private final ISearchRepository searchRepository;
     private final AppPrefs appPrefs;
+
+    private final Subject<Object, Object> reloadApps = PublishSubject.create();
+    private Subscription reloadAppsSub;
 
     @Inject
     HomePresenter(IAppsRepository appsRepository, ISearchRepository searchRepository, AppPrefs appPrefs) {
@@ -43,6 +49,12 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                 .subscribe(new State<List<AppItem>>() {
                     @Override
                     protected void onNext(IHomeView viewState, List<AppItem> list) {
+                        if (reloadAppsSub == null || reloadAppsSub.isUnsubscribed()) {
+                            reloadAppsSub = reloadApps
+                                    .debounce(1, TimeUnit.SECONDS)
+                                    .subscribe(any -> appsRepository.reload());
+                            subs.add(reloadAppsSub);
+                        }
                         viewState.onAppsLoaded(list, searchRepository, appPrefs.homeLayout());
                     }
 
@@ -55,9 +67,7 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     }
 
     void reloadApps() {
-        Subscription s = Observable.timer(1, TimeUnit.SECONDS)
-                .subscribe(any -> appsRepository.reload());
-        subs.add(s);
+        reloadApps.onNext(NOTIFICATION);
     }
 
     void reloadAppsNow() {
