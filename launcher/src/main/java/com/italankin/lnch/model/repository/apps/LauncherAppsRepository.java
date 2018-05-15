@@ -152,7 +152,10 @@ public class LauncherAppsRepository implements IAppsRepository {
                     } else {
                         return loadFromFile(infoList)
                                 .switchIfEmpty(fromPm)
-                                .onErrorResumeNext(fromPm);
+                                .onErrorResumeNext(throwable -> {
+                                    Timber.e(throwable, "loadAll:");
+                                    return fromPm;
+                                });
                     }
                 });
     }
