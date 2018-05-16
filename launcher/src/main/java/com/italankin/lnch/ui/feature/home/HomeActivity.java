@@ -410,7 +410,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
                     if (!TextUtils.isEmpty(label)) {
                         item.customLabel = label;
                         list.getAdapter().notifyItemChanged(position);
-                        presenter.saveState();
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -458,7 +457,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
                         item.customColor = null;
                     }
                     list.getAdapter().notifyItemChanged(position);
-                    presenter.saveState();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
