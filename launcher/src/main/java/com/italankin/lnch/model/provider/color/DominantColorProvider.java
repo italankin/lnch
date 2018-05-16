@@ -17,8 +17,9 @@ public class DominantColorProvider implements ColorProvider {
         int dominant = palette.getDominantColor(Color.WHITE);
         float[] hsv = new float[3];
         Color.colorToHSV(dominant, hsv);
-        if (hsv[2] < 0.15) {
-            return palette.getLightVibrantColor(Color.WHITE);
+        if (hsv[2] < 0.25) {
+            hsv[2] = 0.25f;
+            return Color.HSVToColor(hsv);
         }
         return dominant;
     }
