@@ -3,12 +3,13 @@ package com.italankin.lnch.ui.base;
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
 
-import rx.Observer;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
-    protected final CompositeSubscription subs = new CompositeSubscription();
+    protected final CompositeDisposable subs = new CompositeDisposable();
 
     @Override
     public void onDestroy() {
@@ -35,7 +36,13 @@ public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
         }
 
         @Override
-        public void onCompleted() {
+        public void onSubscribe(Disposable d) {
+            subs.add(d);
+        }
+
+        @Override
+        public void onComplete() {
+
         }
     }
 }

@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<IHomeView> {
@@ -26,8 +26,8 @@ public class HomePresenter extends AppPresenter<IHomeView> {
     private final ISearchRepository searchRepository;
     private final AppPrefs appPrefs;
 
-    private final Subject<Object, Object> reloadApps = PublishSubject.create();
-    private Subscription reloadAppsSub;
+    private final Subject<Object> reloadApps = PublishSubject.create();
+    private Disposable reloadAppsSub;
 
     @Inject
     HomePresenter(IAppsRepository appsRepository, ISearchRepository searchRepository, AppPrefs appPrefs) {
@@ -44,12 +44,12 @@ public class HomePresenter extends AppPresenter<IHomeView> {
 
     void loadApps() {
         getViewState().showProgress();
-        Subscription s = appsRepository.updates()
+        appsRepository.updates()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<AppItem>>() {
                     @Override
                     protected void onNext(IHomeView viewState, List<AppItem> list) {
-                        if (reloadAppsSub == null || reloadAppsSub.isUnsubscribed()) {
+                        if (reloadAppsSub == null || reloadAppsSub.isDisposed()) {
                             reloadAppsSub = reloadApps
                                     .debounce(1, TimeUnit.SECONDS)
                                     .subscribe(any -> appsRepository.reload());
@@ -63,7 +63,6 @@ public class HomePresenter extends AppPresenter<IHomeView> {
                         viewState.showError(e);
                     }
                 });
-        subs.add(s);
     }
 
     void reloadApps() {

@@ -26,11 +26,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Emitter;
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class LauncherAppsRepository implements IAppsRepository {
@@ -55,19 +56,19 @@ public class LauncherAppsRepository implements IAppsRepository {
                 .concatMapIterable(appItems -> appItems)
                 .filter(appItem -> !appItem.hidden)
                 .toList()
-                .subscribe(new Observer<List<AppItem>>() {
+                .subscribe(new SingleObserver<List<AppItem>>() {
                     @Override
-                    public void onNext(List<AppItem> appItems) {
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onSuccess(List<AppItem> appItems) {
                         updates.onNext(appItems);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Timber.e(e);
-                    }
-
-                    @Override
-                    public void onCompleted() {
                     }
                 });
     }
@@ -122,6 +123,10 @@ public class LauncherAppsRepository implements IAppsRepository {
                 })
                 .subscribe(new Observer<Map<String, AppItem>>() {
                     @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
                     public void onNext(Map<String, AppItem> apps) {
                         writeToDisk(apps);
                         reload();
@@ -133,7 +138,7 @@ public class LauncherAppsRepository implements IAppsRepository {
                     }
 
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
                     }
                 });
     }
@@ -212,8 +217,8 @@ public class LauncherAppsRepository implements IAppsRepository {
                         Collections.sort(apps, AppItem.CMP_ORDER);
                         emitter.onNext(apps);
                     }
-                    emitter.onCompleted();
-                }, Emitter.BackpressureMode.DROP);
+                    emitter.onComplete();
+                });
     }
 
     private AppItem createItem(LauncherActivityInfo info) {
