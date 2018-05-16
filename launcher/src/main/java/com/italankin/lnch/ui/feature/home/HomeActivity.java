@@ -17,7 +17,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -378,7 +381,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     private void customizeApp(int position, AppItem item) {
         CharSequence[] items = {
                 "Rename",
-                "Hide",
+                "Set color",
         };
         new AlertDialog.Builder(this)
                 .setTitle(item.getLabel())
@@ -388,7 +391,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
                             renameApp(position, item);
                             break;
                         case 1:
-                            hideApp(item);
+                            setAppColor(position, item);
                             break;
                     }
                 })
@@ -407,7 +410,55 @@ public class HomeActivity extends AppActivity implements IHomeView,
                     if (!TextUtils.isEmpty(label)) {
                         item.customLabel = label;
                         list.getAdapter().notifyItemChanged(position);
+                        presenter.saveState();
                     }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void setAppColor(int position, AppItem item) {
+        EditText editText = new AppCompatEditText(this);
+        editText.setText(String.format("%06x", item.getColor()).substring(2));
+        editText.setSelectAllOnFocus(true);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 6) {
+                    try {
+                        int color = Integer.decode("0x" + s.toString()) + 0xff000000;
+                        editText.setTextColor(color);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+        });
+        editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
+        new AlertDialog.Builder(this)
+                .setTitle(item.getLabel())
+                .setView(editText)
+                .setPositiveButton("OK", (dialog1, which) -> {
+                    String value = editText.getText().toString().trim();
+                    if (!TextUtils.isEmpty(value)) {
+                        try {
+                            item.customColor = Integer.decode("0x" + value) + 0xff000000;
+                        } catch (Exception e) {
+                            showError(e);
+                            return;
+                        }
+                    } else {
+                        item.customColor = null;
+                    }
+                    list.getAdapter().notifyItemChanged(position);
+                    presenter.saveState();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
