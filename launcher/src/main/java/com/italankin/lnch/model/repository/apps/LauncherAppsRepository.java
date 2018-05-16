@@ -271,14 +271,6 @@ public class LauncherAppsRepository implements IAppsRepository {
         writeToDisk(mapByPackageName(apps));
     }
 
-    private Map<String, AppItem> mapByPackageName(List<AppItem> apps) {
-        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
-        for (AppItem app : apps) {
-            map.put(app.packageName, app);
-        }
-        return map;
-    }
-
     private Map<String, AppItem> readFromDisk() {
         Timber.d("readFromDisk");
         Gson gson = new Gson();
@@ -294,6 +286,14 @@ public class LauncherAppsRepository implements IAppsRepository {
 
     private File getPrefs() {
         return new File(context.getFilesDir(), "packages.json");
+    }
+
+    private static Map<String, AppItem> mapByPackageName(List<AppItem> apps) {
+        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
+        for (AppItem app : apps) {
+            map.put(app.packageName, app);
+        }
+        return map;
     }
 
     private static void swapOrder(List<AppItem> list, int from, int to) {
