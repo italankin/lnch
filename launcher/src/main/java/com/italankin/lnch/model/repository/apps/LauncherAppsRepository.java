@@ -52,8 +52,13 @@ public class LauncherAppsRepository implements IAppsRepository {
     public void reload() {
         loadAll()
                 .subscribeOn(Schedulers.computation())
-                .doOnNext(this::writeToDisk)
-                .concatMapIterable(appItems -> appItems)
+                .doOnNext(appsData -> {
+                    if (appsData.changed) {
+                        Timber.d("data has changed, write to disk");
+                        writeToDisk(appsData.apps);
+                    }
+                })
+                .concatMapIterable(appsData -> appsData.apps)
                 .filter(appItem -> !appItem.hidden)
                 .toList()
                 .subscribe(new SingleObserver<List<AppItem>>() {
@@ -110,7 +115,7 @@ public class LauncherAppsRepository implements IAppsRepository {
     public void writeChanges() {
         loadAll()
                 .subscribeOn(Schedulers.computation())
-                .map(this::mapByPackageName)
+                .map(appsData -> mapByPackageName(appsData.apps))
                 .doOnNext(apps -> {
                     List<AppItem> items = updates.getValue();
                     if (items != null) {
@@ -147,11 +152,11 @@ public class LauncherAppsRepository implements IAppsRepository {
     // Private
     ///////////////////////////////////////////////////////////////////////////
 
-    private Observable<List<AppItem>> loadAll() {
+    private Observable<AppsData> loadAll() {
         return Observable
                 .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
                 .flatMap(infoList -> {
-                    Observable<List<AppItem>> fromPm = loadFromList(infoList);
+                    Observable<AppsData> fromPm = loadFromList(infoList);
                     if (!getPrefs().exists()) {
                         return fromPm;
                     } else {
@@ -165,7 +170,7 @@ public class LauncherAppsRepository implements IAppsRepository {
                 });
     }
 
-    private Observable<List<AppItem>> loadFromList(List<LauncherActivityInfo> infoList) {
+    private Observable<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
         return Observable.fromCallable(() -> {
             List<AppItem> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
@@ -175,22 +180,25 @@ public class LauncherAppsRepository implements IAppsRepository {
             for (int i = 0, s = apps.size(); i < s; i++) {
                 apps.get(i).order = i;
             }
-            return apps;
+            AppsData appsData = new AppsData();
+            appsData.apps = apps;
+            return appsData;
         });
     }
 
-    private Observable<List<AppItem>> loadFromFile(List<LauncherActivityInfo> infoList) {
+    private Observable<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Observable
                 .create(emitter -> {
                     Map<String, AppItem> map = readFromDisk();
                     if (map != null) {
-                        List<AppItem> apps = new ArrayList<>(map.size());
+                        AppsData appsData = new AppsData();
+                        appsData.apps = new ArrayList<>(map.size());
                         List<AppItem> newApps = new ArrayList<>(8);
                         int order = 0;
                         for (LauncherActivityInfo info : infoList) {
                             String packageName = info.getApplicationInfo().packageName;
                             if (map.containsKey(packageName)) {
-                                AppItem item = map.get(packageName);
+                                AppItem item = map.remove(packageName);
                                 if (item.order > order) {
                                     order = item.order;
                                 }
@@ -201,21 +209,22 @@ public class LauncherAppsRepository implements IAppsRepository {
                                     item.label = preferences.label.get(info);
                                     item.color = preferences.color.get(info);
                                 }
-                                apps.add(item);
+                                appsData.apps.add(item);
                             } else {
                                 newApps.add(createItem(info));
                             }
                         }
+                        appsData.changed = !map.isEmpty() || !newApps.isEmpty();
                         // update order values
                         if (newApps.size() > 0) {
                             for (int i = 0, s = newApps.size(); i < s; i++) {
                                 AppItem item = newApps.get(i);
                                 item.order = ++order;
-                                apps.add(item);
+                                appsData.apps.add(item);
                             }
                         }
-                        Collections.sort(apps, AppItem.CMP_ORDER);
-                        emitter.onNext(apps);
+                        Collections.sort(appsData.apps, AppItem.CMP_ORDER);
+                        emitter.onNext(appsData);
                     }
                     emitter.onComplete();
                 });
@@ -294,5 +303,10 @@ public class LauncherAppsRepository implements IAppsRepository {
         left.order = right.order;
         right.order = tmp;
         Collections.swap(list, from, to);
+    }
+
+    private static class AppsData {
+        List<AppItem> apps;
+        boolean changed;
     }
 }
