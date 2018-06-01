@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.bean.AppItem;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,9 +1,11 @@
 package com.italankin.lnch.ui.feature.home;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.model.AppItem;
-import com.italankin.lnch.model.repository.apps.IAppsRepository;
-import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.bean.Unit;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.actions.SwapAction;
+import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.ui.base.AppPresenter;
 import com.italankin.lnch.util.AppPrefs;
 
@@ -13,24 +15,25 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
+
+import static com.italankin.lnch.bean.Unit.UNIT;
 
 @InjectViewState
-public class HomePresenter extends AppPresenter<IHomeView> {
+public class HomePresenter extends AppPresenter<HomeView> {
 
-    private static final Object NOTIFICATION = new Object();
-
-    private final IAppsRepository appsRepository;
-    private final ISearchRepository searchRepository;
+    private final AppsRepository appsRepository;
+    private final SearchRepository searchRepository;
     private final AppPrefs appPrefs;
-
-    private final Subject<Object> reloadApps = PublishSubject.create();
-    private Disposable reloadAppsSub;
+    private final Subject<Unit> reloadApps = PublishSubject.create();
+    private List<AppItem> apps;
+    private AppsRepository.Editor editor;
 
     @Inject
-    HomePresenter(IAppsRepository appsRepository, ISearchRepository searchRepository, AppPrefs appPrefs) {
+    HomePresenter(AppsRepository appsRepository, SearchRepository searchRepository, AppPrefs appPrefs) {
         this.appsRepository = appsRepository;
         this.searchRepository = searchRepository;
         this.appPrefs = appPrefs;
@@ -38,46 +41,96 @@ public class HomePresenter extends AppPresenter<IHomeView> {
 
     @Override
     protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
-        loadApps();
+        observeApps();
+        initialLoad();
+        subscribeUpdates();
     }
 
-    void loadApps() {
-        getViewState().showProgress();
-        appsRepository.updates()
+    void notifyPackageChanged() {
+        reloadApps.onNext(UNIT);
+    }
+
+    void reloadAppsImmediate() {
+        update();
+    }
+
+    void startEditMode() {
+        if (editor != null) {
+            throw new IllegalStateException("Editor is not null!");
+        }
+        editor = appsRepository.edit();
+        getViewState().onStartEditMode();
+    }
+
+    void swapItems(int from, int to) {
+        if (editor == null) {
+            throw new IllegalStateException();
+        }
+        editor.enqueue(new SwapAction(from, to));
+        SwapAction.swap(apps, from, to);
+        getViewState().onItemsSwap(from, to);
+    }
+
+    void stopEditMode() {
+        if (editor == null) {
+            throw new IllegalStateException("Editor is null!");
+        }
+        editor.commit()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<AppItem>>() {
+                .subscribe(new CompletableState() {
                     @Override
-                    protected void onNext(IHomeView viewState, List<AppItem> list) {
-                        if (reloadAppsSub == null || reloadAppsSub.isDisposed()) {
-                            reloadAppsSub = reloadApps
-                                    .debounce(1, TimeUnit.SECONDS)
-                                    .subscribe(any -> appsRepository.reload());
-                            subs.add(reloadAppsSub);
-                        }
-                        viewState.onAppsLoaded(list, searchRepository, appPrefs.homeLayout());
+                    protected void onComplete(HomeView viewState) {
+                        viewState.onStopEditMode();
+                        update();
                     }
 
                     @Override
-                    protected void onError(IHomeView viewState, Throwable e) {
+                    protected void onError(HomeView viewState, Throwable e) {
                         viewState.showError(e);
+                    }
+                });
+        editor = null;
+    }
+
+    private void initialLoad() {
+        getViewState().showProgress();
+        update();
+    }
+
+    private void subscribeUpdates() {
+        reloadApps
+                .debounce(1, TimeUnit.SECONDS)
+                .ignoreElements()
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        update();
                     }
                 });
     }
 
-    void reloadApps() {
-        reloadApps.onNext(NOTIFICATION);
+    private void update() {
+        appsRepository.update()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Apps updated");
+                    }
+                });
     }
 
-    void reloadAppsNow() {
-        appsRepository.reload();
-    }
-
-    void swapItems(int from, int to) {
-        appsRepository.swapAppsOrder(from, to);
-    }
-
-    void saveState() {
-        appsRepository.writeChanges();
+    private void observeApps() {
+        appsRepository.observeApps()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new State<List<AppItem>>() {
+                    @Override
+                    protected void onNext(HomeView viewState, List<AppItem> list) {
+                        Timber.d("Receive update: %s", list);
+                        apps = list;
+                        viewState.onAppsLoaded(apps, searchRepository, appPrefs.homeLayout());
+                    }
+                });
     }
 }

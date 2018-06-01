@@ -41,9 +41,9 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.provider.Preferences;
-import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.ui.base.AppActivity;
 import com.italankin.lnch.ui.feature.settings.SettingsActivity;
@@ -51,7 +51,7 @@ import com.italankin.lnch.ui.util.SwapItemHelper;
 
 import java.util.List;
 
-public class HomeActivity extends AppActivity implements IHomeView,
+public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppItemAdapter.Listener {
 
@@ -108,9 +108,6 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (isFinishing()) {
-            presenter.saveState();
-        }
         if (packageUpdatesReceiver != null) {
             unregisterReceiver(packageUpdatesReceiver);
         }
@@ -140,11 +137,10 @@ public class HomeActivity extends AppActivity implements IHomeView,
         if (requestCode == REQUEST_CODE_SETTINGS) {
             switch (resultCode) {
                 case SettingsActivity.RESULT_CHANGED:
-                    presenter.reloadApps();
+                    presenter.reloadAppsImmediate();
                     return;
                 case SettingsActivity.RESULT_EDIT_MODE:
-                    presenter.reloadAppsNow();
-                    setEditMode(true);
+                    presenter.startEditMode();
                     return;
             }
         }
@@ -205,7 +201,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
             startActivityForResult(intent, REQUEST_CODE_SETTINGS);
         });
         btnSettings.setOnLongClickListener(v -> {
-            setEditMode(true);
+            presenter.startEditMode();
             return true;
         });
     }
@@ -226,15 +222,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     @Override
-    public void hideProgress() {
-        if (progressContainer != null) {
-            root.removeView(progressContainer);
-            progressContainer = null;
-        }
-    }
-
-    @Override
-    public void onAppsLoaded(List<AppItem> items, ISearchRepository searchRepository, String layout) {
+    public void onAppsLoaded(List<AppItem> items, SearchRepository searchRepository, String layout) {
         hideProgress();
         AppItemAdapter adapter = (AppItemAdapter) list.getAdapter();
         if (adapter == null) {
@@ -245,6 +233,21 @@ public class HomeActivity extends AppActivity implements IHomeView,
         list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
         editSearch.setAdapter(new SearchAdapter(searchRepository));
+    }
+
+    @Override
+    public void onStartEditMode() {
+        setEditMode(true);
+    }
+
+    @Override
+    public void onStopEditMode() {
+        setEditMode(false);
+    }
+
+    @Override
+    public void onItemsSwap(int from, int to) {
+        list.getAdapter().notifyItemMoved(from, to);
     }
 
     @Override
@@ -274,12 +277,18 @@ public class HomeActivity extends AppActivity implements IHomeView,
     @Override
     public void onItemMove(int from, int to) {
         presenter.swapItems(from, to);
-        list.getAdapter().notifyItemMoved(from, to);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
+
+    private void hideProgress() {
+        if (progressContainer != null) {
+            root.removeView(progressContainer);
+            progressContainer = null;
+        }
+    }
 
     void startApp(AppItem item) {
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
@@ -301,7 +310,7 @@ public class HomeActivity extends AppActivity implements IHomeView,
         packageUpdatesReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                presenter.reloadApps();
+                presenter.notifyPackageChanged();
             }
         };
         IntentFilter filter = new IntentFilter();
@@ -329,15 +338,17 @@ public class HomeActivity extends AppActivity implements IHomeView,
     }
 
     private void setEditMode(boolean value) {
+        if (editMode == value) {
+            return;
+        }
         editMode = value;
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
             Snackbar snackbar = Snackbar.make(root, R.string.edit_mode_hint, Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.edit_mode_exit, v -> {
-                setEditMode(false);
                 snackbar.dismiss();
-                presenter.saveState();
+                presenter.stopEditMode();
             });
             snackbar.show();
             int bottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,

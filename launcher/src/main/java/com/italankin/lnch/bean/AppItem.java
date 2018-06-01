@@ -1,4 +1,4 @@
-package com.italankin.lnch.model;
+package com.italankin.lnch.bean;
 
 import android.support.annotation.Keep;
 
@@ -10,7 +10,6 @@ import java.util.Comparator;
 public class AppItem {
     public static final Comparator<AppItem> CMP_NAME_ASC = new NameComparator(true);
     public static final Comparator<AppItem> CMP_NAME_DESC = new NameComparator(false);
-    public static final Comparator<AppItem> CMP_ORDER = new OrderComparator();
 
     @Expose(serialize = false, deserialize = false)
     public String packageName;
@@ -29,9 +28,6 @@ public class AppItem {
 
     @SerializedName("customColor")
     public Integer customColor;
-
-    @SerializedName("order")
-    public int order;
 
     @SerializedName("hidden")
     public boolean hidden;
@@ -57,6 +53,11 @@ public class AppItem {
         }
         return color;
     }
+
+    @Override
+    public String toString() {
+        return "{packageName=" + packageName + ", hidden=" + hidden + "}";
+    }
 }
 
 class NameComparator implements Comparator<AppItem> {
@@ -70,12 +71,5 @@ class NameComparator implements Comparator<AppItem> {
     public int compare(AppItem lhs, AppItem rhs) {
         int compare = String.CASE_INSENSITIVE_ORDER.compare(lhs.label, rhs.label);
         return asc ? compare : -compare;
-    }
-}
-
-class OrderComparator implements Comparator<AppItem> {
-    @Override
-    public int compare(AppItem o1, AppItem o2) {
-        return o1.order > o2.order ? 1 : (o1.order == o2.order ? 0 : -1);
     }
 }

@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.model.AppItem;
+import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.provider.Preferences;
 
 import java.io.File;
@@ -20,143 +20,87 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.SingleObserver;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-public class LauncherAppsRepository implements IAppsRepository {
+public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
     private final Preferences preferences = new Preferences();
     private final LauncherApps launcherApps;
-
-    private BehaviorSubject<List<AppItem>> updates = BehaviorSubject.create();
+    private final Completable updater;
+    private final BehaviorSubject<List<AppItem>> updatesSubject = BehaviorSubject.create();
 
     public LauncherAppsRepository(Context context) {
         this.context = context;
         this.packageManager = context.getPackageManager();
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-    }
-
-    @Override
-    public void reload() {
-        loadAll()
-                .subscribeOn(Schedulers.computation())
-                .doOnNext(appsData -> {
+        this.updater = loadAll()
+                .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");
                         writeToDisk(appsData.apps);
                     }
                 })
-                .concatMapIterable(appsData -> appsData.apps)
-                .filter(appItem -> !appItem.hidden)
-                .toList()
-                .subscribe(new SingleObserver<List<AppItem>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                .map(appsData -> {
+                    List<AppItem> apps = new ArrayList<>(appsData.apps.size());
+                    for (AppItem app : appsData.apps) {
+                        if (!app.hidden) {
+                            apps.add(app);
+                        }
                     }
-
-                    @Override
-                    public void onSuccess(List<AppItem> appItems) {
-                        updates.onNext(appItems);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                });
+                    return apps;
+                })
+                .doOnSuccess(updatesSubject::onNext)
+                .ignoreElement();
     }
 
     @Override
-    public Observable<List<AppItem>> updates() {
-        try {
-            return updates;
-        } finally {
-            if (!updates.hasValue()) {
-                reload();
-            }
-        }
+    public Completable update() {
+        return updater;
+    }
+
+    @Override
+    public Observable<List<AppItem>> observeApps() {
+        return updatesSubject;
     }
 
     @Override
     public List<AppItem> getApps() {
-        return updates.getValue();
+        return updatesSubject.getValue();
     }
 
     @Override
-    public void swapAppsOrder(int from, int to) {
-        List<AppItem> list = getApps();
-        if (list == null) {
-            return;
-        }
-        if (from < to) {
-            for (int i = from; i < to; i++) {
-                swapOrder(list, i, i + 1);
-            }
-        } else {
-            for (int i = from; i > to; i--) {
-                swapOrder(list, i, i - 1);
-            }
-        }
-    }
-
-    @Override
-    public void writeChanges() {
-        loadAll()
-                .subscribeOn(Schedulers.computation())
-                .map(appsData -> mapByPackageName(appsData.apps))
-                .doOnNext(apps -> {
-                    List<AppItem> items = updates.getValue();
-                    if (items != null) {
-                        for (AppItem item : items) {
-                            if (apps.containsKey(item.packageName)) {
-                                apps.put(item.packageName, item);
-                            }
-                        }
-                    }
-                })
-                .subscribe(new Observer<Map<String, AppItem>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(Map<String, AppItem> apps) {
-                        writeToDisk(apps);
-                        reload();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+    public AppsRepository.Editor edit() {
+        return new Editor();
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
 
-    private Observable<AppsData> loadAll() {
-        return Observable
+    private Single<AppsData> loadAll() {
+        return Single
                 .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
                 .flatMap(infoList -> {
-                    Observable<AppsData> fromPm = loadFromList(infoList);
+                    Single<AppsData> fromPm = loadFromList(infoList);
                     if (!getPrefs().exists()) {
                         return fromPm;
                     } else {
@@ -170,38 +114,36 @@ public class LauncherAppsRepository implements IAppsRepository {
                 });
     }
 
-    private Observable<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
-        return Observable.fromCallable(() -> {
+    private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
+        return Single.fromCallable(() -> {
             List<AppItem> apps = new ArrayList<>(16);
             for (int i = 0, s = infoList.size(); i < s; i++) {
                 apps.add(createItem(infoList.get(i)));
             }
             Collections.sort(apps, AppItem.CMP_NAME_ASC);
-            for (int i = 0, s = apps.size(); i < s; i++) {
-                apps.get(i).order = i;
-            }
             AppsData appsData = new AppsData();
             appsData.apps = apps;
             return appsData;
         });
     }
 
-    private Observable<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
-        return Observable
+    private Maybe<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
+        return Maybe
                 .create(emitter -> {
                     Map<String, AppItem> map = readFromDisk();
                     if (map != null) {
                         AppsData appsData = new AppsData();
                         appsData.apps = new ArrayList<>(map.size());
                         List<AppItem> newApps = new ArrayList<>(8);
-                        int order = 0;
+                        Set<String> processedPackages = new HashSet<>(infoList.size());
                         for (LauncherActivityInfo info : infoList) {
                             String packageName = info.getApplicationInfo().packageName;
-                            if (map.containsKey(packageName)) {
-                                AppItem item = map.remove(packageName);
-                                if (item.order > order) {
-                                    order = item.order;
-                                }
+                            if (!processedPackages.add(packageName)) {
+                                // TODO map by component instead of package
+                                continue;
+                            }
+                            AppItem item = map.remove(packageName);
+                            if (item != null) {
                                 item.packageName = packageName;
                                 int versionCode = getVersionCode(packageName);
                                 if (item.versionCode != versionCode) {
@@ -214,17 +156,11 @@ public class LauncherAppsRepository implements IAppsRepository {
                                 newApps.add(createItem(info));
                             }
                         }
-                        appsData.changed = !map.isEmpty() || !newApps.isEmpty();
+                        appsData.changed = !map.isEmpty() /* some apps deleted*/ ||
+                                !newApps.isEmpty() /* new apps added */;
                         // update order values
-                        if (newApps.size() > 0) {
-                            for (int i = 0, s = newApps.size(); i < s; i++) {
-                                AppItem item = newApps.get(i);
-                                item.order = ++order;
-                                appsData.apps.add(item);
-                            }
-                        }
-                        Collections.sort(appsData.apps, AppItem.CMP_ORDER);
-                        emitter.onNext(appsData);
+                        appsData.apps.addAll(newApps);
+                        emitter.onSuccess(appsData);
                     }
                     emitter.onComplete();
                 });
@@ -296,17 +232,44 @@ public class LauncherAppsRepository implements IAppsRepository {
         return map;
     }
 
-    private static void swapOrder(List<AppItem> list, int from, int to) {
-        AppItem left = list.get(from);
-        AppItem right = list.get(to);
-        int tmp = left.order;
-        left.order = right.order;
-        right.order = tmp;
-        Collections.swap(list, from, to);
-    }
-
     private static class AppsData {
         List<AppItem> apps;
         boolean changed;
+    }
+
+    final class Editor implements AppsRepository.Editor {
+        private final Queue<AppsRepository.Editor.Action> actions = new ArrayDeque<>();
+        private volatile boolean used;
+
+        @Override
+        public void enqueue(AppsRepository.Editor.Action action) {
+            if (used) {
+                throw new IllegalStateException();
+            }
+            actions.offer(action);
+        }
+
+        @Override
+        public Completable commit() {
+            if (used) {
+                throw new IllegalStateException();
+            }
+            Consumer<Disposable> onSubscribe = d -> used = true;
+            if (actions.isEmpty()) {
+                return Completable.complete()
+                        .doOnSubscribe(onSubscribe);
+            }
+            return updatesSubject.take(1)
+                    .doOnSubscribe(onSubscribe)
+                    .doOnNext(apps -> {
+                        Iterator<AppsRepository.Editor.Action> iter = actions.iterator();
+                        while (iter.hasNext()) {
+                            iter.next().apply(apps);
+                            iter.remove();
+                        }
+                        writeToDisk(apps);
+                    })
+                    .ignoreElements();
+        }
     }
 }

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.WorkerThread;
 
-import com.italankin.lnch.model.AppItem;
-import com.italankin.lnch.model.repository.apps.IAppsRepository;
+import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.search.match.GoogleMatch;
 import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -15,12 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class SearchRepositoryImpl implements ISearchRepository {
+public class SearchRepositoryImpl implements SearchRepository {
 
-    private final IAppsRepository appsRepository;
+    private final AppsRepository appsRepository;
     private final PackageManager packageManager;
 
-    public SearchRepositoryImpl(Context context, IAppsRepository appsRepository) {
+    public SearchRepositoryImpl(Context context, AppsRepository appsRepository) {
         this.appsRepository = appsRepository;
         this.packageManager = context.getPackageManager();
     }

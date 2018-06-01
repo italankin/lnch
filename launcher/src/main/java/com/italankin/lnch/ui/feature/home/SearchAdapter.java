@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.IMatch;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private List<? extends IMatch> dataset = new ArrayList<>(0);
 
-    public SearchAdapter(ISearchRepository searchRepository) {
+    public SearchAdapter(SearchRepository searchRepository) {
         this.filter = new SearchFilter(searchRepository) {
             @SuppressWarnings("unchecked")
             @Override
@@ -89,9 +89,9 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 }
 
 abstract class SearchFilter extends Filter {
-    private final ISearchRepository searchRepository;
+    private final SearchRepository searchRepository;
 
-    public SearchFilter(ISearchRepository searchRepository) {
+    public SearchFilter(SearchRepository searchRepository) {
         this.searchRepository = searchRepository;
     }
 

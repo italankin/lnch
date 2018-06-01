@@ -3,9 +3,9 @@ package com.italankin.lnch.di.module;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import com.italankin.lnch.model.repository.apps.IAppsRepository;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
-import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
 import com.italankin.lnch.util.AppPrefs;
 
@@ -31,13 +31,13 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public IAppsRepository provideAppsRepository(Context context) {
+    public AppsRepository provideAppsRepository(Context context) {
         return new LauncherAppsRepository(context);
     }
 
     @Provides
     @Singleton
-    public ISearchRepository provideSearchRepository(Context context, IAppsRepository appsRepository) {
+    public SearchRepository provideSearchRepository(Context context, AppsRepository appsRepository) {
         return new SearchRepositoryImpl(context, appsRepository);
     }
 }

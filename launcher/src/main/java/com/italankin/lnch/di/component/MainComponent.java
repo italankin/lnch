@@ -5,8 +5,8 @@ import android.content.pm.PackageManager;
 
 import com.italankin.lnch.di.module.AppModule;
 import com.italankin.lnch.di.module.MainModule;
-import com.italankin.lnch.model.repository.apps.IAppsRepository;
-import com.italankin.lnch.model.repository.search.ISearchRepository;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.util.AppPrefs;
 
 import javax.inject.Singleton;
@@ -23,8 +23,8 @@ public interface MainComponent {
 
     AppPrefs getAppPrefs();
 
-    IAppsRepository getAppsRepository();
+    AppsRepository getAppsRepository();
 
-    ISearchRepository getSearchRepository();
+    SearchRepository getSearchRepository();
 
 }
