@@ -257,9 +257,11 @@ public class LauncherAppsRepository implements AppsRepository {
             }
             Consumer<Disposable> onSubscribe = d -> used = true;
             if (actions.isEmpty()) {
+                Timber.d("commit: no actions");
                 return Completable.complete()
                         .doOnSubscribe(onSubscribe);
             }
+            Timber.d("commit: apply actions");
             return updatesSubject.take(1)
                     .doOnSubscribe(onSubscribe)
                     .doOnNext(apps -> {
