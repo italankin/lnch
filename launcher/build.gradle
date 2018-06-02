@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
+apply from: '../gradle/versions.gradle'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion compileSdk
     defaultConfig {
         applicationId "com.italankin.lnch"
-        minSdkVersion 23
-        targetSdkVersion 26
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
         versionName "1.0.0"
     }
@@ -22,7 +23,7 @@ android {
         }
     }
     buildTypes {
-    	debug {
+        debug {
             signingConfig signingConfigs.debug
         }
         release {
@@ -31,27 +32,26 @@ android {
 }
 
 dependencies {
-    def supportVersion = "26.1.0"
+    implementation "com.arello-mobile:moxy:$moxyVersion"
+    annotationProcessor "com.arello-mobile:moxy-compiler:$moxyVersion"
+    implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    compileOnly "javax.annotation:jsr250-api:1.0"
+
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
+    implementation "com.google.code.gson:gson:$gsonVersion"
+
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
     implementation "com.android.support:palette-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
     implementation "com.android.support:preference-v14:$supportVersion"
 
-    implementation 'com.arello-mobile:moxy:1.5.3'
-    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
-    implementation 'com.arello-mobile:moxy-app-compat:1.5.3'
-
-    implementation 'com.google.dagger:dagger:2.11'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-    compileOnly 'javax.annotation:jsr250-api:1.0'
-
-    implementation 'com.google.android:flexbox:0.3.2'
-
-    implementation 'com.google.code.gson:gson:2.8.2'
-
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.13'
-
-    implementation 'com.jakewharton.timber:timber:4.7.0'
+    implementation "com.google.android:flexbox:$flexboxVersion"
 }

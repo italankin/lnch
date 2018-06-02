@@ -1,0 +1,14 @@
+ext {
+    targetSdk = 26
+    compileSdk = 26
+    minSdk = 23
+
+    supportVersion = "26.1.0"
+    moxyVersion = "1.5.3"
+    daggerVersion = "2.11"
+    flexboxVersion = "0.3.2"
+    gsonVersion = "2.8.2"
+    rxJavaVersion = "2.1.13"
+    rxAndroidVersion = "2.0.2"
+    timberVersion = "4.7.0"
+}
