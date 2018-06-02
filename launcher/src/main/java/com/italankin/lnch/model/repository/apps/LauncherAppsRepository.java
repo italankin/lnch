@@ -83,6 +83,11 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
+    public Single<List<AppItem>> getAllApps() {
+        return loadAll().map(appsData -> appsData.apps);
+    }
+
+    @Override
     public List<AppItem> getApps() {
         return updatesSubject.getValue();
     }
