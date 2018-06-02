@@ -2,7 +2,6 @@ package com.italankin.lnch.bean;
 
 import android.support.annotation.Keep;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -11,7 +10,7 @@ public class AppItem {
     public static final Comparator<AppItem> CMP_NAME_ASC = new NameComparator(true);
     public static final Comparator<AppItem> CMP_NAME_DESC = new NameComparator(false);
 
-    @Expose(serialize = false, deserialize = false)
+    @SerializedName("packageName")
     public String packageName;
 
     @SerializedName("versionCode")

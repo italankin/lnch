@@ -11,6 +11,7 @@ import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.ui.base.AppPresenter;
 import com.italankin.lnch.util.AppPrefs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +32,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private final SearchRepository searchRepository;
     private final AppPrefs appPrefs;
     private final Subject<Unit> reloadApps = PublishSubject.create();
-    private List<AppItem> apps;
+    private List<AppViewModel> apps;
     private AppsRepository.Editor editor;
 
     @Inject
@@ -73,31 +74,33 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemsSwap(from, to);
     }
 
-    void renameApp(int position, AppItem item, String customLabel) {
+    void renameApp(int position, AppViewModel item, String customLabel) {
         if (editor == null) {
             throw new IllegalStateException();
         }
         String s = customLabel.isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item, s));
+        editor.enqueue(new RenameAction(item.item, s));
         item.customLabel = s;
         getViewState().onItemChanged(position);
     }
 
-    void changeAppCustomColor(int position, AppItem item, String value) {
+    void changeAppCustomColor(int position, AppViewModel item, String value) {
         if (editor == null) {
             throw new IllegalStateException();
         }
+        Integer customColor;
         if (value != null && !value.isEmpty()) {
             try {
-                item.customColor = Integer.decode("0x" + value) + 0xff000000;
+                customColor = Integer.decode("0x" + value) + 0xff000000;
             } catch (Exception e) {
                 getViewState().showError(e);
                 return;
             }
         } else {
-            item.customColor = null;
+            customColor = null;
         }
-        editor.enqueue(new SetCustomColorAction(item, item.customColor));
+        editor.enqueue(new SetCustomColorAction(item.item, customColor));
+        item.customColor = customColor;
         getViewState().onItemChanged(position);
     }
 
@@ -161,10 +164,17 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void observeApps() {
         appsRepository.observeApps()
+                .map(appItems -> {
+                    List<AppViewModel> appViewModels = new ArrayList<>(appItems.size());
+                    for (AppItem appItem : appItems) {
+                        appViewModels.add(new AppViewModel(appItem));
+                    }
+                    return appViewModels;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<AppItem>>() {
+                .subscribe(new State<List<AppViewModel>>() {
                     @Override
-                    protected void onNext(HomeView viewState, List<AppItem> list) {
+                    protected void onNext(HomeView viewState, List<AppViewModel> list) {
                         Timber.d("Receive update: %s", list);
                         apps = list;
                         viewState.onAppsLoaded(apps, searchRepository, appPrefs.homeLayout());

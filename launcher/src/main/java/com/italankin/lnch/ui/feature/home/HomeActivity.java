@@ -37,7 +37,6 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.provider.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.IMatch;
@@ -51,7 +50,7 @@ import java.util.List;
 
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
-        AppItemAdapter.Listener {
+        AppViewModelAdapter.Listener {
 
     private static final int REQUEST_CODE_SETTINGS = 1;
 
@@ -220,11 +219,11 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppItem> items, SearchRepository searchRepository, String layout) {
+    public void onAppsLoaded(List<AppViewModel> items, SearchRepository searchRepository, String layout) {
         hideProgress();
-        AppItemAdapter adapter = (AppItemAdapter) list.getAdapter();
+        AppViewModelAdapter adapter = (AppViewModelAdapter) list.getAdapter();
         if (adapter == null) {
-            adapter = new AppItemAdapter(this, this);
+            adapter = new AppViewModelAdapter(this, this);
         }
         adapter.setDataset(items);
         list.setLayoutManager(getLayoutManager(layout));
@@ -259,7 +258,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onItemClick(int position, AppItem item) {
+    public void onItemClick(int position, AppViewModel item) {
         if (editMode) {
             customizeApp(position, item);
         } else {
@@ -268,7 +267,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onItemLongClick(int position, AppItem item) {
+    public void onItemLongClick(int position, AppViewModel item) {
         if (editMode) {
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));
@@ -293,14 +292,14 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    void startApp(AppItem item) {
+    void startApp(AppViewModel item) {
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
         if (intent != null && intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
         }
     }
 
-    void startAppSettings(AppItem item) {
+    void startAppSettings(AppViewModel item) {
         Uri uri = Uri.fromParts("package", item.packageName, null);
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -392,7 +391,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         return layoutManager;
     }
 
-    private void customizeApp(int position, AppItem item) {
+    private void customizeApp(int position, AppViewModel item) {
         CharSequence[] items = {
                 "Rename",
                 "Set color",
@@ -412,7 +411,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void renameApp(int position, AppItem item) {
+    private void renameApp(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
                 .setTitle(R.string.edit_mode_rename)
                 .customizeEditText(editText -> {
@@ -427,7 +426,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void setAppColor(int position, AppItem item) {
+    private void setAppColor(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
                 .setTitle(item.getLabel())
                 .customizeEditText(editText -> {
@@ -455,8 +454,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void hideApp(AppItem item) {
-        item.hidden = true;
+    private void hideApp(AppViewModel item) {
+        // TODO
     }
 }
 

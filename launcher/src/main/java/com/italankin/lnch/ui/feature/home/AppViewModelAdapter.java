@@ -8,31 +8,30 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.bean.AppItem;
 
 import java.util.Collections;
 import java.util.List;
 
-class AppItemAdapter extends RecyclerView.Adapter<AppItemViewHolder> {
+class AppViewModelAdapter extends RecyclerView.Adapter<AppViewModelHolder> {
     private final LayoutInflater inflater;
-    private List<AppItem> dataset;
+    private List<AppViewModel> dataset;
     private final Listener listener;
 
-    AppItemAdapter(Context context, Listener listener) {
+    AppViewModelAdapter(Context context, Listener listener) {
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
         setHasStableIds(true);
     }
 
-    public void setDataset(List<AppItem> newDataset) {
+    public void setDataset(List<AppViewModel> newDataset) {
         dataset = newDataset != null ? newDataset : Collections.emptyList();
         notifyDataSetChanged();
     }
 
     @Override
-    public AppItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AppViewModelHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.item_app, parent, false);
-        AppItemViewHolder holder = new AppItemViewHolder(view);
+        AppViewModelHolder holder = new AppViewModelHolder(view);
         view.setOnClickListener(v -> {
             if (listener != null) {
                 int pos = holder.getAdapterPosition();
@@ -55,8 +54,8 @@ class AppItemAdapter extends RecyclerView.Adapter<AppItemViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(AppItemViewHolder holder, int position) {
-        AppItem item = dataset.get(position);
+    public void onBindViewHolder(AppViewModelHolder holder, int position) {
+        AppViewModel item = dataset.get(position);
         holder.label.setText(item.getLabel());
         holder.label.setTextColor(item.getColor());
     }
@@ -72,16 +71,16 @@ class AppItemAdapter extends RecyclerView.Adapter<AppItemViewHolder> {
     }
 
     public interface Listener {
-        void onItemClick(int position, AppItem item);
+        void onItemClick(int position, AppViewModel item);
 
-        void onItemLongClick(int position, AppItem item);
+        void onItemLongClick(int position, AppViewModel item);
     }
 }
 
-class AppItemViewHolder extends RecyclerView.ViewHolder {
+class AppViewModelHolder extends RecyclerView.ViewHolder {
     final TextView label;
 
-    AppItemViewHolder(View itemView) {
+    AppViewModelHolder(View itemView) {
         super(itemView);
         label = itemView.findViewById(R.id.label);
     }

@@ -23,13 +23,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -135,36 +134,34 @@ public class LauncherAppsRepository implements AppsRepository {
     private Maybe<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Maybe
                 .create(emitter -> {
-                    Map<String, AppItem> map = readFromDisk();
-                    if (map != null) {
-                        AppsData appsData = new AppsData();
-                        appsData.apps = new ArrayList<>(map.size());
-                        List<AppItem> newApps = new ArrayList<>(8);
-                        Set<String> processedPackages = new HashSet<>(infoList.size());
+                    List<AppItem> savedItems = readFromDisk();
+                    if (savedItems != null) {
+                        List<AppItem> apps = new ArrayList<>(savedItems.size());
+                        List<AppItem> deletedApps = new ArrayList<>(8);
+                        Map<String, LauncherActivityInfo> infosByPackageName = new HashMap<>(infoList.size());
                         for (LauncherActivityInfo info : infoList) {
-                            String packageName = info.getApplicationInfo().packageName;
-                            if (!processedPackages.add(packageName)) {
-                                // TODO map by component instead of package
-                                continue;
-                            }
-                            AppItem item = map.remove(packageName);
-                            if (item != null) {
-                                item.packageName = packageName;
-                                int versionCode = getVersionCode(packageName);
+                            infosByPackageName.put(info.getApplicationInfo().packageName, info);
+                        }
+                        for (AppItem item : savedItems) {
+                            LauncherActivityInfo info = infosByPackageName.remove(item.packageName);
+                            if (info != null) {
+                                int versionCode = getVersionCode(item.packageName);
                                 if (item.versionCode != versionCode) {
                                     item.versionCode = versionCode;
                                     item.label = preferences.label.get(info);
                                     item.color = preferences.color.get(info);
                                 }
-                                appsData.apps.add(item);
+                                apps.add(item);
                             } else {
-                                newApps.add(createItem(info));
+                                deletedApps.add(item);
                             }
                         }
-                        appsData.changed = !map.isEmpty() /* some apps deleted*/ ||
-                                !newApps.isEmpty() /* new apps added */;
-                        // update order values
-                        appsData.apps.addAll(newApps);
+                        for (LauncherActivityInfo info : infosByPackageName.values()) {
+                            apps.add(createItem(info));
+                        }
+                        AppsData appsData = new AppsData();
+                        appsData.apps = apps;
+                        appsData.changed = !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
                         emitter.onSuccess(appsData);
                     }
                     emitter.onComplete();
@@ -188,7 +185,7 @@ public class LauncherAppsRepository implements AppsRepository {
         }
     }
 
-    private void writeToDisk(Map<String, AppItem> map) {
+    private void writeToDisk(List<AppItem> apps) {
         Timber.d("writeToDisk");
         try {
             FileWriter fw = new FileWriter(getPrefs());
@@ -198,7 +195,7 @@ public class LauncherAppsRepository implements AppsRepository {
                     builder.setPrettyPrinting();
                 }
                 Gson gson = builder.create();
-                String json = gson.toJson(map);
+                String json = gson.toJson(apps);
                 fw.write(json);
             } finally {
                 fw.close();
@@ -208,14 +205,10 @@ public class LauncherAppsRepository implements AppsRepository {
         }
     }
 
-    private void writeToDisk(List<AppItem> apps) {
-        writeToDisk(mapByPackageName(apps));
-    }
-
-    private Map<String, AppItem> readFromDisk() {
+    private List<AppItem> readFromDisk() {
         Timber.d("readFromDisk");
         Gson gson = new Gson();
-        Type type = new TypeToken<LinkedHashMap<String, AppItem>>() {
+        Type type = new TypeToken<List<AppItem>>() {
         }.getType();
         try {
             return gson.fromJson(new FileReader(getPrefs()), type);
@@ -230,6 +223,9 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     private static Map<String, AppItem> mapByPackageName(List<AppItem> apps) {
+        if (apps == null) {
+            return new LinkedHashMap<>();
+        }
         Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
         for (AppItem app : apps) {
             map.put(app.packageName, app);
