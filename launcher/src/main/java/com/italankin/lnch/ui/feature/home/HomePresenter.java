@@ -6,6 +6,7 @@ import com.italankin.lnch.bean.Unit;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
+import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.ui.base.AppPresenter;
@@ -101,6 +102,15 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
         editor.enqueue(new SetCustomColorAction(item.item, customColor));
         item.customColor = customColor;
+        getViewState().onItemChanged(position);
+    }
+
+    void hideApp(int position, AppViewModel item) {
+        if (editor == null) {
+            throw new IllegalStateException("Editor is null!");
+        }
+        editor.enqueue(new SetVisibilityAction(item.item, false));
+        item.hidden = true;
         getViewState().onItemChanged(position);
     }
 

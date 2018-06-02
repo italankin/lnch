@@ -7,6 +7,7 @@ public class AppViewModel {
     public final String packageName;
     public final int color;
     public final String label;
+    public boolean hidden;
     public String customLabel;
     public Integer customColor;
 
@@ -14,6 +15,7 @@ public class AppViewModel {
         this.item = item;
         this.packageName = item.packageName;
         this.label = item.label;
+        this.hidden = item.hidden;
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;

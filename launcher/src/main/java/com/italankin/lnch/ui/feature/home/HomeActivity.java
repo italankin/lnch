@@ -45,6 +45,7 @@ import com.italankin.lnch.ui.feature.settings.SettingsActivity;
 import com.italankin.lnch.ui.util.EditTextAlertDialog;
 import com.italankin.lnch.ui.util.SwapItemHelper;
 import com.italankin.lnch.ui.util.TextWatcherAdapter;
+import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 
 import java.util.List;
 
@@ -73,6 +74,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
+    private CompositeAdapter<AppViewModel> adapter;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -152,6 +154,12 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
+        adapter = new CompositeAdapter.Builder<AppViewModel>(this)
+                .add(new AppViewModelAdapter(this))
+                .add(new HiddenAppViewModelAdapter())
+                .recyclerView(list)
+                .setHasStableIds(true)
+                .create();
     }
 
     private void setupRoot() {
@@ -221,13 +229,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppsLoaded(List<AppViewModel> items, SearchRepository searchRepository, String layout) {
         hideProgress();
-        AppViewModelAdapter adapter = (AppViewModelAdapter) list.getAdapter();
-        if (adapter == null) {
-            adapter = new AppViewModelAdapter(this, this);
-        }
         adapter.setDataset(items);
         list.setLayoutManager(getLayoutManager(layout));
-        list.setAdapter(adapter);
         list.setVisibility(View.VISIBLE);
         editSearch.setAdapter(new SearchAdapter(searchRepository));
     }
@@ -395,6 +398,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         CharSequence[] items = {
                 "Rename",
                 "Set color",
+                "Hide",
         };
         new AlertDialog.Builder(this)
                 .setTitle(item.getLabel())
@@ -405,6 +409,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                             break;
                         case 1:
                             setAppColor(position, item);
+                            break;
+                        case 2:
+                            hideApp(position, item);
                             break;
                     }
                 })
@@ -454,8 +461,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void hideApp(AppViewModel item) {
-        // TODO
+    private void hideApp(int position, AppViewModel item) {
+        presenter.hideApp(position, item);
     }
 }
 

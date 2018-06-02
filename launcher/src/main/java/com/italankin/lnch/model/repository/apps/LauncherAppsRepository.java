@@ -58,15 +58,7 @@ public class LauncherAppsRepository implements AppsRepository {
                         writeToDisk(appsData.apps);
                     }
                 })
-                .map(appsData -> {
-                    List<AppItem> apps = new ArrayList<>(appsData.apps.size());
-                    for (AppItem app : appsData.apps) {
-                        if (!app.hidden) {
-                            apps.add(app);
-                        }
-                    }
-                    return apps;
-                })
+                .map(appsData -> appsData.apps)
                 .doOnSuccess(updatesSubject::onNext)
                 .ignoreElement();
     }
