@@ -5,20 +5,20 @@ import com.italankin.lnch.model.repository.apps.AppsRepository;
 
 import java.util.List;
 
-public class VisibilityAction implements AppsRepository.Editor.Action {
+public class SetVisibilityAction implements AppsRepository.Editor.Action {
     private final String packageName;
-    private final boolean hide;
+    private final boolean visible;
 
-    public VisibilityAction(AppItem item, boolean hide) {
+    public SetVisibilityAction(AppItem item, boolean visible) {
         this.packageName = item.packageName;
-        this.hide = hide;
+        this.visible = visible;
     }
 
     @Override
     public void apply(List<AppItem> items) {
         for (AppItem item : items) {
             if (item.packageName.equals(packageName)) {
-                item.hidden = hide;
+                item.hidden = !visible;
                 break;
             }
         }
