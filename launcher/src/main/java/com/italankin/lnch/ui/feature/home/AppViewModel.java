@@ -22,11 +22,17 @@ public class AppViewModel {
     }
 
     public String getLabel() {
-        return item.getLabel();
+        if (customLabel != null) {
+            return customLabel;
+        }
+        return label;
     }
 
     public int getColor() {
-        return item.getColor();
+        if (customColor != null) {
+            return customColor;
+        }
+        return color;
     }
 
     @Override
