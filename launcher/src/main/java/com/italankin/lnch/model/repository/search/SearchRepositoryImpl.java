@@ -14,9 +14,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
+    public static final int MAX_RESULTS = 4;
     private final AppsRepository appsRepository;
     private final PackageManager packageManager;
 
@@ -31,17 +34,18 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (constraint == null || constraint.length() == 0) {
             return Collections.emptyList();
         }
-        String s = constraint.toString().toLowerCase();
+        String s = constraint.toString().trim().toLowerCase();
+        if (s.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Match> matches = new ArrayList<>(8);
         for (AppItem appItem : appsRepository.getApps()) {
             Match match = null;
-            if (startsWith(appItem.customLabel, s)) {
+            if (startsWith(appItem.customLabel, s) || startsWith(appItem.label, s)) {
                 match = new Match(Match.Type.STARTS_WITH);
-            } else if (startsWith(appItem.label, s)) {
-                match = new Match(Match.Type.STARTS_WITH);
-            } else if (contains(appItem.customLabel, s)) {
-                match = new Match(Match.Type.CONTAINS);
-            } else if (contains(appItem.label, s)) {
+            } else if (containsWord(appItem.customLabel, s) || containsWord(appItem.label, s)) {
+                match = new Match(Match.Type.CONTAINS_WORD);
+            } else if (contains(appItem.customLabel, s) || contains(appItem.label, s)) {
                 match = new Match(Match.Type.CONTAINS);
             }
             if (match != null) {
@@ -56,15 +60,27 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
-        matches.add(new GoogleMatch(s));
+        if (matches.size() > 1) {
+            Collections.sort(matches);
+            matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
+        }
 
-        Collections.sort(matches);
+        matches.add(new GoogleMatch(s));
 
         return matches;
     }
 
     private static boolean contains(String what, String substring) {
         return what != null && substring != null && what.toLowerCase(Locale.getDefault()).contains(substring);
+    }
+
+    private static boolean containsWord(String what, String word) {
+        if (what == null || word == null) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("\\b" + word.toLowerCase());
+        Matcher matcher = pattern.matcher(what.toLowerCase());
+        return matcher.find();
     }
 
     private static boolean startsWith(String what, String prefix) {

@@ -53,6 +53,7 @@ public class Match implements IMatch, Comparable<Match> {
 
     public enum Type {
         STARTS_WITH,
+        CONTAINS_WORD,
         CONTAINS,
         OTHER,
     }
