@@ -96,7 +96,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     @Override
     public void showWallpapersSelector() {
         Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-        startActivity(intent);
+        Intent chooser = Intent.createChooser(intent, getString(R.string.set_wallpaper));
+        startActivity(chooser);
     }
 
     private void showFragment(Fragment fragment, @StringRes int title) {

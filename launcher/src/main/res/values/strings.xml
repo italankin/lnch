@@ -16,4 +16,6 @@
     <string name="title_settings_search">Search</string>
     <string name="title_settings_apps_visibility">Apps visibility</string>
     <string name="title_settings_home_layout">Home layout</string>
+
+    <string name="set_wallpaper">Set wallpaper</string>
 </resources>
