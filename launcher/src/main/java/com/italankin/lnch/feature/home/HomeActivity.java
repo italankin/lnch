@@ -8,13 +8,15 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,7 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.ListAlertDialog;
 
 import java.util.List;
 
@@ -362,32 +365,23 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void customizeApp(int position, AppViewModel item) {
-        CharSequence[] items = {
-                "Rename",
-                "Set color",
-                "Hide",
-        };
-        new AlertDialog.Builder(this)
-                .setTitle(item.getLabel())
-                .setItems(items, (d, w) -> {
-                    switch (w) {
-                        case 0:
-                            renameApp(position, item);
-                            break;
-                        case 1:
-                            setAppColor(position, item);
-                            break;
-                        case 2:
-                            hideApp(position, item);
-                            break;
-                    }
+        ListAlertDialog.builder(this)
+                .setTitle(getAppTitle(item))
+                .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
+                    setAppName(position, item);
+                })
+                .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
+                    setAppColor(position, item);
+                })
+                .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
+                    hideApp(position, item);
                 })
                 .show();
     }
 
-    private void renameApp(int position, AppViewModel item) {
+    private void setAppName(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(R.string.edit_mode_rename)
+                .setTitle(getAppTitle(item))
                 .customizeEditText(editText -> {
                     editText.setText(item.customLabel);
                     editText.setSelectAllOnFocus(true);
@@ -402,7 +396,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void setAppColor(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(item.getLabel())
+                .setTitle(getAppTitle(item))
                 .customizeEditText(editText -> {
                     editText.setText(String.format("%06x", item.getColor()).substring(2));
                     editText.setSelectAllOnFocus(true);
@@ -426,6 +420,12 @@ public class HomeActivity extends AppActivity implements HomeView,
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
+    }
+
+    private CharSequence getAppTitle(AppViewModel item) {
+        SpannableStringBuilder ss = new SpannableStringBuilder(item.getLabel());
+        ss.setSpan(new ForegroundColorSpan(item.getColor()), 0, ss.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        return ss;
     }
 
     private void hideApp(int position, AppViewModel item) {
