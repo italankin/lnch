@@ -5,9 +5,10 @@ import android.content.pm.PackageManager;
 
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
-import com.italankin.lnch.model.repository.prefs.AppPrefs;
 
 import javax.inject.Singleton;
 
@@ -25,19 +26,19 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public AppPrefs provideAppPrefs(Context context) {
-        return new AppPrefs(context);
+    public Preferences providePreferences(Context context) {
+        return new UserPreferences(context);
     }
 
     @Provides
     @Singleton
-    public AppsRepository provideAppsRepository(Context context) {
-        return new LauncherAppsRepository(context);
+    public AppsRepository provideAppsRepository(Context context, PackageManager packageManager) {
+        return new LauncherAppsRepository(context, packageManager);
     }
 
     @Provides
     @Singleton
-    public SearchRepository provideSearchRepository(Context context, AppsRepository appsRepository) {
-        return new SearchRepositoryImpl(context, appsRepository);
+    public SearchRepository provideSearchRepository(PackageManager packageManager, AppsRepository appsRepository) {
+        return new SearchRepositoryImpl(packageManager, appsRepository);
     }
 }

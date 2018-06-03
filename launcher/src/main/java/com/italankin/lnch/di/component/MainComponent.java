@@ -6,8 +6,8 @@ import android.content.pm.PackageManager;
 import com.italankin.lnch.di.module.AppModule;
 import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
-import com.italankin.lnch.model.repository.prefs.AppPrefs;
 
 import javax.inject.Singleton;
 
@@ -21,7 +21,7 @@ public interface MainComponent {
 
     PackageManager getPackageManager();
 
-    AppPrefs getAppPrefs();
+    Preferences getAppPrefs();
 
     AppsRepository getAppsRepository();
 

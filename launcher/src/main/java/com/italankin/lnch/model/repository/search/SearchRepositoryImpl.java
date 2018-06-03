@@ -1,6 +1,5 @@
 package com.italankin.lnch.model.repository.search;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.WorkerThread;
 
@@ -23,9 +22,9 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final AppsRepository appsRepository;
     private final PackageManager packageManager;
 
-    public SearchRepositoryImpl(Context context, AppsRepository appsRepository) {
+    public SearchRepositoryImpl(PackageManager packageManager, AppsRepository appsRepository) {
         this.appsRepository = appsRepository;
-        this.packageManager = context.getPackageManager();
+        this.packageManager = packageManager;
     }
 
     @WorkerThread

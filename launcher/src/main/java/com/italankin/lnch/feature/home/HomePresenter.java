@@ -3,15 +3,15 @@ package com.italankin.lnch.feature.home;
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.bean.Unit;
+import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
-import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.model.repository.prefs.AppPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +32,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private final AppsRepository appsRepository;
     private final SearchRepository searchRepository;
-    private final AppPrefs appPrefs;
+    private final Preferences preferences;
     private final Subject<Unit> reloadApps = PublishSubject.create();
     private List<AppViewModel> apps;
     private AppsRepository.Editor editor;
 
     @Inject
-    HomePresenter(AppsRepository appsRepository, SearchRepository searchRepository, AppPrefs appPrefs) {
+    HomePresenter(AppsRepository appsRepository, SearchRepository searchRepository, Preferences preferences) {
         this.appsRepository = appsRepository;
         this.searchRepository = searchRepository;
-        this.appPrefs = appPrefs;
+        this.preferences = preferences;
     }
 
     @Override
@@ -188,7 +188,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, List<AppViewModel> list) {
                         Timber.d("Receive update: %s", list);
                         apps = list;
-                        viewState.onAppsLoaded(apps, searchRepository, appPrefs.homeLayout());
+                        viewState.onAppsLoaded(apps, searchRepository, preferences.homeLayout());
                     }
                 });
     }

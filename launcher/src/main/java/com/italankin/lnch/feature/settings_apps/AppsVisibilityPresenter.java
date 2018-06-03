@@ -1,14 +1,13 @@
 package com.italankin.lnch.feature.settings_apps;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.bean.AppItem;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +24,10 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
     private final PackageManager packageManager;
 
     @Inject
-    AppsVisibilityPresenter(Context context, AppsRepository appsRepository) {
+    AppsVisibilityPresenter(PackageManager packageManager, AppsRepository appsRepository) {
         this.appsRepository = appsRepository;
         this.editor = appsRepository.edit();
-        this.packageManager = context.getPackageManager();
+        this.packageManager = packageManager;
     }
 
     @Override

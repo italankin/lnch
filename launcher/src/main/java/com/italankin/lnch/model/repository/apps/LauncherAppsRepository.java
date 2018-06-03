@@ -47,9 +47,9 @@ public class LauncherAppsRepository implements AppsRepository {
     private final Completable updater;
     private final BehaviorSubject<List<AppItem>> updatesSubject = BehaviorSubject.create();
 
-    public LauncherAppsRepository(Context context) {
+    public LauncherAppsRepository(Context context, PackageManager packageManager) {
         this.context = context;
-        this.packageManager = context.getPackageManager();
+        this.packageManager = packageManager;
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.updater = loadAll()
                 .doOnSuccess(appsData -> {

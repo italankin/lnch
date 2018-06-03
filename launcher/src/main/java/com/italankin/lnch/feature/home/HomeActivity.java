@@ -338,7 +338,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             if (adapter.getCount() > 0) {
                 Match item = adapter.getItem(pos);
                 Intent intent = item.getIntent();
-                if (intent != null && intent.resolveActivity(getPackageManager()) != null) {
+                if (intent != null && intent.resolveActivity(packageManager) != null) {
                     startActivity(intent);
                 }
             }
