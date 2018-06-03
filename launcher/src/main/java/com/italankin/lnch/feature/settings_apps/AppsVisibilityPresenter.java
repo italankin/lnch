@@ -52,7 +52,7 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
     }
 
     private void loadApps() {
-        appsRepository.getAllApps()
+        appsRepository.fetchApps()
                 .toObservable()
                 .map(appItems -> {
                     List<AppViewModel> apps = new ArrayList<>(appItems.size());

@@ -12,7 +12,7 @@ public interface AppsRepository {
 
     Observable<List<AppItem>> observeApps();
 
-    Single<List<AppItem>> getAllApps();
+    Single<List<AppItem>> fetchApps();
 
     Completable update();
 

@@ -74,7 +74,7 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
-    public Single<List<AppItem>> getAllApps() {
+    public Single<List<AppItem>> fetchApps() {
         return loadAll().map(appsData -> appsData.apps);
     }
 
