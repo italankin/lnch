@@ -13,7 +13,7 @@
         android:theme="@style/LauncherTheme">
 
         <activity
-            android:name=".ui.feature.home.HomeActivity"
+            android:name=".feature.home.HomeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true">
@@ -26,7 +26,7 @@
         </activity>
 
         <activity
-            android:name=".ui.feature.settings.SettingsActivity"
+            android:name=".feature.settings_root.SettingsActivity"
             android:label="@string/title_settings"
             android:launchMode="singleInstance"
             android:theme="@style/PreferenceTheme" />

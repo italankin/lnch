@@ -7,7 +7,7 @@ import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
-import com.italankin.lnch.util.AppPrefs;
+import com.italankin.lnch.model.repository.prefs.AppPrefs;
 
 import javax.inject.Singleton;
 
