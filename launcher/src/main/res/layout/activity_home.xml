@@ -41,7 +41,8 @@
             android:layout_gravity="right"
             android:background="?selectableItemBackground"
             android:padding="16dp"
-            android:src="@drawable/ic_settings" />
+            android:src="@drawable/ic_settings"
+            tools:ignore="ContentDescription" />
 
     </FrameLayout>
 
