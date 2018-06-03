@@ -293,6 +293,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
         if (intent != null && intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -302,6 +304,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -313,6 +317,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 Intent intent = item.getIntent();
                 if (intent != null && intent.resolveActivity(packageManager) != null) {
                     startActivity(intent);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
                 }
             }
             editSearch.setText("");
