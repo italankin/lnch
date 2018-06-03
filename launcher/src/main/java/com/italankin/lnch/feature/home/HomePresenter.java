@@ -105,7 +105,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
             throw new IllegalStateException("Editor is null!");
         }
         editor = null;
-        getViewState().onStopEditMode();
+        getViewState().onChangesDiscarded();
+        update();
     }
 
     void stopEditMode() {

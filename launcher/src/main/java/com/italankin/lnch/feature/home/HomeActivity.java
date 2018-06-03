@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -78,6 +79,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private ItemTouchHelper touchHelper;
     private CompositeAdapter<AppViewModel> adapter;
     private String layout;
+    private Snackbar editModeSnackbar;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -107,6 +109,14 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void onBackPressed() {
+        if (editMode) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.edit_mode_discard_message)
+                    .setPositiveButton(R.string.edit_mode_discard, (dialog, which) -> presenter.discardChanges())
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+            return;
+        }
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else {
@@ -240,6 +250,11 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
+    public void onChangesDiscarded() {
+        setEditMode(false);
+    }
+
+    @Override
     public void onItemsSwap(int from, int to) {
         list.getAdapter().notifyItemMoved(from, to);
     }
@@ -334,15 +349,20 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
-            Snackbar snackbar = Snackbar.make(root, R.string.edit_mode_hint, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction(R.string.edit_mode_exit, v -> {
-                snackbar.dismiss();
-                presenter.stopEditMode();
+            editModeSnackbar = Snackbar.make(root, R.string.edit_mode_hint, Snackbar.LENGTH_INDEFINITE);
+            editModeSnackbar.setAction(R.string.edit_mode_save, v -> {
+                if (editModeSnackbar.isShownOrQueued()) {
+                    presenter.stopEditMode();
+                }
             });
-            snackbar.show();
+            editModeSnackbar.show();
             list.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.snackbar_size));
         } else {
             list.setPadding(0, 0, 0, 0);
+            if (editModeSnackbar != null) {
+                editModeSnackbar.dismiss();
+                editModeSnackbar = null;
+            }
         }
     }
 

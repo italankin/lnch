@@ -8,8 +8,10 @@
     <string name="hint_search">Search</string>
 
     <string name="edit_mode_hint">Edit mode</string>
-    <string name="edit_mode_exit">Exit edit mode</string>
+    <string name="edit_mode_save">Save</string>
     <string name="edit_mode_saved">Saved</string>
+    <string name="edit_mode_discard_message">Discard changes?</string>
+    <string name="edit_mode_discard">Discard</string>
     <string name="edit_mode_prefs_title">Edit mode</string>
     <string name="edit_mode_prefs_hint">Enter edit mode</string>
     <string name="edit_mode_rename">Rename</string>

@@ -30,6 +30,9 @@ interface HomeView extends MvpView {
     @StateStrategyType(value = OneExecutionTagStrategy.class, tag = EDIT_MODE)
     void onStopEditMode();
 
+    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = EDIT_MODE)
+    void onChangesDiscarded();
+
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsSwap(int from, int to);
 
