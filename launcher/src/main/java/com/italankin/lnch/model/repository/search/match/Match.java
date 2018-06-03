@@ -2,59 +2,24 @@ package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 
-public class Match implements IMatch, Comparable<Match> {
-    public final Match.Type type;
-    public Drawable icon;
-    public int iconRes;
-    public int color;
-    public CharSequence label;
-    public Intent intent;
+public interface Match {
 
-    public Match(Match.Type type) {
-        this.type = type;
-    }
+    Drawable getIcon();
 
-    @Override
-    public Drawable getIcon() {
-        return icon;
-    }
+    @DrawableRes
+    int getIconResource();
 
-    @Override
-    public int getIconResource() {
-        return iconRes;
-    }
+    CharSequence getLabel();
 
-    @Override
-    public CharSequence getLabel() {
-        return label;
-    }
+    @ColorInt
+    int getColor();
 
-    @Override
-    public int getColor() {
-        return color;
-    }
+    String toString();
 
-    @Override
-    public String toString() {
-        return label.toString();
-    }
+    Intent getIntent();
 
-    @Override
-    public Intent getIntent() {
-        return intent;
-    }
-
-    @Override
-    public int compareTo(@NonNull Match match) {
-        return type.compareTo(match.type);
-    }
-
-    public enum Type {
-        STARTS_WITH,
-        CONTAINS_WORD,
-        CONTAINS,
-        OTHER,
-    }
 }
+

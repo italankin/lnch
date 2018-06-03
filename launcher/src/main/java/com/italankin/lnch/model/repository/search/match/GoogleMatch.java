@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import com.italankin.lnch.R;
 
-public class GoogleMatch extends Match {
+public class GoogleMatch extends MatchImpl {
     public GoogleMatch(String query) {
         super(Type.OTHER);
         color = Color.WHITE;

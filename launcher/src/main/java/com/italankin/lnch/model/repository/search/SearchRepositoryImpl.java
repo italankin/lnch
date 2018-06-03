@@ -7,8 +7,8 @@ import android.support.annotation.WorkerThread;
 import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.search.match.GoogleMatch;
-import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
+import com.italankin.lnch.model.repository.search.match.MatchImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @WorkerThread
     @Override
-    public List<? extends IMatch> search(CharSequence constraint) {
+    public List<? extends Match> search(CharSequence constraint) {
         if (constraint == null || constraint.length() == 0) {
             return Collections.emptyList();
         }
@@ -38,15 +38,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (s.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Match> matches = new ArrayList<>(8);
+        List<MatchImpl> matches = new ArrayList<>(8);
         for (AppItem appItem : appsRepository.getApps()) {
-            Match match = null;
+            MatchImpl match = null;
             if (startsWith(appItem.customLabel, s) || startsWith(appItem.label, s)) {
-                match = new Match(Match.Type.STARTS_WITH);
+                match = new MatchImpl(MatchImpl.Type.STARTS_WITH);
             } else if (containsWord(appItem.customLabel, s) || containsWord(appItem.label, s)) {
-                match = new Match(Match.Type.CONTAINS_WORD);
+                match = new MatchImpl(MatchImpl.Type.CONTAINS_WORD);
             } else if (contains(appItem.customLabel, s) || contains(appItem.label, s)) {
-                match = new Match(Match.Type.CONTAINS);
+                match = new MatchImpl(MatchImpl.Type.CONTAINS);
             }
             if (match != null) {
                 match.color = appItem.getColor();

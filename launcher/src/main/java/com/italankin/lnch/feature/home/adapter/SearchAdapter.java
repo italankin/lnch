@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.SearchRepository;
-import com.italankin.lnch.model.repository.search.match.IMatch;
+import com.italankin.lnch.model.repository.search.match.Match;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,14 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private final Filter filter;
 
-    private List<? extends IMatch> dataset = new ArrayList<>(0);
+    private List<? extends Match> dataset = new ArrayList<>(0);
 
     public SearchAdapter(SearchRepository searchRepository) {
         this.filter = new SearchFilter(searchRepository) {
             @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                dataset = (List<IMatch>) results.values;
+                dataset = (List<Match>) results.values;
                 notifyDataSetChanged();
             }
         };
@@ -40,7 +40,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public IMatch getItem(int position) {
+    public Match getItem(int position) {
         return dataset.get(position);
     }
 
@@ -60,7 +60,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        IMatch item = getItem(position);
+        Match item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
         Drawable icon = item.getIcon();
@@ -98,7 +98,7 @@ abstract class SearchFilter extends Filter {
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         FilterResults results = new FilterResults();
-        List<? extends IMatch> matches = searchRepository.search(constraint);
+        List<? extends Match> matches = searchRepository.search(constraint);
         results.values = matches;
         results.count = matches.size();
         return results;

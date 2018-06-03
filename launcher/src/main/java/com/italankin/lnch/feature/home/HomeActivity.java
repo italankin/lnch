@@ -47,7 +47,7 @@ import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.provider.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
-import com.italankin.lnch.model.repository.search.match.IMatch;
+import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
@@ -336,7 +336,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (editSearch.getText().length() > 0) {
             SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
             if (adapter.getCount() > 0) {
-                IMatch item = adapter.getItem(pos);
+                Match item = adapter.getItem(pos);
                 Intent intent = item.getIntent();
                 if (intent != null && intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
