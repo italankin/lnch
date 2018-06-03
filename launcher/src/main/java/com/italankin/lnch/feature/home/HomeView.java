@@ -4,10 +4,9 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.italankin.lnch.feature.home.model.AppViewModel;
-import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
+import com.italankin.lnch.feature.home.model.AppViewModel;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ interface HomeView extends MvpView {
     void showProgress();
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
-    void onAppsLoaded(List<AppViewModel> appList, SearchRepository searchRepository, String layout);
+    void onAppsLoaded(List<AppViewModel> appList, String layout);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);

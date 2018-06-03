@@ -42,7 +42,6 @@ import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.provider.Preferences;
-import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
@@ -190,6 +189,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             onFireSearch(position);
         });
         editSearch.setThreshold(1);
+        editSearch.setAdapter(new SearchAdapter(daggerService().main().getSearchRepository()));
 
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
@@ -218,12 +218,11 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppViewModel> items, SearchRepository searchRepository, String layout) {
+    public void onAppsLoaded(List<AppViewModel> items, String layout) {
         hideProgress();
         setLayout(layout);
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
-        editSearch.setAdapter(new SearchAdapter(searchRepository));
     }
 
     @Override

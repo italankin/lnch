@@ -10,7 +10,6 @@ import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.search.SearchRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +24,13 @@ import timber.log.Timber;
 public class HomePresenter extends AppPresenter<HomeView> {
 
     private final AppsRepository appsRepository;
-    private final SearchRepository searchRepository;
     private final Preferences preferences;
     private List<AppViewModel> apps;
     private AppsRepository.Editor editor;
 
     @Inject
-    HomePresenter(AppsRepository appsRepository, SearchRepository searchRepository, Preferences preferences) {
+    HomePresenter(AppsRepository appsRepository, Preferences preferences) {
         this.appsRepository = appsRepository;
-        this.searchRepository = searchRepository;
         this.preferences = preferences;
     }
 
@@ -163,7 +160,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, List<AppViewModel> list) {
                         Timber.d("Receive update: %s", list);
                         apps = list;
-                        viewState.onAppsLoaded(apps, searchRepository, preferences.homeLayout());
+                        viewState.onAppsLoaded(apps, preferences.homeLayout());
                     }
                 });
     }

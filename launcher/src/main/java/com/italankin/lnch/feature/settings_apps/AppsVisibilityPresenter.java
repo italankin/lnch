@@ -69,7 +69,7 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
 
                     @Override
                     protected void onError(AppsVisibilityView viewState, Throwable e) {
-                        viewState.onError(e);
+                        viewState.showError(e);
                     }
                 });
     }

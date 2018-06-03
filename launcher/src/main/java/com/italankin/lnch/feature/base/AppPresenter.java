@@ -60,7 +60,7 @@ public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
 
         @Override
         public void onError(Throwable e) {
-            Timber.e(e, "CompletableState.onError");
+            Timber.e(e, "CompletableState.showError");
             onError(getViewState(), e);
         }
 

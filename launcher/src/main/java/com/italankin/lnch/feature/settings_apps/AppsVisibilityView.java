@@ -14,7 +14,7 @@ interface AppsVisibilityView extends MvpView {
     void onAppsLoaded(List<AppViewModel> apps);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onError(Throwable e);
+    void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemChanged(int position);

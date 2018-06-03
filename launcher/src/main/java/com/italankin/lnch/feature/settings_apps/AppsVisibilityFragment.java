@@ -62,7 +62,7 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void showError(Throwable e) {
         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
