@@ -37,20 +37,20 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.provider.Preferences;
-import com.italankin.lnch.model.repository.search.SearchRepository;
-import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
-import com.italankin.lnch.feature.home.util.SwapItemHelper;
+import com.italankin.lnch.model.provider.Preferences;
+import com.italankin.lnch.model.repository.search.SearchRepository;
+import com.italankin.lnch.model.repository.search.match.IMatch;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
         setupWindow();
 
-        setContentView(R.layout.activity_launcher);
+        setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
         list = findViewById(R.id.list);
         searchBar = findViewById(R.id.search_bar);
