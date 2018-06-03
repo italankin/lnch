@@ -1,9 +1,6 @@
 package com.italankin.lnch.feature.home;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,7 +67,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     private RecyclerView list;
 
     private InputMethodManager inputMethodManager;
-    private BroadcastReceiver packageUpdatesReceiver;
     private PackageManager packageManager;
 
     private FrameLayout progressContainer;
@@ -105,16 +101,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         setupRoot();
         setupList();
         setupSearchBar();
-
-        registerReceiver();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (packageUpdatesReceiver != null) {
-            unregisterReceiver(packageUpdatesReceiver);
-        }
     }
 
     @Override
@@ -314,22 +300,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
         }
-    }
-
-    private void registerReceiver() {
-        packageUpdatesReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                presenter.notifyPackageChanged();
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        filter.addDataScheme("package");
-        registerReceiver(packageUpdatesReceiver, filter);
     }
 
     private void onFireSearch(int pos) {

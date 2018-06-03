@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.home;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.bean.AppItem;
-import com.italankin.lnch.bean.Unit;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
@@ -15,17 +14,12 @@ import com.italankin.lnch.model.repository.search.SearchRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 import timber.log.Timber;
-
-import static com.italankin.lnch.bean.Unit.UNIT;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {
@@ -33,7 +27,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private final AppsRepository appsRepository;
     private final SearchRepository searchRepository;
     private final Preferences preferences;
-    private final Subject<Unit> reloadApps = PublishSubject.create();
     private List<AppViewModel> apps;
     private AppsRepository.Editor editor;
 
@@ -48,11 +41,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     protected void onFirstViewAttach() {
         observeApps();
         initialLoad();
-        subscribeUpdates();
-    }
-
-    void notifyPackageChanged() {
-        reloadApps.onNext(UNIT);
     }
 
     void reloadAppsImmediate() {
@@ -148,18 +136,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private void initialLoad() {
         getViewState().showProgress();
         update();
-    }
-
-    private void subscribeUpdates() {
-        reloadApps
-                .debounce(1, TimeUnit.SECONDS)
-                .ignoreElements()
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onComplete() {
-                        update();
-                    }
-                });
     }
 
     private void update() {

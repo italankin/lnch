@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Process;
+import android.os.UserHandle;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,14 +30,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
 public class LauncherAppsRepository implements AppsRepository {
@@ -46,12 +51,13 @@ public class LauncherAppsRepository implements AppsRepository {
     private final LauncherApps launcherApps;
     private final Completable updater;
     private final BehaviorSubject<List<AppItem>> updatesSubject = BehaviorSubject.create();
+    private final Subject<String> packageChangesSubject = PublishSubject.create();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager) {
         this.context = context;
         this.packageManager = packageManager;
-        this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-        this.updater = loadAll()
+        launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        updater = loadAll()
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");
@@ -60,7 +66,28 @@ public class LauncherAppsRepository implements AppsRepository {
                 })
                 .map(appsData -> appsData.apps)
                 .doOnSuccess(updatesSubject::onNext)
+                .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
+        packageChangesSubject
+                .doOnNext(Timber::d)
+                .debounce(1, TimeUnit.SECONDS)
+                .flatMapCompletable(change -> updater.onErrorComplete())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e, "change:");
+                    }
+                });
+        //noinspection ConstantConditions
+        launcherApps.registerCallback(new LauncherCallbacks());
     }
 
     @Override
@@ -228,6 +255,43 @@ public class LauncherAppsRepository implements AppsRepository {
     private static class AppsData {
         List<AppItem> apps;
         boolean changed;
+    }
+
+    final class LauncherCallbacks extends LauncherApps.Callback {
+        @Override
+        public void onPackageRemoved(String packageName, UserHandle user) {
+            if (Process.myUserHandle().equals(user)) {
+                packageChangesSubject.onNext("package removed");
+            }
+        }
+
+        @Override
+        public void onPackageAdded(String packageName, UserHandle user) {
+            if (Process.myUserHandle().equals(user)) {
+                packageChangesSubject.onNext("package added");
+            }
+        }
+
+        @Override
+        public void onPackageChanged(String packageName, UserHandle user) {
+            if (Process.myUserHandle().equals(user)) {
+                packageChangesSubject.onNext("package changed");
+            }
+        }
+
+        @Override
+        public void onPackagesAvailable(String[] packageNames, UserHandle user, boolean replacing) {
+            if (Process.myUserHandle().equals(user)) {
+                packageChangesSubject.onNext("packages available");
+            }
+        }
+
+        @Override
+        public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            if (Process.myUserHandle().equals(user)) {
+                packageChangesSubject.onNext("packages unavailable");
+            }
+        }
     }
 
     final class Editor implements AppsRepository.Editor {
