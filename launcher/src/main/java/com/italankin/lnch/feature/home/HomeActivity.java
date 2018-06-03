@@ -392,6 +392,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.renameApp(position, item, label);
                 })
                 .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
+                    presenter.renameApp(position, item, "");
+                })
                 .show();
     }
 
@@ -420,6 +423,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.changeAppCustomColor(position, item, value);
                 })
                 .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
+                    presenter.changeAppCustomColor(position, item, null);
+                })
                 .show();
     }
 

@@ -53,6 +53,16 @@ public final class EditTextAlertDialog {
             return setPositiveButton(builder.getContext().getText(title), listener);
         }
 
+        public Builder setNeutralButton(@StringRes int title, DialogInterface.OnClickListener listener) {
+            builder.setNeutralButton(title, listener);
+            return this;
+        }
+
+        public Builder setNeutralButton(CharSequence title, DialogInterface.OnClickListener listener) {
+            builder.setNeutralButton(title, listener);
+            return this;
+        }
+
         public Builder customizeEditText(Action action) {
             action.customize(editText);
             return this;

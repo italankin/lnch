@@ -12,6 +12,7 @@
     <string name="edit_mode_prefs_title">Edit mode</string>
     <string name="edit_mode_prefs_hint">Enter edit mode</string>
     <string name="edit_mode_rename">Rename</string>
+    <string name="edit_mode_reset">Reset</string>
     <string name="edit_mode_action_name">Rename</string>
     <string name="edit_mode_action_color">Color</string>
     <string name="edit_mode_action_hide">Hide</string>
