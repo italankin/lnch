@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.StubView;
 
 public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewModelHolder, AppViewModel> {
     @Override
@@ -19,7 +20,7 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
     @NonNull
     @Override
     public HiddenAppViewModelHolder onCreate(LayoutInflater inflater, ViewGroup parent) {
-        return new HiddenAppViewModelHolder(new View(inflater.getContext()));
+        return new HiddenAppViewModelHolder(new StubView(inflater.getContext()));
     }
 
     @Override
