@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -124,7 +123,7 @@ public class LauncherAppsRepository implements AppsRepository {
                 .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
                 .flatMap(infoList -> {
                     Single<AppsData> fromPm = loadFromList(infoList);
-                    if (!getPrefs().exists()) {
+                    if (!getPackgesFile().exists()) {
                         return fromPm;
                     } else {
                         return loadFromFile(infoList)
@@ -144,9 +143,7 @@ public class LauncherAppsRepository implements AppsRepository {
                 apps.add(createItem(infoList.get(i)));
             }
             Collections.sort(apps, AppItem.CMP_NAME_ASC);
-            AppsData appsData = new AppsData();
-            appsData.apps = apps;
-            return appsData;
+            return new AppsData(apps, false);
         });
     }
 
@@ -178,18 +175,17 @@ public class LauncherAppsRepository implements AppsRepository {
                         for (LauncherActivityInfo info : infosByPackageName.values()) {
                             apps.add(createItem(info));
                         }
-                        AppsData appsData = new AppsData();
-                        appsData.apps = apps;
-                        appsData.changed = !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
-                        emitter.onSuccess(appsData);
+                        boolean changed = !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
+                        emitter.onSuccess(new AppsData(apps, changed));
                     }
                     emitter.onComplete();
                 });
     }
 
     private AppItem createItem(LauncherActivityInfo info) {
-        AppItem item = new AppItem(info.getApplicationInfo().packageName);
-        item.versionCode = getVersionCode(info.getApplicationInfo().packageName);
+        String packageName = info.getApplicationInfo().packageName;
+        AppItem item = new AppItem(packageName);
+        item.versionCode = getVersionCode(packageName);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
         return item;
@@ -207,7 +203,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private void writeToDisk(List<AppItem> apps) {
         Timber.d("writeToDisk");
         try {
-            FileWriter fw = new FileWriter(getPrefs());
+            FileWriter fw = new FileWriter(getPackgesFile());
             try {
                 GsonBuilder builder = new GsonBuilder();
                 if (BuildConfig.DEBUG) {
@@ -230,31 +226,25 @@ public class LauncherAppsRepository implements AppsRepository {
         Type type = new TypeToken<List<AppItem>>() {
         }.getType();
         try {
-            return gson.fromJson(new FileReader(getPrefs()), type);
+            return gson.fromJson(new FileReader(getPackgesFile()), type);
         } catch (FileNotFoundException e) {
             Timber.e(e, "readFromDisk:");
             return null;
         }
     }
 
-    private File getPrefs() {
+    private File getPackgesFile() {
         return new File(context.getFilesDir(), "packages.json");
     }
 
-    private static Map<String, AppItem> mapByPackageName(List<AppItem> apps) {
-        if (apps == null) {
-            return new LinkedHashMap<>();
-        }
-        Map<String, AppItem> map = new LinkedHashMap<>(apps.size());
-        for (AppItem app : apps) {
-            map.put(app.packageName, app);
-        }
-        return map;
-    }
-
     private static class AppsData {
-        List<AppItem> apps;
-        boolean changed;
+        final List<AppItem> apps;
+        final boolean changed;
+
+        public AppsData(List<AppItem> apps, boolean changed) {
+            this.apps = apps;
+            this.changed = changed;
+        }
     }
 
     final class LauncherCallbacks extends LauncherApps.Callback {
