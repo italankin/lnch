@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.home;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
@@ -10,8 +9,8 @@ import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.rx.ListMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -148,13 +147,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void observeApps() {
         appsRepository.observeApps()
-                .map(appItems -> {
-                    List<AppViewModel> appViewModels = new ArrayList<>(appItems.size());
-                    for (AppItem appItem : appItems) {
-                        appViewModels.add(new AppViewModel(appItem));
-                    }
-                    return appViewModels;
-                })
+                .map(ListMapper.create(AppViewModel::new))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<AppViewModel>>() {
                     @Override

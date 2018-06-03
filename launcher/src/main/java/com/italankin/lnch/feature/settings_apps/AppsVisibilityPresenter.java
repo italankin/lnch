@@ -3,13 +3,12 @@ package com.italankin.lnch.feature.settings_apps;
 import android.content.pm.PackageManager;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
+import com.italankin.lnch.util.rx.ListMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,13 +53,7 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
     private void loadApps() {
         appsRepository.fetchApps()
                 .toObservable()
-                .map(appItems -> {
-                    List<AppViewModel> apps = new ArrayList<>(appItems.size());
-                    for (AppItem appItem : appItems) {
-                        apps.add(new AppViewModel(appItem, packageManager));
-                    }
-                    return apps;
-                })
+                .map(ListMapper.create(item -> new AppViewModel(item, packageManager)))
                 .subscribe(new State<List<AppViewModel>>() {
                     @Override
                     protected void onNext(AppsVisibilityView viewState, List<AppViewModel> apps) {
