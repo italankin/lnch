@@ -14,8 +14,8 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_search.SearchFragment;
 import com.italankin.lnch.feature.settings_apps.AppsVisibilityFragment;
+import com.italankin.lnch.feature.settings_search.SearchFragment;
 
 import timber.log.Timber;
 
@@ -71,14 +71,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    private CharSequence getFragmentTitle() {
-        int index = fragmentManager.getBackStackEntryCount() - 1;
-        if (index < 0) {
-            return getString(R.string.title_settings);
-        }
-        return fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
-    }
-
     @Override
     public void launchEditMode() {
         setResult(RESULT_EDIT_MODE);
@@ -118,5 +110,13 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Timber.d("onSharedPreferenceChanged: key=%s", key);
         setResult(RESULT_CHANGED);
+    }
+
+    private CharSequence getFragmentTitle() {
+        int index = fragmentManager.getBackStackEntryCount() - 1;
+        if (index < 0) {
+            return getString(R.string.title_settings);
+        }
+        return fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
     }
 }
