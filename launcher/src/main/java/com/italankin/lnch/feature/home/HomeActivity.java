@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +75,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
     private CompositeAdapter<AppViewModel> adapter;
+    private String layout;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -220,8 +220,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppsLoaded(List<AppViewModel> items, SearchRepository searchRepository, String layout) {
         hideProgress();
+        setLayout(layout);
         adapter.setDataset(items);
-        list.setLayoutManager(getLayoutManager(layout));
         list.setVisibility(View.VISIBLE);
         editSearch.setAdapter(new SearchAdapter(searchRepository));
     }
@@ -331,42 +331,35 @@ public class HomeActivity extends AppActivity implements HomeView,
                 presenter.stopEditMode();
             });
             snackbar.show();
-            int bottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,
-                    getResources().getDisplayMetrics());
-            list.setPadding(0, 0, 0, bottom);
+            list.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.snackbar_size));
         } else {
             list.setPadding(0, 0, 0, 0);
         }
     }
 
+    private void setLayout(String layout) {
+        if (!layout.equals(this.layout)) {
+            this.layout = layout;
+            list.setLayoutManager(getLayoutManager(layout));
+        }
+    }
+
     private RecyclerView.LayoutManager getLayoutManager(String layout) {
         if (layout == null) {
-            layout = Preferences.LAYOUT_FLEX;
+            layout = Preferences.LAYOUT_COMPACT;
         }
         switch (layout) {
             case Preferences.LAYOUT_GRID:
-                return getGridLayoutManager();
+                return new GridLayoutManager(this, 2);
             case Preferences.LAYOUT_LINEAR:
-                return getLinearLayoutManager();
-            case Preferences.LAYOUT_FLEX:
+                return new LinearLayoutManager(this);
+            case Preferences.LAYOUT_COMPACT:
             default:
-                return getFlexboxLayoutManager();
+                FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
+                return layoutManager;
         }
-    }
-
-    private RecyclerView.LayoutManager getGridLayoutManager() {
-        return new GridLayoutManager(this, 2);
-    }
-
-    private RecyclerView.LayoutManager getLinearLayoutManager() {
-        return new LinearLayoutManager(this);
-    }
-
-    private RecyclerView.LayoutManager getFlexboxLayoutManager() {
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-        layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setAlignItems(AlignItems.FLEX_START);
-        return layoutManager;
     }
 
     private void customizeApp(int position, AppViewModel item) {

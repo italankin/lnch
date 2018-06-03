@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="home_layouts">
-        <item>flex</item>
+        <item>compact</item>
         <item>grid</item>
         <item>linear</item>
     </string-array>
     <string-array name="home_layout_desc">
-        <item>Flex</item>
+        <item>Compact</item>
         <item>Grid</item>
         <item>List</item>
     </string-array>

@@ -8,7 +8,7 @@
             android:key="@string/prefs_search"
             android:title="@string/title_settings_search" />
         <ListPreference
-            android:defaultValue="flex"
+            android:defaultValue="compact"
             android:entries="@array/home_layout_desc"
             android:entryValues="@array/home_layouts"
             android:key="@string/prefs_home_layout"
