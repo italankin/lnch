@@ -122,34 +122,35 @@ public class LauncherAppsRepository implements AppsRepository {
         return Single
                 .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
                 .flatMap(infoList -> {
-                    Single<AppsData> fromPm = loadFromList(infoList);
-                    if (!getPackgesFile().exists()) {
-                        return fromPm;
-                    } else {
-                        return loadFromFile(infoList)
-                                .switchIfEmpty(fromPm)
-                                .onErrorResumeNext(throwable -> {
-                                    Timber.e(throwable, "loadAll:");
-                                    return fromPm;
-                                });
-                    }
+                    Single<AppsData> fromList = loadFromList(infoList);
+                    return loadFromFile(infoList)
+                            .switchIfEmpty(fromList)
+                            .onErrorResumeNext(throwable -> {
+                                Timber.e(throwable, "loadAll:");
+                                return fromList;
+                            });
                 });
     }
 
     private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
-        return Single.fromCallable(() -> {
-            List<AppItem> apps = new ArrayList<>(16);
-            for (int i = 0, s = infoList.size(); i < s; i++) {
-                apps.add(createItem(infoList.get(i)));
-            }
-            Collections.sort(apps, AppItem.CMP_NAME_ASC);
-            return new AppsData(apps, false);
-        });
+        return Single
+                .fromCallable(() -> {
+                    List<AppItem> apps = new ArrayList<>(16);
+                    for (int i = 0, s = infoList.size(); i < s; i++) {
+                        apps.add(createItem(infoList.get(i)));
+                    }
+                    Collections.sort(apps, AppItem.CMP_NAME_ASC);
+                    return new AppsData(apps, false);
+                });
     }
 
     private Maybe<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Maybe
                 .create(emitter -> {
+                    if (!getPackgesFile().exists()) {
+                        emitter.onComplete();
+                        return;
+                    }
                     List<AppItem> savedItems = readFromDisk();
                     if (savedItems != null) {
                         List<AppItem> apps = new ArrayList<>(savedItems.size());
