@@ -45,7 +45,7 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
 }
 
 class HiddenAppViewModelHolder extends RecyclerView.ViewHolder {
-    public HiddenAppViewModelHolder(View itemView) {
+    HiddenAppViewModelHolder(View itemView) {
         super(itemView);
     }
 }
