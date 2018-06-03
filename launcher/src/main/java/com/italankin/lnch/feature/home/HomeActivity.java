@@ -236,6 +236,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onStopEditMode() {
         setEditMode(false);
+        Toast.makeText(this, R.string.edit_mode_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
