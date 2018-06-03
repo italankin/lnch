@@ -122,7 +122,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     @Override
                     protected void onComplete(HomeView viewState) {
                         viewState.onStopEditMode();
-                        update();
                     }
 
                     @Override
