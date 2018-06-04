@@ -367,6 +367,9 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setLayout(String layout) {
+        if (layout == null) {
+            layout = Preferences.LAYOUT_COMPACT;
+        }
         if (!layout.equals(this.layout)) {
             this.layout = layout;
             list.setLayoutManager(getLayoutManager(layout));
