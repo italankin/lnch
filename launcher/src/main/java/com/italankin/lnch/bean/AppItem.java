@@ -14,7 +14,7 @@ public class AppItem {
     public String id;
 
     @SerializedName("versionCode")
-    public int versionCode;
+    public long versionCode;
 
     @SerializedName("component")
     public String component;
