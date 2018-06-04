@@ -140,7 +140,7 @@ public class LauncherAppsRepository implements AppsRepository {
                         apps.add(createItem(infoList.get(i)));
                     }
                     Collections.sort(apps, AppItem.CMP_NAME_ASC);
-                    return new AppsData(apps, false);
+                    return new AppsData(apps, true);
                 });
     }
 
