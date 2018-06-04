@@ -153,16 +153,20 @@ public class LauncherAppsRepository implements AppsRepository {
                         emitter.onComplete();
                         return;
                     }
-                    List<AppItem> savedItems = readFromDisk();
+                    List<AppItem> savedItems;
+                    boolean oldVersion = false;
+                    try {
+                        savedItems = readFromDisk();
+                    } catch (JsonSyntaxException e) {
+                        savedItems = fromVersion1();
+                        oldVersion = true;
+                    }
                     if (savedItems != null) {
                         List<AppItem> apps = new ArrayList<>(savedItems.size());
                         List<AppItem> deletedApps = new ArrayList<>(8);
-                        Map<String, LauncherActivityInfo> infosByPackageName = new HashMap<>(infoList.size());
-                        for (LauncherActivityInfo info : infoList) {
-                            infosByPackageName.put(info.getApplicationInfo().packageName, info);
-                        }
+                        Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
                         for (AppItem item : savedItems) {
-                            LauncherActivityInfo info = infosByPackageName.remove(item.id);
+                            LauncherActivityInfo info = findInfo(infosByPackageName, item);
                             if (info != null) {
                                 int versionCode = getVersionCode(item.id);
                                 if (item.versionCode != versionCode) {
@@ -175,20 +179,62 @@ public class LauncherAppsRepository implements AppsRepository {
                                 deletedApps.add(item);
                             }
                         }
-                        for (LauncherActivityInfo info : infosByPackageName.values()) {
-                            apps.add(createItem(info));
+                        for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
+                            for (LauncherActivityInfo info : infos) {
+                                apps.add(createItem(info));
+                            }
                         }
-                        boolean changed = !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
+                        boolean changed = oldVersion || !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
                         emitter.onSuccess(new AppsData(apps, changed));
                     }
                     emitter.onComplete();
                 });
     }
 
+    private Map<String, List<LauncherActivityInfo>> infosByPackageName(List<LauncherActivityInfo> infoList) {
+        Map<String, List<LauncherActivityInfo>> infosByPackageName = new HashMap<>(infoList.size());
+        for (LauncherActivityInfo info : infoList) {
+            String packageName = info.getApplicationInfo().packageName;
+            List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
+            if (list == null) {
+                list = new ArrayList<>(1);
+                infosByPackageName.put(packageName, list);
+            }
+            list.add(info);
+        }
+        return infosByPackageName;
+    }
+
+    private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppItem item) {
+        List<LauncherActivityInfo> infos = map.get(item.id);
+        LauncherActivityInfo result = null;
+        if (infos.size() == 1) {
+            result = infos.get(0);
+        } else {
+            for (LauncherActivityInfo info : infos) {
+                if (getComponent(info).equals(item.component)) {
+                    result = info;
+                    break;
+                }
+            }
+        }
+        if (result != null) {
+            if (item.component == null) {
+                item.component = getComponent(result);
+            }
+            infos.remove(result);
+            if (infos.isEmpty()) {
+                map.remove(item.id);
+            }
+        }
+        return result;
+    }
+
     private AppItem createItem(LauncherActivityInfo info) {
         String packageName = info.getApplicationInfo().packageName;
         AppItem item = new AppItem(packageName);
         item.versionCode = getVersionCode(packageName);
+        item.component = getComponent(info);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
         return item;
@@ -201,6 +247,10 @@ public class LauncherAppsRepository implements AppsRepository {
         } catch (PackageManager.NameNotFoundException e) {
             return 0;
         }
+    }
+
+    private String getComponent(LauncherActivityInfo info) {
+        return Integer.toHexString(info.getComponentName().flattenToString().hashCode());
     }
 
     private void writeToDisk(List<AppItem> apps) {
@@ -231,17 +281,17 @@ public class LauncherAppsRepository implements AppsRepository {
         try {
             return gson.fromJson(new FileReader(getPackgesFile()), type);
         } catch (JsonSyntaxException e) {
-            return fromVersion1(gson);
+            return fromVersion1();
         } catch (Exception e) {
             Timber.e(e, "readFromDisk:");
             return null;
         }
     }
 
-    private List<AppItem> fromVersion1(Gson gson) {
+    private List<AppItem> fromVersion1() {
         Timber.d("fromVersion1");
         try {
-            Map<String, AppItem_v1> map = gson.fromJson(new FileReader(getPackgesFile()),
+            Map<String, AppItem_v1> map = new Gson().fromJson(new FileReader(getPackgesFile()),
                     new TypeToken<Map<String, AppItem_v1>>() {
                     }.getType());
             List<AppItem_v1> appItems_v1 = new ArrayList<>(map.size());
