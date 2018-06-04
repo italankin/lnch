@@ -13,12 +13,8 @@ public class SwapItemHelper extends ItemTouchHelper.Callback {
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
             RecyclerView.ViewHolder target) {
-        int pos = target.getAdapterPosition();
-        if (pos > 0 && pos < recyclerView.getAdapter().getItemCount()) {
-            callback.onItemMove(viewHolder.getAdapterPosition(), pos);
-            return true;
-        }
-        return false;
+        callback.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        return true;
     }
 
     @Override
