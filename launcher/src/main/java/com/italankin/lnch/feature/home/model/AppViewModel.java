@@ -13,7 +13,7 @@ public class AppViewModel {
 
     public AppViewModel(AppItem item) {
         this.item = item;
-        this.packageName = item.packageName;
+        this.packageName = item.id;
         this.label = item.label;
         this.hidden = item.hidden;
         this.customLabel = item.customLabel;

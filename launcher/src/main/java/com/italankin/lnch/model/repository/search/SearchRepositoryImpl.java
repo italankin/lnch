@@ -50,9 +50,9 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (match != null) {
                 match.color = appItem.getColor();
                 match.label = appItem.getLabel();
-                match.intent = packageManager.getLaunchIntentForPackage(appItem.packageName);
+                match.intent = packageManager.getLaunchIntentForPackage(appItem.id);
                 try {
-                    match.icon = packageManager.getApplicationIcon(appItem.packageName);
+                    match.icon = packageManager.getApplicationIcon(appItem.id);
                 } catch (PackageManager.NameNotFoundException ignored) {
                 }
                 matches.add(match);

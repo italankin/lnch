@@ -10,9 +10,11 @@ import android.os.UserHandle;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.bean.AppItem_v1;
 import com.italankin.lnch.model.provider.Preferences;
 
 import java.io.File;
@@ -160,9 +162,9 @@ public class LauncherAppsRepository implements AppsRepository {
                             infosByPackageName.put(info.getApplicationInfo().packageName, info);
                         }
                         for (AppItem item : savedItems) {
-                            LauncherActivityInfo info = infosByPackageName.remove(item.packageName);
+                            LauncherActivityInfo info = infosByPackageName.remove(item.id);
                             if (info != null) {
-                                int versionCode = getVersionCode(item.packageName);
+                                int versionCode = getVersionCode(item.id);
                                 if (item.versionCode != versionCode) {
                                     item.versionCode = versionCode;
                                     item.label = preferences.label.get(info);
@@ -228,8 +230,36 @@ public class LauncherAppsRepository implements AppsRepository {
         }.getType();
         try {
             return gson.fromJson(new FileReader(getPackgesFile()), type);
-        } catch (FileNotFoundException e) {
+        } catch (JsonSyntaxException e) {
+            return fromVersion1(gson);
+        } catch (Exception e) {
             Timber.e(e, "readFromDisk:");
+            return null;
+        }
+    }
+
+    private List<AppItem> fromVersion1(Gson gson) {
+        Timber.d("fromVersion1");
+        try {
+            Map<String, AppItem_v1> map = gson.fromJson(new FileReader(getPackgesFile()),
+                    new TypeToken<Map<String, AppItem_v1>>() {
+                    }.getType());
+            List<AppItem_v1> appItems_v1 = new ArrayList<>(map.size());
+            for (Map.Entry<String, AppItem_v1> entry : map.entrySet()) {
+                AppItem_v1 item = entry.getValue();
+                item.packageName = entry.getKey();
+                appItems_v1.add(item);
+            }
+            Collections.sort(appItems_v1, (o1, o2) -> {
+                return o1.order > o2.order ? 1 : (o1.order == o2.order ? 0 : -1);
+            });
+            List<AppItem> appItems = new ArrayList<>(map.size());
+            for (AppItem_v1 item : appItems_v1) {
+                appItems.add(item.toAppItem());
+            }
+            return appItems;
+        } catch (FileNotFoundException e) {
+            Timber.e(e, "fromVersion1:");
             return null;
         }
     }

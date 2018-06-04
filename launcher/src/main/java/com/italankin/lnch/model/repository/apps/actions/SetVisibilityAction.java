@@ -10,14 +10,14 @@ public class SetVisibilityAction implements AppsRepository.Editor.Action {
     private final boolean visible;
 
     public SetVisibilityAction(AppItem item, boolean visible) {
-        this.packageName = item.packageName;
+        this.packageName = item.id;
         this.visible = visible;
     }
 
     @Override
     public void apply(List<AppItem> items) {
         for (AppItem item : items) {
-            if (item.packageName.equals(packageName)) {
+            if (item.id.equals(packageName)) {
                 item.hidden = !visible;
                 break;
             }

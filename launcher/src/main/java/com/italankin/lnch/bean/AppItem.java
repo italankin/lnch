@@ -10,8 +10,8 @@ public class AppItem {
     public static final Comparator<AppItem> CMP_NAME_ASC = new NameComparator(true);
     public static final Comparator<AppItem> CMP_NAME_DESC = new NameComparator(false);
 
-    @SerializedName("packageName")
-    public String packageName;
+    @SerializedName("id")
+    public String id;
 
     @SerializedName("versionCode")
     public int versionCode;
@@ -35,8 +35,8 @@ public class AppItem {
     public AppItem() {
     }
 
-    public AppItem(String packageName) {
-        this.packageName = packageName;
+    public AppItem(String id) {
+        this.id = id;
     }
 
     public String getLabel() {
@@ -55,7 +55,7 @@ public class AppItem {
 
     @Override
     public String toString() {
-        return "{packageName=" + packageName + ", hidden=" + hidden + "}";
+        return "{id=" + id + ", hidden=" + hidden + "}";
     }
 }
 

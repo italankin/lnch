@@ -10,14 +10,14 @@ public class SetCustomColorAction implements AppsRepository.Editor.Action {
     private final Integer customColor;
 
     public SetCustomColorAction(AppItem item, Integer customColor) {
-        this.packageName = item.packageName;
+        this.packageName = item.id;
         this.customColor = customColor;
     }
 
     @Override
     public void apply(List<AppItem> items) {
         for (AppItem item : items) {
-            if (item.packageName.equals(packageName)) {
+            if (item.id.equals(packageName)) {
                 item.customColor = customColor;
                 break;
             }

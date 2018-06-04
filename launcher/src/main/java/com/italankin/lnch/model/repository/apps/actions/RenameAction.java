@@ -10,14 +10,14 @@ public class RenameAction implements AppsRepository.Editor.Action {
     private final String customLabel;
 
     public RenameAction(AppItem item, String customLabel) {
-        this.packageName = item.packageName;
+        this.packageName = item.id;
         this.customLabel = customLabel;
     }
 
     @Override
     public void apply(List<AppItem> items) {
         for (AppItem item : items) {
-            if (item.packageName.equals(packageName)) {
+            if (item.id.equals(packageName)) {
                 item.customLabel = customLabel;
                 break;
             }

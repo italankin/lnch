@@ -20,7 +20,7 @@ public class AppViewModel {
 
     private static Drawable getIcon(AppItem item, PackageManager pm) {
         try {
-            return pm.getApplicationIcon(item.packageName);
+            return pm.getApplicationIcon(item.id);
         } catch (PackageManager.NameNotFoundException ignored) {
             return null;
         }
