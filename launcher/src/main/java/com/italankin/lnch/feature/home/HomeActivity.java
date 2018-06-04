@@ -15,9 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -396,7 +393,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void customizeApp(int position, AppViewModel item) {
         ListAlertDialog.builder(this)
-                .setTitle(getAppTitle(item))
+                .setTitle(item.getLabel())
                 .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
                     setAppName(position, item);
                 })
@@ -411,7 +408,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void setAppName(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(getAppTitle(item))
+                .setTitle(item.getLabel())
                 .customizeEditText(editText -> {
                     editText.setText(item.customLabel);
                     editText.setSelectAllOnFocus(true);
@@ -429,7 +426,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void setAppColor(int position, AppViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(getAppTitle(item))
+                .setTitle(item.getLabel())
                 .customizeEditText(editText -> {
                     editText.setText(String.format("%06x", item.getColor()).substring(2));
                     editText.setSelectAllOnFocus(true);
@@ -456,12 +453,6 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.changeAppCustomColor(position, item, null);
                 })
                 .show();
-    }
-
-    private CharSequence getAppTitle(AppViewModel item) {
-        SpannableStringBuilder ss = new SpannableStringBuilder(item.getLabel());
-        ss.setSpan(new ForegroundColorSpan(item.getColor()), 0, ss.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        return ss;
     }
 
     private void hideApp(int position, AppViewModel item) {
