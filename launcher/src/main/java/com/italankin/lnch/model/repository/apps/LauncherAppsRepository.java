@@ -116,7 +116,7 @@ public class LauncherAppsRepository implements AppsRepository {
 
     @Override
     public AppsRepository.Editor edit() {
-        return new Editor();
+        return new Editor(updatesSubject.getValue());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -369,7 +369,12 @@ public class LauncherAppsRepository implements AppsRepository {
 
     final class Editor implements AppsRepository.Editor {
         private final Queue<AppsRepository.Editor.Action> actions = new ArrayDeque<>();
+        private final List<AppItem> apps;
         private volatile boolean used;
+
+        Editor(List<AppItem> apps) {
+            this.apps = apps;
+        }
 
         @Override
         public void enqueue(AppsRepository.Editor.Action action) {
@@ -391,18 +396,19 @@ public class LauncherAppsRepository implements AppsRepository {
                         .doOnSubscribe(onSubscribe);
             }
             Timber.d("commit: apply actions");
-            return updatesSubject.take(1)
-                    .doOnSubscribe(onSubscribe)
-                    .doOnNext(apps -> {
+            return Single
+                    .fromCallable(() -> {
                         List<AppItem> result = new ArrayList<>(apps);
                         Iterator<AppsRepository.Editor.Action> iter = actions.iterator();
                         while (iter.hasNext()) {
                             iter.next().apply(result);
                             iter.remove();
                         }
-                        writeToDisk(result);
+                        return result;
                     })
-                    .ignoreElements();
+                    .doOnSubscribe(onSubscribe)
+                    .doOnSuccess(LauncherAppsRepository.this::writeToDisk)
+                    .ignoreElement();
         }
     }
 }

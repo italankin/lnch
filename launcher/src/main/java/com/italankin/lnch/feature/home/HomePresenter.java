@@ -119,6 +119,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     @Override
                     protected void onComplete(HomeView viewState) {
                         viewState.onStopEditMode();
+                        update();
                     }
 
                     @Override
@@ -147,6 +148,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void observeApps() {
         appsRepository.observeApps()
+                .filter(appItems -> editor == null)
                 .map(ListMapper.create(AppViewModel::new))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<AppViewModel>>() {
