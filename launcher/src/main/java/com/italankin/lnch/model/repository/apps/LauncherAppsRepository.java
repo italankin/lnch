@@ -180,8 +180,14 @@ public class LauncherAppsRepository implements AppsRepository {
                             }
                         }
                         for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
-                            for (LauncherActivityInfo info : infos) {
-                                apps.add(createItem(info));
+                            if (infos.size() == 1) {
+                                apps.add(createItem(infos.get(0)));
+                            } else {
+                                for (LauncherActivityInfo info : infos) {
+                                    AppItem item = createItem(info);
+                                    item.componentName = getComponentName(info);
+                                    apps.add(item);
+                                }
                             }
                         }
                         boolean changed = oldVersion || !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
@@ -209,19 +215,17 @@ public class LauncherAppsRepository implements AppsRepository {
         List<LauncherActivityInfo> infos = map.get(item.id);
         LauncherActivityInfo result = null;
         if (infos.size() == 1) {
-            result = infos.get(0);
-        } else {
+            result = infos.remove(0);
+        } else if (item.componentName != null) {
             for (LauncherActivityInfo info : infos) {
-                if (getComponent(info).equals(item.component)) {
+                String componentName = getComponentName(info);
+                if (componentName.equals(item.componentName)) {
                     result = info;
                     break;
                 }
             }
         }
         if (result != null) {
-            if (item.component == null) {
-                item.component = getComponent(result);
-            }
             infos.remove(result);
             if (infos.isEmpty()) {
                 map.remove(item.id);
@@ -234,7 +238,6 @@ public class LauncherAppsRepository implements AppsRepository {
         String packageName = info.getApplicationInfo().packageName;
         AppItem item = new AppItem(packageName);
         item.versionCode = getVersionCode(packageName);
-        item.component = getComponent(info);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
         return item;
@@ -249,8 +252,8 @@ public class LauncherAppsRepository implements AppsRepository {
         }
     }
 
-    private String getComponent(LauncherActivityInfo info) {
-        return Integer.toHexString(info.getComponentName().flattenToString().hashCode());
+    private String getComponentName(LauncherActivityInfo info) {
+        return info.getComponentName().flattenToString();
     }
 
     private void writeToDisk(List<AppItem> apps) {

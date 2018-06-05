@@ -5,6 +5,7 @@ import com.italankin.lnch.bean.AppItem;
 public class AppViewModel {
     public final AppItem item;
     public final String packageName;
+    public final String componentName;
     public final int color;
     public final String label;
     public boolean hidden;
@@ -14,6 +15,7 @@ public class AppViewModel {
     public AppViewModel(AppItem item) {
         this.item = item;
         this.packageName = item.id;
+        this.componentName = item.componentName;
         this.label = item.label;
         this.hidden = item.hidden;
         this.customLabel = item.customLabel;

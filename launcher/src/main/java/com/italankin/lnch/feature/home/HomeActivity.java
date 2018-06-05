@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.home;
 
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -304,7 +306,14 @@ public class HomeActivity extends AppActivity implements HomeView,
     void startApp(AppViewModel item) {
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
         if (intent != null && intent.resolveActivity(packageManager) != null) {
-            startActivity(intent);
+            if (item.componentName != null) {
+                intent.setComponent(ComponentName.unflattenFromString(item.componentName));
+            }
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                showError(e);
+            }
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }

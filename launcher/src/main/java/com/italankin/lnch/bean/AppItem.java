@@ -16,8 +16,8 @@ public class AppItem {
     @SerializedName("versionCode")
     public long versionCode;
 
-    @SerializedName("component")
-    public String component;
+    @SerializedName("componentName")
+    public String componentName;
 
     @SerializedName("label")
     public String label;
