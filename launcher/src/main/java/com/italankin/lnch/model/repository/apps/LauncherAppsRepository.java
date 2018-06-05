@@ -67,7 +67,7 @@ public class LauncherAppsRepository implements AppsRepository {
                         writeToDisk(appsData.apps);
                     }
                 })
-                .map(appsData -> appsData.apps)
+                .map(appsData -> Collections.unmodifiableList(appsData.apps))
                 .doOnSuccess(updatesSubject::onNext)
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
@@ -394,12 +394,13 @@ public class LauncherAppsRepository implements AppsRepository {
             return updatesSubject.take(1)
                     .doOnSubscribe(onSubscribe)
                     .doOnNext(apps -> {
+                        List<AppItem> result = new ArrayList<>(apps);
                         Iterator<AppsRepository.Editor.Action> iter = actions.iterator();
                         while (iter.hasNext()) {
-                            iter.next().apply(apps);
+                            iter.next().apply(result);
                             iter.remove();
                         }
-                        writeToDisk(apps);
+                        writeToDisk(result);
                     })
                     .ignoreElements();
         }
