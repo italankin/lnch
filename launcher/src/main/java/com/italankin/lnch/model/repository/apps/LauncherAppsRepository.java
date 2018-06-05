@@ -334,36 +334,32 @@ public class LauncherAppsRepository implements AppsRepository {
     final class LauncherCallbacks extends LauncherApps.Callback {
         @Override
         public void onPackageRemoved(String packageName, UserHandle user) {
-            if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext("package removed");
-            }
+            notify(user, "package removed");
         }
 
         @Override
         public void onPackageAdded(String packageName, UserHandle user) {
-            if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext("package added");
-            }
+            notify(user, "package added");
         }
 
         @Override
         public void onPackageChanged(String packageName, UserHandle user) {
-            if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext("package changed");
-            }
+            notify(user, "package changed");
         }
 
         @Override
         public void onPackagesAvailable(String[] packageNames, UserHandle user, boolean replacing) {
-            if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext("packages available");
-            }
+            notify(user, "packages available");
         }
 
         @Override
         public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            notify(user, "packages unavailable");
+        }
+
+        private void notify(UserHandle user, String s) {
             if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext("packages unavailable");
+                packageChangesSubject.onNext(s);
             }
         }
     }
