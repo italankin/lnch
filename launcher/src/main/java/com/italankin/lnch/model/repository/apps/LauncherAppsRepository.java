@@ -38,6 +38,7 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
@@ -53,6 +54,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private final Completable updater;
     private final BehaviorSubject<List<AppItem>> updatesSubject = BehaviorSubject.create();
     private final Subject<String> packageChangesSubject = PublishSubject.create();
+    private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager) {
         this.context = context;
@@ -76,6 +78,7 @@ public class LauncherAppsRepository implements AppsRepository {
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        disposeBag.add(d);
                     }
 
                     @Override
