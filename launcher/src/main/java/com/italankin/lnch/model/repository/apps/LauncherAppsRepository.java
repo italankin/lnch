@@ -216,6 +216,9 @@ public class LauncherAppsRepository implements AppsRepository {
 
     private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppItem item) {
         List<LauncherActivityInfo> infos = map.get(item.id);
+        if (infos == null) {
+            return null;
+        }
         LauncherActivityInfo result = null;
         if (infos.size() == 1) {
             result = infos.remove(0);
