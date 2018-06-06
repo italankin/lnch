@@ -24,6 +24,10 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private final AppsRepository appsRepository;
     private final Preferences preferences;
+    /**
+     * View commands will dispatch this instance on every state restore, so any changes
+     * made to this list will be visible to new views.
+     */
     private List<AppViewModel> apps;
     private AppsRepository.Editor editor;
 
