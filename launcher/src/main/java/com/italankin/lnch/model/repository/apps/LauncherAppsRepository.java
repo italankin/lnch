@@ -316,10 +316,21 @@ public class LauncherAppsRepository implements AppsRepository {
             for (AppItem_v1 item : appItems_v1) {
                 appItems.add(item.toAppItem());
             }
+            createBackup(map);
             return appItems;
         } catch (FileNotFoundException e) {
             Timber.e(e, "fromVersion1:");
             return null;
+        }
+    }
+
+    private static void createBackup(Map<String, AppItem_v1> map) {
+        try {
+            FileWriter fileWriter = new FileWriter("packages.json.backup");
+            new Gson().toJson(map, new TypeToken<Map<String, AppItem_v1>>() {
+            }.getType(), fileWriter);
+            fileWriter.close();
+        } catch (Exception ignored) {
         }
     }
 
