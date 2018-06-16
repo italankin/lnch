@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.repository.search;
 
+import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.support.annotation.WorkerThread;
 
@@ -51,6 +52,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 match.color = appItem.getColor();
                 match.label = appItem.getLabel();
                 match.intent = packageManager.getLaunchIntentForPackage(appItem.id);
+                if (match.intent != null && appItem.componentName != null) {
+                    match.intent.setComponent(ComponentName.unflattenFromString(appItem.componentName));
+                }
                 try {
                     match.icon = packageManager.getApplicationIcon(appItem.id);
                 } catch (PackageManager.NameNotFoundException ignored) {
