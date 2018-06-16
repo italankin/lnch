@@ -391,11 +391,12 @@ public class LauncherAppsRepository implements AppsRepository {
         }
 
         @Override
-        public void enqueue(AppsRepository.Editor.Action action) {
+        public Editor enqueue(AppsRepository.Editor.Action action) {
             if (used) {
                 throw new IllegalStateException();
             }
             actions.offer(action);
+            return this;
         }
 
         @Override

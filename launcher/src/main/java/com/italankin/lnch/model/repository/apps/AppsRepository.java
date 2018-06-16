@@ -22,7 +22,7 @@ public interface AppsRepository {
 
     interface Editor {
 
-        void enqueue(Action action);
+        Editor enqueue(Action action);
 
         Completable commit();
 
