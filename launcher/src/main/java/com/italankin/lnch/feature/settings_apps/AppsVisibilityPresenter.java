@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
@@ -51,9 +53,11 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
     }
 
     private void loadApps() {
-        appsRepository.fetchApps()
-                .toObservable()
+        appsRepository.observeApps()
+                .subscribeOn(Schedulers.io())
+                .take(1)
                 .map(ListMapper.create(item -> new AppViewModel(item, packageManager)))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<AppViewModel>>() {
                     @Override
                     protected void onNext(AppsVisibilityView viewState, List<AppViewModel> apps) {
