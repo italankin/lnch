@@ -21,6 +21,9 @@ interface HomeView extends MvpView {
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
     void onAppsLoaded(List<AppViewModel> appList, String layout);
 
+    @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
+    void onAppsLoadError(Throwable e);
+
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);
 

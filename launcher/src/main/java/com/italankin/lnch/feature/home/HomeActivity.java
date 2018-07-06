@@ -17,16 +17,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -48,6 +44,7 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.ListAlertDialog;
 
 import java.util.List;
@@ -61,7 +58,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @InjectPresenter
     HomePresenter presenter;
 
-    private CoordinatorLayout root;
+    private LceLayout root;
     private ViewGroup searchBar;
     private AutoCompleteTextView editSearch;
     private View btnSettings;
@@ -69,8 +66,6 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private InputMethodManager inputMethodManager;
     private PackageManager packageManager;
-
-    private FrameLayout progressContainer;
 
     private boolean editMode = false;
 
@@ -216,25 +211,15 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void showProgress() {
-        if (progressContainer != null) {
-            return;
-        }
-        list.setVisibility(View.INVISIBLE);
-        progressContainer = new FrameLayout(this);
-        ProgressBar progressBar = new ProgressBar(this);
-        int size = getResources().getDimensionPixelSize(R.dimen.progress_indicator_size);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size, Gravity.CENTER);
-        progressContainer.addView(progressBar, params);
-        root.addView(progressContainer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+        root.showLoading();
     }
 
     @Override
     public void onAppsLoaded(List<AppViewModel> items, String layout) {
-        hideProgress();
         setLayout(layout);
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
+        root.showContent();
     }
 
     @Override
@@ -261,6 +246,14 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onItemChanged(int position) {
         list.getAdapter().notifyItemChanged(position);
+    }
+
+    @Override
+    public void onAppsLoadError(Throwable e) {
+        root.error()
+                .button(v -> presenter.loadApps())
+                .message(e.getMessage())
+                .show();
     }
 
     @Override
@@ -295,13 +288,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
-
-    private void hideProgress() {
-        if (progressContainer != null) {
-            root.removeView(progressContainer);
-            progressContainer = null;
-        }
-    }
 
     void startApp(AppViewModel item) {
         searchBarBehavior.hide();

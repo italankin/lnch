@@ -37,7 +37,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     private void setupInitialState() {
-        maxOffset = topView.getHeight();
+        maxOffset = topView.getMeasuredHeight();
         if (shown) {
             topView.setTranslationY(0);
             topView.setAlpha(1);

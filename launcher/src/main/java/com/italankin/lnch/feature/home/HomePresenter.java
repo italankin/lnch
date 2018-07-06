@@ -40,7 +40,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     @Override
     protected void onFirstViewAttach() {
         observeApps();
-        initialLoad();
+        loadApps();
+    }
+
+    void loadApps() {
+        getViewState().showProgress();
+        update();
     }
 
     void reloadAppsImmediate() {
@@ -134,11 +139,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
         editor = null;
     }
 
-    private void initialLoad() {
-        getViewState().showProgress();
-        update();
-    }
-
     private void update() {
         appsRepository.update()
                 .subscribeOn(Schedulers.io())
@@ -161,6 +161,15 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         Timber.d("Receive update: %s", list);
                         apps = list;
                         viewState.onAppsLoaded(apps, preferences.homeLayout());
+                    }
+
+                    @Override
+                    protected void onError(HomeView viewState, Throwable e) {
+                        if (apps != null) {
+                            viewState.showError(e);
+                        } else {
+                            viewState.onAppsLoadError(e);
+                        }
                     }
                 });
     }
