@@ -342,7 +342,9 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
-            editModeSnackbar = Snackbar.make(root, R.string.edit_mode_hint, Snackbar.LENGTH_INDEFINITE);
+            editModeSnackbar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.edit_mode_hint,
+                    Snackbar.LENGTH_INDEFINITE);
             editModeSnackbar.setAction(R.string.edit_mode_save, v -> {
                 if (editModeSnackbar.isShownOrQueued()) {
                     presenter.stopEditMode();
