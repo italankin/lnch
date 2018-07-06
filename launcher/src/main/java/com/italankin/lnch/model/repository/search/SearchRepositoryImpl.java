@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -81,9 +79,13 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (what == null || word == null) {
             return false;
         }
-        Pattern pattern = Pattern.compile("\\b" + word.toLowerCase());
-        Matcher matcher = pattern.matcher(what.toLowerCase());
-        return matcher.find();
+        String[] words = what.toLowerCase().split("\\s+");
+        for (String w : words) {
+            if (w.startsWith(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean startsWith(String what, String prefix) {
