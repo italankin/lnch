@@ -52,7 +52,8 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
                 });
     }
 
-    private void loadApps() {
+    void loadApps() {
+        getViewState().showLoading();
         appsRepository.observeApps()
                 .subscribeOn(Schedulers.io())
                 .take(1)

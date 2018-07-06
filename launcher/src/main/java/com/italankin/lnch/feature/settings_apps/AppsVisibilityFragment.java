@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -15,6 +14,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings_apps.adapter.AppsViewModelAdapter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
     @InjectPresenter
     AppsVisibilityPresenter presenter;
 
+    private LceLayout lce;
     private RecyclerView list;
 
     @ProvidePresenter
@@ -45,6 +46,12 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         list = view.findViewById(R.id.list);
+        lce = view.findViewById(R.id.lce);
+    }
+
+    @Override
+    public void showLoading() {
+        lce.showLoading();
     }
 
     @Override
@@ -54,6 +61,7 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
                 .recyclerView(list)
                 .dataset(apps)
                 .create();
+        lce.showContent();
     }
 
     @Override
@@ -63,7 +71,10 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
 
     @Override
     public void showError(Throwable e) {
-        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        lce.error()
+                .button(v -> presenter.loadApps())
+                .message(e.getMessage())
+                .show();
     }
 
     @Override

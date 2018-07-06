@@ -11,9 +11,12 @@ import java.util.List;
 interface AppsVisibilityView extends MvpView {
 
     @StateStrategyType(SingleStateStrategy.class)
+    void showLoading();
+
+    @StateStrategyType(SingleStateStrategy.class)
     void onAppsLoaded(List<AppViewModel> apps);
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
+    @StateStrategyType(SingleStateStrategy.class)
     void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
