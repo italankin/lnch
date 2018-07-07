@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.WorkerThread;
 
 import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.bean.GroupSeparator;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.search.match.GoogleMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -38,6 +39,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         List<MatchImpl> matches = new ArrayList<>(8);
         for (AppItem appItem : appsRepository.getApps()) {
+            if (GroupSeparator.ID.equals(appItem.id)) {
+                continue;
+            }
             MatchImpl match = null;
             if (startsWith(appItem.customLabel, s) || startsWith(appItem.label, s)) {
                 match = new MatchImpl(MatchImpl.Type.STARTS_WITH);

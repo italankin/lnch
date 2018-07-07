@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.bean.AppItem_v1;
+import com.italankin.lnch.bean.GroupSeparator;
 import com.italankin.lnch.model.provider.Preferences;
 
 import java.io.File;
@@ -169,6 +170,10 @@ public class LauncherAppsRepository implements AppsRepository {
                         List<AppItem> deletedApps = new ArrayList<>(8);
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
                         for (AppItem item : savedItems) {
+                            if (GroupSeparator.ID.equals(item.id)) {
+                                apps.add(item);
+                                continue;
+                            }
                             LauncherActivityInfo info = findInfo(infosByPackageName, item);
                             if (info != null) {
                                 int versionCode = getVersionCode(item.id);

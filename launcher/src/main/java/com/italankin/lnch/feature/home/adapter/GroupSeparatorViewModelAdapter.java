@@ -6,75 +6,75 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
-public class AppViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder, AppViewModel> {
+public class GroupSeparatorViewModelAdapter extends BaseAdapterDelegate<GroupSeparatorViewModelHolder, GroupSeparatorViewModel> {
     private final Listener listener;
 
-    public AppViewModelAdapter(Listener listener) {
+    public GroupSeparatorViewModelAdapter(Listener listener) {
         this.listener = listener;
     }
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.item_app;
+        return R.layout.item_separator;
     }
 
     @NonNull
     @Override
-    protected AppViewModelHolder createViewHolder(View itemView) {
-        AppViewModelHolder holder = new AppViewModelHolder(itemView);
+    protected GroupSeparatorViewModelHolder createViewHolder(View itemView) {
+        GroupSeparatorViewModelHolder holder = new GroupSeparatorViewModelHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onAppClick(pos, getItem(pos));
+                    listener.onSeparatorClick(pos, getItem(pos));
                 }
             });
             itemView.setOnLongClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onAppLongClick(pos, getItem(pos));
-                    return true;
+                    listener.onSeparatorLongClick(pos, getItem(pos));
                 }
-                return false;
+                return true;
             });
         }
         return holder;
     }
 
     @Override
-    public long getItemId(int position, AppViewModel item) {
-        return item.hashCode();
-    }
-
-    @Override
-    public void onBind(AppViewModelHolder holder, int position, AppViewModel item) {
+    public void onBind(GroupSeparatorViewModelHolder holder, int position, GroupSeparatorViewModel item) {
         holder.bind(item);
     }
 
     @Override
+    public long getItemId(int position, GroupSeparatorViewModel item) {
+        return item.hashCode();
+    }
+
+    @Override
     public boolean isType(int position, Object item) {
-        return item.getClass() == AppViewModel.class && !((AppViewModel) item).hidden;
+        return item.getClass() == GroupSeparatorViewModel.class;
     }
 
     public interface Listener {
-        void onAppClick(int position, AppViewModel item);
+        void onSeparatorClick(int position, GroupSeparatorViewModel item);
 
-        void onAppLongClick(int position, AppViewModel item);
+        void onSeparatorLongClick(int position, GroupSeparatorViewModel item);
     }
 }
 
-class AppViewModelHolder extends RecyclerView.ViewHolder {
+
+class GroupSeparatorViewModelHolder extends RecyclerView.ViewHolder {
     final TextView label;
 
-    AppViewModelHolder(View itemView) {
+    GroupSeparatorViewModelHolder(View itemView) {
         super(itemView);
         label = itemView.findViewById(R.id.label);
     }
 
-    void bind(AppViewModel item) {
+    void bind(GroupSeparatorViewModel item) {
         label.setText(item.getLabel());
         label.setTextColor(item.getColor());
     }

@@ -1,9 +1,13 @@
 package com.italankin.lnch.feature.home;
 
 import com.arellomobile.mvp.InjectViewState;
+import com.italankin.lnch.bean.GroupSeparator;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.actions.AddSeparatorAction;
+import com.italankin.lnch.model.repository.apps.actions.RemoveSeparatorAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
@@ -52,27 +56,29 @@ public class HomePresenter extends AppPresenter<HomeView> {
         update();
     }
 
+    void hideGroup(int position) {
+        GroupSeparatorViewModel group = (GroupSeparatorViewModel) apps.get(position);
+        setGroupExpanded(position, !group.expanded);
+    }
+
     void startEditMode() {
         if (editor != null) {
             throw new IllegalStateException("Editor is not null!");
         }
         editor = appsRepository.edit();
+        expandGroups();
         getViewState().onStartEditMode();
     }
 
     void swapApps(int from, int to) {
-        if (editor == null) {
-            throw new IllegalStateException();
-        }
+        requireEditMode();
         editor.enqueue(new SwapAction(from, to));
         SwapAction.swap(apps, from, to);
         getViewState().onItemsSwap(from, to);
     }
 
     void renameApp(int position, AppViewModel item, String customLabel) {
-        if (editor == null) {
-            throw new IllegalStateException();
-        }
+        requireEditMode();
         String s = customLabel.isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction(item.item, s));
         item.customLabel = s;
@@ -80,9 +86,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void changeAppCustomColor(int position, AppViewModel item, String value) {
-        if (editor == null) {
-            throw new IllegalStateException();
-        }
+        requireEditMode();
         Integer customColor;
         if (value != null && !value.isEmpty()) {
             try {
@@ -100,27 +104,36 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void hideApp(int position, AppViewModel item) {
-        if (editor == null) {
-            throw new IllegalStateException("Editor is null!");
-        }
+        requireEditMode();
         editor.enqueue(new SetVisibilityAction(item.item, false));
         item.hidden = true;
         getViewState().onItemChanged(position);
     }
 
+    void addSeparator(int position) {
+        requireEditMode();
+        GroupSeparator item = new GroupSeparator();
+        editor.enqueue(new AddSeparatorAction(position, item));
+        apps.add(position, new GroupSeparatorViewModel(item));
+        getViewState().onItemInserted(position);
+    }
+
+    void removeSeparator(int position) {
+        requireEditMode();
+        editor.enqueue(new RemoveSeparatorAction(position));
+        apps.remove(position);
+        getViewState().onItemsRemoved(position, 1);
+    }
+
     void discardChanges() {
-        if (editor == null) {
-            throw new IllegalStateException("Editor is null!");
-        }
+        requireEditMode();
         editor = null;
         getViewState().onChangesDiscarded();
         update();
     }
 
     void stopEditMode() {
-        if (editor == null) {
-            throw new IllegalStateException("Editor is null!");
-        }
+        requireEditMode();
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -153,7 +166,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private void observeApps() {
         appsRepository.observeApps()
                 .filter(appItems -> editor == null)
-                .map(ListMapper.create(AppViewModel::new))
+                .map(ListMapper.create(item -> item.id.equals(GroupSeparator.ID) ?
+                        new GroupSeparatorViewModel(item) : new AppViewModel(item)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<AppViewModel>>() {
                     @Override
@@ -172,5 +186,43 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         }
                     }
                 });
+    }
+
+    private void setGroupExpanded(int position, boolean expanded) {
+        GroupSeparatorViewModel group = (GroupSeparatorViewModel) apps.get(position);
+        int startIndex = position + 1;
+        int endIndex = position;
+        for (int i = startIndex, size = apps.size(); i < size; i++) {
+            if (apps.get(i) instanceof GroupSeparatorViewModel) {
+                break;
+            }
+            endIndex = i;
+        }
+        if (startIndex == endIndex) {
+            return;
+        }
+        group.expanded = expanded;
+        for (int i = startIndex; i <= endIndex; i++) {
+            apps.get(i).hidden = !group.expanded;
+        }
+        if (group.expanded) {
+            getViewState().onItemsInserted(startIndex, endIndex - startIndex);
+        } else {
+            getViewState().onItemsRemoved(startIndex, endIndex - startIndex);
+        }
+    }
+
+    private void expandGroups() {
+        for (int i = 0, size = apps.size(); i < size; i++) {
+            if (apps.get(i) instanceof GroupSeparatorViewModel) {
+                setGroupExpanded(i, true);
+            }
+        }
+    }
+
+    private void requireEditMode() {
+        if (editor == null) {
+            throw new IllegalStateException();
+        }
     }
 }

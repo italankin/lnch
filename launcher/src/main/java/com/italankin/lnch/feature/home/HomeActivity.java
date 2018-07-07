@@ -33,9 +33,11 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.GroupSeparatorViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
@@ -51,7 +53,8 @@ import java.util.List;
 
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
-        AppViewModelAdapter.Listener {
+        AppViewModelAdapter.Listener,
+        GroupSeparatorViewModelAdapter.Listener {
 
     private static final int REQUEST_CODE_SETTINGS = 1;
 
@@ -154,6 +157,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         adapter = new CompositeAdapter.Builder<AppViewModel>(this)
                 .add(new AppViewModelAdapter(this))
                 .add(new HiddenAppViewModelAdapter())
+                .add(new GroupSeparatorViewModelAdapter(this))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
@@ -249,6 +253,21 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
+    public void onItemInserted(int position) {
+        list.getAdapter().notifyItemInserted(position);
+    }
+
+    @Override
+    public void onItemsInserted(int startIndex, int count) {
+        list.getAdapter().notifyItemRangeInserted(startIndex, count);
+    }
+
+    @Override
+    public void onItemsRemoved(int startIndex, int count) {
+        list.getAdapter().notifyItemRangeRemoved(startIndex, count);
+    }
+
+    @Override
     public void onAppsLoadError(Throwable e) {
         root.error()
                 .button(v -> presenter.loadApps())
@@ -262,7 +281,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onItemClick(int position, AppViewModel item) {
+    public void onAppClick(int position, AppViewModel item) {
         if (editMode) {
             customizeApp(position, item);
         } else {
@@ -271,12 +290,29 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onItemLongClick(int position, AppViewModel item) {
+    public void onAppLongClick(int position, AppViewModel item) {
         if (editMode) {
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));
         } else {
             startAppSettings(item);
+        }
+    }
+
+    @Override
+    public void onSeparatorClick(int position, GroupSeparatorViewModel item) {
+        if (editMode) {
+            customizeSeparator(position, item);
+        } else {
+            presenter.hideGroup(position);
+        }
+    }
+
+    @Override
+    public void onSeparatorLongClick(int position, GroupSeparatorViewModel item) {
+        if (editMode) {
+            View view = list.getLayoutManager().findViewByPosition(position);
+            touchHelper.startDrag(list.getChildViewHolder(view));
         }
     }
 
@@ -399,7 +435,10 @@ public class HomeActivity extends AppActivity implements HomeView,
                     setAppColor(position, item);
                 })
                 .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
-                    hideApp(position, item);
+                    presenter.hideApp(position, item);
+                })
+                .addItem(0, R.string.edit_mode_action_add_separator, () -> {
+                    presenter.addSeparator(position);
                 })
                 .show();
     }
@@ -453,8 +492,19 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void hideApp(int position, AppViewModel item) {
-        presenter.hideApp(position, item);
+    private void customizeSeparator(int position, GroupSeparatorViewModel item) {
+        ListAlertDialog.builder(this)
+                .setTitle(item.getLabel())
+                .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
+                    setAppName(position, item);
+                })
+                .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
+                    setAppColor(position, item);
+                })
+                .addItem(0, R.string.edit_mode_action_remove_separator, () -> {
+                    presenter.removeSeparator(position);
+                })
+                .show();
     }
 }
 

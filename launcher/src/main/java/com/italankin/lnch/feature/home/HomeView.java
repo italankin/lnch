@@ -42,4 +42,13 @@ interface HomeView extends MvpView {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemChanged(int position);
 
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onItemInserted(int position);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onItemsInserted(int startIndex, int count);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onItemsRemoved(int startIndex, int count);
+
 }
