@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.italankin.lnch.di.service.DaggerService;
 
-public class App extends Application {
+public class LauncherApp extends Application {
 
     public DaggerService daggerService;
 

@@ -3,7 +3,7 @@
     package="com.italankin.lnch">
 
     <application
-        android:name=".DebugApp"
+        android:name=".DebugLauncherApp"
         tools:replace="name" />
 
 </manifest>

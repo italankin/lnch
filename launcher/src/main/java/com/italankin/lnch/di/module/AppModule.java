@@ -2,7 +2,7 @@ package com.italankin.lnch.di.module;
 
 import android.content.Context;
 
-import com.italankin.lnch.App;
+import com.italankin.lnch.LauncherApp;
 
 import javax.inject.Singleton;
 
@@ -11,15 +11,15 @@ import dagger.Provides;
 
 @Module
 public class AppModule {
-    private final App app;
+    private final LauncherApp launcherApp;
 
-    public AppModule(App app) {
-        this.app = app;
+    public AppModule(LauncherApp launcherApp) {
+        this.launcherApp = launcherApp;
     }
 
     @Singleton
     @Provides
     public Context provideContext() {
-        return app;
+        return launcherApp;
     }
 }

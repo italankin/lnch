@@ -2,7 +2,7 @@
     package="com.italankin.lnch">
 
     <application
-        android:name=".App"
+        android:name=".LauncherApp"
         android:allowBackup="true"
         android:clearTaskOnLaunch="true"
         android:icon="@mipmap/ic_launcher"
