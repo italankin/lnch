@@ -153,7 +153,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private Maybe<AppsData> loadFromFile(List<LauncherActivityInfo> infoList) {
         return Maybe
                 .create(emitter -> {
-                    if (!getPackgesFile().exists()) {
+                    if (!getPackagesFile().exists()) {
                         emitter.onComplete();
                         return;
                     }
@@ -270,7 +270,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private void writeToDisk(List<AppItem> apps) {
         Timber.d("writeToDisk");
         try {
-            FileWriter fw = new FileWriter(getPackgesFile());
+            FileWriter fw = new FileWriter(getPackagesFile());
             try {
                 GsonBuilder builder = new GsonBuilder();
                 if (BuildConfig.DEBUG) {
@@ -293,7 +293,7 @@ public class LauncherAppsRepository implements AppsRepository {
         Type type = new TypeToken<List<AppItem>>() {
         }.getType();
         try {
-            return gson.fromJson(new FileReader(getPackgesFile()), type);
+            return gson.fromJson(new FileReader(getPackagesFile()), type);
         } catch (JsonSyntaxException e) {
             return fromVersion1();
         } catch (Exception e) {
@@ -305,7 +305,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private List<AppItem> fromVersion1() {
         Timber.d("fromVersion1");
         try {
-            Map<String, AppItem_v1> map = new Gson().fromJson(new FileReader(getPackgesFile()),
+            Map<String, AppItem_v1> map = new Gson().fromJson(new FileReader(getPackagesFile()),
                     new TypeToken<Map<String, AppItem_v1>>() {
                     }.getType());
             List<AppItem_v1> appItems_v1 = new ArrayList<>(map.size());
@@ -339,7 +339,7 @@ public class LauncherAppsRepository implements AppsRepository {
         }
     }
 
-    private File getPackgesFile() {
+    private File getPackagesFile() {
         return new File(context.getFilesDir(), "packages.json");
     }
 
