@@ -314,9 +314,7 @@ public class LauncherAppsRepository implements AppsRepository {
                 item.packageName = entry.getKey();
                 appItems_v1.add(item);
             }
-            Collections.sort(appItems_v1, (o1, o2) -> {
-                return o1.order > o2.order ? 1 : (o1.order == o2.order ? 0 : -1);
-            });
+            Collections.sort(appItems_v1);
             List<AppItem> appItems = new ArrayList<>(map.size());
             for (AppItem_v1 item : appItems_v1) {
                 appItems.add(item.toAppItem());

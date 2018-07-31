@@ -1,8 +1,10 @@
 package com.italankin.lnch.bean;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
-public class AppItem_v1 {
+public class AppItem_v1 implements Comparable<AppItem_v1> {
 
     @SerializedName("packageName")
     public String packageName;
@@ -40,6 +42,11 @@ public class AppItem_v1 {
         item.customColor = customColor;
         item.hidden = hidden;
         return item;
+    }
+
+    @Override
+    public int compareTo(@NonNull AppItem_v1 another) {
+        return Integer.compare(order, another.order);
     }
 }
 
