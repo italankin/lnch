@@ -382,7 +382,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     R.string.edit_mode_hint,
                     Snackbar.LENGTH_INDEFINITE);
             editModeSnackbar.setAction(R.string.edit_mode_save, v -> {
-                if (editModeSnackbar.isShownOrQueued()) {
+                if (editModeSnackbar != null && editModeSnackbar.isShownOrQueued()) {
                     presenter.stopEditMode();
                 }
             });
