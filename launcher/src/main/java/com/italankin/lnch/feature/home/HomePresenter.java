@@ -203,7 +203,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
         group.expanded = expanded;
         for (int i = startIndex; i <= endIndex; i++) {
-            apps.get(i).hidden = !group.expanded;
+            apps.get(i).visible = group.expanded;
         }
         if (group.expanded) {
             getViewState().onItemsInserted(startIndex, endIndex - startIndex);

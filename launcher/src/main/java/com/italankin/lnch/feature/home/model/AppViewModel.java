@@ -9,6 +9,7 @@ public class AppViewModel {
     public final int color;
     public final String label;
     public boolean hidden;
+    public boolean visible = true;
     public String customLabel;
     public Integer customColor;
 
@@ -18,6 +19,7 @@ public class AppViewModel {
         this.componentName = item.componentName;
         this.label = item.label;
         this.hidden = item.hidden;
+        this.visible = !item.hidden;
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
@@ -35,6 +37,10 @@ public class AppViewModel {
             return customColor;
         }
         return color;
+    }
+
+    public boolean isVisible() {
+        return !hidden && visible;
     }
 
     @Override
