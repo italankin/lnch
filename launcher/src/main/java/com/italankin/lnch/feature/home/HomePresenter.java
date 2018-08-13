@@ -1,10 +1,12 @@
 package com.italankin.lnch.feature.home;
 
+import android.graphics.Color;
+
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.bean.GroupSeparator;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
+import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddSeparatorAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveSeparatorAction;
@@ -12,9 +14,13 @@ import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
+import com.italankin.lnch.model.repository.descriptors.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.GroupDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.rx.ListMapper;
+import com.italankin.lnch.util.ListUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,7 +38,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
      */
-    private List<AppViewModel> apps;
+    private List<ItemViewModel> items;
     private AppsRepository.Editor editor;
 
     @Inject
@@ -57,7 +63,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void hideGroup(int position) {
-        GroupSeparatorViewModel group = (GroupSeparatorViewModel) apps.get(position);
+        GroupSeparatorViewModel group = (GroupSeparatorViewModel) items.get(position);
         setGroupExpanded(position, !group.expanded);
     }
 
@@ -73,19 +79,19 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void swapApps(int from, int to) {
         requireEditMode();
         editor.enqueue(new SwapAction(from, to));
-        SwapAction.swap(apps, from, to);
+        ListUtils.swap(items, from, to);
         getViewState().onItemsSwap(from, to);
     }
 
-    void renameApp(int position, AppViewModel item, String customLabel) {
+    void renameItem(int position, ItemViewModel item, String customLabel) {
         requireEditMode();
         String s = customLabel.isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item.item, s));
-        item.customLabel = s;
+        editor.enqueue(new RenameAction(item.getDescriptor(), s));
+        item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
-    void changeAppCustomColor(int position, AppViewModel item, String value) {
+    void changeItemCustomColor(int position, ItemViewModel item, String value) {
         requireEditMode();
         Integer customColor;
         if (value != null && !value.isEmpty()) {
@@ -98,8 +104,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
         } else {
             customColor = null;
         }
-        editor.enqueue(new SetCustomColorAction(item.item, customColor));
-        item.customColor = customColor;
+        editor.enqueue(new SetCustomColorAction(item.getDescriptor(), customColor));
+        item.setCustomColor(customColor);
         getViewState().onItemChanged(position);
     }
 
@@ -112,16 +118,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void addSeparator(int position) {
         requireEditMode();
-        GroupSeparator item = new GroupSeparator();
+        GroupDescriptor item = new GroupDescriptor("New Group", Color.WHITE);
         editor.enqueue(new AddSeparatorAction(position, item));
-        apps.add(position, new GroupSeparatorViewModel(item));
+        items.add(position, new GroupSeparatorViewModel(item));
         getViewState().onItemInserted(position);
     }
 
     void removeSeparator(int position) {
         requireEditMode();
         editor.enqueue(new RemoveSeparatorAction(position));
-        apps.remove(position);
+        items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
 
@@ -164,22 +170,21 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     private void observeApps() {
-        appsRepository.observeApps()
+        appsRepository.observe()
                 .filter(appItems -> editor == null)
-                .map(ListMapper.create(item -> item.id.equals(GroupSeparator.ID) ?
-                        new GroupSeparatorViewModel(item) : new AppViewModel(item)))
+                .map(this::mapItems)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<AppViewModel>>() {
+                .subscribe(new State<List<ItemViewModel>>() {
                     @Override
-                    protected void onNext(HomeView viewState, List<AppViewModel> list) {
+                    protected void onNext(HomeView viewState, List<ItemViewModel> list) {
                         Timber.d("Receive update: %s", list);
-                        apps = list;
-                        viewState.onAppsLoaded(apps, preferences.homeLayout());
+                        items = list;
+                        viewState.onAppsLoaded(items, preferences.homeLayout());
                     }
 
                     @Override
                     protected void onError(HomeView viewState, Throwable e) {
-                        if (apps != null) {
+                        if (items != null) {
                             viewState.showError(e);
                         } else {
                             viewState.onAppsLoadError(e);
@@ -188,12 +193,24 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
+    private List<ItemViewModel> mapItems(List<Descriptor> descriptors) {
+        List<ItemViewModel> result = new ArrayList<>(descriptors.size());
+        for (Descriptor descriptor : descriptors) {
+            if (descriptor instanceof AppDescriptor) {
+                result.add(new AppViewModel((AppDescriptor) descriptor));
+            } else if (descriptor instanceof GroupDescriptor) {
+                result.add(new GroupSeparatorViewModel((GroupDescriptor) descriptor));
+            }
+        }
+        return result;
+    }
+
     private void setGroupExpanded(int position, boolean expanded) {
-        GroupSeparatorViewModel group = (GroupSeparatorViewModel) apps.get(position);
+        GroupSeparatorViewModel group = (GroupSeparatorViewModel) items.get(position);
         int startIndex = position + 1;
         int endIndex = position;
-        for (int i = startIndex, size = apps.size(); i < size; i++) {
-            if (apps.get(i) instanceof GroupSeparatorViewModel) {
+        for (int i = startIndex, size = items.size(); i < size; i++) {
+            if (items.get(i) instanceof GroupSeparatorViewModel) {
                 break;
             }
             endIndex = i;
@@ -203,7 +220,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
         group.expanded = expanded;
         for (int i = startIndex; i <= endIndex; i++) {
-            apps.get(i).visible = group.expanded;
+            ((AppViewModel) items.get(i)).visible = group.expanded;
         }
         if (group.expanded) {
             getViewState().onItemsInserted(startIndex, endIndex - startIndex);
@@ -213,8 +230,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     private void expandGroups() {
-        for (int i = 0, size = apps.size(); i < size; i++) {
-            if (apps.get(i) instanceof GroupSeparatorViewModel) {
+        for (int i = 0, size = items.size(); i < size; i++) {
+            if (items.get(i) instanceof GroupSeparatorViewModel) {
                 setGroupExpanded(i, true);
             }
         }

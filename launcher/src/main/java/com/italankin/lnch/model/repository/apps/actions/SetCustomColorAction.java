@@ -1,24 +1,24 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
 public class SetCustomColorAction implements AppsRepository.Editor.Action {
-    private final String packageName;
+    private final Descriptor item;
     private final Integer customColor;
 
-    public SetCustomColorAction(AppItem item, Integer customColor) {
-        this.packageName = item.id;
+    public SetCustomColorAction(Descriptor item, Integer customColor) {
+        this.item = item;
         this.customColor = customColor;
     }
 
     @Override
-    public void apply(List<AppItem> items) {
-        for (AppItem item : items) {
-            if (item.id.equals(packageName)) {
-                item.customColor = customColor;
+    public void apply(List<Descriptor> items) {
+        for (Descriptor item : items) {
+            if (this.item.equals(item)) {
+                item.setCustomColor(customColor);
                 break;
             }
         }

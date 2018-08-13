@@ -5,6 +5,7 @@ import com.arellomobile.mvp.MvpView;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
@@ -18,53 +19,49 @@ public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
         subs.clear();
     }
 
-    protected abstract class State<T> implements Observer<T> {
+    protected abstract class State<T> extends BaseState implements Observer<T> {
         protected void onNext(V viewState, T t) {
-        }
-
-        protected void onError(V viewState, Throwable e) {
         }
 
         @Override
         public void onNext(T t) {
             onNext(getViewState(), t);
         }
+    }
 
-        @Override
-        public void onError(Throwable e) {
-            Timber.e(e, "State.onError:");
-            onError(getViewState(), e);
+
+    protected abstract class SingleState<T> extends BaseState implements SingleObserver<T> {
+        protected void onSuccess(V viewState, T t) {
         }
 
         @Override
-        public void onComplete() {
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            subs.add(d);
+        public void onSuccess(T t) {
+            onSuccess(getViewState(), t);
         }
     }
 
-    protected abstract class CompletableState implements CompletableObserver {
+    protected abstract class CompletableState extends BaseState implements CompletableObserver {
         protected void onComplete(V viewState) {
-        }
-
-        protected void onError(V viewState, Throwable e) {
         }
 
         @Override
         public void onComplete() {
             onComplete(getViewState());
         }
+    }
 
-        @Override
+    private abstract class BaseState {
+        protected void onError(V viewState, Throwable e) {
+        }
+
         public void onError(Throwable e) {
-            Timber.e(e, "CompletableState.showError");
+            Timber.e(e, "%s.onError", getClass().getSimpleName());
             onError(getViewState(), e);
         }
 
-        @Override
+        public void onComplete() {
+        }
+
         public void onSubscribe(Disposable d) {
             subs.add(d);
         }

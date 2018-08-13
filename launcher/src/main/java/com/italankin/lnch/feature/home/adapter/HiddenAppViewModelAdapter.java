@@ -35,7 +35,7 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
 
     @Override
     public boolean isType(int position, Object item) {
-        return item.getClass() == AppViewModel.class && !((AppViewModel) item).isVisible();
+        return item instanceof AppViewModel && !((AppViewModel) item).isVisible();
     }
 
     @Override

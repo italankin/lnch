@@ -1,24 +1,24 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
 public class RenameAction implements AppsRepository.Editor.Action {
-    private final String packageName;
+    private final Descriptor item;
     private final String customLabel;
 
-    public RenameAction(AppItem item, String customLabel) {
-        this.packageName = item.id;
+    public RenameAction(Descriptor item, String customLabel) {
+        this.item = item;
         this.customLabel = customLabel;
     }
 
     @Override
-    public void apply(List<AppItem> items) {
-        for (AppItem item : items) {
-            if (item.id.equals(packageName)) {
-                item.customLabel = customLabel;
+    public void apply(List<Descriptor> items) {
+        for (Descriptor item : items) {
+            if (this.item.equals(item)) {
+                item.setCustomLabel(customLabel);
                 break;
             }
         }

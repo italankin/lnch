@@ -55,7 +55,7 @@ public class GroupSeparatorViewModelAdapter extends BaseAdapterDelegate<GroupSep
 
     @Override
     public boolean isType(int position, Object item) {
-        return item.getClass() == GroupSeparatorViewModel.class;
+        return item instanceof GroupSeparatorViewModel;
     }
 
     public interface Listener {
@@ -75,7 +75,7 @@ class GroupSeparatorViewModelHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(GroupSeparatorViewModel item) {
-        label.setText(item.getLabel());
-        label.setTextColor(item.getColor());
+        label.setText(item.label);
+        label.setTextColor(item.color);
     }
 }

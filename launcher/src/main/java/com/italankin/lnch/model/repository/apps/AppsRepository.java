@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.repository.apps;
 
-import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ import io.reactivex.Single;
 
 public interface AppsRepository {
 
-    Observable<List<AppItem>> observeApps();
+    Observable<List<Descriptor>> observe();
 
-    Single<List<AppItem>> fetchApps();
+    Single<List<Descriptor>> fetch();
 
     Completable update();
 
     Editor edit();
 
-    List<AppItem> getApps();
+    List<Descriptor> items();
 
     interface Editor {
 
@@ -27,7 +27,7 @@ public interface AppsRepository {
         Completable commit();
 
         interface Action {
-            void apply(List<AppItem> items);
+            void apply(List<Descriptor> items);
         }
     }
 }

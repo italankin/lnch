@@ -9,13 +9,13 @@ import io.reactivex.functions.Function;
 
 public class ListMapper<T, R> implements Function<List<T>, List<R>> {
 
-    public static <T, R> Function<List<T>, List<R>> create(@NonNull Function<T, R> mapper) {
+    public static <T, R> Function<List<T>, List<R>> create(@NonNull Function<? super T, ? extends R> mapper) {
         return new ListMapper<>(mapper);
     }
 
-    private final Function<T, R> mapper;
+    private final Function<? super T, ? extends R> mapper;
 
-    private ListMapper(@NonNull Function<T, R> mapper) {
+    private ListMapper(@NonNull Function<? super T, ? extends R> mapper) {
         this.mapper = mapper;
     }
 

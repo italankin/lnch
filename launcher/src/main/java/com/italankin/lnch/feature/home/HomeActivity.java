@@ -38,6 +38,7 @@ import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
+import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
@@ -74,7 +75,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
-    private CompositeAdapter<AppViewModel> adapter;
+    private CompositeAdapter<ItemViewModel> adapter;
     private String layout;
     private Snackbar editModeSnackbar;
 
@@ -154,7 +155,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
-        adapter = new CompositeAdapter.Builder<AppViewModel>(this)
+        adapter = new CompositeAdapter.Builder<ItemViewModel>(this)
                 .add(new AppViewModelAdapter(this))
                 .add(new HiddenAppViewModelAdapter())
                 .add(new GroupSeparatorViewModelAdapter(this))
@@ -219,7 +220,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppViewModel> items, String layout) {
+    public void onAppsLoaded(List<ItemViewModel> items, String layout) {
         setLayout(layout);
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
@@ -283,7 +284,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppClick(int position, AppViewModel item) {
         if (editMode) {
-            customizeApp(position, item);
+            customizeItem(position, item);
         } else {
             startApp(item);
         }
@@ -425,14 +426,14 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void customizeApp(int position, AppViewModel item) {
+    private void customizeItem(int position, AppViewModel item) {
         ListAlertDialog.builder(this)
-                .setTitle(item.getLabel())
+                .setTitle(item.getVisibleLabel())
                 .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
-                    setAppName(position, item);
+                    setItemCustomLabel(position, item);
                 })
                 .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
-                    setAppColor(position, item);
+                    setItemColor(position, item);
                 })
                 .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
                     presenter.hideApp(position, item);
@@ -443,29 +444,29 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void setAppName(int position, AppViewModel item) {
+    private void setItemCustomLabel(int position, ItemViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(item.getLabel())
+                .setTitle(item.getCustomLabel())
                 .customizeEditText(editText -> {
-                    editText.setText(item.customLabel);
+                    editText.setText(item.getCustomLabel());
                     editText.setSelectAllOnFocus(true);
                 })
                 .setPositiveButton(R.string.edit_mode_rename, (dialog, editText) -> {
                     String label = editText.getText().toString().trim();
-                    presenter.renameApp(position, item, label);
+                    presenter.renameItem(position, item, label);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
-                    presenter.renameApp(position, item, "");
+                    presenter.renameItem(position, item, "");
                 })
                 .show();
     }
 
-    private void setAppColor(int position, AppViewModel item) {
+    private void setItemColor(int position, ItemViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(item.getLabel())
+                .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
-                    editText.setText(String.format("%06x", item.getColor()).substring(2));
+                    editText.setText(String.format("%06x", item.getVisibleColor()).substring(2));
                     editText.setSelectAllOnFocus(true);
                     editText.addTextChangedListener(new TextWatcherAdapter() {
                         @Override
@@ -483,23 +484,23 @@ public class HomeActivity extends AppActivity implements HomeView,
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String value = editText.getText().toString().trim();
-                    presenter.changeAppCustomColor(position, item, value);
+                    presenter.changeItemCustomColor(position, item, value);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
-                    presenter.changeAppCustomColor(position, item, null);
+                    presenter.changeItemCustomColor(position, item, null);
                 })
                 .show();
     }
 
     private void customizeSeparator(int position, GroupSeparatorViewModel item) {
         ListAlertDialog.builder(this)
-                .setTitle(item.getLabel())
+                .setTitle(item.getVisibleLabel())
                 .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
-                    setAppName(position, item);
+                    setItemCustomLabel(position, item);
                 })
                 .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
-                    setAppColor(position, item);
+                    setItemColor(position, item);
                 })
                 .addItem(0, R.string.edit_mode_action_remove_separator, () -> {
                     presenter.removeSeparator(position);

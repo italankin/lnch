@@ -8,22 +8,13 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.os.UserHandle;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.bean.AppItem;
-import com.italankin.lnch.bean.AppItem_v1;
-import com.italankin.lnch.bean.GroupSeparator;
 import com.italankin.lnch.model.provider.Preferences;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,25 +41,27 @@ import timber.log.Timber;
 public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
+    private final DescriptorRepository descriptorRepository;
     private final Preferences preferences = new Preferences();
     private final LauncherApps launcherApps;
     private final Completable updater;
-    private final BehaviorSubject<List<AppItem>> updatesSubject = BehaviorSubject.create();
+    private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
     private final Subject<String> packageChangesSubject = PublishSubject.create();
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
-    public LauncherAppsRepository(Context context, PackageManager packageManager) {
+    public LauncherAppsRepository(Context context, PackageManager packageManager, DescriptorRepository descriptorRepository) {
         this.context = context;
         this.packageManager = packageManager;
+        this.descriptorRepository = descriptorRepository;
         launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         updater = loadAll()
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");
-                        writeToDisk(appsData.apps);
+                        writeToDisk(appsData.items);
                     }
                 })
-                .map(appsData -> Collections.unmodifiableList(appsData.apps))
+                .map(appsData -> Collections.unmodifiableList(appsData.items))
                 .doOnSuccess(updatesSubject::onNext)
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
@@ -101,17 +94,17 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
-    public Observable<List<AppItem>> observeApps() {
+    public Observable<List<Descriptor>> observe() {
         return updatesSubject;
     }
 
     @Override
-    public Single<List<AppItem>> fetchApps() {
-        return loadAll().map(appsData -> appsData.apps);
+    public Single<List<Descriptor>> fetch() {
+        return loadAll().map(appsData -> appsData.items);
     }
 
     @Override
-    public List<AppItem> getApps() {
+    public List<Descriptor> items() {
         return updatesSubject.getValue();
     }
 
@@ -131,22 +124,19 @@ public class LauncherAppsRepository implements AppsRepository {
                     Single<AppsData> fromList = loadFromList(infoList);
                     return loadFromFile(infoList)
                             .switchIfEmpty(fromList)
-                            .onErrorResumeNext(throwable -> {
-                                Timber.e(throwable, "loadAll:");
-                                return fromList;
-                            });
+                            .doOnError(throwable -> Timber.e(throwable, "loadAll:"))
+                            .onErrorResumeNext(fromList);
                 });
     }
 
     private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
         return Single
                 .fromCallable(() -> {
-                    List<AppItem> apps = new ArrayList<>(16);
+                    List<Descriptor> items = new ArrayList<>(16);
                     for (int i = 0, s = infoList.size(); i < s; i++) {
-                        apps.add(createItem(infoList.get(i)));
+                        items.add(createItem(infoList.get(i)));
                     }
-                    Collections.sort(apps, AppItem.CMP_NAME_ASC);
-                    return new AppsData(apps, true);
+                    return new AppsData(items, true);
                 });
     }
 
@@ -157,49 +147,45 @@ public class LauncherAppsRepository implements AppsRepository {
                         emitter.onComplete();
                         return;
                     }
-                    List<AppItem> savedItems;
-                    boolean oldVersion = false;
-                    try {
-                        savedItems = readFromDisk();
-                    } catch (JsonSyntaxException e) {
-                        savedItems = fromVersion1();
-                        oldVersion = true;
-                    }
+                    List<Descriptor> savedItems = descriptorRepository.read(getPackagesFile());
                     if (savedItems != null) {
-                        List<AppItem> apps = new ArrayList<>(savedItems.size());
-                        List<AppItem> deletedApps = new ArrayList<>(8);
+                        List<Descriptor> items = new ArrayList<>(savedItems.size());
+                        List<Descriptor> deleted = new ArrayList<>(8);
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
-                        for (AppItem item : savedItems) {
-                            if (GroupSeparator.ID.equals(item.id)) {
-                                apps.add(item);
+                        for (Descriptor item : savedItems) {
+                            if (item instanceof GroupDescriptor) {
+                                items.add(item);
+                                continue;
+                            } else if (!(item instanceof AppDescriptor)) {
                                 continue;
                             }
-                            LauncherActivityInfo info = findInfo(infosByPackageName, item);
+                            AppDescriptor app = (AppDescriptor) item;
+                            LauncherActivityInfo info = findInfo(infosByPackageName, app);
                             if (info != null) {
-                                int versionCode = getVersionCode(item.id);
-                                if (item.versionCode != versionCode) {
-                                    item.versionCode = versionCode;
-                                    item.label = preferences.label.get(info);
-                                    item.color = preferences.color.get(info);
+                                int versionCode = getVersionCode(app.packageName);
+                                if (app.versionCode != versionCode) {
+                                    app.versionCode = versionCode;
+                                    app.label = preferences.label.get(info);
+                                    app.color = preferences.color.get(info);
                                 }
-                                apps.add(item);
+                                items.add(app);
                             } else {
-                                deletedApps.add(item);
+                                deleted.add(app);
                             }
                         }
                         for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
                             if (infos.size() == 1) {
-                                apps.add(createItem(infos.get(0)));
+                                items.add(createItem(infos.get(0)));
                             } else {
                                 for (LauncherActivityInfo info : infos) {
-                                    AppItem item = createItem(info);
+                                    AppDescriptor item = createItem(info);
                                     item.componentName = getComponentName(info);
-                                    apps.add(item);
+                                    items.add(item);
                                 }
                             }
                         }
-                        boolean changed = oldVersion || !deletedApps.isEmpty() || !infosByPackageName.isEmpty();
-                        emitter.onSuccess(new AppsData(apps, changed));
+                        boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty();
+                        emitter.onSuccess(new AppsData(items, changed));
                     }
                     emitter.onComplete();
                 });
@@ -219,8 +205,8 @@ public class LauncherAppsRepository implements AppsRepository {
         return infosByPackageName;
     }
 
-    private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppItem item) {
-        List<LauncherActivityInfo> infos = map.get(item.id);
+    private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppDescriptor item) {
+        List<LauncherActivityInfo> infos = map.get(item.packageName);
         if (infos == null) {
             return null;
         }
@@ -239,18 +225,19 @@ public class LauncherAppsRepository implements AppsRepository {
         if (result != null) {
             infos.remove(result);
             if (infos.isEmpty()) {
-                map.remove(item.id);
+                map.remove(item.packageName);
             }
         }
         return result;
     }
 
-    private AppItem createItem(LauncherActivityInfo info) {
+    private AppDescriptor createItem(LauncherActivityInfo info) {
         String packageName = info.getApplicationInfo().packageName;
-        AppItem item = new AppItem(packageName);
+        AppDescriptor item = new AppDescriptor(packageName);
         item.versionCode = getVersionCode(packageName);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
+        item.componentName = getComponentName(info);
         return item;
     }
 
@@ -267,74 +254,8 @@ public class LauncherAppsRepository implements AppsRepository {
         return info.getComponentName().flattenToString();
     }
 
-    private void writeToDisk(List<AppItem> apps) {
-        Timber.d("writeToDisk");
-        try {
-            FileWriter fw = new FileWriter(getPackagesFile());
-            try {
-                GsonBuilder builder = new GsonBuilder();
-                if (BuildConfig.DEBUG) {
-                    builder.setPrettyPrinting();
-                }
-                Gson gson = builder.create();
-                String json = gson.toJson(apps);
-                fw.write(json);
-            } finally {
-                fw.close();
-            }
-        } catch (IOException e) {
-            Timber.e(e, "writeToDisk:");
-        }
-    }
-
-    private List<AppItem> readFromDisk() {
-        Timber.d("readFromDisk");
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<AppItem>>() {
-        }.getType();
-        try {
-            return gson.fromJson(new FileReader(getPackagesFile()), type);
-        } catch (JsonSyntaxException e) {
-            return fromVersion1();
-        } catch (Exception e) {
-            Timber.e(e, "readFromDisk:");
-            return null;
-        }
-    }
-
-    private List<AppItem> fromVersion1() {
-        Timber.d("fromVersion1");
-        try {
-            Map<String, AppItem_v1> map = new Gson().fromJson(new FileReader(getPackagesFile()),
-                    new TypeToken<Map<String, AppItem_v1>>() {
-                    }.getType());
-            List<AppItem_v1> appItems_v1 = new ArrayList<>(map.size());
-            for (Map.Entry<String, AppItem_v1> entry : map.entrySet()) {
-                AppItem_v1 item = entry.getValue();
-                item.packageName = entry.getKey();
-                appItems_v1.add(item);
-            }
-            Collections.sort(appItems_v1);
-            List<AppItem> appItems = new ArrayList<>(map.size());
-            for (AppItem_v1 item : appItems_v1) {
-                appItems.add(item.toAppItem());
-            }
-            createBackup(map);
-            return appItems;
-        } catch (FileNotFoundException e) {
-            Timber.e(e, "fromVersion1:");
-            return null;
-        }
-    }
-
-    private static void createBackup(Map<String, AppItem_v1> map) {
-        try {
-            FileWriter fileWriter = new FileWriter("packages.json.backup");
-            new Gson().toJson(map, new TypeToken<Map<String, AppItem_v1>>() {
-            }.getType(), fileWriter);
-            fileWriter.close();
-        } catch (Exception ignored) {
-        }
+    private void writeToDisk(List<Descriptor> items) {
+        descriptorRepository.write(getPackagesFile(), items);
     }
 
     private File getPackagesFile() {
@@ -342,11 +263,11 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     private static class AppsData {
-        final List<AppItem> apps;
+        final List<Descriptor> items;
         final boolean changed;
 
-        public AppsData(List<AppItem> apps, boolean changed) {
-            this.apps = apps;
+        public AppsData(List<Descriptor> items, boolean changed) {
+            this.items = items;
             this.changed = changed;
         }
     }
@@ -386,11 +307,11 @@ public class LauncherAppsRepository implements AppsRepository {
 
     final class Editor implements AppsRepository.Editor {
         private final Queue<AppsRepository.Editor.Action> actions = new ArrayDeque<>();
-        private final List<AppItem> apps;
+        private final List<Descriptor> items;
         private volatile boolean used;
 
-        Editor(List<AppItem> apps) {
-            this.apps = apps;
+        Editor(List<Descriptor> items) {
+            this.items = items;
         }
 
         @Override
@@ -416,7 +337,7 @@ public class LauncherAppsRepository implements AppsRepository {
             Timber.d("commit: apply actions");
             return Single
                     .fromCallable(() -> {
-                        List<AppItem> result = new ArrayList<>(apps);
+                        List<Descriptor> result = new ArrayList<>(items);
                         Iterator<AppsRepository.Editor.Action> iter = actions.iterator();
                         while (iter.hasNext()) {
                             iter.next().apply(result);

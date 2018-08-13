@@ -7,13 +7,14 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
-import com.italankin.lnch.util.rx.ListMapper;
+import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -54,14 +55,17 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
 
     void loadApps() {
         getViewState().showLoading();
-        appsRepository.observeApps()
+        appsRepository.observe()
                 .subscribeOn(Schedulers.io())
                 .take(1)
-                .map(ListMapper.create(item -> new AppViewModel(item, packageManager)))
+                .concatMapIterable(Functions.identity())
+                .ofType(AppDescriptor.class)
+                .map(item -> new AppViewModel(item, packageManager))
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<AppViewModel>>() {
+                .subscribe(new SingleState<List<AppViewModel>>() {
                     @Override
-                    protected void onNext(AppsVisibilityView viewState, List<AppViewModel> apps) {
+                    protected void onSuccess(AppsVisibilityView viewState, List<AppViewModel> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 

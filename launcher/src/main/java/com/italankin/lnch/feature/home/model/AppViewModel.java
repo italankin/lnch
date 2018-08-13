@@ -1,21 +1,22 @@
 package com.italankin.lnch.feature.home.model;
 
-import com.italankin.lnch.bean.AppItem;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 
-public class AppViewModel {
-    public final AppItem item;
+public class AppViewModel implements ItemViewModel {
+    public final AppDescriptor item;
     public final String packageName;
     public final String componentName;
     public final int color;
     public final String label;
     public boolean hidden;
-    public boolean visible = true;
+    public boolean visible;
     public String customLabel;
     public Integer customColor;
 
-    public AppViewModel(AppItem item) {
+    public AppViewModel(AppDescriptor item) {
         this.item = item;
-        this.packageName = item.id;
+        this.packageName = item.packageName;
         this.componentName = item.componentName;
         this.label = item.label;
         this.hidden = item.hidden;
@@ -25,14 +26,35 @@ public class AppViewModel {
         this.customColor = item.customColor;
     }
 
-    public String getLabel() {
+    @Override
+    public Descriptor getDescriptor() {
+        return item;
+    }
+
+    @Override
+    public String getCustomLabel() {
+        return customLabel;
+    }
+
+    @Override
+    public void setCustomLabel(String label) {
+        customLabel = label;
+    }
+
+    @Override
+    public void setCustomColor(Integer color) {
+        customColor = color;
+    }
+
+    @Override
+    public String getVisibleLabel() {
         if (customLabel != null) {
             return customLabel;
         }
         return label;
     }
 
-    public int getColor() {
+    public int getVisibleColor() {
         if (customColor != null) {
             return customColor;
         }

@@ -1,9 +1,9 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.util.ListUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 public class SwapAction implements AppsRepository.Editor.Action {
@@ -16,19 +16,7 @@ public class SwapAction implements AppsRepository.Editor.Action {
     }
 
     @Override
-    public void apply(List<AppItem> items) {
-        swap(items, from, to);
-    }
-
-    public static <T> void swap(List<T> items, int from, int to) {
-        if (from < to) {
-            for (int i = from; i < to; i++) {
-                Collections.swap(items, i, i + 1);
-            }
-        } else {
-            for (int i = from; i > to; i--) {
-                Collections.swap(items, i, i - 1);
-            }
-        }
+    public void apply(List<Descriptor> items) {
+        ListUtils.swap(items, from, to);
     }
 }

@@ -1,24 +1,24 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
-import com.italankin.lnch.bean.AppItem;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
 public class SetVisibilityAction implements AppsRepository.Editor.Action {
-    private final String packageName;
+    private final Descriptor item;
     private final boolean visible;
 
-    public SetVisibilityAction(AppItem item, boolean visible) {
-        this.packageName = item.id;
+    public SetVisibilityAction(Descriptor item, boolean visible) {
+        this.item = item;
         this.visible = visible;
     }
 
     @Override
-    public void apply(List<AppItem> items) {
-        for (AppItem item : items) {
-            if (item.id.equals(packageName)) {
-                item.hidden = !visible;
+    public void apply(List<Descriptor> items) {
+        for (Descriptor item : items) {
+            if (this.item.equals(item)) {
+                item.setHidden(!visible);
                 break;
             }
         }

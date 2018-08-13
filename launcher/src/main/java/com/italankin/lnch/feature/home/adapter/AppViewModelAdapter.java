@@ -56,7 +56,7 @@ public class AppViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder,
 
     @Override
     public boolean isType(int position, Object item) {
-        return item.getClass() == AppViewModel.class && ((AppViewModel) item).isVisible();
+        return item instanceof AppViewModel && ((AppViewModel) item).isVisible();
     }
 
     public interface Listener {
@@ -75,7 +75,7 @@ class AppViewModelHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(AppViewModel item) {
-        label.setText(item.getLabel());
-        label.setTextColor(item.getColor());
+        label.setText(item.getVisibleLabel());
+        label.setTextColor(item.getVisibleColor());
     }
 }
