@@ -1,6 +1,6 @@
 package com.italankin.lnch.feature.home;
 
-import android.graphics.Color;
+import android.support.annotation.ColorInt;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -14,9 +14,9 @@ import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
-import com.italankin.lnch.model.repository.descriptors.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
-import com.italankin.lnch.model.repository.descriptors.GroupDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ListUtils;
 
@@ -116,9 +116,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemChanged(position);
     }
 
-    void addSeparator(int position) {
+    void addSeparator(int position, String label, @ColorInt int color) {
         requireEditMode();
-        GroupDescriptor item = new GroupDescriptor("New Group", Color.WHITE);
+        GroupDescriptor item = new GroupDescriptor(label, color);
         editor.enqueue(new AddSeparatorAction(position, item));
         items.add(position, new GroupSeparatorViewModel(item));
         getViewState().onItemInserted(position);

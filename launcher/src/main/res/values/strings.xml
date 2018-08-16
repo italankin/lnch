@@ -8,6 +8,8 @@
 
     <string name="hint_search">Search</string>
 
+    <string name="new_group_label">New Group</string>
+
     <string name="edit_mode_hint">Edit mode</string>
     <string name="edit_mode_save">Save</string>
     <string name="edit_mode_saved">Saved</string>
