@@ -14,4 +14,9 @@ public interface Descriptor {
 
     void setHidden(boolean hidden);
 
+    @Override
+    boolean equals(Object o);
+
+    @Override
+    int hashCode();
 }
