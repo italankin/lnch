@@ -5,10 +5,10 @@ import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
-public class RemoveSeparatorAction implements AppsRepository.Editor.Action {
+public class RemoveAction implements AppsRepository.Editor.Action {
     private final int position;
 
-    public RemoveSeparatorAction(int position) {
+    public RemoveAction(int position) {
         this.position = position;
     }
 

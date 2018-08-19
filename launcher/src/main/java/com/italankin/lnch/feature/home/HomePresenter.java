@@ -9,7 +9,7 @@ import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddSeparatorAction;
-import com.italankin.lnch.model.repository.apps.actions.RemoveSeparatorAction;
+import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
@@ -126,7 +126,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void removeSeparator(int position) {
         requireEditMode();
-        editor.enqueue(new RemoveSeparatorAction(position));
+        editor.enqueue(new RemoveAction(position));
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
