@@ -18,17 +18,17 @@ import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-public class AppsVisibilityFragment extends AppFragment implements AppsVisibilityView {
+public class AppsFragment extends AppFragment implements AppsView {
 
     @InjectPresenter
-    AppsVisibilityPresenter presenter;
+    AppsPresenter presenter;
 
     private LceLayout lce;
     private RecyclerView list;
 
     @ProvidePresenter
-    AppsVisibilityPresenter providePresenter() {
-        return daggerService().presenters().appsVisibility();
+    AppsPresenter providePresenter() {
+        return daggerService().presenters().apps();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class AppsVisibilityFragment extends AppFragment implements AppsVisibilit
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_apps_visibility, container, false);
+        return inflater.inflate(R.layout.fragment_settings_apps, container, false);
     }
 
     @Override

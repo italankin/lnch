@@ -12,6 +12,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_app_visibility" />
+        tools:listitem="@layout/item_settings_app" />
 
 </com.italankin.lnch.util.widget.LceLayout>

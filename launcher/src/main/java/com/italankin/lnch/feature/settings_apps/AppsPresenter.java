@@ -19,14 +19,14 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
+public class AppsPresenter extends AppPresenter<AppsView> {
 
     private final AppsRepository appsRepository;
     private final AppsRepository.Editor editor;
     private final PackageManager packageManager;
 
     @Inject
-    AppsVisibilityPresenter(PackageManager packageManager, AppsRepository appsRepository) {
+    AppsPresenter(PackageManager packageManager, AppsRepository appsRepository) {
         this.appsRepository = appsRepository;
         this.editor = appsRepository.edit();
         this.packageManager = packageManager;
@@ -65,12 +65,12 @@ public class AppsVisibilityPresenter extends AppPresenter<AppsVisibilityView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleState<List<AppViewModel>>() {
                     @Override
-                    protected void onSuccess(AppsVisibilityView viewState, List<AppViewModel> apps) {
+                    protected void onSuccess(AppsView viewState, List<AppViewModel> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 
                     @Override
-                    protected void onError(AppsVisibilityView viewState, Throwable e) {
+                    protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });

@@ -14,7 +14,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_apps.AppsVisibilityFragment;
+import com.italankin.lnch.feature.settings_apps.AppsFragment;
 import com.italankin.lnch.feature.settings_search.SearchFragment;
 
 import timber.log.Timber;
@@ -85,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     @Override
     public void showAppsVisibilityPreferences() {
         setResult(RESULT_CHANGED);
-        showFragment(new AppsVisibilityFragment(), R.string.title_settings_apps_visibility);
+        showFragment(new AppsFragment(), R.string.title_settings_apps);
     }
 
     @Override

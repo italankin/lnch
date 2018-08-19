@@ -8,7 +8,7 @@ import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 
 import java.util.List;
 
-interface AppsVisibilityView extends MvpView {
+interface AppsView extends MvpView {
 
     @StateStrategyType(SingleStateStrategy.class)
     void showLoading();

@@ -20,7 +20,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.item_app_visibility;
+        return R.layout.item_settings_app;
     }
 
     @NonNull

@@ -51,7 +51,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
             }
             return true;
         });
-        findPreference(R.string.prefs_apps_visibility).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.prefs_apps).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showAppsVisibilityPreferences();
             }

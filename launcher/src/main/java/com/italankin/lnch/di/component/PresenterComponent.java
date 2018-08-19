@@ -2,7 +2,7 @@ package com.italankin.lnch.di.component;
 
 import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.home.HomePresenter;
-import com.italankin.lnch.feature.settings_apps.AppsVisibilityPresenter;
+import com.italankin.lnch.feature.settings_apps.AppsPresenter;
 
 import dagger.Component;
 
@@ -12,6 +12,6 @@ public interface PresenterComponent {
 
     HomePresenter home();
 
-    AppsVisibilityPresenter appsVisibility();
+    AppsPresenter apps();
 
 }

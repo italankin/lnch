@@ -14,8 +14,8 @@
             android:key="@string/prefs_home_layout"
             android:title="@string/title_settings_home_layout" />
         <Preference
-            android:key="@string/prefs_apps_visibility"
-            android:title="@string/title_settings_apps_visibility" />
+            android:key="@string/prefs_apps"
+            android:title="@string/title_settings_apps" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/edit_mode_prefs_title">
         <Preference
