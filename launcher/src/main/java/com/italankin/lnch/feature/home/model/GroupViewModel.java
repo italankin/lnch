@@ -3,7 +3,7 @@ package com.italankin.lnch.feature.home.model;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 
-public class GroupSeparatorViewModel implements ItemViewModel {
+public class GroupViewModel implements ItemViewModel {
     public final GroupDescriptor item;
     public final String label;
     public String customLabel;
@@ -11,7 +11,7 @@ public class GroupSeparatorViewModel implements ItemViewModel {
     public int color;
     public Integer customColor;
 
-    public GroupSeparatorViewModel(GroupDescriptor item) {
+    public GroupViewModel(GroupDescriptor item) {
         this.item = item;
         this.label = item.label;
         this.color = item.color;

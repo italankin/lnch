@@ -5,7 +5,7 @@ import android.support.annotation.ColorInt;
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
-import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
+import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddGroupAction;
@@ -63,7 +63,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void hideGroup(int position) {
-        GroupSeparatorViewModel group = (GroupSeparatorViewModel) items.get(position);
+        GroupViewModel group = (GroupViewModel) items.get(position);
         setGroupExpanded(position, !group.expanded);
     }
 
@@ -116,15 +116,15 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemChanged(position);
     }
 
-    void addSeparator(int position, String label, @ColorInt int color) {
+    void addGroup(int position, String label, @ColorInt int color) {
         requireEditMode();
         GroupDescriptor item = new GroupDescriptor(label, color);
         editor.enqueue(new AddGroupAction(position, item));
-        items.add(position, new GroupSeparatorViewModel(item));
+        items.add(position, new GroupViewModel(item));
         getViewState().onItemInserted(position);
     }
 
-    void removeSeparator(int position) {
+    void removeGroup(int position) {
         requireEditMode();
         editor.enqueue(new RemoveAction(position));
         items.remove(position);
@@ -199,18 +199,18 @@ public class HomePresenter extends AppPresenter<HomeView> {
             if (descriptor instanceof AppDescriptor) {
                 result.add(new AppViewModel((AppDescriptor) descriptor));
             } else if (descriptor instanceof GroupDescriptor) {
-                result.add(new GroupSeparatorViewModel((GroupDescriptor) descriptor));
+                result.add(new GroupViewModel((GroupDescriptor) descriptor));
             }
         }
         return result;
     }
 
     private void setGroupExpanded(int position, boolean expanded) {
-        GroupSeparatorViewModel group = (GroupSeparatorViewModel) items.get(position);
+        GroupViewModel group = (GroupViewModel) items.get(position);
         int startIndex = position + 1;
         int endIndex = position;
         for (int i = startIndex, size = items.size(); i < size; i++) {
-            if (items.get(i) instanceof GroupSeparatorViewModel) {
+            if (items.get(i) instanceof GroupViewModel) {
                 break;
             }
             endIndex = i;
@@ -231,7 +231,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void expandGroups() {
         for (int i = 0, size = items.size(); i < size; i++) {
-            if (items.get(i) instanceof GroupSeparatorViewModel) {
+            if (items.get(i) instanceof GroupViewModel) {
                 setGroupExpanded(i, true);
             }
         }

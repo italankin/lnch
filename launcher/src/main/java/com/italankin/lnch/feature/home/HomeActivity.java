@@ -33,11 +33,11 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.GroupSeparatorViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
-import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
+import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
@@ -55,7 +55,7 @@ import java.util.List;
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
-        GroupSeparatorViewModelAdapter.Listener {
+        GroupViewModelAdapter.Listener {
 
     private static final int REQUEST_CODE_SETTINGS = 1;
 
@@ -158,7 +158,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         adapter = new CompositeAdapter.Builder<ItemViewModel>(this)
                 .add(new AppViewModelAdapter(this))
                 .add(new HiddenAppViewModelAdapter())
-                .add(new GroupSeparatorViewModelAdapter(this))
+                .add(new GroupViewModelAdapter(this))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
@@ -301,16 +301,16 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onSeparatorClick(int position, GroupSeparatorViewModel item) {
+    public void onGroupClick(int position, GroupViewModel item) {
         if (editMode) {
-            customizeSeparator(position, item);
+            customizeGroup(position, item);
         } else {
             presenter.hideGroup(position);
         }
     }
 
     @Override
-    public void onSeparatorLongClick(int position, GroupSeparatorViewModel item) {
+    public void onGroupLongClick(int position, GroupViewModel item) {
         if (editMode) {
             View view = list.getLayoutManager().findViewByPosition(position);
             touchHelper.startDrag(list.getChildViewHolder(view));
@@ -438,8 +438,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
                     presenter.hideApp(position, item);
                 })
-                .addItem(R.drawable.ic_action_add_group, R.string.edit_mode_action_add_separator, () -> {
-                    presenter.addSeparator(position, getString(R.string.new_group_label),
+                .addItem(R.drawable.ic_action_add_group, R.string.edit_mode_action_add_group, () -> {
+                    presenter.addGroup(position, getString(R.string.new_group_label),
                             getColor(R.color.group_default));
                 })
                 .show();
@@ -494,7 +494,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void customizeSeparator(int position, GroupSeparatorViewModel item) {
+    private void customizeGroup(int position, GroupViewModel item) {
         ListAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
                 .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
@@ -503,8 +503,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
                     setItemColor(position, item);
                 })
-                .addItem(R.drawable.ic_action_remove, R.string.edit_mode_action_remove_separator, () -> {
-                    presenter.removeSeparator(position);
+                .addItem(R.drawable.ic_action_remove, R.string.edit_mode_action_remove_group, () -> {
+                    presenter.removeGroup(position);
                 })
                 .show();
     }
