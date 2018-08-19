@@ -133,12 +133,12 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
      *
      * @param <T> list data type
      */
-    public static final class Builder<T> {
-        private final Context context;
-        private final SparseArray<AdapterDelegate> delegates = new SparseArray<>(1);
-        private boolean hasStableIds;
-        private List<T> dataset;
-        private RecyclerView recyclerView;
+    public static class Builder<T> {
+        protected final Context context;
+        protected final SparseArray<AdapterDelegate> delegates = new SparseArray<>(1);
+        protected boolean hasStableIds;
+        protected List<T> dataset;
+        protected RecyclerView recyclerView;
 
         public Builder(Context context) {
             this.context = context;
@@ -214,7 +214,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
             if (delegates.size() == 0) {
                 throw new IllegalStateException("No AdapterDelegates added");
             }
-            CompositeAdapter<T> adapter = new CompositeAdapter<>(context, delegates, hasStableIds);
+            CompositeAdapter<T> adapter = createAdapter();
             if (dataset != null) {
                 adapter.dataset = dataset;
             }
@@ -222,6 +222,10 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
                 recyclerView.setAdapter(adapter);
             }
             return adapter;
+        }
+
+        protected CompositeAdapter<T> createAdapter() {
+            return new CompositeAdapter<>(context, delegates, hasStableIds);
         }
     }
 }
