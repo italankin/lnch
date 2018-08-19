@@ -438,7 +438,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
                     presenter.hideApp(position, item);
                 })
-                .addItem(0, R.string.edit_mode_action_add_separator, () -> {
+                .addItem(R.drawable.ic_action_add_group, R.string.edit_mode_action_add_separator, () -> {
                     presenter.addSeparator(position, getString(R.string.new_group_label),
                             getColor(R.color.group_default));
                 })
@@ -503,7 +503,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
                     setItemColor(position, item);
                 })
-                .addItem(0, R.string.edit_mode_action_remove_separator, () -> {
+                .addItem(R.drawable.ic_action_remove, R.string.edit_mode_action_remove_separator, () -> {
                     presenter.removeSeparator(position);
                 })
                 .show();
