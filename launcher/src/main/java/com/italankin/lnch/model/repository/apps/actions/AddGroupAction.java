@@ -6,17 +6,17 @@ import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 
 import java.util.List;
 
-public class AddSeparatorAction implements AppsRepository.Editor.Action {
+public class AddGroupAction implements AppsRepository.Editor.Action {
     private final int position;
-    private final GroupDescriptor separator;
+    private final GroupDescriptor groupDescriptor;
 
-    public AddSeparatorAction(int position, GroupDescriptor separator) {
+    public AddGroupAction(int position, GroupDescriptor groupDescriptor) {
         this.position = position;
-        this.separator = separator;
+        this.groupDescriptor = groupDescriptor;
     }
 
     @Override
     public void apply(List<Descriptor> items) {
-        items.add(position, separator);
+        items.add(position, groupDescriptor);
     }
 }

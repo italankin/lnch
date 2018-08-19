@@ -8,7 +8,7 @@ import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupSeparatorViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.apps.actions.AddSeparatorAction;
+import com.italankin.lnch.model.repository.apps.actions.AddGroupAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
@@ -119,7 +119,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void addSeparator(int position, String label, @ColorInt int color) {
         requireEditMode();
         GroupDescriptor item = new GroupDescriptor(label, color);
-        editor.enqueue(new AddSeparatorAction(position, item));
+        editor.enqueue(new AddGroupAction(position, item));
         items.add(position, new GroupSeparatorViewModel(item));
         getViewState().onItemInserted(position);
     }
