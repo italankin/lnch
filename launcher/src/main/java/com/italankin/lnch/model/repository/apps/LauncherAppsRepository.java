@@ -237,7 +237,6 @@ public class LauncherAppsRepository implements AppsRepository {
         item.versionCode = getVersionCode(packageName);
         item.label = preferences.label.get(info);
         item.color = preferences.color.get(info);
-        item.componentName = getComponentName(info);
         return item;
     }
 
