@@ -27,11 +27,11 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder
     @Override
     protected AppViewModelHolder createViewHolder(View itemView) {
         AppViewModelHolder holder = new AppViewModelHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.visibility.setOnClickListener(v -> {
             if (listener != null) {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(pos, getItem(pos));
+                    listener.onVisibilityClick(pos, getItem(pos));
                 }
             }
         });
@@ -49,25 +49,32 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder
     }
 
     public interface Listener {
-        void onItemClick(int position, AppViewModel item);
+        void onVisibilityClick(int position, AppViewModel item);
     }
 }
 
 class AppViewModelHolder extends RecyclerView.ViewHolder {
-    final TextView label;
+    private static final float ALPHA_ITEM_VISIBLE = 1f;
+    private static final float ALPHA_ITEM_HIDDEN = 0.3f;
+
     final ImageView icon;
+    final TextView label;
+    final ImageView visibility;
 
     AppViewModelHolder(View itemView) {
         super(itemView);
         label = itemView.findViewById(R.id.label);
         icon = itemView.findViewById(R.id.icon);
+        visibility = itemView.findViewById(R.id.visibility);
     }
 
     void bind(AppViewModel item) {
-        label.setCompoundDrawablesWithIntrinsicBounds(0,0,
-                item.hidden ? R.drawable.ic_visibility_off : R.drawable.ic_visibility_on,0);
+        visibility.setImageResource(item.hidden ? R.drawable.ic_visibility_off :
+                R.drawable.ic_visibility_on);
         label.setText(item.label);
         icon.setImageDrawable(item.icon);
-        itemView.invalidate();
+        float alpha = item.hidden ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;
+        label.setAlpha(alpha);
+        icon.setAlpha(alpha);
     }
 }

@@ -18,7 +18,7 @@ import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-public class AppsFragment extends AppFragment implements AppsView {
+public class AppsFragment extends AppFragment implements AppsView, AppsViewModelAdapter.Listener {
 
     @InjectPresenter
     AppsPresenter presenter;
@@ -50,6 +50,12 @@ public class AppsFragment extends AppFragment implements AppsView {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.saveChanges();
+    }
+
+    @Override
     public void showLoading() {
         lce.showLoading();
     }
@@ -57,7 +63,7 @@ public class AppsFragment extends AppFragment implements AppsView {
     @Override
     public void onAppsLoaded(List<AppViewModel> apps) {
         new CompositeAdapter.Builder<AppViewModel>(getContext())
-                .add(new AppsViewModelAdapter(presenter::toggleAppVisibility))
+                .add(new AppsViewModelAdapter(this))
                 .recyclerView(list)
                 .dataset(apps)
                 .create();
@@ -78,8 +84,7 @@ public class AppsFragment extends AppFragment implements AppsView {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.saveChanges();
+    public void onVisibilityClick(int position, AppViewModel item) {
+        presenter.toggleAppVisibility(position, item);
     }
 }
