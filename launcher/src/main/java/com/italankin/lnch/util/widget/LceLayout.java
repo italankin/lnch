@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -328,6 +330,9 @@ public class LceLayout extends FrameLayout {
             super(inflater.getContext());
             setGravity(Gravity.CENTER);
             setOrientation(VERTICAL);
+            DisplayMetrics dm = inflater.getContext().getResources().getDisplayMetrics();
+            int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, dm);
+            setPadding(p, p, p, p);
             inflater.inflate(R.layout.state_view, this, true);
             text = findViewById(R.id.text);
             button = findViewById(R.id.button);

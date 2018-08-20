@@ -29,6 +29,7 @@
             android:name=".feature.settings_root.SettingsActivity"
             android:label="@string/title_settings"
             android:launchMode="singleInstance"
-            android:theme="@style/PreferenceTheme" />
+            android:theme="@style/PreferenceTheme"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

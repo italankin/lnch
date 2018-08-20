@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +23,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
     public static final int RESULT_CHANGED = RESULT_FIRST_USER;
     public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER + 1;
+    private Toolbar toolbar;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -42,19 +42,17 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(() -> {
-            ActionBar actionBar = getSupportActionBar();
-            assert actionBar != null;
-            actionBar.setTitle(getFragmentTitle());
-            actionBar.setDisplayHomeAsUpEnabled(fragmentManager.getBackStackEntryCount() > 0);
+            toolbar.setTitle(getFragmentTitle());
+            toolbar.setNavigationIcon(fragmentManager.getBackStackEntryCount() > 0
+                    ? R.drawable.ic_arrow_back
+                    : R.drawable.ic_close);
         });
 
         setContentView(R.layout.activity_settings);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        //noinspection ConstantConditions
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
 
         if (savedInstanceState == null) {
             fragmentManager

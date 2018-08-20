@@ -3,7 +3,10 @@ package com.italankin.lnch.feature.settings_apps;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,20 +14,22 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.settings_apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings_apps.adapter.AppsViewModelAdapter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-public class AppsFragment extends AppFragment implements AppsView, AppsViewModelAdapter.Listener {
+public class AppsFragment extends AppFragment implements AppsView, AppsViewModelAdapter.Listener, AppsFilter.OnFilterResult {
 
     @InjectPresenter
     AppsPresenter presenter;
 
     private LceLayout lce;
     private RecyclerView list;
+    private FilterCompositeAdapter<AppViewModel> adapter;
 
     @ProvidePresenter
     AppsPresenter providePresenter() {
@@ -35,6 +40,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -50,6 +56,29 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.settings_apps, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setQueryHint(getString(R.string.hint_search));
+        // TODO
+        if (true) {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    adapter.filter(query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    adapter.filter(newText);
+                    return false;
+                }
+            });
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         presenter.saveChanges();
@@ -62,11 +91,13 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
 
     @Override
     public void onAppsLoaded(List<AppViewModel> apps) {
-        new CompositeAdapter.Builder<AppViewModel>(getContext())
-                .add(new AppsViewModelAdapter(this))
-                .recyclerView(list)
-                .dataset(apps)
-                .create();
+        adapter = (FilterCompositeAdapter<AppViewModel>)
+                new FilterCompositeAdapter.Builder<AppViewModel>(getContext())
+                        .filter(new AppsFilter(apps, this))
+                        .add(new AppsViewModelAdapter(this))
+                        .recyclerView(list)
+                        .dataset(apps)
+                        .create();
         lce.showContent();
     }
 
@@ -86,5 +117,17 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     @Override
     public void onVisibilityClick(int position, AppViewModel item) {
         presenter.toggleAppVisibility(position, item);
+    }
+
+    @Override
+    public void onFilterResult(String query, List<AppViewModel> items) {
+        if (items.isEmpty()) {
+            lce.empty()
+                    .message(getString(R.string.search_placeholder, query)) // TODO
+                    .show();
+        } else {
+            adapter.setDataset(items);
+            lce.showContent();
+        }
     }
 }
