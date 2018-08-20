@@ -21,7 +21,7 @@ public interface MainComponent {
 
     PackageManager getPackageManager();
 
-    Preferences getAppPrefs();
+    Preferences getPreferences();
 
     AppsRepository getAppsRepository();
 

@@ -5,7 +5,7 @@ import com.italankin.lnch.model.provider.color.DominantColorProvider;
 import com.italankin.lnch.model.provider.label.LabelProvider;
 import com.italankin.lnch.model.provider.label.UppercaseLabelProvider;
 
-public class Preferences {
+public class ProviderPreferences {
 
     public static final String LAYOUT_COMPACT = "compact";
     public static final String LAYOUT_GRID = "grid";

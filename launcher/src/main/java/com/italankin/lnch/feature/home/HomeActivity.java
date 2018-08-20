@@ -39,10 +39,12 @@ import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
-import com.italankin.lnch.model.provider.Preferences;
+import com.italankin.lnch.model.provider.ProviderPreferences;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
@@ -78,6 +80,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private CompositeAdapter<ItemViewModel> adapter;
     private String layout;
     private Snackbar editModeSnackbar;
+    private Preferences preferences;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -90,6 +93,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         packageManager = getPackageManager();
+        preferences = daggerService().main().getPreferences();
 
         setupWindow();
 
@@ -165,6 +169,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setupRoot() {
+        root.setBackgroundColor(preferences.overlayColor());
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
@@ -173,7 +178,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
-                if (daggerService().main().getAppPrefs().searchShowSoftKeyboard()) {
+                if (preferences.searchShowSoftKeyboard()) {
                     editSearch.requestFocus();
                 }
                 inputMethodManager.showSoftInput(editSearch, 0);
@@ -220,8 +225,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<ItemViewModel> items, String layout) {
-        setLayout(layout);
+    public void onAppsLoaded(List<ItemViewModel> items, UserPrefs userPrefs) {
+        applyUserPrefs(userPrefs);
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
         root.showContent();
@@ -354,6 +359,11 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
+    private void applyUserPrefs(UserPrefs userPrefs) {
+        setLayout(userPrefs.homeLayout);
+        root.setBackgroundColor(userPrefs.overlayColor);
+    }
+
     private void onFireSearch(int pos) {
         if (editSearch.getText().length() > 0) {
             SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
@@ -400,7 +410,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void setLayout(String layout) {
         if (layout == null) {
-            layout = Preferences.LAYOUT_COMPACT;
+            layout = ProviderPreferences.LAYOUT_COMPACT;
         }
         if (!layout.equals(this.layout)) {
             this.layout = layout;
@@ -410,14 +420,14 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private RecyclerView.LayoutManager getLayoutManager(String layout) {
         if (layout == null) {
-            layout = Preferences.LAYOUT_COMPACT;
+            layout = ProviderPreferences.LAYOUT_COMPACT;
         }
         switch (layout) {
-            case Preferences.LAYOUT_GRID:
+            case ProviderPreferences.LAYOUT_GRID:
                 return new GridLayoutManager(this, 2);
-            case Preferences.LAYOUT_LINEAR:
+            case ProviderPreferences.LAYOUT_LINEAR:
                 return new LinearLayoutManager(this);
-            case Preferences.LAYOUT_COMPACT:
+            case ProviderPreferences.LAYOUT_COMPACT:
             default:
                 FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
                 layoutManager.setFlexDirection(FlexDirection.ROW);

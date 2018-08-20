@@ -6,4 +6,7 @@ public interface Preferences {
 
     String homeLayout();
 
+    void setOverlayColor(int color);
+
+    int overlayColor();
 }

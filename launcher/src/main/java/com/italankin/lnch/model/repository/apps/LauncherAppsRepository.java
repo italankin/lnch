@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.os.UserHandle;
 
-import com.italankin.lnch.model.provider.Preferences;
+import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
@@ -42,7 +42,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
     private final DescriptorRepository descriptorRepository;
-    private final Preferences preferences = new Preferences();
+    private final ProviderPreferences providerPreferences = new ProviderPreferences();
     private final LauncherApps launcherApps;
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
@@ -165,8 +165,8 @@ public class LauncherAppsRepository implements AppsRepository {
                                 int versionCode = getVersionCode(app.packageName);
                                 if (app.versionCode != versionCode) {
                                     app.versionCode = versionCode;
-                                    app.label = preferences.label.get(info);
-                                    app.color = preferences.color.get(info);
+                                    app.label = providerPreferences.label.get(info);
+                                    app.color = providerPreferences.color.get(info);
                                 }
                                 items.add(app);
                             } else {
@@ -235,8 +235,8 @@ public class LauncherAppsRepository implements AppsRepository {
         String packageName = info.getApplicationInfo().packageName;
         AppDescriptor item = new AppDescriptor(packageName);
         item.versionCode = getVersionCode(packageName);
-        item.label = preferences.label.get(info);
-        item.color = preferences.color.get(info);
+        item.label = providerPreferences.label.get(info);
+        item.color = providerPreferences.color.get(info);
         return item;
     }
 

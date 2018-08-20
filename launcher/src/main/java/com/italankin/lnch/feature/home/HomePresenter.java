@@ -7,6 +7,7 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddGroupAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
@@ -179,7 +180,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, List<ItemViewModel> list) {
                         Timber.d("Receive update: %s", list);
                         items = list;
-                        viewState.onAppsLoaded(items, preferences.homeLayout());
+                        viewState.onAppsLoaded(items, userPrefs());
                     }
 
                     @Override
@@ -191,6 +192,13 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         }
                     }
                 });
+    }
+
+    private UserPrefs userPrefs() {
+        UserPrefs userPrefs = new UserPrefs();
+        userPrefs.homeLayout = preferences.homeLayout();
+        userPrefs.overlayColor = preferences.overlayColor();
+        return userPrefs;
     }
 
     private List<ItemViewModel> mapItems(List<Descriptor> descriptors) {

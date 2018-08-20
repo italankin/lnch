@@ -4,7 +4,7 @@
     <string name="prefs_search_show_soft_keyboard">search_show_soft_keyboard</string>
     <string name="prefs_wallpaper">wallpaper</string>
     <string name="prefs_wallpaper_change">wallpaper_change</string>
-    <string name="prefs_wallpaper_overlay">wallpaper_overlay</string>
+    <string name="prefs_wallpaper_overlay_show">wallpaper_overlay_show</string>
     <string name="prefs_wallpaper_overlay_color">wallpaper_overlay_color</string>
     <string name="prefs_home_apps">apps</string>
     <string name="prefs_home_layout">home_layout</string>

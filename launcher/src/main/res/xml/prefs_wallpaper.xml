@@ -8,10 +8,10 @@
     <PreferenceCategory android:title="@string/title_settings_wallpaper_overlay">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/prefs_wallpaper_overlay"
+            android:key="@string/prefs_wallpaper_overlay_show"
             android:title="@string/title_settings_wallpaper_overlay_show" />
         <Preference
-            android:dependency="@string/prefs_wallpaper_overlay"
+            android:dependency="@string/prefs_wallpaper_overlay_show"
             android:key="@string/prefs_wallpaper_overlay_color"
             android:title="@string/title_settings_wallpaper_overlay_color" />
     </PreferenceCategory>
