@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/title_settings_wallpaper">
+        <Preference
+            android:key="@string/prefs_wallpaper_change"
+            android:title="@string/title_settings_wallpaper_change" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_wallpaper_overlay">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_wallpaper_overlay"
+            android:title="@string/title_settings_wallpaper_overlay_show" />
+        <Preference
+            android:dependency="@string/prefs_wallpaper_overlay"
+            android:key="@string/prefs_wallpaper_overlay_color"
+            android:title="@string/title_settings_wallpaper_overlay_color" />
+    </PreferenceCategory>
+</PreferenceScreen>

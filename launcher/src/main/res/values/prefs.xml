@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="prefs_edit_mode">edit_mode</string>
-    <string name="prefs_search">search</string>
-    <string name="prefs_wallpaper">wallpaper</string>
-    <string name="prefs_apps">apps</string>
+    <string name="prefs_search_behavior">search_behavior</string>
     <string name="prefs_search_show_soft_keyboard">search_show_soft_keyboard</string>
+    <string name="prefs_wallpaper">wallpaper</string>
+    <string name="prefs_wallpaper_change">wallpaper_change</string>
+    <string name="prefs_wallpaper_overlay">wallpaper_overlay</string>
+    <string name="prefs_wallpaper_overlay_color">wallpaper_overlay_color</string>
+    <string name="prefs_home_apps">apps</string>
     <string name="prefs_home_layout">home_layout</string>
+    <string name="prefs_home_customize">customize</string>
 </resources>

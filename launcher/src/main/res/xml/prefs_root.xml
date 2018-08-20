@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Home">
+    <PreferenceCategory android:title="@string/title_settings_home">
         <Preference
+            android:icon="@drawable/ic_settings_wallpaper"
             android:key="@string/prefs_wallpaper"
-            android:title="Wallpaper" />
-        <Preference
-            android:key="@string/prefs_search"
-            android:title="@string/title_settings_search" />
+            android:title="@string/title_settings_wallpaper" />
         <ListPreference
             android:defaultValue="compact"
             android:entries="@array/home_layout_desc"
             android:entryValues="@array/home_layouts"
+            android:icon="@drawable/ic_settings_layout"
             android:key="@string/prefs_home_layout"
             android:title="@string/title_settings_home_layout" />
         <Preference
-            android:key="@string/prefs_apps"
+            android:icon="@drawable/ic_settings_apps"
+            android:key="@string/prefs_home_apps"
             android:title="@string/title_settings_apps" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/edit_mode_prefs_title">
         <Preference
-            android:key="@string/prefs_edit_mode"
-            android:title="@string/edit_mode_prefs_hint" />
+            android:icon="@drawable/ic_action_rename"
+            android:key="@string/prefs_home_customize"
+            android:title="@string/title_settings_home_customize" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_search">
+        <Preference
+            android:icon="@drawable/ic_settings_search"
+            android:key="@string/prefs_search_behavior"
+            android:title="@string/title_settings_search_behavior" />
     </PreferenceCategory>
 </PreferenceScreen>

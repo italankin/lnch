@@ -3,7 +3,7 @@
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/prefs_search_show_soft_keyboard"
-        android:summaryOff="Keyboard will NOT open when search bar appears"
-        android:summaryOn="Keyboard will open when search bar appears"
-        android:title="Automatically show keyboard" />
+        android:summaryOff="@string/title_settings_search_behavior_auto_show_summary_off"
+        android:summaryOn="@string/title_settings_search_behavior_auto_show_summary_on"
+        android:title="@string/title_settings_search_behavior_auto_show" />
 </PreferenceScreen>

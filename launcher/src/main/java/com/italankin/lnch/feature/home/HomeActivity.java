@@ -109,8 +109,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     public void onBackPressed() {
         if (editMode) {
             new AlertDialog.Builder(this)
-                    .setMessage(R.string.edit_mode_discard_message)
-                    .setPositiveButton(R.string.edit_mode_discard, (dialog, which) -> presenter.discardChanges())
+                    .setMessage(R.string.customize_discard_message)
+                    .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
                     .setNegativeButton(R.string.cancel, null)
                     .show();
             return;
@@ -235,7 +235,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onStopEditMode() {
         setEditMode(false);
-        Toast.makeText(this, R.string.edit_mode_saved, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -380,9 +380,9 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
             editModeSnackbar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.edit_mode_hint,
+                    R.string.customize_snackbar_hint,
                     Snackbar.LENGTH_INDEFINITE);
-            editModeSnackbar.setAction(R.string.edit_mode_save, v -> {
+            editModeSnackbar.setAction(R.string.customize_save, v -> {
                 if (editModeSnackbar != null && editModeSnackbar.isShownOrQueued()) {
                     presenter.stopEditMode();
                 }
@@ -429,16 +429,16 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void customizeItem(int position, AppViewModel item) {
         ListAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
-                .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
+                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
                     setItemCustomLabel(position, item);
                 })
-                .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
+                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
                     setItemColor(position, item);
                 })
-                .addItem(R.drawable.ic_action_hide, R.string.edit_mode_action_hide, () -> {
+                .addItem(R.drawable.ic_action_hide, R.string.customize_item_hide, () -> {
                     presenter.hideApp(position, item);
                 })
-                .addItem(R.drawable.ic_action_add_group, R.string.edit_mode_action_add_group, () -> {
+                .addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
                     presenter.addGroup(position, getString(R.string.new_group_label),
                             getColor(R.color.group_default));
                 })
@@ -452,12 +452,12 @@ public class HomeActivity extends AppActivity implements HomeView,
                     editText.setText(item.getCustomLabel());
                     editText.setSelectAllOnFocus(true);
                 })
-                .setPositiveButton(R.string.edit_mode_rename, (dialog, editText) -> {
+                .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String label = editText.getText().toString().trim();
                     presenter.renameItem(position, item, label);
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
+                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
                     presenter.renameItem(position, item, "");
                 })
                 .show();
@@ -488,7 +488,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.changeItemCustomColor(position, item, value);
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.edit_mode_reset, (dialog, which) -> {
+                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
                     presenter.changeItemCustomColor(position, item, null);
                 })
                 .show();
@@ -497,13 +497,13 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void customizeGroup(int position, GroupViewModel item) {
         ListAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
-                .addItem(R.drawable.ic_action_name, R.string.edit_mode_action_name, () -> {
+                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
                     setItemCustomLabel(position, item);
                 })
-                .addItem(R.drawable.ic_action_color, R.string.edit_mode_action_color, () -> {
+                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
                     setItemColor(position, item);
                 })
-                .addItem(R.drawable.ic_action_remove, R.string.edit_mode_action_remove_group, () -> {
+                .addItem(R.drawable.ic_action_remove, R.string.customize_item_remove_group, () -> {
                     presenter.removeGroup(position);
                 })
                 .show();

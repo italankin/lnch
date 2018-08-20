@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings_apps.AppsFragment;
 import com.italankin.lnch.feature.settings_search.SearchFragment;
+import com.italankin.lnch.feature.settings_wallpaper.WallpaperFragment;
 
 import timber.log.Timber;
 
@@ -77,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
     @Override
     public void showSearchPreferences() {
-        showFragment(new SearchFragment(), R.string.title_settings_search);
+        showFragment(new SearchFragment(), R.string.title_settings_search_behavior);
     }
 
     @Override
@@ -87,10 +88,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     }
 
     @Override
-    public void showWallpapersSelector() {
-        Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-        Intent chooser = Intent.createChooser(intent, getString(R.string.set_wallpaper));
-        startActivity(chooser);
+    public void showWallpaperPreferences() {
+        showFragment(new WallpaperFragment(), R.string.title_settings_wallpaper);
     }
 
     private void showFragment(Fragment fragment, @StringRes int title) {
