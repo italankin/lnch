@@ -97,7 +97,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         Integer customColor;
         if (value != null && !value.isEmpty()) {
             try {
-                customColor = Integer.decode("0x" + value) + 0xff000000;
+                customColor = Integer.decode("0x" + value) | 0xff000000;
             } catch (Exception e) {
                 getViewState().showError(e);
                 return;
