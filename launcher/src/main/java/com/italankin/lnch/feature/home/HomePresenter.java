@@ -68,24 +68,24 @@ public class HomePresenter extends AppPresenter<HomeView> {
         setGroupExpanded(position, !group.expanded);
     }
 
-    void startEditMode() {
+    void startCustomize() {
         if (editor != null) {
             throw new IllegalStateException("Editor is not null!");
         }
         editor = appsRepository.edit();
         expandGroups();
-        getViewState().onStartEditMode();
+        getViewState().onStartCustomize();
     }
 
     void swapApps(int from, int to) {
-        requireEditMode();
+        requireEditor();
         editor.enqueue(new SwapAction(from, to));
         ListUtils.swap(items, from, to);
         getViewState().onItemsSwap(from, to);
     }
 
     void renameItem(int position, ItemViewModel item, String customLabel) {
-        requireEditMode();
+        requireEditor();
         String s = customLabel.isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction(item.getDescriptor(), s));
         item.setCustomLabel(s);
@@ -93,7 +93,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void changeItemCustomColor(int position, ItemViewModel item, String value) {
-        requireEditMode();
+        requireEditor();
         Integer customColor;
         if (value != null && !value.isEmpty()) {
             try {
@@ -111,14 +111,14 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void hideApp(int position, AppViewModel item) {
-        requireEditMode();
+        requireEditor();
         editor.enqueue(new SetVisibilityAction(item.item, false));
         item.hidden = true;
         getViewState().onItemChanged(position);
     }
 
     void addGroup(int position, String label, @ColorInt int color) {
-        requireEditMode();
+        requireEditor();
         GroupDescriptor item = new GroupDescriptor(label, color);
         editor.enqueue(new AddGroupAction(position, item));
         items.add(position, new GroupViewModel(item));
@@ -126,28 +126,28 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void removeGroup(int position) {
-        requireEditMode();
+        requireEditor();
         editor.enqueue(new RemoveAction(position));
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
 
     void discardChanges() {
-        requireEditMode();
+        requireEditor();
         editor = null;
         getViewState().onChangesDiscarded();
         update();
     }
 
-    void stopEditMode() {
-        requireEditMode();
+    void stopCustomize() {
+        requireEditor();
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
                     protected void onComplete(HomeView viewState) {
-                        viewState.onStopEditMode();
+                        viewState.onStopCustomize();
                         update();
                     }
 
@@ -245,7 +245,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
     }
 
-    private void requireEditMode() {
+    private void requireEditor() {
         if (editor == null) {
             throw new IllegalStateException();
         }

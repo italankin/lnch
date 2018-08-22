@@ -144,7 +144,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.reloadAppsImmediate();
                     return;
                 case SettingsActivity.RESULT_EDIT_MODE:
-                    presenter.startEditMode();
+                    presenter.startCustomize();
                     return;
             }
         }
@@ -214,7 +214,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             startActivityForResult(intent, REQUEST_CODE_SETTINGS);
         });
         btnSettings.setOnLongClickListener(v -> {
-            presenter.startEditMode();
+            presenter.startCustomize();
             return true;
         });
     }
@@ -233,12 +233,12 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onStartEditMode() {
+    public void onStartCustomize() {
         setEditMode(true);
     }
 
     @Override
-    public void onStopEditMode() {
+    public void onStopCustomize() {
         setEditMode(false);
         Toast.makeText(this, R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
@@ -394,7 +394,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     Snackbar.LENGTH_INDEFINITE);
             editModeSnackbar.setAction(R.string.customize_save, v -> {
                 if (editModeSnackbar != null && editModeSnackbar.isShownOrQueued()) {
-                    presenter.stopEditMode();
+                    presenter.stopCustomize();
                 }
             });
             editModeSnackbar.show();

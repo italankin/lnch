@@ -14,7 +14,7 @@ import java.util.List;
 interface HomeView extends MvpView {
 
     String CONTENT = "content";
-    String EDIT_MODE = "edit_mode";
+    String CUSTOMIZE = "customize";
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
     void showProgress();
@@ -28,13 +28,13 @@ interface HomeView extends MvpView {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);
 
-    @StateStrategyType(value = TagStrategy.class, tag = EDIT_MODE)
-    void onStartEditMode();
+    @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
+    void onStartCustomize();
 
-    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = EDIT_MODE)
-    void onStopEditMode();
+    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
+    void onStopCustomize();
 
-    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = EDIT_MODE)
+    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
     void onChangesDiscarded();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
