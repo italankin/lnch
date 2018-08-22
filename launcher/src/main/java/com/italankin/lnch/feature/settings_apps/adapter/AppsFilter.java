@@ -10,10 +10,14 @@ import com.italankin.lnch.util.SearchUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-
 public class AppsFilter extends Filter {
+    public static final int FLAG_HIDDEN = 1;
+    public static final int FLAG_VISIBLE = 1 << 1;
+
+    private static final int DEFAULT_FLAGS = FLAG_HIDDEN | FLAG_VISIBLE;
     private static final FilterResults EMPTY;
 
     static {
@@ -27,22 +31,52 @@ public class AppsFilter extends Filter {
     @Nullable
     private final OnFilterResult onFilterResult;
 
+    private volatile int flags = DEFAULT_FLAGS;
+    private volatile CharSequence constraint;
+
     public AppsFilter(@NonNull List<AppViewModel> items, @Nullable OnFilterResult onFilterResult) {
         this.unfiltered = items;
         this.onFilterResult = onFilterResult;
     }
 
+    public void setFlags(int newFlags) {
+        if (flags != newFlags) {
+            flags = newFlags;
+            filter(constraint);
+        }
+    }
+
+    public void resetFlags() {
+        setFlags(DEFAULT_FLAGS);
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
-        if (TextUtils.isEmpty(constraint)) {
-            return of(unfiltered);
-        }
-        String query = constraint.toString().trim().toLowerCase();
+        this.constraint = constraint;
         List<AppViewModel> result = new ArrayList<>(unfiltered.size());
         for (AppViewModel item : unfiltered) {
-            if (SearchUtils.contains(item.item.label, query) ||
-                    SearchUtils.contains(item.item.customLabel, query)) {
-                result.add(item);
+            if (!item.hidden && (flags & FLAG_VISIBLE) == 0) {
+                continue;
+            }
+            if (item.hidden && (flags & FLAG_HIDDEN) == 0) {
+                continue;
+            }
+            result.add(item);
+        }
+        if (TextUtils.isEmpty(constraint)) {
+            return of(result);
+        }
+        String query = constraint.toString().trim().toLowerCase();
+        Iterator<AppViewModel> iterator = result.iterator();
+        while (iterator.hasNext()) {
+            AppViewModel item = iterator.next();
+            if (!SearchUtils.contains(item.item.label, query) &&
+                    !SearchUtils.contains(item.item.customLabel, query)) {
+                iterator.remove();
             }
         }
         return of(result);

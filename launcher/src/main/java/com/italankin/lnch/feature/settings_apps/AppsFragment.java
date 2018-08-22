@@ -2,11 +2,14 @@ package com.italankin.lnch.feature.settings_apps;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +33,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     private LceLayout lce;
     private RecyclerView list;
     private FilterCompositeAdapter<AppViewModel> adapter;
+    private AppsFilter filter;
 
     @ProvidePresenter
     AppsPresenter providePresenter() {
@@ -58,24 +62,31 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.settings_apps, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint(getString(R.string.hint_search));
-        // TODO
-        if (true) {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    adapter.filter(query);
-                    return false;
-                }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query);
+                return false;
+            }
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    adapter.filter(newText);
-                    return false;
-                }
-            });
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                showFilterDialog();
+                return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -91,9 +102,10 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
 
     @Override
     public void onAppsLoaded(List<AppViewModel> apps) {
+        filter = new AppsFilter(apps, this);
         adapter = (FilterCompositeAdapter<AppViewModel>)
                 new FilterCompositeAdapter.Builder<AppViewModel>(getContext())
-                        .filter(new AppsFilter(apps, this))
+                        .filter(filter)
                         .add(new AppsViewModelAdapter(this))
                         .recyclerView(list)
                         .dataset(apps)
@@ -122,12 +134,42 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     @Override
     public void onFilterResult(String query, List<AppViewModel> items) {
         if (items.isEmpty()) {
+            String message = TextUtils.isEmpty(query) ? getString(R.string.search_empty)
+                    : getString(R.string.search_placeholder, query);
             lce.empty()
-                    .message(getString(R.string.search_placeholder, query)) // TODO
+                    .message(message)
                     .show();
         } else {
             adapter.setDataset(items);
             lce.showContent();
         }
+    }
+
+    private void showFilterDialog() {
+        int flags = filter.getFlags();
+        boolean[] itemsState = {
+                (flags & AppsFilter.FLAG_VISIBLE) > 0,
+                (flags & AppsFilter.FLAG_HIDDEN) > 0
+        };
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.settings_apps_filter)
+                .setMultiChoiceItems(R.array.settings_apps_filter_items, itemsState, (dialog, which, isChecked) -> {
+                    itemsState[which] = isChecked;
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.settings_apps_filter_reset, (dialog, which) -> {
+                    filter.resetFlags();
+                })
+                .setPositiveButton(R.string.settings_apps_filter_apply, (dialog, which) -> {
+                    int newFlags = 0;
+                    if (itemsState[0]) {
+                        newFlags |= AppsFilter.FLAG_VISIBLE;
+                    }
+                    if (itemsState[1]) {
+                        newFlags |= AppsFilter.FLAG_HIDDEN;
+                    }
+                    filter.setFlags(newFlags);
+                })
+                .show();
     }
 }
