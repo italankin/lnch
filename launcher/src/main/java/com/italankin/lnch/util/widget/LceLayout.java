@@ -348,7 +348,7 @@ public class LceLayout extends FrameLayout {
                 button.setText(title);
             }
             button.setOnClickListener(listener);
-            button.setVisibility(listener != null ? VISIBLE : INVISIBLE);
+            button.setVisibility(listener != null ? VISIBLE : GONE);
         }
     }
 

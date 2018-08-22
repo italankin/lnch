@@ -12,7 +12,6 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:textSize="18sp"
         tools:text="Try again later" />
@@ -21,6 +20,9 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/retry" />
+        android:layout_marginTop="16dp"
+        android:text="@string/retry"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </merge>
