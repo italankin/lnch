@@ -11,6 +11,8 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 200;
     private static final float DRAG_RESISTANCE = 0.77f;
+    private static final float SHOWN_SHOW_THRESHOLD = .25f;
+    private static final float HIDDEN_SHOW_THRESHOLD = .40f;
 
     private View topView;
     private View bottomView;
@@ -34,19 +36,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
             setupInitialState();
         }
         return false;
-    }
-
-    private void setupInitialState() {
-        maxOffset = topView.getMeasuredHeight();
-        if (shown) {
-            topView.setTranslationY(0);
-            topView.setAlpha(1);
-            bottomView.setTranslationY(maxOffset);
-        } else {
-            topView.setTranslationY(-maxOffset);
-            topView.setAlpha(0);
-            bottomView.setTranslationY(0);
-        }
     }
 
     @Override
@@ -107,44 +96,8 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Magic
+    // Public
     ///////////////////////////////////////////////////////////////////////////
-
-    private void onDrag(int dy) {
-        int actual = (int) (dy * (1 - DRAG_RESISTANCE));
-        float cty = topView.getTranslationY() - actual;
-        if (cty < -maxOffset) {
-            cty = -maxOffset;
-        } else if (cty > 0) {
-            cty = 0;
-        }
-        topView.setTranslationY(cty);
-        topView.setAlpha(1 - Math.abs(cty) / maxOffset);
-        float tty = bottomView.getTranslationY() - actual;
-        if (tty < 0) {
-            tty = 0;
-        } else if (tty > maxOffset) {
-            tty = maxOffset;
-        }
-        bottomView.setTranslationY(tty);
-    }
-
-    private void jumpToActualState() {
-        float abs = Math.abs(topView.getTranslationY());
-        if (shown) {
-            if (abs < maxOffset * .25f) {
-                show();
-            } else {
-                hide();
-            }
-        } else {
-            if (abs < maxOffset * .50f) {
-                show();
-            } else {
-                hide();
-            }
-        }
-    }
 
     public void show() {
         dragInProgress = false;
@@ -196,6 +149,59 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Private
+    ///////////////////////////////////////////////////////////////////////////
+
+    private void setupInitialState() {
+        maxOffset = topView.getMeasuredHeight();
+        if (shown) {
+            topView.setTranslationY(0);
+            topView.setAlpha(1);
+            bottomView.setTranslationY(maxOffset);
+        } else {
+            topView.setTranslationY(-maxOffset);
+            topView.setAlpha(0);
+            bottomView.setTranslationY(0);
+        }
+    }
+
+    private void onDrag(int dy) {
+        int actual = (int) (dy * (1 - DRAG_RESISTANCE));
+        float cty = topView.getTranslationY() - actual;
+        if (cty < -maxOffset) {
+            cty = -maxOffset;
+        } else if (cty > 0) {
+            cty = 0;
+        }
+        topView.setTranslationY(cty);
+        topView.setAlpha(1 - Math.abs(cty) / maxOffset);
+        float tty = bottomView.getTranslationY() - actual;
+        if (tty < 0) {
+            tty = 0;
+        } else if (tty > maxOffset) {
+            tty = maxOffset;
+        }
+        bottomView.setTranslationY(tty);
+    }
+
+    private void jumpToActualState() {
+        float abs = Math.abs(topView.getTranslationY());
+        if (shown) {
+            if (abs < maxOffset * SHOWN_SHOW_THRESHOLD) {
+                show();
+            } else {
+                hide();
+            }
+        } else {
+            if (abs < maxOffset * HIDDEN_SHOW_THRESHOLD) {
+                show();
+            } else {
+                hide();
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
