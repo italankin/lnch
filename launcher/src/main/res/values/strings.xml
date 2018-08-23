@@ -41,6 +41,8 @@
     <string name="title_settings_search_behavior_auto_show_summary_on">Keyboard will open when search bar appears</string>
     <string name="title_settings_search_behavior_auto_show_summary_off">Keyboard will NOT open when search bar appears</string>
 
+    <string name="settings_system">System settings</string>
+
     <string name="settings_apps_filter">Filter</string>
     <string name="settings_apps_filter_apply">Apply</string>
     <string name="settings_apps_filter_reset">Reset</string>
