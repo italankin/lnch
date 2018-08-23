@@ -109,6 +109,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        topView.animate().setListener(null);
                         if (listener != null) {
                             listener.onShow();
                         }
@@ -131,6 +132,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        topView.animate().setListener(null);
                         if (listener != null) {
                             listener.onHide();
                         }
