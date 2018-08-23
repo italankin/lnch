@@ -50,13 +50,17 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     @Override
     protected void onFirstViewAttach() {
-        observeApps();
-        loadApps();
+        reloadApps();
     }
 
     void loadApps() {
         getViewState().showProgress();
         update();
+    }
+
+    void reloadApps() {
+        observeApps();
+        loadApps();
     }
 
     void reloadAppsImmediate() {

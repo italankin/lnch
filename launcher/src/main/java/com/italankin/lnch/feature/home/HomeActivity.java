@@ -275,7 +275,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppsLoadError(Throwable e) {
         root.error()
-                .button(v -> presenter.loadApps())
+                .button(v -> presenter.reloadApps())
                 .message(e.getMessage())
                 .show();
     }
