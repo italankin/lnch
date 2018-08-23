@@ -4,9 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -46,6 +44,7 @@ import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
+import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
@@ -349,9 +348,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     void startAppSettings(AppViewModel item) {
-        Uri uri = Uri.fromParts("package", item.packageName, null);
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = IntentUtils.getPackageSystemSettings(item.packageName);
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
         } else {
