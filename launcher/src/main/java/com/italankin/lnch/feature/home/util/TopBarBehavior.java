@@ -12,7 +12,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private static final int ANIM_DURATION = 200;
     private static final float DRAG_RESISTANCE = 0.77f;
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
-    private static final float HIDDEN_SHOW_THRESHOLD = .40f;
+    private static final float HIDDEN_SHOW_THRESHOLD = .6f;
 
     private View topView;
     private View bottomView;
