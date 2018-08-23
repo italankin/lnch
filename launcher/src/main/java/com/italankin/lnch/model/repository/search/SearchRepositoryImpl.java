@@ -6,9 +6,10 @@ import android.content.pm.PackageManager;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
-import com.italankin.lnch.model.repository.search.match.GoogleMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
-import com.italankin.lnch.model.repository.search.match.MatchImpl;
+import com.italankin.lnch.model.repository.search.match.PartialMatch;
+import com.italankin.lnch.model.repository.search.match.UrlMatch;
+import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,19 +39,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (s.isEmpty()) {
             return Collections.emptyList();
         }
-        List<MatchImpl> matches = new ArrayList<>(8);
+        List<PartialMatch> matches = new ArrayList<>(8);
         for (Descriptor item : appsRepository.items()) {
             if (!(item instanceof AppDescriptor)) {
                 continue;
             }
             AppDescriptor appItem = (AppDescriptor) item;
-            MatchImpl match = null;
+            PartialMatch match = null;
             if (startsWith(appItem.customLabel, s) || startsWith(appItem.label, s)) {
-                match = new MatchImpl(MatchImpl.Type.STARTS_WITH);
+                match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
             } else if (containsWord(appItem.customLabel, s) || containsWord(appItem.label, s)) {
-                match = new MatchImpl(MatchImpl.Type.CONTAINS_WORD);
+                match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
             } else if (contains(appItem.customLabel, s) || contains(appItem.label, s)) {
-                match = new MatchImpl(MatchImpl.Type.CONTAINS);
+                match = new PartialMatch(PartialMatch.Type.CONTAINS);
             }
             if (match != null) {
                 match.color = item.getVisibleColor();
@@ -72,7 +73,12 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
         }
 
-        matches.add(new GoogleMatch(s));
+        matches.add(new WebSearchMatch(constraint.toString(), s));
+
+        if (s.startsWith("http://") && s.length() > 7 || s.startsWith("https://") && s.length() > 8
+                || s.matches("\\w+\\.\\w+")) {
+            matches.add(new UrlMatch(s));
+        }
 
         return matches;
     }

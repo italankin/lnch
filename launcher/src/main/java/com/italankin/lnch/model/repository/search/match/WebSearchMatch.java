@@ -6,11 +6,11 @@ import android.net.Uri;
 
 import com.italankin.lnch.R;
 
-public class GoogleMatch extends MatchImpl {
-    public GoogleMatch(String query) {
+public class WebSearchMatch extends PartialMatch {
+    public WebSearchMatch(String label, String query) {
         super(Type.OTHER);
         color = Color.WHITE;
-        label = query.trim();
+        this.label = label.trim();
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=" + query));
         iconRes = R.drawable.ic_search;
     }

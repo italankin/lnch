@@ -4,15 +4,15 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 
-public class MatchImpl implements Match, Comparable<MatchImpl> {
-    public final MatchImpl.Type type;
+public class PartialMatch implements Match, Comparable<PartialMatch> {
+    public final PartialMatch.Type type;
     public Drawable icon;
     public int iconRes;
     public int color;
     public CharSequence label;
     public Intent intent;
 
-    public MatchImpl(MatchImpl.Type type) {
+    public PartialMatch(PartialMatch.Type type) {
         this.type = type;
     }
 
@@ -47,11 +47,12 @@ public class MatchImpl implements Match, Comparable<MatchImpl> {
     }
 
     @Override
-    public int compareTo(@NonNull MatchImpl match) {
+    public int compareTo(@NonNull PartialMatch match) {
         return type.compareTo(match.type);
     }
 
     public enum Type {
+        EXACT,
         STARTS_WITH,
         CONTAINS_WORD,
         CONTAINS,
