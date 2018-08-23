@@ -54,7 +54,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             if (match != null) {
                 match.color = item.getVisibleColor();
-                match.label = appItem.customLabel;
+                match.label = appItem.getVisibleLabel();
                 match.intent = packageManager.getLaunchIntentForPackage(appItem.packageName);
                 if (match.intent != null && appItem.componentName != null) {
                     match.intent.setComponent(ComponentName.unflattenFromString(appItem.componentName));
