@@ -10,7 +10,7 @@ import android.view.View;
 public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 200;
-    private static final float DRAG_RESISTANCE = 0.55f;
+    private static final float DRAG_RESISTANCE = 0.77f;
 
     private View topView;
     private View bottomView;
