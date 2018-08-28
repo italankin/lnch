@@ -10,11 +10,14 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import com.squareup.picasso.Picasso;
 
-public class AppsViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder, AppViewModel> {
+public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, AppViewModel> {
+    private final Picasso picasso;
     private final Listener listener;
 
-    public AppsViewModelAdapter(@Nullable Listener listener) {
+    public AppsViewModelAdapter(Picasso picasso, @Nullable Listener listener) {
+        this.picasso = picasso;
         this.listener = listener;
     }
 
@@ -51,30 +54,32 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder
     public interface Listener {
         void onVisibilityClick(int position, AppViewModel item);
     }
-}
 
-class AppViewModelHolder extends RecyclerView.ViewHolder {
-    private static final float ALPHA_ITEM_VISIBLE = 1f;
-    private static final float ALPHA_ITEM_HIDDEN = 0.3f;
+    class AppViewModelHolder extends RecyclerView.ViewHolder {
+        private static final float ALPHA_ITEM_VISIBLE = 1f;
+        private static final float ALPHA_ITEM_HIDDEN = 0.3f;
 
-    final ImageView icon;
-    final TextView label;
-    final ImageView visibility;
+        final ImageView icon;
+        final TextView label;
+        final ImageView visibility;
 
-    AppViewModelHolder(View itemView) {
-        super(itemView);
-        label = itemView.findViewById(R.id.label);
-        icon = itemView.findViewById(R.id.icon);
-        visibility = itemView.findViewById(R.id.visibility);
-    }
+        AppViewModelHolder(View itemView) {
+            super(itemView);
+            label = itemView.findViewById(R.id.label);
+            icon = itemView.findViewById(R.id.icon);
+            visibility = itemView.findViewById(R.id.visibility);
+        }
 
-    void bind(AppViewModel item) {
-        visibility.setImageResource(item.hidden ? R.drawable.ic_visibility_off :
-                R.drawable.ic_visibility_on);
-        label.setText(item.label);
-        icon.setImageDrawable(item.icon);
-        float alpha = item.hidden ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;
-        label.setAlpha(alpha);
-        icon.setAlpha(alpha);
+        void bind(AppViewModel item) {
+            visibility.setImageResource(item.hidden ? R.drawable.ic_visibility_off :
+                    R.drawable.ic_visibility_on);
+            label.setText(item.label);
+            picasso.load(item.icon)
+                    .fit()
+                    .into(icon);
+            float alpha = item.hidden ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;
+            label.setAlpha(alpha);
+            icon.setAlpha(alpha);
+        }
     }
 }
