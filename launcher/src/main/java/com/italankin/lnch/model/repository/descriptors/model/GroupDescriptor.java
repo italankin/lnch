@@ -7,6 +7,9 @@ import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 public class GroupDescriptor implements Descriptor {
 
+    @SerializedName("id")
+    public String id;
+
     @SerializedName("label")
     public String label;
 
@@ -24,6 +27,7 @@ public class GroupDescriptor implements Descriptor {
     }
 
     public GroupDescriptor(String label, int color) {
+        this.id = Long.toHexString(System.currentTimeMillis());
         this.label = label;
         this.color = color;
     }
