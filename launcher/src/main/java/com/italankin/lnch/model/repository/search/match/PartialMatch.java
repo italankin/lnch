@@ -1,12 +1,12 @@
 package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 public class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;
-    public Drawable icon;
+    public Uri icon;
     public int iconRes;
     public int color;
     public CharSequence label;
@@ -17,7 +17,7 @@ public class PartialMatch implements Match, Comparable<PartialMatch> {
     }
 
     @Override
-    public Drawable getIcon() {
+    public Uri getIcon() {
         return icon;
     }
 

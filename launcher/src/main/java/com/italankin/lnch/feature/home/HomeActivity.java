@@ -29,6 +29,7 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.MainComponent;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
@@ -50,6 +51,7 @@ import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.ListAlertDialog;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -205,7 +207,9 @@ public class HomeActivity extends AppActivity implements HomeView,
             onFireSearch(position);
         });
         editSearch.setThreshold(1);
-        editSearch.setAdapter(new SearchAdapter(daggerService().main().getSearchRepository()));
+        MainComponent mainComponent = daggerService().main();
+        Picasso picasso = mainComponent.getPicassoFactory().create(this);
+        editSearch.setAdapter(new SearchAdapter(picasso, mainComponent.getSearchRepository()));
 
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
