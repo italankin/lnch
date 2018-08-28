@@ -10,6 +10,7 @@ import android.text.style.UnderlineSpan;
 import com.italankin.lnch.R;
 
 public class UrlMatch extends PartialMatch {
+
     public UrlMatch(String url) {
         super(Type.OTHER);
         color = Color.WHITE;
