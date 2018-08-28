@@ -32,26 +32,26 @@ android {
 }
 
 dependencies {
-    implementation "com.arello-mobile:moxy:$moxyVersion"
-    annotationProcessor "com.arello-mobile:moxy-compiler:$moxyVersion"
-    implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
+    implementation moxy
+    annotationProcessor moxyCompiler
+    implementation moxyAppCompat
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
-    compileOnly "javax.annotation:jsr250-api:1.0"
+    implementation dagger
+    annotationProcessor daggerCompiler
+    compileOnly jsr250
 
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation rxJava
+    implementation rxAndroid
 
-    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation gson
 
-    implementation "com.jakewharton.timber:timber:$timberVersion"
+    implementation timber
 
-    implementation "com.android.support:appcompat-v7:$supportVersion"
-    implementation "com.android.support:recyclerview-v7:$supportVersion"
-    implementation "com.android.support:palette-v7:$supportVersion"
-    implementation "com.android.support:design:$supportVersion"
-    implementation "com.android.support:preference-v14:$supportVersion"
+    implementation appCompat
+    implementation recyclerView
+    implementation palette
+    implementation design
+    implementation preference
 
-    implementation "com.google.android:flexbox:$flexboxVersion"
+    implementation flexbox
 }
