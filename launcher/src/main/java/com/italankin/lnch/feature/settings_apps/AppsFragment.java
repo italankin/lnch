@@ -22,6 +22,7 @@ import com.italankin.lnch.feature.settings_apps.adapter.AppsViewModelAdapter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -103,10 +104,11 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     @Override
     public void onAppsLoaded(List<AppViewModel> apps) {
         filter = new AppsFilter(apps, this);
+        Picasso picasso = daggerService().main().getPicassoFactory().create(getContext());
         adapter = (FilterCompositeAdapter<AppViewModel>)
                 new FilterCompositeAdapter.Builder<AppViewModel>(getContext())
                         .filter(filter)
-                        .add(new AppsViewModelAdapter(this))
+                        .add(new AppsViewModelAdapter(picasso, this))
                         .recyclerView(list)
                         .dataset(apps)
                         .create();

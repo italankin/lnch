@@ -10,6 +10,7 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
 import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
+import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,10 +62,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 if (match.intent != null && appItem.componentName != null) {
                     match.intent.setComponent(ComponentName.unflattenFromString(appItem.componentName));
                 }
-                try {
-                    match.icon = packageManager.getApplicationIcon(appItem.packageName);
-                } catch (PackageManager.NameNotFoundException ignored) {
-                }
+                match.icon = PackageManagerRequestHandler.uriFrom(appItem.packageName);
                 matches.add(match);
             }
         }

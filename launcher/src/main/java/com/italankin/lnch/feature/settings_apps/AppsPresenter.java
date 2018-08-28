@@ -60,7 +60,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .take(1)
                 .concatMapIterable(Functions.identity())
                 .ofType(AppDescriptor.class)
-                .map(item -> new AppViewModel(item, packageManager))
+                .map(AppViewModel::new)
                 .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER.compare(lhs.label, rhs.label))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())

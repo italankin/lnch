@@ -1,13 +1,13 @@
 package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 
 public interface Match {
 
-    Drawable getIcon();
+    Uri getIcon();
 
     @DrawableRes
     int getIconResource();

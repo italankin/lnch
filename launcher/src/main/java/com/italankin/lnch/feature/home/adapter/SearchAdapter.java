@@ -1,6 +1,6 @@
 package com.italankin.lnch.feature.home.adapter;
 
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +13,20 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.Match;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
 
+    private final Picasso picasso;
     private final Filter filter;
 
     private List<? extends Match> dataset = new ArrayList<>(0);
 
-    public SearchAdapter(SearchRepository searchRepository) {
+    public SearchAdapter(Picasso picasso, SearchRepository searchRepository) {
+        this.picasso = picasso;
         this.filter = new SearchFilter(searchRepository) {
             @SuppressWarnings("unchecked")
             @Override
@@ -63,12 +66,17 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         Match item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
-        Drawable icon = item.getIcon();
+
+        Uri icon = item.getIcon();
         if (icon != null) {
-            holder.image.setImageDrawable(icon);
+            picasso.load(icon)
+                    .fit()
+                    .into(holder.image);
         } else {
+            picasso.cancelRequest(holder.image);
             holder.image.setImageResource(item.getIconResource());
         }
+
         return convertView;
     }
 
