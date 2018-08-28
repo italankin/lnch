@@ -11,6 +11,7 @@ ext {
     rxJavaVersion = "2.1.13"
     rxAndroidVersion = "2.0.2"
     timberVersion = "4.7.0"
+    picassoVersion = "2.71828"
 
     moxy = "com.arello-mobile:moxy:$moxyVersion"
     moxyCompiler = "com.arello-mobile:moxy-compiler:$moxyVersion"
@@ -28,4 +29,5 @@ ext {
     design = "com.android.support:design:$supportVersion"
     preference = "com.android.support:preference-v14:$supportVersion"
     flexbox = "com.google.android:flexbox:$flexboxVersion"
+    picasso = "com.squareup.picasso:picasso:$picassoVersion"
 }

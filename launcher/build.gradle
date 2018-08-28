@@ -54,4 +54,5 @@ dependencies {
     implementation preference
 
     implementation flexbox
+    implementation picasso
 }
