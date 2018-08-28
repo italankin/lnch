@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.util.Patterns.WEB_URL;
 import static com.italankin.lnch.util.SearchUtils.contains;
 import static com.italankin.lnch.util.SearchUtils.containsWord;
 import static com.italankin.lnch.util.SearchUtils.startsWith;
@@ -75,8 +76,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         matches.add(new WebSearchMatch(constraint.toString(), s));
 
-        if (s.startsWith("http://") && s.length() > 7 || s.startsWith("https://") && s.length() > 8
-                || s.matches("\\w+\\.\\w+")) {
+        if (WEB_URL.matcher(s).matches() || WEB_URL.matcher("http://" + s).matches()) {
             matches.add(new UrlMatch(s));
         }
 
