@@ -8,6 +8,7 @@ import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
+import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
 
@@ -26,5 +27,7 @@ public interface MainComponent {
     AppsRepository getAppsRepository();
 
     SearchRepository getSearchRepository();
+
+    PicassoFactory getPicassoFactory();
 
 }

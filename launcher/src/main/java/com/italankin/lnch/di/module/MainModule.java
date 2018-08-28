@@ -13,6 +13,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
+import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
 
@@ -55,5 +56,11 @@ public class MainModule {
     @Singleton
     public SearchRepository provideSearchRepository(PackageManager packageManager, AppsRepository appsRepository) {
         return new SearchRepositoryImpl(packageManager, appsRepository);
+    }
+
+    @Provides
+    @Singleton
+    public PicassoFactory providePicassoFactory(Context context) {
+        return new PicassoFactory(context);
     }
 }
