@@ -25,7 +25,8 @@ public class UrlMatch extends PartialMatch {
     }
 
     private CharSequence buildLabel(String url) {
+        String beautifiedUrl = url.replaceFirst("https?://", "");
         return new SpannableStringBuilder("Go to ")
-                .append(url, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                .append(beautifiedUrl, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 }
