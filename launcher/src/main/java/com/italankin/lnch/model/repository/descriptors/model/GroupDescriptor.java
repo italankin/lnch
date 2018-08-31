@@ -20,7 +20,7 @@ public class GroupDescriptor implements Descriptor {
     public int color;
 
     @SerializedName("custom_color")
-    public int customColor;
+    public Integer customColor;
 
     @Keep
     public GroupDescriptor() {
@@ -34,7 +34,7 @@ public class GroupDescriptor implements Descriptor {
 
     @Override
     public int getVisibleColor() {
-        return color;
+        return customColor != null ? customColor : color;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class GroupDescriptor implements Descriptor {
 
     @Override
     public String getVisibleLabel() {
-        return label;
+        return customLabel != null ? customLabel : label;
     }
 
     @Override

@@ -75,7 +75,7 @@ class GroupViewModelHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(GroupViewModel item) {
-        label.setText(item.label);
-        label.setTextColor(item.color);
+        label.setText(item.getVisibleLabel());
+        label.setTextColor(item.getVisibleColor());
     }
 }

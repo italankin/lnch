@@ -13,8 +13,8 @@ public class GroupViewModel implements ItemViewModel {
 
     public GroupViewModel(GroupDescriptor item) {
         this.item = item;
-        this.label = item.label;
-        this.color = item.color;
+        this.label = item.getVisibleLabel();
+        this.color = item.getVisibleColor();
     }
 
     @Override
