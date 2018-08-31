@@ -28,7 +28,7 @@ public class GsonDescriptorRepository implements DescriptorRepository {
         try {
             return gson.fromJson(new FileReader(packagesFile), getType());
         } catch (Exception e) {
-            Timber.e(e, "GsonDescriptorRepository.read");
+            Timber.e(e, "read:");
             return null;
         }
     }

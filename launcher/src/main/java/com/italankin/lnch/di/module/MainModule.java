@@ -8,7 +8,7 @@ import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
 import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptors.json.GsonDescriptorRepository;
+import com.italankin.lnch.model.repository.descriptors.json.VersioningDescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
@@ -49,7 +49,7 @@ public class MainModule {
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
-        return new GsonDescriptorRepository(gsonBuilder);
+        return new VersioningDescriptorRepository(gsonBuilder);
     }
 
     @Provides
