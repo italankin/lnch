@@ -18,11 +18,15 @@ public interface AppsRepository {
 
     Editor edit();
 
+    Completable clear();
+
     List<Descriptor> items();
 
     interface Editor {
 
         Editor enqueue(Action action);
+
+        Editor clear();
 
         Completable commit();
 

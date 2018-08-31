@@ -51,4 +51,7 @@
         <item>Visible</item>
         <item>Hidden</item>
     </string-array>
+    <string name="settings_apps_reset">Reset</string>
+    <string name="settings_apps_reset_message">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults? This action cannot be undone</string>
+    <string name="settings_apps_reset_action">Reset</string>
 </resources>

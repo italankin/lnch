@@ -86,6 +86,9 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
             case R.id.action_filter:
                 showFilterDialog();
                 return true;
+            case R.id.action_reset:
+                showResetDialog();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -177,6 +180,17 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
                     }
                     filter.setFlags(newFlags);
                 })
+                .show();
+    }
+
+    private void showResetDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.settings_apps_reset)
+                .setMessage(R.string.settings_apps_reset_message)
+                .setPositiveButton(R.string.settings_apps_reset_action, (dialog, which) -> {
+                    presenter.resetAppsSettings();
+                })
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 }

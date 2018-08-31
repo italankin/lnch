@@ -113,6 +113,11 @@ public class LauncherAppsRepository implements AppsRepository {
         return new Editor(updatesSubject.getValue());
     }
 
+    @Override
+    public Completable clear() {
+        return Completable.fromCallable(() -> getPackagesFile().delete());
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
@@ -319,6 +324,12 @@ public class LauncherAppsRepository implements AppsRepository {
                 throw new IllegalStateException();
             }
             actions.offer(action);
+            return this;
+        }
+
+        @Override
+        public AppsRepository.Editor clear() {
+            actions.clear();
             return this;
         }
 

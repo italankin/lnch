@@ -1,7 +1,5 @@
 package com.italankin.lnch.feature.settings_apps;
 
-import android.content.pm.PackageManager;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
@@ -23,13 +21,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private final AppsRepository appsRepository;
     private final AppsRepository.Editor editor;
-    private final PackageManager packageManager;
 
     @Inject
-    AppsPresenter(PackageManager packageManager, AppsRepository appsRepository) {
+    AppsPresenter(AppsRepository appsRepository) {
         this.appsRepository = appsRepository;
         this.editor = appsRepository.edit();
-        this.packageManager = packageManager;
     }
 
     @Override
@@ -73,6 +69,20 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     @Override
                     protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
+                    }
+                });
+    }
+
+    void resetAppsSettings() {
+        getViewState().showLoading();
+        appsRepository.clear()
+                .subscribeOn(Schedulers.io())
+                .andThen(appsRepository.update())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        editor.clear();
+                        loadApps();
                     }
                 });
     }
