@@ -129,6 +129,11 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     }
 
     @Override
+    public void onItemClick(int position, AppViewModel item) {
+        onVisibilityClick(position, item);
+    }
+
+    @Override
     public void onVisibilityClick(int position, AppViewModel item) {
         presenter.toggleAppVisibility(position, item);
     }

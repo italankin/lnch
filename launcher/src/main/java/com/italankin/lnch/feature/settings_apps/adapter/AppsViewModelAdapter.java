@@ -30,14 +30,20 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     @Override
     protected AppViewModelHolder createViewHolder(View itemView) {
         AppViewModelHolder holder = new AppViewModelHolder(itemView);
-        holder.visibility.setOnClickListener(v -> {
-            if (listener != null) {
+        if (listener != null) {
+            holder.itemView.setOnClickListener(v -> {
+                int pos = holder.getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(pos, getItem(pos));
+                }
+            });
+            holder.visibility.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
                     listener.onVisibilityClick(pos, getItem(pos));
                 }
-            }
-        });
+            });
+        }
         return holder;
     }
 
@@ -52,6 +58,8 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     public interface Listener {
+        void onItemClick(int position, AppViewModel item);
+
         void onVisibilityClick(int position, AppViewModel item);
     }
 
@@ -61,11 +69,13 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
 
         final ImageView icon;
         final TextView label;
+        final TextView packageName;
         final ImageView visibility;
 
         AppViewModelHolder(View itemView) {
             super(itemView);
             label = itemView.findViewById(R.id.label);
+            packageName = itemView.findViewById(R.id.package_name);
             icon = itemView.findViewById(R.id.icon);
             visibility = itemView.findViewById(R.id.visibility);
         }
@@ -74,6 +84,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
             visibility.setImageResource(item.hidden ? R.drawable.ic_visibility_off :
                     R.drawable.ic_visibility_on);
             label.setText(item.label);
+            packageName.setText(item.packageName);
             picasso.load(item.icon)
                     .fit()
                     .into(icon);

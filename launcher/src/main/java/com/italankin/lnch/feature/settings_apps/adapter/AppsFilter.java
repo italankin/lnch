@@ -75,7 +75,8 @@ public class AppsFilter extends Filter {
         while (iterator.hasNext()) {
             AppViewModel item = iterator.next();
             if (!SearchUtils.contains(item.item.label, query) &&
-                    !SearchUtils.contains(item.item.customLabel, query)) {
+                    !SearchUtils.contains(item.item.customLabel, query) &&
+                    !SearchUtils.contains(item.item.packageName, query)) {
                 iterator.remove();
             }
         }

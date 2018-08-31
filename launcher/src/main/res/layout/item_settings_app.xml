@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    tools:background="#444"
+    tools:ignore="RtlSymmetry">
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="12dp"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
         tools:ignore="ContentDescription"
         tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/label"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@id/icon"
+        android:layout_toStartOf="@+id/visibility"
         android:ellipsize="end"
-        android:gravity="center_vertical"
+        android:lines="1"
         android:singleLine="true"
         android:textColor="#fff"
         android:textSize="16sp"
+        tools:text="@tools:sample/first_names" />
+
+    <TextView
+        android:id="@+id/package_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/icon"
+        android:layout_toStartOf="@+id/visibility"
+        android:ellipsize="end"
+        android:lines="1"
+        android:singleLine="true"
+        android:textColor="#888"
+        android:textSize="12sp"
         tools:text="@tools:sample/first_names" />
 
     <ImageView
         android:id="@+id/visibility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:background="?selectableItemBackground"
-        android:padding="12dp"
+        android:padding="16dp"
+        tools:background="#555"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_visibility_on" />
 
-
-</LinearLayout>
+</RelativeLayout>

@@ -9,12 +9,14 @@ public class AppViewModel {
     public final AppDescriptor item;
     public final Uri icon;
     public final String label;
+    public final String packageName;
     public boolean hidden;
 
     public AppViewModel(AppDescriptor item) {
         this.item = item;
         this.icon = PackageManagerRequestHandler.uriFrom(item.packageName);
         this.label = item.getVisibleLabel();
+        this.packageName = item.packageName;
         this.hidden = item.hidden;
     }
 }
