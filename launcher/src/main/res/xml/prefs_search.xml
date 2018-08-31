@@ -6,4 +6,8 @@
         android:summaryOff="@string/title_settings_search_behavior_auto_show_summary_off"
         android:summaryOn="@string/title_settings_search_behavior_auto_show_summary_on"
         android:title="@string/title_settings_search_behavior_auto_show" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/prefs_search_use_custom_tabs"
+        android:title="@string/title_settings_search_use_custom_tabs" />
 </PreferenceScreen>

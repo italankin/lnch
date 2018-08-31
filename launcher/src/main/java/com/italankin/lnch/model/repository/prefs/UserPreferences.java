@@ -43,4 +43,9 @@ public class UserPreferences implements Preferences {
                 ? prefs.getInt(context.getString(R.string.prefs_wallpaper_overlay_color), defValue)
                 : defValue;
     }
+
+    @Override
+    public boolean useCustomTabs() {
+        return prefs.getBoolean(context.getString(R.string.prefs_search_use_custom_tabs), true);
+    }
 }

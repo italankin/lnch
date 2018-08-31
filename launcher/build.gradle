@@ -52,6 +52,7 @@ dependencies {
     implementation palette
     implementation design
     implementation preference
+    implementation customTabs
 
     implementation flexbox
     implementation picasso

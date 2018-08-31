@@ -9,4 +9,6 @@ public interface Preferences {
     void setOverlayColor(int color);
 
     int overlayColor();
+
+    boolean useCustomTabs();
 }

@@ -28,6 +28,7 @@ ext {
     palette = "com.android.support:palette-v7:$supportVersion"
     design = "com.android.support:design:$supportVersion"
     preference = "com.android.support:preference-v14:$supportVersion"
+    customTabs = "com.android.support:customtabs:$supportVersion"
     flexbox = "com.google.android:flexbox:$flexboxVersion"
     picasso = "com.squareup.picasso:picasso:$picassoVersion"
 }

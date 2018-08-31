@@ -2,6 +2,7 @@
 <resources>
     <string name="prefs_search_behavior">search_behavior</string>
     <string name="prefs_search_show_soft_keyboard">search_show_soft_keyboard</string>
+    <string name="prefs_search_use_custom_tabs">search_use_custom_tabs</string>
     <string name="prefs_wallpaper">wallpaper</string>
     <string name="prefs_wallpaper_change">wallpaper_change</string>
     <string name="prefs_wallpaper_overlay_show">wallpaper_overlay_show</string>

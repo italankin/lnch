@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -370,16 +372,35 @@ public class HomeActivity extends AppActivity implements HomeView,
             SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
             if (adapter.getCount() > 0) {
                 Match item = adapter.getItem(pos);
-                Intent intent = item.getIntent();
-                if (intent != null && intent.resolveActivity(packageManager) != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-                }
+                handleSearchIntent(item.getIntent());
             }
             editSearch.setText("");
         }
         searchBarBehavior.hide();
+    }
+
+    private void handleSearchIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+        if (preferences.useCustomTabs() && Intent.ACTION_VIEW.equals(intent.getAction()) &&
+                intent.getData() != null) {
+            CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                    .setToolbarColor(ContextCompat.getColor(this, R.color.primary))
+                    .addDefaultShareMenuItem()
+                    .setShowTitle(true)
+                    .build();
+            customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (customTabsIntent.intent.resolveActivity(packageManager) != null) {
+                customTabsIntent.launchUrl(this, intent.getData());
+            }
+            return;
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setEditMode(boolean value) {
