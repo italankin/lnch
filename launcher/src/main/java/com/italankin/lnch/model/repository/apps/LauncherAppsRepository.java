@@ -115,7 +115,8 @@ public class LauncherAppsRepository implements AppsRepository {
 
     @Override
     public Completable clear() {
-        return Completable.fromCallable(() -> getPackagesFile().delete());
+        return Completable.fromCallable(() -> getPackagesFile().delete())
+                .andThen(updater);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -357,7 +358,7 @@ public class LauncherAppsRepository implements AppsRepository {
                     })
                     .doOnSubscribe(onSubscribe)
                     .doOnSuccess(LauncherAppsRepository.this::writeToDisk)
-                    .ignoreElement();
+                    .flatMapCompletable(descriptors -> updater);
         }
     }
 }

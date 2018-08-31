@@ -77,7 +77,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().showLoading();
         appsRepository.clear()
                 .subscribeOn(Schedulers.io())
-                .andThen(appsRepository.update())
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
