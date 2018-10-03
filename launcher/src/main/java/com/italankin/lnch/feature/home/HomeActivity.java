@@ -479,7 +479,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void setItemCustomLabel(int position, ItemViewModel item) {
         EditTextAlertDialog.builder(this)
-                .setTitle(item.getCustomLabel())
+                .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
                     editText.setText(item.getCustomLabel());
                     editText.setSelectAllOnFocus(true);
