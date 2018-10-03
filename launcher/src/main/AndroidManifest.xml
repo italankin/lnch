@@ -31,5 +31,10 @@
             android:launchMode="singleInstance"
             android:theme="@style/PreferenceTheme"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".feature.settings_wallpaper.overlay.WallpaperOverlayActivity"
+            android:label=""
+            android:theme="@style/OverlayTheme" />
     </application>
 </manifest>
