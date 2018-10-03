@@ -219,24 +219,25 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private void setGroupExpanded(int position, boolean expanded) {
         GroupViewModel group = (GroupViewModel) items.get(position);
         int startIndex = position + 1;
-        int endIndex = position;
+        int endIndex = position + 1;
         for (int i = startIndex, size = items.size(); i < size; i++) {
+            endIndex = i;
             if (items.get(i) instanceof GroupViewModel) {
                 break;
             }
-            endIndex = i;
         }
-        if (startIndex == endIndex) {
+        int count = endIndex - startIndex;
+        if (count == 0) {
             return;
         }
         group.expanded = expanded;
-        for (int i = startIndex; i <= endIndex; i++) {
+        for (int i = startIndex; i < endIndex; i++) {
             ((AppViewModel) items.get(i)).visible = group.expanded;
         }
         if (group.expanded) {
-            getViewState().onItemsInserted(startIndex, endIndex - startIndex);
+            getViewState().onItemsInserted(startIndex, count);
         } else {
-            getViewState().onItemsRemoved(startIndex, endIndex - startIndex);
+            getViewState().onItemsRemoved(startIndex, count);
         }
     }
 
