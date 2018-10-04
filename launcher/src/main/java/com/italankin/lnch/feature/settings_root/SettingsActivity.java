@@ -39,12 +39,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(() -> {
-            toolbar.setTitle(getFragmentTitle());
-            toolbar.setNavigationIcon(fragmentManager.getBackStackEntryCount() > 0
-                    ? R.drawable.ic_arrow_back
-                    : R.drawable.ic_close);
-        });
+        fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
 
         setContentView(R.layout.activity_settings);
 
@@ -58,6 +53,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
                     .add(R.id.container, new SettingsRootFragment())
                     .commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateToolbar();
     }
 
     @Override
@@ -104,11 +105,17 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         Timber.d("onSharedPreferenceChanged: key=%s", key);
     }
 
+    private void updateToolbar() {
+        toolbar.setTitle(getFragmentTitle());
+        toolbar.setNavigationIcon(fragmentManager.getBackStackEntryCount() > 0
+                ? R.drawable.ic_arrow_back
+                : R.drawable.ic_close);
+    }
+
     private CharSequence getFragmentTitle() {
         int index = fragmentManager.getBackStackEntryCount() - 1;
-        if (index < 0) {
-            return getString(R.string.title_settings);
-        }
-        return fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
+        return index < 0
+                ? getString(R.string.title_settings)
+                : fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
     }
 }
