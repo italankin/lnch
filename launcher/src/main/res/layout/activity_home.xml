@@ -34,10 +34,10 @@
                 android:hint="@string/hint_search"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textAutoComplete"
-                android:paddingBottom="16dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="64dp"
                 android:paddingTop="16dp"
+                android:paddingRight="64dp"
+                android:paddingBottom="16dp"
                 android:selectAllOnFocus="true" />
 
             <ImageView
