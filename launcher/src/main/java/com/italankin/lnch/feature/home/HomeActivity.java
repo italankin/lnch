@@ -46,6 +46,7 @@ import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -60,6 +61,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         AppViewModelAdapter.Listener,
         GroupViewModelAdapter.Listener {
 
+    private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
 
     @InjectPresenter
@@ -108,6 +110,16 @@ public class HomeActivity extends AppActivity implements HomeView,
         setupRoot();
         setupList();
         setupSearchBar();
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_SEARCH_SHOWN, false)) {
+            ViewUtils.onGlobalLayout(root, () -> searchBarBehavior.show());
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_SEARCH_SHOWN, searchBarBehavior.isShown());
     }
 
     @Override
