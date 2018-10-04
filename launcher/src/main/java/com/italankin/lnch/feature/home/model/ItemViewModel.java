@@ -15,5 +15,4 @@ public interface ItemViewModel {
     int getVisibleColor();
 
     void setCustomColor(Integer color);
-
 }

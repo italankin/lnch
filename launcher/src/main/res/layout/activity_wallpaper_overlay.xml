@@ -27,9 +27,12 @@
 
     </LinearLayout>
 
-    <com.italankin.lnch.util.widget.ColorPicker
+    <com.italankin.lnch.util.widget.colorpicker.ColorPickerView
         android:id="@+id/color_picker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        app:cp_model="argb"
+        app:cp_previewVisible="false" />
 
 </LinearLayout>

@@ -15,8 +15,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
-import android.text.InputFilter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -48,11 +46,11 @@ import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.TextWatcherAdapter;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.ListAlertDialog;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -496,31 +494,16 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setItemColor(int position, ItemViewModel item) {
-        EditTextAlertDialog.builder(this)
-                .setTitle(item.getVisibleLabel())
-                .customizeEditText(editText -> {
-                    editText.setText(String.format("%06x", item.getVisibleColor()).substring(2));
-                    editText.setSelectAllOnFocus(true);
-                    editText.addTextChangedListener(new TextWatcherAdapter() {
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            if (s.length() == 6) {
-                                try {
-                                    int color = Integer.decode("0x" + s.toString()) + 0xff000000;
-                                    editText.setTextColor(color);
-                                } catch (NumberFormatException ignored) {
-                                }
-                            }
-                        }
-                    });
-                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
+        int visibleColor = item.getVisibleColor();
+        ColorPickerDialog.builder(this)
+                .setHexVisible(false)
+                .setSelectedColor(visibleColor)
+                .setOnColorPickedListener(color -> {
+                    if (color != visibleColor) {
+                        presenter.changeItemCustomColor(position, item, color);
+                    }
                 })
-                .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String value = editText.getText().toString().trim();
-                    presenter.changeItemCustomColor(position, item, value);
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
+                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
                     presenter.changeItemCustomColor(position, item, null);
                 })
                 .show();

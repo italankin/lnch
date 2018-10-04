@@ -96,21 +96,10 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemChanged(position);
     }
 
-    void changeItemCustomColor(int position, ItemViewModel item, String value) {
+    void changeItemCustomColor(int position, ItemViewModel item, Integer color) {
         requireEditor();
-        Integer customColor;
-        if (value != null && !value.isEmpty()) {
-            try {
-                customColor = Integer.decode("0x" + value) | 0xff000000;
-            } catch (Exception e) {
-                getViewState().showError(e);
-                return;
-            }
-        } else {
-            customColor = null;
-        }
-        editor.enqueue(new SetCustomColorAction(item.getDescriptor(), customColor));
-        item.setCustomColor(customColor);
+        editor.enqueue(new SetCustomColorAction(item.getDescriptor(), color));
+        item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 

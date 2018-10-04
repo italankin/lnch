@@ -15,7 +15,8 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.widget.ColorPicker;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
 public class WallpaperOverlayActivity extends AppActivity {
 
@@ -23,7 +24,7 @@ public class WallpaperOverlayActivity extends AppActivity {
         return new Intent(context, WallpaperOverlayActivity.class);
     }
 
-    private ColorPicker colorPicker;
+    private ColorPickerView colorPicker;
     private Preferences preferences;
 
     @Override
@@ -42,16 +43,19 @@ public class WallpaperOverlayActivity extends AppActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
 
         TextView itemApp = findViewById(R.id.item_app);
-        itemApp.setText(R.string.app_name);
+        itemApp.setText(R.string.settings_overlay_preview);
         itemApp.setAllCaps(true);
         itemApp.setTextColor(ContextCompat.getColor(this, R.color.accent));
-        itemApp.setClickable(true);
+        itemApp.setOnClickListener(v -> {
+            ColorPickerDialog.builder(this)
+                    .setSelectedColor(itemApp.getCurrentTextColor())
+                    .setOnColorPickedListener(itemApp::setTextColor)
+                    .show();
+        });
 
         colorPicker = findViewById(R.id.color_picker);
         ViewGroup root = findViewById(R.id.root);
         colorPicker.setColorChangedListener(root::setBackgroundColor);
-        colorPicker.setPreviewVisible(false);
-        colorPicker.setColorModel(ColorPicker.ARGB);
         colorPicker.setSelectedColor(preferences.overlayColor());
     }
 
