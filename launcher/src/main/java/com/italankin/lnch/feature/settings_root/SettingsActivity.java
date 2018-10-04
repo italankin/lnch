@@ -80,8 +80,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     }
 
     @Override
-    public void showAppsVisibilityPreferences() {
-        showFragment(new AppsFragment(), R.string.title_settings_apps);
+    public void showAppsPreferences() {
+        showFragment(new AppsFragment(), R.string.title_settings_apps_list);
     }
 
     @Override

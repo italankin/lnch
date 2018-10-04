@@ -21,7 +21,7 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.prefs_wallpaper_change).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_wallpaper_change).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             Intent chooser = Intent.createChooser(intent,
@@ -29,7 +29,7 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
             startActivity(chooser);
             return true;
         });
-        findPreference(R.string.prefs_wallpaper_overlay_color).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_wallpaper_overlay_color).setOnPreferenceClickListener(preference -> {
             Intent intent = WallpaperOverlayActivity.getStartIntent(getContext());
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             startActivity(intent);

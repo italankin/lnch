@@ -21,31 +21,31 @@ public class UserPreferences implements Preferences {
 
     @Override
     public boolean searchShowSoftKeyboard() {
-        return prefs.getBoolean(context.getString(R.string.prefs_search_show_soft_keyboard), true);
+        return prefs.getBoolean(context.getString(R.string.pref_search_show_soft_keyboard), true);
     }
 
     @Override
     public String homeLayout() {
-        return prefs.getString(context.getString(R.string.prefs_home_layout), null);
+        return prefs.getString(context.getString(R.string.pref_home_layout), null);
     }
 
     @Override
     public void setOverlayColor(int color) {
-        prefs.edit().putInt(context.getString(R.string.prefs_wallpaper_overlay_color), color).apply();
+        prefs.edit().putInt(context.getString(R.string.pref_wallpaper_overlay_color), color).apply();
     }
 
     @Override
     public int overlayColor() {
         boolean show = prefs.getBoolean(
-                context.getString(R.string.prefs_wallpaper_overlay_show), false);
+                context.getString(R.string.pref_wallpaper_overlay_show), false);
         int defValue = Color.TRANSPARENT;
         return show
-                ? prefs.getInt(context.getString(R.string.prefs_wallpaper_overlay_color), defValue)
+                ? prefs.getInt(context.getString(R.string.pref_wallpaper_overlay_color), defValue)
                 : defValue;
     }
 
     @Override
     public boolean useCustomTabs() {
-        return prefs.getBoolean(context.getString(R.string.prefs_search_use_custom_tabs), true);
+        return prefs.getBoolean(context.getString(R.string.pref_search_use_custom_tabs), true);
     }
 }

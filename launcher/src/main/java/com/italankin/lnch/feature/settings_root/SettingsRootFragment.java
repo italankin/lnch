@@ -45,27 +45,27 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.prefs_home_customize).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_home_customize).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.launchEditMode();
             }
             return true;
         });
-        findPreference(R.string.prefs_search_behavior).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_search_behavior).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showSearchPreferences();
             }
             return true;
         });
-        findPreference(R.string.prefs_wallpaper).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_wallpaper).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showWallpaperPreferences();
             }
             return true;
         });
-        findPreference(R.string.prefs_home_apps).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_apps_list).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
-                callbacks.showAppsVisibilityPreferences();
+                callbacks.showAppsPreferences();
             }
             return true;
         });
@@ -100,7 +100,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
 
         void showSearchPreferences();
 
-        void showAppsVisibilityPreferences();
+        void showAppsPreferences();
 
         void showWallpaperPreferences();
     }

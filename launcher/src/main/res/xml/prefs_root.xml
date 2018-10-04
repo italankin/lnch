@@ -3,28 +3,30 @@
     <PreferenceCategory android:title="@string/title_settings_home">
         <Preference
             android:icon="@drawable/ic_settings_wallpaper"
-            android:key="@string/prefs_wallpaper"
+            android:key="@string/key_wallpaper"
             android:title="@string/title_settings_wallpaper" />
         <ListPreference
             android:defaultValue="compact"
             android:entries="@array/home_layout_desc"
             android:entryValues="@array/home_layouts"
             android:icon="@drawable/ic_settings_layout"
-            android:key="@string/prefs_home_layout"
+            android:key="@string/pref_home_layout"
             android:title="@string/title_settings_home_layout" />
         <Preference
-            android:icon="@drawable/ic_settings_apps"
-            android:key="@string/prefs_home_apps"
-            android:title="@string/title_settings_apps" />
-        <Preference
             android:icon="@drawable/ic_action_rename"
-            android:key="@string/prefs_home_customize"
+            android:key="@string/key_home_customize"
             android:title="@string/title_settings_home_customize" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_apps">
+        <Preference
+            android:icon="@drawable/ic_settings_apps"
+            android:key="@string/key_apps_list"
+            android:title="@string/title_settings_apps_list" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_settings_search">
         <Preference
             android:icon="@drawable/ic_settings_search"
-            android:key="@string/prefs_search_behavior"
+            android:key="@string/key_search_behavior"
             android:title="@string/title_settings_search_behavior" />
     </PreferenceCategory>
 </PreferenceScreen>

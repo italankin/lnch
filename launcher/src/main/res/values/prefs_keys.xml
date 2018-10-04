@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- references to preference views -->
+    <string name="key_search_behavior">search_behavior</string>
+    <string name="key_wallpaper">wallpaper</string>
+    <string name="key_wallpaper_change">wallpaper_change</string>
+    <string name="key_apps_list">apps_list</string>
+    <string name="key_home_customize">customize</string>
+</resources>

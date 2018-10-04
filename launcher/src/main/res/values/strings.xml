@@ -30,6 +30,7 @@
     <string name="title_settings_home_layout">Layout</string>
     <string name="title_settings_home_customize">Customize</string>
     <string name="title_settings_apps">Apps</string>
+    <string name="title_settings_apps_list">Apps</string>
     <string name="title_settings_wallpaper">Wallpaper</string>
     <string name="title_settings_wallpaper_change">Change wallpaper</string>
     <string name="title_settings_wallpaper_overlay">Overlay</string>
