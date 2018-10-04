@@ -374,6 +374,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void applyUserPrefs(UserPrefs userPrefs) {
         setLayout(userPrefs.homeLayout);
         root.setBackgroundColor(userPrefs.overlayColor);
+        list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
     }
 
     private void onFireSearch(int pos) {

@@ -69,6 +69,12 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
             }
             return true;
         });
+        findPreference(R.string.key_home_misc).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showMiscPreferences();
+            }
+            return true;
+        });
     }
 
     @Override
@@ -101,6 +107,8 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
         void showSearchPreferences();
 
         void showAppsPreferences();
+
+        void showMiscPreferences();
 
         void showWallpaperPreferences();
     }

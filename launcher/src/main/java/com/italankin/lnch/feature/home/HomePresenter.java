@@ -190,6 +190,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         UserPrefs userPrefs = new UserPrefs();
         userPrefs.homeLayout = preferences.homeLayout();
         userPrefs.overlayColor = preferences.overlayColor();
+        userPrefs.showScrollbar = preferences.showScrollbar();
         return userPrefs;
     }
 

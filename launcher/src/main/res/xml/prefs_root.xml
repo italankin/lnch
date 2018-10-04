@@ -16,6 +16,10 @@
             android:icon="@drawable/ic_action_rename"
             android:key="@string/key_home_customize"
             android:title="@string/title_settings_home_customize" />
+        <Preference
+            android:icon="@drawable/ic_settings_home_misc"
+            android:key="@string/key_home_misc"
+            android:title="@string/title_settings_home_misc" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_settings_apps">
         <Preference

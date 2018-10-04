@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings_apps.AppsFragment;
+import com.italankin.lnch.feature.settings_misc.MiscFragment;
 import com.italankin.lnch.feature.settings_search.SearchFragment;
 import com.italankin.lnch.feature.settings_wallpaper.WallpaperFragment;
 
@@ -82,6 +83,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     @Override
     public void showAppsPreferences() {
         showFragment(new AppsFragment(), R.string.title_settings_apps_list);
+    }
+
+    @Override
+    public void showMiscPreferences() {
+        showFragment(new MiscFragment(), R.string.title_settings_home_misc);
     }
 
     @Override

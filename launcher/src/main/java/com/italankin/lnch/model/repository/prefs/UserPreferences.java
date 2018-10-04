@@ -48,4 +48,9 @@ public class UserPreferences implements Preferences {
     public boolean useCustomTabs() {
         return prefs.getBoolean(context.getString(R.string.pref_search_use_custom_tabs), true);
     }
+
+    @Override
+    public boolean showScrollbar() {
+        return prefs.getBoolean(context.getString(R.string.pref_misc_show_scrollbar), false);
+    }
 }

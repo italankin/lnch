@@ -11,4 +11,6 @@ public interface Preferences {
     int overlayColor();
 
     boolean useCustomTabs();
+
+    boolean showScrollbar();
 }

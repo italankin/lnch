@@ -58,6 +58,7 @@
             android:layout_height="match_parent"
             android:clipChildren="false"
             android:clipToPadding="false"
+            android:scrollbars="vertical"
             android:visibility="invisible"
             tools:listitem="@layout/item_app"
             tools:translationY="64dp"
