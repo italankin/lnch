@@ -22,8 +22,7 @@ import timber.log.Timber;
 public class SettingsActivity extends AppCompatActivity implements SettingsRootFragment.Callbacks,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public static final int RESULT_CHANGED = RESULT_FIRST_USER;
-    public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER + 1;
+    public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER;
     private Toolbar toolbar;
 
     public static Intent getStartIntent(Context context) {
@@ -35,8 +34,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setResult(RESULT_CANCELED);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -83,7 +80,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
     @Override
     public void showAppsVisibilityPreferences() {
-        setResult(RESULT_CHANGED);
         showFragment(new AppsFragment(), R.string.title_settings_apps);
     }
 
@@ -106,7 +102,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Timber.d("onSharedPreferenceChanged: key=%s", key);
-        setResult(RESULT_CHANGED);
     }
 
     private CharSequence getFragmentTitle() {

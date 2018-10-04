@@ -141,12 +141,11 @@ public class HomeActivity extends AppActivity implements HomeView,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_SETTINGS) {
             switch (resultCode) {
-                case SettingsActivity.RESULT_CHANGED:
-                    presenter.reloadAppsImmediate();
-                    return;
                 case SettingsActivity.RESULT_EDIT_MODE:
                     presenter.startCustomize();
                     return;
+                default:
+                    presenter.reloadAppsImmediate();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
