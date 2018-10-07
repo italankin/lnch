@@ -20,8 +20,10 @@ public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, Custo
     public ShortcutViewModel(ShortcutDescriptor item) {
         this.item = item;
         this.uri = item.uri;
-        this.label = item.getVisibleLabel();
-        this.color = item.getVisibleColor();
+        this.label = item.label;
+        this.customLabel = item.customLabel;
+        this.color = item.color;
+        this.customColor = item.customColor;
     }
 
     @Override

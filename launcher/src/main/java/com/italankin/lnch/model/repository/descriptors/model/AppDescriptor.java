@@ -43,10 +43,7 @@ public class AppDescriptor implements Descriptor {
 
     @Override
     public String getVisibleLabel() {
-        if (customLabel != null) {
-            return customLabel;
-        }
-        return label;
+        return customLabel != null ? customLabel : label;
     }
 
     @Override
@@ -61,10 +58,7 @@ public class AppDescriptor implements Descriptor {
 
     @Override
     public int getVisibleColor() {
-        if (customColor != null) {
-            return customColor;
-        }
-        return color;
+        return customColor != null ? customColor : color;
     }
 
     @Override
@@ -94,12 +88,9 @@ public class AppDescriptor implements Descriptor {
         if (!packageName.equals(that.packageName)) {
             return false;
         }
-        if (componentName != null ? componentName.equals(that.componentName)
-                : that.componentName == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return componentName != null
+                ? componentName.equals(that.componentName)
+                : that.componentName == null;
     }
 
     @Override

@@ -53,6 +53,11 @@ public class ShortcutDescriptor implements Descriptor {
 
     @Override
     public void setHidden(boolean hidden) {
-        // TODO
+        // empty
+    }
+
+    @Override
+    public String toString() {
+        return "Shortcut{" + uri + "}";
     }
 }

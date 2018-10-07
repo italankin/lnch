@@ -18,8 +18,10 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
 
     public GroupViewModel(GroupDescriptor item) {
         this.item = item;
-        this.label = item.getVisibleLabel();
-        this.color = item.getVisibleColor();
+        this.label = item.label;
+        this.customLabel = item.customLabel;
+        this.color = item.color;
+        this.customColor = item.customColor;
     }
 
     @Override
