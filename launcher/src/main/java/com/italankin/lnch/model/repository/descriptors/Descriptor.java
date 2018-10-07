@@ -2,6 +2,8 @@ package com.italankin.lnch.model.repository.descriptors;
 
 public interface Descriptor {
 
+    String getId();
+
     int getVisibleColor();
 
     void setCustomColor(Integer color);

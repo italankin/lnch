@@ -57,6 +57,11 @@ public class AppDescriptor implements Descriptor {
     }
 
     @Override
+    public String getId() {
+        return componentName != null ? componentName : packageName;
+    }
+
+    @Override
     public int getVisibleColor() {
         return customColor != null ? customColor : color;
     }

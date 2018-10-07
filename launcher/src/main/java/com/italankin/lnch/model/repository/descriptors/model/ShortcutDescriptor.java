@@ -40,6 +40,11 @@ public class ShortcutDescriptor implements Descriptor {
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public int getVisibleColor() {
         return customColor != null ? customColor : color;
     }
