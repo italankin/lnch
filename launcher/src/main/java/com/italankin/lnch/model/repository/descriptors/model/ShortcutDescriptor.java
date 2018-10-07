@@ -57,6 +57,11 @@ public class ShortcutDescriptor implements Descriptor {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj.getClass() == ShortcutDescriptor.class;
+    }
+
+    @Override
     public String toString() {
         return "Shortcut{" + uri + "}";
     }
