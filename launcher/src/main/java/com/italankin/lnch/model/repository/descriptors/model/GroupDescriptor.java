@@ -5,6 +5,8 @@ import android.support.annotation.Keep;
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
+import java.util.UUID;
+
 public class GroupDescriptor implements Descriptor {
 
     @SerializedName("id")
@@ -27,7 +29,7 @@ public class GroupDescriptor implements Descriptor {
     }
 
     public GroupDescriptor(String label, int color) {
-        this.id = Long.toHexString(System.currentTimeMillis());
+        this.id = UUID.randomUUID().toString();
         this.label = label;
         this.color = color;
     }

@@ -5,7 +5,14 @@ import android.support.annotation.Keep;
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
+import java.util.UUID;
+
 public class ShortcutDescriptor implements Descriptor {
+
+    private static final String UNKNOWN_NAME = "???";
+
+    @SerializedName("id")
+    public String id;
 
     @SerializedName("uri")
     public String uri;
@@ -24,6 +31,7 @@ public class ShortcutDescriptor implements Descriptor {
 
     @Keep
     public ShortcutDescriptor() {
+        this.id = UUID.randomUUID().toString();
     }
 
     @Override
