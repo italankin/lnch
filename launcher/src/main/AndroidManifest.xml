@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.italankin.lnch">
 
     <permission
@@ -20,7 +21,8 @@
         android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/LauncherTheme">
+        android:theme="@style/LauncherTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name=".feature.home.HomeActivity"
