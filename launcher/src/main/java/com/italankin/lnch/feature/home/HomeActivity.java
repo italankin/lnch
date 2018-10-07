@@ -563,7 +563,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String label = editText.getText().toString().trim();
-                    presenter.renameItem(position, item, label);
+                    if (!label.equals(item.getCustomLabel())) {
+                        presenter.renameItem(position, item, label);
+                    }
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
