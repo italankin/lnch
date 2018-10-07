@@ -25,8 +25,9 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public String homeLayout() {
-        return prefs.getString(context.getString(R.string.pref_home_layout), null);
+    public HomeLayout homeLayout() {
+        String pref = prefs.getString(context.getString(R.string.pref_home_layout), null);
+        return HomeLayout.from(pref);
     }
 
     @Override

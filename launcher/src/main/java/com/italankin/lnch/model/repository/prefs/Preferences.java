@@ -4,7 +4,7 @@ public interface Preferences {
 
     boolean searchShowSoftKeyboard();
 
-    String homeLayout();
+    HomeLayout homeLayout();
 
     void setOverlayColor(int color);
 
@@ -13,4 +13,25 @@ public interface Preferences {
     boolean useCustomTabs();
 
     boolean showScrollbar();
+
+    enum HomeLayout {
+        COMPACT("compact"),
+        GRID("grid"),
+        LINEAR("linear");
+
+        static HomeLayout from(String s) {
+            for (HomeLayout value : values()) {
+                if (value.name.equals(s)) {
+                    return value;
+                }
+            }
+            return COMPACT;
+        }
+
+        private final String name;
+
+        HomeLayout(String name) {
+            this.name = name;
+        }
+    }
 }

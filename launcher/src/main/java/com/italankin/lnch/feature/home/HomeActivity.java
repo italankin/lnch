@@ -50,7 +50,6 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
-import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.IntentUtils;
@@ -91,7 +90,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
     private CompositeAdapter<DescriptorItem> adapter;
-    private String layout;
+    private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private Preferences preferences;
 
@@ -501,26 +500,20 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void setLayout(String layout) {
-        if (layout == null) {
-            layout = ProviderPreferences.LAYOUT_COMPACT;
-        }
-        if (!layout.equals(this.layout)) {
+    private void setLayout(Preferences.HomeLayout layout) {
+        if (layout != this.layout) {
             this.layout = layout;
             list.setLayoutManager(getLayoutManager(layout));
         }
     }
 
-    private RecyclerView.LayoutManager getLayoutManager(String layout) {
-        if (layout == null) {
-            layout = ProviderPreferences.LAYOUT_COMPACT;
-        }
+    private RecyclerView.LayoutManager getLayoutManager(Preferences.HomeLayout layout) {
         switch (layout) {
-            case ProviderPreferences.LAYOUT_GRID:
+            case GRID:
                 return new GridLayoutManager(this, 2);
-            case ProviderPreferences.LAYOUT_LINEAR:
+            case LINEAR:
                 return new LinearLayoutManager(this);
-            case ProviderPreferences.LAYOUT_COMPACT:
+            case COMPACT:
             default:
                 FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
