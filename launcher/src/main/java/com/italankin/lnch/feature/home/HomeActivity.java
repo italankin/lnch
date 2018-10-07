@@ -390,7 +390,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void startApp(AppViewModel item) {
         searchBarBehavior.hide();
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
-        if (intent != null && intent.resolveActivity(packageManager) != null) {
+        if (intent != null) {
             if (item.componentName != null) {
                 intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
