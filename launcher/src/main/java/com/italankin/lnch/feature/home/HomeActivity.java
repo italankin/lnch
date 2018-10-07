@@ -152,10 +152,19 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (searchBarBehavior.isShown()) {
-            searchBarBehavior.hide();
-        } else if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-            list.smoothScrollToPosition(0);
+        String action = intent.getAction();
+        if (action == null) {
+            return;
+        }
+        switch (action) {
+            case Intent.ACTION_MAIN: {
+                if (searchBarBehavior.isShown()) {
+                    searchBarBehavior.hide();
+                } else {
+                    list.smoothScrollToPosition(0);
+                }
+                break;
+            }
         }
     }
 
