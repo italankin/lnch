@@ -6,4 +6,7 @@ public class UserPrefs {
     public Preferences.HomeLayout homeLayout;
     public int overlayColor;
     public boolean showScrollbar;
+    public float itemTextSize;
+    public int itemPadding;
+    public float itemShadowRadius;
 }

@@ -7,4 +7,7 @@
     <string name="pref_wallpaper_overlay_color">wallpaper_overlay_color</string>
     <string name="pref_home_layout">home_layout</string>
     <string name="pref_misc_show_scrollbar">show_scrollbar</string>
+    <string name="pref_item_text_size">item_text_size</string>
+    <string name="pref_item_padding">item_padding</string>
+    <string name="pref_item_shadow_radius">item_shadow_radius</string>
 </resources>

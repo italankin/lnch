@@ -2,17 +2,23 @@ package com.italankin.lnch.feature.home.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.descriptor.model.ShortcutViewModel;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 public class ShortcutViewModelAdapter extends BaseAdapterDelegate<ShortcutViewModelHolder, ShortcutViewModel> {
+
+    private final UserPrefs userPrefs;
     private final Listener listener;
 
-    public ShortcutViewModelAdapter(Listener listener) {
+    public ShortcutViewModelAdapter(UserPrefs userPrefs, Listener listener) {
+        this.userPrefs = userPrefs;
         this.listener = listener;
     }
 
@@ -40,7 +46,18 @@ public class ShortcutViewModelAdapter extends BaseAdapterDelegate<ShortcutViewMo
                 return true;
             });
         }
+        applyUserPrefs(holder);
         return holder;
+    }
+
+    private void applyUserPrefs(ShortcutViewModelHolder holder) {
+        DisplayMetrics dm = holder.itemView.getResources().getDisplayMetrics();
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                userPrefs.itemPadding, dm);
+        holder.label.setPadding(padding, padding, padding, padding);
+        holder.label.setTextSize(userPrefs.itemTextSize);
+        holder.label.setShadowLayer(userPrefs.itemShadowRadius,
+                holder.label.getShadowDx(), holder.label.getShadowDy(), holder.label.getShadowColor());
     }
 
     @Override

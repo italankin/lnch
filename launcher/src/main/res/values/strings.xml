@@ -5,6 +5,7 @@
     <string name="cancel">Cancel</string>
     <string name="error">Error</string>
     <string name="retry">Retry</string>
+    <string name="save">Save</string>
 
     <string name="hint_search">Search</string>
 
@@ -31,6 +32,7 @@
     <string name="title_settings_home_customize">Customize</string>
     <string name="title_settings_home_misc">Miscellaneous</string>
     <string name="title_settings_home_misc_scrollbar">Show scroll indicator</string>
+    <string name="title_settings_home_item_look">Item look</string>
     <string name="title_settings_apps">Apps</string>
     <string name="title_settings_apps_list">Apps</string>
     <string name="title_settings_wallpaper">Wallpaper</string>
@@ -46,9 +48,9 @@
     <string name="title_settings_search_use_custom_tabs">Use custom tabs</string>
 
     <string name="settings_system">System settings</string>
-
-    <string name="settings_overlay_save">Save</string>
     <string name="settings_overlay_preview">Preview</string>
+
+    <string name="settings_item_preview">Preview</string>
 
     <string name="settings_apps_filter">Filter</string>
     <string name="settings_apps_filter_apply">Apply</string>
@@ -60,4 +62,6 @@
     <string name="settings_apps_reset">Reset</string>
     <string name="settings_apps_reset_message">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults? This action cannot be undone</string>
     <string name="settings_apps_reset_action">Reset</string>
+
+    <string name="settings_item_look_reset">Reset</string>
 </resources>

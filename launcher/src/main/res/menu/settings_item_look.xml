@@ -5,4 +5,7 @@
         android:id="@+id/action_save"
         android:title="@string/save"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_reset"
+        android:title="@string/settings_item_look_reset" />
 </menu>

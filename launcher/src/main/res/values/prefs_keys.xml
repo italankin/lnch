@@ -7,4 +7,5 @@
     <string name="key_apps_list">apps_list</string>
     <string name="key_home_customize">customize</string>
     <string name="key_home_misc">miscellaneous</string>
+    <string name="key_home_item_look">item_look</string>
 </resources>

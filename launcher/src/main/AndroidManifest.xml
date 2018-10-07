@@ -49,6 +49,11 @@
             android:label=""
             android:theme="@style/OverlayTheme" />
 
+        <activity
+            android:name=".feature.settings_item.ItemLookActivity"
+            android:label="@string/title_settings_home_item_look"
+            android:theme="@style/OverlayTheme" />
+
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">

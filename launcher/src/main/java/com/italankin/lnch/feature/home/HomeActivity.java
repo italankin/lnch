@@ -89,7 +89,6 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
-    private CompositeAdapter<DescriptorItem> adapter;
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private Preferences preferences;
@@ -189,14 +188,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
-        adapter = new CompositeAdapter.Builder<DescriptorItem>(this)
-                .add(new AppViewModelAdapter(this))
-                .add(new HiddenAppViewModelAdapter())
-                .add(new GroupViewModelAdapter(this))
-                .add(new ShortcutViewModelAdapter(this))
-                .recyclerView(list)
-                .setHasStableIds(true)
-                .create();
     }
 
     private void setupRoot() {
@@ -261,7 +252,15 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppsLoaded(List<DescriptorItem> items, UserPrefs userPrefs) {
         applyUserPrefs(userPrefs);
-        adapter.setDataset(items);
+        new CompositeAdapter.Builder<DescriptorItem>(this)
+                .add(new AppViewModelAdapter(userPrefs, this))
+                .add(new HiddenAppViewModelAdapter())
+                .add(new GroupViewModelAdapter(userPrefs, this))
+                .add(new ShortcutViewModelAdapter(userPrefs, this))
+                .dataset(items)
+                .recyclerView(list)
+                .setHasStableIds(true)
+                .create();
         list.setVisibility(View.VISIBLE);
         root.showContent();
     }

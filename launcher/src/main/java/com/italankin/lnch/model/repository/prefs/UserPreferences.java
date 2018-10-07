@@ -54,4 +54,43 @@ public class UserPreferences implements Preferences {
     public boolean showScrollbar() {
         return prefs.getBoolean(context.getString(R.string.pref_misc_show_scrollbar), false);
     }
+
+    @Override
+    public void setItemTextSize(float size) {
+        prefs.edit().putFloat(context.getString(R.string.pref_item_text_size), size).apply();
+    }
+
+    @Override
+    public float itemTextSize() {
+        return prefs.getFloat(context.getString(R.string.pref_item_text_size), 22);
+    }
+
+    @Override
+    public void setItemPadding(int padding) {
+        prefs.edit().putInt(context.getString(R.string.pref_item_padding), padding).apply();
+    }
+
+    @Override
+    public int itemPadding() {
+        return prefs.getInt(context.getString(R.string.pref_item_padding), 16);
+    }
+
+    @Override
+    public void setItemShadowRadius(float radius) {
+        prefs.edit().putFloat(context.getString(R.string.pref_item_shadow_radius), radius).apply();
+    }
+
+    @Override
+    public float itemShadowRadius() {
+        return prefs.getFloat(context.getString(R.string.pref_item_shadow_radius), 4);
+    }
+
+    @Override
+    public void resetItemSettings() {
+        prefs.edit()
+                .remove(context.getString(R.string.pref_item_text_size))
+                .remove(context.getString(R.string.pref_item_padding))
+                .remove(context.getString(R.string.pref_item_shadow_radius))
+                .apply();
+    }
 }

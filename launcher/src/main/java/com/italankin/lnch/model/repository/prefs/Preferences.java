@@ -14,6 +14,20 @@ public interface Preferences {
 
     boolean showScrollbar();
 
+    void setItemTextSize(float size);
+
+    float itemTextSize();
+
+    void setItemPadding(int padding);
+
+    int itemPadding();
+
+    void setItemShadowRadius(float radius);
+
+    float itemShadowRadius();
+
+    void resetItemSettings();
+
     enum HomeLayout {
         COMPACT("compact"),
         GRID("grid"),
