@@ -3,12 +3,10 @@ package com.italankin.lnch.model.repository.apps;
 import android.content.Context;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Process;
 import android.os.UserHandle;
 
-import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
@@ -37,18 +35,23 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
+import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getDominantIconColor;
+import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getLabel;
+import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getVersionCode;
+
 public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
     private final DescriptorRepository descriptorRepository;
-    private final ProviderPreferences providerPreferences = new ProviderPreferences();
     private final LauncherApps launcherApps;
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
     private final Subject<String> packageChangesSubject = PublishSubject.create();
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
-    public LauncherAppsRepository(Context context, PackageManager packageManager, DescriptorRepository descriptorRepository) {
+    public LauncherAppsRepository(Context context, PackageManager packageManager,
+            DescriptorRepository descriptorRepository) {
         this.context = context;
         this.packageManager = packageManager;
         this.descriptorRepository = descriptorRepository;
@@ -165,11 +168,11 @@ public class LauncherAppsRepository implements AppsRepository {
                             AppDescriptor app = (AppDescriptor) item;
                             LauncherActivityInfo info = findInfo(infosByPackageName, app);
                             if (info != null) {
-                                int versionCode = getVersionCode(app.packageName);
+                                int versionCode = getVersionCode(packageManager, app.packageName);
                                 if (app.versionCode != versionCode) {
                                     app.versionCode = versionCode;
-                                    app.label = providerPreferences.label.get(info);
-                                    app.color = providerPreferences.color.get(info);
+                                    app.label = getLabel(info);
+                                    app.color = getDominantIconColor(info);
                                 }
                                 items.add(app);
                             } else {
@@ -237,23 +240,10 @@ public class LauncherAppsRepository implements AppsRepository {
     private AppDescriptor createItem(LauncherActivityInfo info) {
         String packageName = info.getApplicationInfo().packageName;
         AppDescriptor item = new AppDescriptor(packageName);
-        item.versionCode = getVersionCode(packageName);
-        item.label = providerPreferences.label.get(info);
-        item.color = providerPreferences.color.get(info);
+        item.versionCode = getVersionCode(packageManager, packageName);
+        item.label = getLabel(info);
+        item.color = getDominantIconColor(info);
         return item;
-    }
-
-    private int getVersionCode(String packageName) {
-        try {
-            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            return 0;
-        }
-    }
-
-    private String getComponentName(LauncherActivityInfo info) {
-        return info.getComponentName().flattenToString();
     }
 
     private void writeToDisk(List<Descriptor> items) {
