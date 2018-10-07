@@ -15,9 +15,9 @@ import com.italankin.lnch.feature.home.descriptor.model.ShortcutViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
+import com.italankin.lnch.model.repository.apps.actions.RecolorAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
-import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
@@ -104,7 +104,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void changeItemCustomColor(int position, CustomColorItem item, Integer color) {
         requireEditor();
-        editor.enqueue(new SetCustomColorAction(item.getDescriptor(), color));
+        editor.enqueue(new RecolorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }

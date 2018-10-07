@@ -5,11 +5,11 @@ import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 
-public class SetCustomColorAction implements AppsRepository.Editor.Action {
+public class RecolorAction implements AppsRepository.Editor.Action {
     private final Descriptor item;
     private final Integer customColor;
 
-    public SetCustomColorAction(Descriptor item, Integer customColor) {
+    public RecolorAction(Descriptor item, Integer customColor) {
         this.item = item;
         this.customColor = customColor;
     }
