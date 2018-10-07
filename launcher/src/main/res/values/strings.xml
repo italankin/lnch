@@ -22,7 +22,7 @@
     <string name="customize_item_color">Color</string>
     <string name="customize_item_hide">Hide</string>
     <string name="customize_item_add_group">Add separator</string>
-    <string name="customize_item_remove_group">Remove separator</string>
+    <string name="customize_item_delete">Delete</string>
     <string name="customize_action_reset">Reset</string>
 
     <string name="title_settings">Settings</string>

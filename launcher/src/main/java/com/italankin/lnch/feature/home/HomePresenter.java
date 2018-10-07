@@ -7,9 +7,10 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
+import com.italankin.lnch.feature.home.model.ShortcutViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.apps.actions.AddGroupAction;
+import com.italankin.lnch.model.repository.apps.actions.AddAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetCustomColorAction;
@@ -18,6 +19,7 @@ import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ListUtils;
 
@@ -113,12 +115,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void addGroup(int position, String label, @ColorInt int color) {
         requireEditor();
         GroupDescriptor item = new GroupDescriptor(label, color);
-        editor.enqueue(new AddGroupAction(position, item));
+        editor.enqueue(new AddAction(position, item));
         items.add(position, new GroupViewModel(item));
         getViewState().onItemInserted(position);
     }
 
-    void removeGroup(int position) {
+    void removeItem(int position) {
         requireEditor();
         editor.enqueue(new RemoveAction(position));
         items.remove(position);
@@ -201,6 +203,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 result.add(new AppViewModel((AppDescriptor) descriptor));
             } else if (descriptor instanceof GroupDescriptor) {
                 result.add(new GroupViewModel((GroupDescriptor) descriptor));
+            } else if (descriptor instanceof ShortcutDescriptor) {
+                result.add(new ShortcutViewModel((ShortcutDescriptor) descriptor));
             }
         }
         return result;

@@ -35,9 +35,11 @@ import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
+import com.italankin.lnch.feature.home.adapter.ShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.ItemViewModel;
+import com.italankin.lnch.feature.home.model.ShortcutViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
@@ -54,12 +56,15 @@ import com.italankin.lnch.util.widget.ListAlertDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
+import java.net.URISyntaxException;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
-        GroupViewModelAdapter.Listener {
+        GroupViewModelAdapter.Listener, ShortcutViewModelAdapter.Listener {
 
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
@@ -175,6 +180,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .add(new AppViewModelAdapter(this))
                 .add(new HiddenAppViewModelAdapter())
                 .add(new GroupViewModelAdapter(this))
+                .add(new ShortcutViewModelAdapter(this))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
@@ -300,10 +306,14 @@ public class HomeActivity extends AppActivity implements HomeView,
         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Adapter listeners
+    ///////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onAppClick(int position, AppViewModel item) {
         if (editMode) {
-            customizeItem(position, item);
+            customizeApp(position, item);
         } else {
             startApp(item);
         }
@@ -312,8 +322,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppLongClick(int position, AppViewModel item) {
         if (editMode) {
-            View view = list.getLayoutManager().findViewByPosition(position);
-            touchHelper.startDrag(list.getChildViewHolder(view));
+            startDrag(position);
         } else {
             startAppSettings(item);
         }
@@ -331,10 +340,29 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onGroupLongClick(int position, GroupViewModel item) {
         if (editMode) {
-            View view = list.getLayoutManager().findViewByPosition(position);
-            touchHelper.startDrag(list.getChildViewHolder(view));
+            startDrag(position);
         }
     }
+
+    @Override
+    public void onShortcutClick(int position, ShortcutViewModel item) {
+        if (editMode) {
+            customizeShortcut(position, item);
+        } else {
+            startShortcut(item);
+        }
+    }
+
+    @Override
+    public void onShortcutLongClick(int position, ShortcutViewModel item) {
+        if (editMode) {
+            startDrag(position);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // SwapItemHelper
+    ///////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onItemMove(int from, int to) {
@@ -345,7 +373,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     // Private
     ///////////////////////////////////////////////////////////////////////////
 
-    void startApp(AppViewModel item) {
+    private void startApp(AppViewModel item) {
         searchBarBehavior.hide();
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
         if (intent != null && intent.resolveActivity(packageManager) != null) {
@@ -362,13 +390,31 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    void startAppSettings(AppViewModel item) {
+    private void startAppSettings(AppViewModel item) {
         Intent intent = IntentUtils.getPackageSystemSettings(item.packageName);
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void startShortcut(ShortcutViewModel item) {
+        try {
+            Intent intent = Intent.parseUri(item.uri, 0);
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        } catch (URISyntaxException e) {
+            Timber.e(e, "startShortcut:");
+        }
+    }
+
+    private void startDrag(int position) {
+        View view = list.getLayoutManager().findViewByPosition(position);
+        touchHelper.startDrag(list.getChildViewHolder(view));
     }
 
     private void applyUserPrefs(UserPrefs userPrefs) {
@@ -468,7 +514,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void customizeItem(int position, AppViewModel item) {
+    private void customizeApp(int position, AppViewModel item) {
         ListAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
                 .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
@@ -530,8 +576,27 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
                     setItemColor(position, item);
                 })
-                .addItem(R.drawable.ic_action_remove, R.string.customize_item_remove_group, () -> {
-                    presenter.removeGroup(position);
+                .addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
+                    presenter.removeItem(position);
+                })
+                .show();
+    }
+
+    private void customizeShortcut(int position, ShortcutViewModel item) {
+        ListAlertDialog.builder(this)
+                .setTitle(item.getVisibleLabel())
+                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
+                    setItemCustomLabel(position, item);
+                })
+                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
+                    setItemColor(position, item);
+                })
+                .addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
+                    presenter.addGroup(position, getString(R.string.new_group_label),
+                            getColor(R.color.group_default));
+                })
+                .addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
+                    presenter.removeItem(position);
                 })
                 .show();
     }

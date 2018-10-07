@@ -6,6 +6,6 @@ import com.italankin.lnch.di.service.DaggerService;
 
 public abstract class AppFragment extends MvpAppCompatFragment {
     protected DaggerService daggerService() {
-        return ((LauncherApp) getContext().getApplicationContext()).daggerService;
+        return LauncherApp.getInstance(getContext()).daggerService;
     }
 }

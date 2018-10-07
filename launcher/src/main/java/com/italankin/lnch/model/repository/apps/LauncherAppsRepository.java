@@ -12,7 +12,6 @@ import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
-import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 
 import java.io.File;
 import java.util.ArrayDeque;
@@ -159,10 +158,8 @@ public class LauncherAppsRepository implements AppsRepository {
                         List<Descriptor> deleted = new ArrayList<>(8);
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
                         for (Descriptor item : savedItems) {
-                            if (item instanceof GroupDescriptor) {
+                            if (!(item instanceof AppDescriptor)) {
                                 items.add(item);
-                                continue;
-                            } else if (!(item instanceof AppDescriptor)) {
                                 continue;
                             }
                             AppDescriptor app = (AppDescriptor) item;
