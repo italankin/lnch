@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.StubView;

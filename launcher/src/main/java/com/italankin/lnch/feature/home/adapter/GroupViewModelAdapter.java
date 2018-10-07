@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.GroupViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.GroupViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 public class GroupViewModelAdapter extends BaseAdapterDelegate<GroupViewModelHolder, GroupViewModel> {

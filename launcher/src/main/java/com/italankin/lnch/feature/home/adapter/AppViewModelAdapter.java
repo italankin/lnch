@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.AppViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 public class AppViewModelAdapter extends BaseAdapterDelegate<AppViewModelHolder, AppViewModel> {

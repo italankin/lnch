@@ -1,9 +1,16 @@
-package com.italankin.lnch.feature.home.model;
+package com.italankin.lnch.feature.home.descriptor.model;
 
+import com.italankin.lnch.feature.home.descriptor.CustomColorItem;
+import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
+import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
+import com.italankin.lnch.feature.home.descriptor.GroupedItem;
+import com.italankin.lnch.feature.home.descriptor.HiddenItem;
+import com.italankin.lnch.feature.home.descriptor.VisibleItem;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 
-public class AppViewModel implements ItemViewModel {
+public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
+        VisibleItem, GroupedItem {
     public final AppDescriptor item;
     public final String packageName;
     public final String componentName;
@@ -42,27 +49,42 @@ public class AppViewModel implements ItemViewModel {
     }
 
     @Override
+    public String getVisibleLabel() {
+        return customLabel != null ? customLabel : label;
+    }
+
+    @Override
     public void setCustomColor(Integer color) {
         customColor = color;
     }
 
     @Override
-    public String getVisibleLabel() {
-        if (customLabel != null) {
-            return customLabel;
-        }
-        return label;
+    public Integer getCustomColor() {
+        return customColor;
     }
 
     public int getVisibleColor() {
-        if (customColor != null) {
-            return customColor;
-        }
-        return color;
+        return customColor != null ? customColor : color;
     }
 
+    @Override
     public boolean isVisible() {
         return !hidden && visible;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override

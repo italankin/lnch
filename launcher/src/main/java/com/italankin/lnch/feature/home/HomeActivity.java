@@ -36,10 +36,16 @@ import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.adapter.ShortcutViewModelAdapter;
-import com.italankin.lnch.feature.home.model.AppViewModel;
-import com.italankin.lnch.feature.home.model.GroupViewModel;
-import com.italankin.lnch.feature.home.model.ItemViewModel;
-import com.italankin.lnch.feature.home.model.ShortcutViewModel;
+import com.italankin.lnch.feature.home.descriptor.CustomColorItem;
+import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
+import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
+import com.italankin.lnch.feature.home.descriptor.GroupedItem;
+import com.italankin.lnch.feature.home.descriptor.HiddenItem;
+import com.italankin.lnch.feature.home.descriptor.LabelItem;
+import com.italankin.lnch.feature.home.descriptor.RemovableItem;
+import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.GroupViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.ShortcutViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
@@ -85,7 +91,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
-    private CompositeAdapter<ItemViewModel> adapter;
+    private CompositeAdapter<DescriptorItem> adapter;
     private String layout;
     private Snackbar editModeSnackbar;
     private Preferences preferences;
@@ -176,7 +182,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
-        adapter = new CompositeAdapter.Builder<ItemViewModel>(this)
+        adapter = new CompositeAdapter.Builder<DescriptorItem>(this)
                 .add(new AppViewModelAdapter(this))
                 .add(new HiddenAppViewModelAdapter())
                 .add(new GroupViewModelAdapter(this))
@@ -245,7 +251,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<ItemViewModel> items, UserPrefs userPrefs) {
+    public void onAppsLoaded(List<DescriptorItem> items, UserPrefs userPrefs) {
         applyUserPrefs(userPrefs);
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
@@ -313,7 +319,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppClick(int position, AppViewModel item) {
         if (editMode) {
-            customizeApp(position, item);
+            customize(position, item);
         } else {
             startApp(item);
         }
@@ -331,7 +337,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onGroupClick(int position, GroupViewModel item) {
         if (editMode) {
-            customizeGroup(position, item);
+            customize(position, item);
         } else {
             presenter.hideGroup(position);
         }
@@ -347,7 +353,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onShortcutClick(int position, ShortcutViewModel item) {
         if (editMode) {
-            customizeShortcut(position, item);
+            customize(position, item);
         } else {
             startShortcut(item);
         }
@@ -514,26 +520,41 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void customizeApp(int position, AppViewModel item) {
-        ListAlertDialog.builder(this)
-                .setTitle(item.getVisibleLabel())
-                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
-                    setItemCustomLabel(position, item);
-                })
-                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
-                    setItemColor(position, item);
-                })
-                .addItem(R.drawable.ic_action_hide, R.string.customize_item_hide, () -> {
-                    presenter.hideApp(position, item);
-                })
-                .addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
-                    presenter.addGroup(position, getString(R.string.new_group_label),
-                            getColor(R.color.group_default));
-                })
-                .show();
+    private void customize(int position, DescriptorItem item) {
+        ListAlertDialog.Builder builder = ListAlertDialog.builder(this);
+        if (item instanceof LabelItem) {
+            builder.setTitle(((LabelItem) item).getVisibleLabel());
+        }
+        if (item instanceof CustomLabelItem) {
+            builder.addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
+                setItemCustomLabel(position, (CustomLabelItem) item);
+            });
+        }
+        if (item instanceof CustomColorItem) {
+            builder.addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
+                setItemColor(position, (CustomColorItem) item);
+            });
+        }
+        if (item instanceof HiddenItem) {
+            builder.addItem(R.drawable.ic_action_hide, R.string.customize_item_hide, () -> {
+                presenter.hideItem(position, (HiddenItem) item);
+            });
+        }
+        if (item instanceof GroupedItem) {
+            builder.addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
+                presenter.addGroup(position, getString(R.string.new_group_label),
+                        getColor(R.color.group_default));
+            });
+        }
+        if (item instanceof RemovableItem) {
+            builder.addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
+                presenter.removeItem(position);
+            });
+        }
+        builder.show();
     }
 
-    private void setItemCustomLabel(int position, ItemViewModel item) {
+    private void setItemCustomLabel(int position, CustomLabelItem item) {
         EditTextAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
@@ -551,7 +572,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
-    private void setItemColor(int position, ItemViewModel item) {
+    private void setItemColor(int position, CustomColorItem item) {
         int visibleColor = item.getVisibleColor();
         ColorPickerDialog.builder(this)
                 .setHexVisible(false)
@@ -563,40 +584,6 @@ public class HomeActivity extends AppActivity implements HomeView,
                 })
                 .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
                     presenter.changeItemCustomColor(position, item, null);
-                })
-                .show();
-    }
-
-    private void customizeGroup(int position, GroupViewModel item) {
-        ListAlertDialog.builder(this)
-                .setTitle(item.getVisibleLabel())
-                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
-                    setItemCustomLabel(position, item);
-                })
-                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
-                    setItemColor(position, item);
-                })
-                .addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
-                    presenter.removeItem(position);
-                })
-                .show();
-    }
-
-    private void customizeShortcut(int position, ShortcutViewModel item) {
-        ListAlertDialog.builder(this)
-                .setTitle(item.getVisibleLabel())
-                .addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
-                    setItemCustomLabel(position, item);
-                })
-                .addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
-                    setItemColor(position, item);
-                })
-                .addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
-                    presenter.addGroup(position, getString(R.string.new_group_label),
-                            getColor(R.color.group_default));
-                })
-                .addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
-                    presenter.removeItem(position);
                 })
                 .show();
     }

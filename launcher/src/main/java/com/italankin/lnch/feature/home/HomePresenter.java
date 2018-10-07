@@ -4,10 +4,14 @@ import android.support.annotation.ColorInt;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.home.model.AppViewModel;
-import com.italankin.lnch.feature.home.model.GroupViewModel;
-import com.italankin.lnch.feature.home.model.ItemViewModel;
-import com.italankin.lnch.feature.home.model.ShortcutViewModel;
+import com.italankin.lnch.feature.home.descriptor.CustomColorItem;
+import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
+import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
+import com.italankin.lnch.feature.home.descriptor.HiddenItem;
+import com.italankin.lnch.feature.home.descriptor.VisibleItem;
+import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.GroupViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.ShortcutViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
@@ -41,7 +45,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
      */
-    private List<ItemViewModel> items;
+    private List<DescriptorItem> items;
     private AppsRepository.Editor editor;
 
     @Inject
@@ -90,25 +94,25 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemsSwap(from, to);
     }
 
-    void renameItem(int position, ItemViewModel item, String customLabel) {
+    void renameItem(int position, CustomLabelItem item, String customLabel) {
         requireEditor();
-        String s = customLabel.isEmpty() ? null : customLabel;
+        String s = customLabel.trim().isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction(item.getDescriptor(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
-    void changeItemCustomColor(int position, ItemViewModel item, Integer color) {
+    void changeItemCustomColor(int position, CustomColorItem item, Integer color) {
         requireEditor();
         editor.enqueue(new SetCustomColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
-    void hideApp(int position, AppViewModel item) {
+    void hideItem(int position, HiddenItem item) {
         requireEditor();
-        editor.enqueue(new SetVisibilityAction(item.item, false));
-        item.hidden = true;
+        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), false));
+        item.setHidden(true);
         getViewState().onItemChanged(position);
     }
 
@@ -169,9 +173,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .filter(appItems -> editor == null)
                 .map(this::mapItems)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<ItemViewModel>>() {
+                .subscribe(new State<List<DescriptorItem>>() {
                     @Override
-                    protected void onNext(HomeView viewState, List<ItemViewModel> list) {
+                    protected void onNext(HomeView viewState, List<DescriptorItem> list) {
                         Timber.d("Receive update: %s", list);
                         items = list;
                         viewState.onAppsLoaded(items, userPrefs());
@@ -196,8 +200,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
         return userPrefs;
     }
 
-    private List<ItemViewModel> mapItems(List<Descriptor> descriptors) {
-        List<ItemViewModel> result = new ArrayList<>(descriptors.size());
+    private List<DescriptorItem> mapItems(List<Descriptor> descriptors) {
+        List<DescriptorItem> result = new ArrayList<>(descriptors.size());
         for (Descriptor descriptor : descriptors) {
             if (descriptor instanceof AppDescriptor) {
                 result.add(new AppViewModel((AppDescriptor) descriptor));
@@ -216,7 +220,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         int endIndex = position + 1;
         for (int i = startIndex, size = items.size(); i < size; i++) {
             endIndex = i;
-            if (items.get(i) instanceof GroupViewModel) {
+            if (!(items.get(i) instanceof VisibleItem)) {
                 break;
             }
         }
@@ -226,7 +230,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
         group.expanded = expanded;
         for (int i = startIndex; i < endIndex; i++) {
-            ((AppViewModel) items.get(i)).visible = group.expanded;
+            VisibleItem item = (VisibleItem) items.get(i);
+            item.setVisible(group.expanded);
         }
         if (group.expanded) {
             getViewState().onItemsInserted(startIndex, count);

@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.ShortcutViewModel;
+import com.italankin.lnch.feature.home.descriptor.model.ShortcutViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 public class ShortcutViewModelAdapter extends BaseAdapterDelegate<ShortcutViewModelHolder, ShortcutViewModel> {

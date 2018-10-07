@@ -1,18 +1,25 @@
-package com.italankin.lnch.feature.home.model;
+package com.italankin.lnch.feature.home.descriptor.model;
 
+import com.italankin.lnch.feature.home.descriptor.CustomColorItem;
+import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
+import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
+import com.italankin.lnch.feature.home.descriptor.GroupedItem;
+import com.italankin.lnch.feature.home.descriptor.RemovableItem;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
-import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 
-public class GroupViewModel implements ItemViewModel {
-    public final GroupDescriptor item;
+public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
+        GroupedItem, RemovableItem {
+    public final ShortcutDescriptor item;
+    public final String uri;
     public final String label;
     public String customLabel;
-    public boolean expanded = true;
     public int color;
     public Integer customColor;
 
-    public GroupViewModel(GroupDescriptor item) {
+    public ShortcutViewModel(ShortcutDescriptor item) {
         this.item = item;
+        this.uri = item.uri;
         this.label = item.getVisibleLabel();
         this.color = item.getVisibleColor();
     }
@@ -45,5 +52,10 @@ public class GroupViewModel implements ItemViewModel {
     @Override
     public void setCustomColor(Integer color) {
         this.customColor = color;
+    }
+
+    @Override
+    public Integer getCustomColor() {
+        return customColor;
     }
 }
