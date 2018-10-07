@@ -14,9 +14,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
     private static final float HIDDEN_SHOW_THRESHOLD = .6f;
 
-    private View topView;
-    private View bottomView;
-    private int maxOffset = -1;
+    private final View topView;
+    private final View bottomView;
+    private final int maxOffset;
 
     private boolean dragInProgress = false;
     private boolean shown = false;
@@ -24,18 +24,13 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private final Listener listener;
 
-    public TopBarBehavior(View topView, View bottomView, Listener listener) {
+    public TopBarBehavior(View topView, View bottomView, int maxOffset, Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
+        this.maxOffset = maxOffset;
         this.listener = listener;
-    }
 
-    @Override
-    public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
-        if (maxOffset <= 0) {
-            setupInitialState();
-        }
-        return false;
+        setupInitialState();
     }
 
     @Override
@@ -59,9 +54,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         if (!dragInProgress && shown) {
             dragInProgress = dy > 0;
         }
-        if (dragInProgress) {
-            onDrag(dy);
+        if (dragInProgress && topView.getTranslationY() > -maxOffset) {
             consumed[1] = dy;
+            onDrag(dy);
         }
     }
 
@@ -71,6 +66,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
             int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         if (!dragInProgress) {
             dragInProgress = dyUnconsumed < 0;
+        }
+        if (dragInProgress) {
+            onDrag(dyUnconsumed);
         }
     }
 
@@ -89,8 +87,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (velocityY > 0) {
+        if (shown && velocityY > 0) {
             hide();
+            return true;
         }
         return false;
     }
@@ -158,7 +157,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     private void setupInitialState() {
-        maxOffset = topView.getMeasuredHeight();
         if (shown) {
             topView.setTranslationY(0);
             topView.setAlpha(1);
@@ -171,6 +169,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     private void onDrag(int dy) {
+        if (dy == 0) {
+            return;
+        }
         int actual = (int) (dy * (1 - DRAG_RESISTANCE));
         float cty = topView.getTranslationY() - actual;
         if (cty < -maxOffset) {

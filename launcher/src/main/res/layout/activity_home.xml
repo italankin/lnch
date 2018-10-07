@@ -19,7 +19,7 @@
         <FrameLayout
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/searchbar_size"
             android:background="#1fff"
             android:focusable="true"
             android:focusableInTouchMode="true"

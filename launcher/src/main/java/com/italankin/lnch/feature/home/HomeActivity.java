@@ -54,7 +54,6 @@ import com.italankin.lnch.model.provider.ProviderPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -123,7 +122,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         setupSearchBar();
 
         if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_SEARCH_SHOWN, false)) {
-            ViewUtils.onGlobalLayout(root, () -> searchBarBehavior.show());
+            searchBarBehavior.show();
         }
     }
 
@@ -199,7 +198,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setupSearchBar() {
-        searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
+        int maxOffset = getResources().getDimensionPixelSize(R.dimen.searchbar_size);
+        searchBarBehavior = new TopBarBehavior(searchBar, list, maxOffset, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
                 if (preferences.searchShowSoftKeyboard()) {
