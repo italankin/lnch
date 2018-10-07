@@ -57,7 +57,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".feature.receiver.UninstallShortcutReceiver">
+        <receiver
+            android:name=".feature.receiver.UninstallShortcutReceiver"
+            android:permission="com.android.launcher.permission.UNINSTALL_SHORTCUT">
             <intent-filter>
                 <action android:name="com.android.launcher.action.UNINSTALL_SHORTCUT" />
             </intent-filter>
