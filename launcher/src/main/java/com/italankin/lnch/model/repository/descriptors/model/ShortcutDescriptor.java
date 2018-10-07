@@ -31,7 +31,12 @@ public class ShortcutDescriptor implements Descriptor {
 
     @Keep
     public ShortcutDescriptor() {
+    }
+
+    public ShortcutDescriptor(String uri, String label) {
         this.id = UUID.randomUUID().toString();
+        this.uri = uri;
+        this.label = label != null ? label.toUpperCase() : UNKNOWN_NAME;
     }
 
     @Override

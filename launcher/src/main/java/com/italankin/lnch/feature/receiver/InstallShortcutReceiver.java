@@ -13,7 +13,6 @@ import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 import timber.log.Timber;
 
 public class InstallShortcutReceiver extends BroadcastReceiver {
-    private static final String UNKNOWN_NAME = "???";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -33,9 +32,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
         String uri = target.toUri(0);
 
-        ShortcutDescriptor descriptor = new ShortcutDescriptor();
-        descriptor.label = name != null ? name.toUpperCase() : UNKNOWN_NAME;
-        descriptor.uri = uri;
+        ShortcutDescriptor descriptor = new ShortcutDescriptor(uri, name);
         descriptor.color = Color.WHITE;
 
         AppsRepository apps = LauncherApp.getInstance(context)
