@@ -46,6 +46,7 @@
     <string name="title_settings_search_behavior_auto_show_summary_on">Keyboard will open when search bar appears</string>
     <string name="title_settings_search_behavior_auto_show_summary_off">Keyboard will NOT open when search bar appears</string>
     <string name="title_settings_search_use_custom_tabs">Use custom tabs</string>
+    <string name="title_settings_search_use_custom_tabs_summary">Web search and links will open inside the launcher</string>
 
     <string name="settings_system">System settings</string>
     <string name="settings_overlay_preview">Preview</string>

@@ -9,5 +9,6 @@
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/pref_search_use_custom_tabs"
+        android:summary="@string/title_settings_search_use_custom_tabs_summary"
         android:title="@string/title_settings_search_use_custom_tabs" />
 </PreferenceScreen>
