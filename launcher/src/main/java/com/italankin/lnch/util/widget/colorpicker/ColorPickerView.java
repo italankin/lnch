@@ -1,7 +1,6 @@
 package com.italankin.lnch.util.widget.colorpicker;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +54,8 @@ public class ColorPickerView extends LinearLayout {
         setGravity(Gravity.CENTER_HORIZONTAL);
 
         preview = findViewById(R.id.preview);
-        preview.setBackground(new BackdropDrawable());
+        int gridSize = context.getResources().getDimensionPixelSize(R.dimen.backdrop_grid_size);
+        preview.setBackground(new BackdropDrawable(gridSize));
         hex = findViewById(R.id.hex_value);
         hex.setOnClickListener(v -> {
             if (onHexValueClickListener != null) {
@@ -194,20 +193,28 @@ public class ColorPickerView extends LinearLayout {
      * Draws transparency grid and color on top of it
      */
     private static class BackdropDrawable extends ColorDrawable {
-        private final int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
-                Resources.getSystem().getDisplayMetrics());
+        private final int gridSize;
         private final Paint paint = new Paint();
+
+        public BackdropDrawable(@Px int gridSize) {
+            if (gridSize <= 0) {
+                throw new IllegalArgumentException("size must be > 0");
+            }
+            this.gridSize = gridSize;
+        }
 
         @Override
         public void draw(@NonNull Canvas canvas) {
             int bw = getBounds().width();
-            int width = (bw + size - bw % size) / size;
+            int width = (bw + gridSize - bw % gridSize) / gridSize;
             int bh = getBounds().height();
-            int height = (bh + size - bh % size) / size;
+            int height = (bh + gridSize - bh % gridSize) / gridSize;
             for (int w = 0; w < width; w++) {
                 for (int h = 0; h < height; h++) {
                     paint.setColor(w % 2 == h % 2 ? Color.WHITE : Color.LTGRAY);
-                    canvas.drawRect(size * w, size * h, size * w + size, size * h + size, paint);
+                    canvas.drawRect(gridSize * w, gridSize * h,
+                            gridSize * w + gridSize, gridSize * h + gridSize,
+                            paint);
                 }
             }
             super.draw(canvas);
