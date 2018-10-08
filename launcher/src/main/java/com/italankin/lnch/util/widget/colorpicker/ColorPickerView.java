@@ -200,8 +200,10 @@ public class ColorPickerView extends LinearLayout {
 
         @Override
         public void draw(@NonNull Canvas canvas) {
-            int width = getBounds().width() / size;
-            int height = getBounds().height() / size;
+            int bw = getBounds().width();
+            int width = (bw + size - bw % size) / size;
+            int bh = getBounds().height();
+            int height = (bh + size - bh % size) / size;
             for (int w = 0; w < width; w++) {
                 for (int h = 0; h < height; h++) {
                     paint.setColor(w % 2 == h % 2 ? Color.WHITE : Color.LTGRAY);
