@@ -47,6 +47,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
      */
     private List<DescriptorItem> items;
     private AppsRepository.Editor editor;
+    private final UserPrefs userPrefs = new UserPrefs();
 
     @Inject
     HomePresenter(AppsRepository appsRepository, Preferences preferences) {
@@ -178,7 +179,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, List<DescriptorItem> list) {
                         Timber.d("Receive update: %s", list);
                         items = list;
-                        viewState.onAppsLoaded(items, userPrefs());
+                        updateUserPrefs();
+                        viewState.onAppsLoaded(items, userPrefs);
                     }
 
                     @Override
@@ -192,8 +194,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
-    private UserPrefs userPrefs() {
-        UserPrefs userPrefs = new UserPrefs();
+    private void updateUserPrefs() {
         userPrefs.homeLayout = preferences.homeLayout();
         userPrefs.overlayColor = preferences.overlayColor();
         userPrefs.showScrollbar = preferences.showScrollbar();
@@ -201,7 +202,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
         userPrefs.itemPadding = preferences.itemPadding();
         userPrefs.itemShadowRadius = preferences.itemShadowRadius();
         userPrefs.itemFont = preferences.itemFont().typeface();
-        return userPrefs;
     }
 
     private List<DescriptorItem> mapItems(List<Descriptor> descriptors) {

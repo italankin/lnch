@@ -2,17 +2,14 @@ package com.italankin.lnch.feature.home.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.descriptor.model.GroupViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
-public class GroupViewModelAdapter extends BaseAdapterDelegate<GroupViewModelHolder, GroupViewModel> {
+public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewModelHolder, GroupViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -46,19 +43,8 @@ public class GroupViewModelAdapter extends BaseAdapterDelegate<GroupViewModelHol
                 return true;
             });
         }
-        applyUserPrefs(holder);
+        applyUserPrefs(holder.label, userPrefs);
         return holder;
-    }
-
-    private void applyUserPrefs(GroupViewModelHolder holder) {
-        DisplayMetrics dm = holder.itemView.getResources().getDisplayMetrics();
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                userPrefs.itemPadding, dm);
-        holder.label.setPadding(padding, padding, padding, padding);
-        holder.label.setTextSize(userPrefs.itemTextSize);
-        holder.label.setShadowLayer(userPrefs.itemShadowRadius,
-                holder.label.getShadowDx(), holder.label.getShadowDy(), holder.label.getShadowColor());
-        holder.label.setTypeface(userPrefs.itemFont);
     }
 
     @Override

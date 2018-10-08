@@ -4,7 +4,7 @@ import android.graphics.Typeface;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class UserPrefs {
+public final class UserPrefs {
     public Preferences.HomeLayout homeLayout;
     public int overlayColor;
     public boolean showScrollbar;
