@@ -22,7 +22,7 @@
         android:gravity="center">
 
         <include
-            android:id="@+id/item_app"
+            android:id="@+id/item_preview"
             layout="@layout/item_app" />
 
     </LinearLayout>

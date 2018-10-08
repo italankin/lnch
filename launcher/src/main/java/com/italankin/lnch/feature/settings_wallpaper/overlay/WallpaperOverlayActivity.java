@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -42,21 +43,32 @@ public class WallpaperOverlayActivity extends AppActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        TextView itemApp = findViewById(R.id.item_app);
-        itemApp.setText(R.string.settings_overlay_preview);
-        itemApp.setAllCaps(true);
-        itemApp.setTextColor(ContextCompat.getColor(this, R.color.accent));
-        itemApp.setOnClickListener(v -> {
-            ColorPickerDialog.builder(this)
-                    .setSelectedColor(itemApp.getCurrentTextColor())
-                    .setOnColorPickedListener(itemApp::setTextColor)
-                    .show();
-        });
+        initItemPreview();
 
         colorPicker = findViewById(R.id.color_picker);
         ViewGroup root = findViewById(R.id.root);
         colorPicker.setColorChangedListener(root::setBackgroundColor);
         colorPicker.setSelectedColor(preferences.overlayColor());
+    }
+
+    private void initItemPreview() {
+        TextView itemPreview = findViewById(R.id.item_preview);
+        itemPreview.setText(R.string.settings_overlay_preview);
+        itemPreview.setAllCaps(true);
+        itemPreview.setTextColor(ContextCompat.getColor(this, R.color.accent));
+        itemPreview.setOnClickListener(v -> {
+            ColorPickerDialog.builder(this)
+                    .setSelectedColor(itemPreview.getCurrentTextColor())
+                    .setOnColorPickedListener(itemPreview::setTextColor)
+                    .show();
+        });
+
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                preferences.itemPadding(), getResources().getDisplayMetrics());
+        itemPreview.setPadding(padding, padding, padding, padding);
+        itemPreview.setTextSize(preferences.itemTextSize());
+        itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
+                itemPreview.getShadowDy(), itemPreview.getShadowColor());
     }
 
     @Override
