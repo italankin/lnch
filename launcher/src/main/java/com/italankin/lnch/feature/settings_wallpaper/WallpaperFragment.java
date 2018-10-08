@@ -23,7 +23,6 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.key_wallpaper_change).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             Intent chooser = Intent.createChooser(intent,
                     getString(R.string.title_settings_wallpaper_change));
             startActivity(chooser);

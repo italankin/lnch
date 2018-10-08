@@ -72,6 +72,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
         });
         findPreference(R.string.key_home_item_look).setOnPreferenceClickListener(preference -> {
             Intent intent = ItemLookActivity.getStartIntent(getContext());
+            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             startActivity(intent);
             return true;
         });
