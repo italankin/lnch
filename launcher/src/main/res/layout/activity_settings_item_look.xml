@@ -27,7 +27,7 @@
         android:gravity="center">
 
         <include
-            android:id="@+id/item_app"
+            android:id="@+id/item_preview"
             layout="@layout/item_app" />
 
     </LinearLayout>
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_toEndOf="@id/text_size_icon"
-                    android:text="Text size"
+                    android:text="@string/settings_item_look_text_size"
                     android:textSize="12sp" />
 
                 <SeekBar
@@ -75,6 +75,44 @@
                     android:layout_toEndOf="@id/text_size_icon"
                     tools:max="42"
                     tools:progress="25" />
+
+            </RelativeLayout>
+
+            <!-- Text Font -->
+
+            <RelativeLayout
+                android:id="@+id/text_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/text_font_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_settings_font" />
+
+                <TextView
+                    android:id="@+id/text_font_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/text_font_icon"
+                    android:text="@string/settings_item_look_text_font"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/text_font_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/text_font_title"
+                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@id/text_font_icon"
+                    android:textColor="#888"
+                    android:textSize="12sp"
+                    tools:text="Default" />
 
             </RelativeLayout>
 
@@ -98,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_toEndOf="@id/padding_icon"
-                    android:text="Padding"
+                    android:text="@string/settings_item_look_padding"
                     android:textSize="12sp" />
 
                 <SeekBar
@@ -133,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_toEndOf="@id/shadow_icon"
-                    android:text="Shadow"
+                    android:text="@string/settings_item_look_shadow_radius"
                     android:textSize="12sp" />
 
                 <SeekBar

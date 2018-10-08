@@ -200,6 +200,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         userPrefs.itemTextSize = preferences.itemTextSize();
         userPrefs.itemPadding = preferences.itemPadding();
         userPrefs.itemShadowRadius = preferences.itemShadowRadius();
+        userPrefs.itemFont = preferences.itemFont().typeface();
         return userPrefs;
     }
 

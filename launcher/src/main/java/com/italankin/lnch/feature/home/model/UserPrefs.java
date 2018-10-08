@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.home.model;
 
+import android.graphics.Typeface;
+
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class UserPrefs {
@@ -9,4 +11,5 @@ public class UserPrefs {
     public float itemTextSize;
     public int itemPadding;
     public float itemShadowRadius;
+    public Typeface itemFont;
 }

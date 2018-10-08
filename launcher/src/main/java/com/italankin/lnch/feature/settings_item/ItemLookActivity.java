@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -34,10 +35,12 @@ public class ItemLookActivity extends AppActivity {
     private static final int SHADOW_RADIUS_MAX = 16;
 
     private Preferences preferences;
-    private TextView itemApp;
+    private TextView preview;
     private SeekBar paddingSeekBar;
     private SeekBar textSizeSeekBar;
     private SeekBar shadowSeekBar;
+    private TextView textFontValue;
+    private int fontFamily;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +56,9 @@ public class ItemLookActivity extends AppActivity {
         initOverlay();
         initToolbar();
         initPreview();
+
         initTextSize();
+        initFont();
         initPadding();
         initShadow();
     }
@@ -98,18 +103,19 @@ public class ItemLookActivity extends AppActivity {
     }
 
     private void initPreview() {
-        itemApp = findViewById(R.id.item_app);
-        itemApp.setBackgroundColor(0x20ffffff);
-        itemApp.setText(R.string.settings_item_preview);
-        itemApp.setAllCaps(true);
-        itemApp.setTextColor(ContextCompat.getColor(this, R.color.accent));
-        itemApp.setOnClickListener(v -> {
+        preview = findViewById(R.id.item_preview);
+        preview.setBackgroundColor(0x20ffffff);
+        preview.setText(R.string.settings_item_preview);
+        preview.setAllCaps(true);
+        preview.setTextColor(ContextCompat.getColor(this, R.color.accent));
+        preview.setOnClickListener(v -> {
             ColorPickerDialog.builder(this)
-                    .setSelectedColor(itemApp.getCurrentTextColor())
-                    .setOnColorPickedListener(itemApp::setTextColor)
+                    .setSelectedColor(preview.getCurrentTextColor())
+                    .setOnColorPickedListener(preview::setTextColor)
                     .show();
         });
-        itemApp.setTextSize(preferences.itemTextSize());
+        preview.setTextSize(preferences.itemTextSize());
+        preview.setTypeface(preferences.itemFont().typeface());
         setItemAppPadding(preferences.itemPadding());
         setItemAppShadow(preferences.itemShadowRadius());
     }
@@ -119,8 +125,26 @@ public class ItemLookActivity extends AppActivity {
         textSizeSeekBar.setProgress((int) (preferences.itemTextSize() - TEXT_SIZE_MIN));
         textSizeSeekBar.setMax(TEXT_SIZE_MAX - TEXT_SIZE_MIN);
         textSizeSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
-            itemApp.setTextSize(TEXT_SIZE_MIN + progress);
+            preview.setTextSize(TEXT_SIZE_MIN + progress);
         }));
+    }
+
+    private void initFont() {
+        CharSequence[] items = {"Default", "Sans Serif", "Serif", "Monospace"};
+        fontFamily = preferences.itemFont().ordinal();
+        View viewById = findViewById(R.id.text_font);
+        viewById.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.settings_item_look_text_font);
+            builder.setItems(items, (dialog, which) -> {
+                preview.setTypeface(Preferences.Font.values()[which].typeface());
+                fontFamily = which;
+                textFontValue.setText(items[fontFamily]);
+            });
+            builder.show();
+        });
+        textFontValue = findViewById(R.id.text_font_value);
+        textFontValue.setText(items[fontFamily]);
     }
 
     private void initPadding() {
@@ -144,11 +168,11 @@ public class ItemLookActivity extends AppActivity {
     private void setItemAppPadding(int padding) {
         int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 padding, getResources().getDisplayMetrics());
-        itemApp.setPadding(p, p, p, p);
+        preview.setPadding(p, p, p, p);
     }
 
     private void setItemAppShadow(float radius) {
-        itemApp.setShadowLayer(radius, itemApp.getShadowDx(), itemApp.getShadowDy(), itemApp.getShadowColor());
+        preview.setShadowLayer(radius, preview.getShadowDx(), preview.getShadowDy(), preview.getShadowColor());
     }
 
     private void save() {
@@ -158,5 +182,6 @@ public class ItemLookActivity extends AppActivity {
         preferences.setItemTextSize(textSize);
         preferences.setItemPadding(padding);
         preferences.setItemShadowRadius(shadowRadius);
+        preferences.setItemFont(Preferences.Font.values()[fontFamily]);
     }
 }

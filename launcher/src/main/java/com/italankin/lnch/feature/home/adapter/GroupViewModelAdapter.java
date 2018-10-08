@@ -58,6 +58,7 @@ public class GroupViewModelAdapter extends BaseAdapterDelegate<GroupViewModelHol
         holder.label.setTextSize(userPrefs.itemTextSize);
         holder.label.setShadowLayer(userPrefs.itemShadowRadius,
                 holder.label.getShadowDx(), holder.label.getShadowDy(), holder.label.getShadowColor());
+        holder.label.setTypeface(userPrefs.itemFont);
     }
 
     @Override

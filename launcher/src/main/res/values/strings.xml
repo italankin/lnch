@@ -65,4 +65,8 @@
     <string name="settings_apps_reset_action">Reset</string>
 
     <string name="settings_item_look_reset">Reset</string>
+    <string name="settings_item_look_text_size">Text size</string>
+    <string name="settings_item_look_text_font">Font</string>
+    <string name="settings_item_look_shadow_radius">Shadow radius</string>
+    <string name="settings_item_look_padding">Padding</string>
 </resources>

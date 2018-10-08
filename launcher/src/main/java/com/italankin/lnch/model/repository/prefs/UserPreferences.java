@@ -86,11 +86,23 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public void setItemFont(Font font) {
+        prefs.edit().putString(context.getString(R.string.pref_item_font), font.toString()).apply();
+    }
+
+    @Override
+    public Font itemFont() {
+        String pref = prefs.getString(context.getString(R.string.pref_item_font), null);
+        return Font.from(pref);
+    }
+
+    @Override
     public void resetItemSettings() {
         prefs.edit()
                 .remove(context.getString(R.string.pref_item_text_size))
                 .remove(context.getString(R.string.pref_item_padding))
                 .remove(context.getString(R.string.pref_item_shadow_radius))
+                .remove(context.getString(R.string.pref_item_font))
                 .apply();
     }
 }
