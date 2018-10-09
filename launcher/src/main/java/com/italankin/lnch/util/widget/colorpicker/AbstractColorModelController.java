@@ -1,7 +1,10 @@
 package com.italankin.lnch.util.widget.colorpicker;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +12,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 abstract class AbstractColorModelController implements ColorModelController {
     @Nullable
     protected ColorPickerView.OnColorChangedListener listener;
+
+    @CallSuper
+    @Override
+    public void destroy() {
+        this.listener = null;
+    }
 
     @Override
     public void setListener(@Nullable ColorPickerView.OnColorChangedListener listener) {
@@ -27,7 +37,30 @@ abstract class AbstractColorModelController implements ColorModelController {
         labelView.setText(label);
         SeekBar seekBarView = rowView.findViewById(R.id.seekbar);
         seekBarView.setMax(max);
-        TextView valueView = rowView.findViewById(R.id.hex_value);
+        TextView valueView = rowView.findViewById(R.id.value);
+        valueView.setOnClickListener(v -> {
+            EditTextAlertDialog.builder(root.getContext())
+                    .setTitle(R.string.color_picker_edit_value_title)
+                    .customizeEditText(editText -> {
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+                        String text = String.valueOf(seekBarView.getProgress());
+                        editText.setText(text);
+                        editText.setSelection(text.length());
+                        editText.setHint(editText.getContext()
+                                .getString(R.string.color_picker_edit_value_hint, 0, max));
+                    })
+                    .setPositiveButton(R.string.ok, (dialog, editText) -> {
+                        try {
+                            String s = editText.getText().toString().trim();
+                            int value = Integer.parseInt(s);
+                            seekBarView.setProgress(Math.min(max, Math.max(0, value)));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+        });
         root.addView(rowView);
         Row row = new Row(rowView, labelView, seekBarView, valueView);
         seekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

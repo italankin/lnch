@@ -82,11 +82,19 @@ public class ColorPickerView extends LinearLayout {
         a.recycle();
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (colorModelController != null) {
+            colorModelController.destroy();
+        }
+    }
+
     public void setColorModel(ColorModel model) {
         int selectedColor = Color.BLACK;
         if (colorModelController != null) {
             selectedColor = colorModelController.getColor();
-            colorModelController.setListener(null);
+            colorModelController.destroy();
         }
         container.removeAllViews();
         colorModelController = getModelController(model);
