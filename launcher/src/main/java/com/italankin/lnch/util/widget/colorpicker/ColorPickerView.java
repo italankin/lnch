@@ -23,8 +23,6 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 
-import timber.log.Timber;
-
 public class ColorPickerView extends LinearLayout {
 
     private static final String KEY_BASE_STATE = "BASE_STATE";
@@ -144,7 +142,13 @@ public class ColorPickerView extends LinearLayout {
         state.putParcelable(KEY_BASE_STATE, base);
         state.putBoolean(KEY_PREVIEW_VISIBLE, preview.getVisibility() == View.VISIBLE);
         state.putInt(KEY_SELECTED_COLOR, colorModelController.getColor());
-        state.putSerializable(KEY_MODEL, colorModelController.getClass());
+        ColorModel model = null;
+        if (colorModelController instanceof ARGB) {
+            model = ColorModel.ARGB;
+        } else if (colorModelController instanceof RGB) {
+            model = ColorModel.RGB;
+        }
+        state.putSerializable(KEY_MODEL, model);
         return state;
     }
 
@@ -155,15 +159,12 @@ public class ColorPickerView extends LinearLayout {
         boolean previewVisible = myState.getBoolean(KEY_PREVIEW_VISIBLE, true);
         setPreviewVisible(previewVisible);
         //noinspection unchecked
-        Class<? extends ColorModel> model = (Class<? extends ColorModel>) myState.getSerializable(KEY_MODEL);
-        try {
-            //noinspection ConstantConditions
-            setColorModel(model.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
-            Timber.e(e, "onRestoreInstanceState:");
+        ColorModel model = (ColorModel) myState.getSerializable(KEY_MODEL);
+        if (model != null) {
+            setColorModel(model);
+            int selectedColor = myState.getInt(KEY_SELECTED_COLOR, Color.BLACK);
+            setSelectedColor(selectedColor);
         }
-        int selectedColor = myState.getInt(KEY_SELECTED_COLOR, Color.BLACK);
-        setSelectedColor(selectedColor);
     }
 
     private ColorModelController getModelController(ColorModel model) {
