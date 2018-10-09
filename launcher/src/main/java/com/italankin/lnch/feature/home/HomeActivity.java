@@ -559,15 +559,18 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
+        String customLabel = item.getCustomLabel();
         EditTextAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
-                    editText.setText(item.getCustomLabel());
-                    editText.setSelectAllOnFocus(true);
+                    editText.setText(customLabel);
+                    if (customLabel != null) {
+                        editText.setSelection(customLabel.length());
+                    }
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String label = editText.getText().toString().trim();
-                    if (!label.equals(item.getCustomLabel())) {
+                    if (!label.equals(customLabel)) {
                         presenter.renameItem(position, item, label);
                     }
                 })
