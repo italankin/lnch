@@ -63,7 +63,6 @@ public class ActionPopupWindow extends PopupWindow {
         this.arrowWidth = (int) (arrowHeight * 1.33);
         this.darkArrowColor = context.getColor(R.color.popup_actions_background);
         this.lightArrowColor = context.getColor(R.color.popup_background);
-
     }
 
     public ActionPopupWindow addAction(ActionInfo actionInfo) {
