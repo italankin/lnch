@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
@@ -15,12 +17,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -41,7 +45,6 @@ import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
 import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
 import com.italankin.lnch.feature.home.descriptor.GroupedItem;
 import com.italankin.lnch.feature.home.descriptor.HiddenItem;
-import com.italankin.lnch.feature.home.descriptor.LabelItem;
 import com.italankin.lnch.feature.home.descriptor.RemovableItem;
 import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
 import com.italankin.lnch.feature.home.descriptor.model.GroupViewModel;
@@ -53,10 +56,11 @@ import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.italankin.lnch.util.widget.ListAlertDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
@@ -92,6 +96,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private CompositeAdapter<DescriptorItem> adapter;
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
+    private PopupWindow popupWindow;
     private Preferences preferences;
 
     @ProvidePresenter
@@ -133,6 +138,9 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void onBackPressed() {
+        if (dismissPopup()) {
+            return;
+        }
         if (editMode) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.customize_discard_message)
@@ -189,6 +197,12 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
+        list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                dismissPopup();
+            }
+        });
     }
 
     private void setupRoot() {
@@ -340,7 +354,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (editMode) {
             startDrag(position);
         } else {
-            startAppSettings(item);
+            showAppPopup(position, item);
         }
     }
 
@@ -389,6 +403,15 @@ public class HomeActivity extends AppActivity implements HomeView,
     // Private
     ///////////////////////////////////////////////////////////////////////////
 
+    private boolean dismissPopup() {
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+            popupWindow = null;
+            return true;
+        }
+        return false;
+    }
+
     private void startApp(AppViewModel item) {
         searchBarBehavior.hide();
         Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
@@ -406,8 +429,32 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
+    private void showAppPopup(int position, AppViewModel item) {
+        dismissPopup();
+        ActionPopupWindow popup = new ActionPopupWindow(this);
+        popup.addShortcut(R.string.popup_app_info, R.drawable.ic_app_info, v -> {
+            startAppSettings(item);
+        });
+        if (!PackageUtils.isSystem(packageManager, item.packageName)) {
+            popup.addShortcut(R.string.popup_app_uninstall, R.drawable.ic_action_delete, v -> {
+                startAppUninstall(item);
+            });
+        }
+        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
+        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
+    }
+
     private void startAppSettings(AppViewModel item) {
         Intent intent = IntentUtils.getPackageSystemSettings(item.packageName);
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startAppUninstall(AppViewModel item) {
+        Intent intent = IntentUtils.getUninstallIntent(item.packageName);
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent);
         } else {
@@ -429,6 +476,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void startDrag(int position) {
+        dismissPopup();
         View view = list.getLayoutManager().findViewByPosition(position);
         touchHelper.startDrag(list.getChildViewHolder(view));
     }
@@ -525,37 +573,44 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void customize(int position, DescriptorItem item) {
-        ListAlertDialog.Builder builder = ListAlertDialog.builder(this);
-        if (item instanceof LabelItem) {
-            builder.setTitle(((LabelItem) item).getVisibleLabel());
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+        }
+        ActionPopupWindow popup = new ActionPopupWindow(this);
+        if (item instanceof HiddenItem) {
+            popup.addAction(R.drawable.ic_action_hide, v -> {
+                presenter.hideItem(position, (HiddenItem) item);
+            }, v -> {
+                Toast.makeText(this, R.string.customize_item_hide, Toast.LENGTH_SHORT).show();
+                return true;
+            });
         }
         if (item instanceof CustomLabelItem) {
-            builder.addItem(R.drawable.ic_action_rename, R.string.customize_item_rename, () -> {
+            popup.addShortcut(R.string.customize_item_rename, R.drawable.ic_action_rename, v -> {
                 setItemCustomLabel(position, (CustomLabelItem) item);
             });
         }
         if (item instanceof CustomColorItem) {
-            builder.addItem(R.drawable.ic_action_color, R.string.customize_item_color, () -> {
+            popup.addShortcut(R.string.customize_item_color, R.drawable.ic_action_color, v -> {
                 setItemColor(position, (CustomColorItem) item);
             });
         }
-        if (item instanceof HiddenItem) {
-            builder.addItem(R.drawable.ic_action_hide, R.string.customize_item_hide, () -> {
-                presenter.hideItem(position, (HiddenItem) item);
-            });
-        }
         if (item instanceof GroupedItem) {
-            builder.addItem(R.drawable.ic_action_add_group, R.string.customize_item_add_group, () -> {
+            popup.addShortcut(R.string.customize_item_add_group, R.drawable.ic_action_add_group, v -> {
                 presenter.addGroup(position, getString(R.string.new_group_label),
                         getColor(R.color.group_default));
             });
         }
         if (item instanceof RemovableItem) {
-            builder.addItem(R.drawable.ic_action_delete, R.string.customize_item_delete, () -> {
+            popup.addAction(R.drawable.ic_action_delete, v -> {
                 presenter.removeItem(position);
+            }, v -> {
+                Toast.makeText(this, R.string.customize_item_delete, Toast.LENGTH_SHORT).show();
+                return true;
             });
         }
-        builder.show();
+        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
+        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
@@ -595,6 +650,14 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.changeItemCustomColor(position, item, null);
                 })
                 .show();
+    }
+
+    private Rect computeScreenBounds() {
+        Resources res = getResources();
+        int statusBarSize = res.getDimensionPixelSize(R.dimen.statusbar_size);
+        int navBarSize = res.getDimensionPixelSize(R.dimen.navbar_size);
+        DisplayMetrics dm = res.getDisplayMetrics();
+        return new Rect(0, statusBarSize, dm.widthPixels, dm.heightPixels - navBarSize);
     }
 }
 

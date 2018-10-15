@@ -29,6 +29,9 @@
     <string name="customize_item_delete">Delete</string>
     <string name="customize_action_reset">Reset</string>
 
+    <string name="popup_app_info">App info</string>
+    <string name="popup_app_uninstall">Uninstall</string>
+
     <string name="title_settings">Settings</string>
     <string name="title_settings_home">Home</string>
     <string name="title_settings_home_layout">Layout</string>
