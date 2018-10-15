@@ -10,5 +10,6 @@
     android:lines="1"
     android:orientation="vertical"
     android:padding="8dp"
+    android:textSize="16sp"
     tools:drawableStart="@drawable/ic_settings_apps"
     tools:text="Shortcut" />
