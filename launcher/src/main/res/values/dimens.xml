@@ -5,4 +5,6 @@
     <dimen name="color_picker_preview_size">128dp</dimen>
     <dimen name="searchbar_size">56dp</dimen>
     <dimen name="backdrop_grid_size">12dp</dimen>
+    <dimen name="popup_window_horizontal_padding">8dp</dimen>
+    <dimen name="popup_window_arrow_padding">8dp</dimen>
 </resources>

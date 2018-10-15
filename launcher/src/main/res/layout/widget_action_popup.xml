@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:elevation="4dp"
+    android:outlineProvider="background"
+    android:paddingTop="@dimen/popup_window_arrow_padding">
+
+    <LinearLayout
+        android:id="@+id/shortcut_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_bg"
+        android:minWidth="192dp"
+        android:orientation="vertical"
+        android:outlineProvider="background"
+        tools:ignore="UselessParent"
+        tools:minHeight="92dp">
+
+        <LinearLayout
+            android:id="@+id/action_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/popup_actions_background"
+            android:gravity="end"
+            android:orientation="horizontal"
+            tools:minHeight="48dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

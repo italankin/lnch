@@ -8,4 +8,6 @@
     <color name="navigation_bar">#8000</color>
     <color name="launcher_background">#212121</color>
     <color name="group_default">#ffffff</color>
+    <color name="popup_background">#424242</color>
+    <color name="popup_actions_background">#303030</color>
 </resources>
