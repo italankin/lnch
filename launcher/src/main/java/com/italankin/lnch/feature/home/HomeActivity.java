@@ -140,11 +140,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             return;
         }
         if (editMode) {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.customize_discard_message)
-                    .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+            presenter.confirmDiscardChanges();
             return;
         }
         if (searchBarBehavior.isShown()) {
@@ -305,6 +301,15 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onStartCustomize() {
         setEditMode(true);
+    }
+
+    @Override
+    public void onConfirmDiscardChanges() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.customize_discard_message)
+                .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     @Override

@@ -26,6 +26,8 @@ public interface AppsRepository {
 
         Editor enqueue(Action action);
 
+        boolean isEmpty();
+
         Editor clear();
 
         Completable commit();

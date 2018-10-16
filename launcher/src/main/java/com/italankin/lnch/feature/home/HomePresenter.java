@@ -135,6 +135,15 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemsRemoved(position, 1);
     }
 
+    void confirmDiscardChanges() {
+        requireEditor();
+        if (editor.isEmpty()) {
+            discardChanges();
+        } else {
+            getViewState().onConfirmDiscardChanges();
+        }
+    }
+
     void discardChanges() {
         requireEditor();
         editor = null;

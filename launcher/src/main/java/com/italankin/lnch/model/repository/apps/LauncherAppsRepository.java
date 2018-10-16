@@ -329,6 +329,11 @@ public class LauncherAppsRepository implements AppsRepository {
         }
 
         @Override
+        public boolean isEmpty() {
+            return actions.isEmpty();
+        }
+
+        @Override
         public AppsRepository.Editor clear() {
             actions.clear();
             return this;
