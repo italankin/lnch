@@ -3,13 +3,16 @@ package com.italankin.lnch.model.repository.search;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
+import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
 import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
+import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
 
 import java.util.ArrayList;
@@ -37,32 +40,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (constraint == null || constraint.length() == 0) {
             return Collections.emptyList();
         }
-        String s = constraint.toString().trim().toLowerCase();
-        if (s.isEmpty()) {
+        String query = constraint.toString().trim().toLowerCase();
+        if (query.isEmpty()) {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(8);
         for (Descriptor item : appsRepository.items()) {
-            if (!(item instanceof AppDescriptor)) {
-                continue;
-            }
-            AppDescriptor appItem = (AppDescriptor) item;
             PartialMatch match = null;
-            if (startsWith(appItem.customLabel, s) || startsWith(appItem.label, s)) {
-                match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
-            } else if (containsWord(appItem.customLabel, s) || containsWord(appItem.label, s)) {
-                match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
-            } else if (contains(appItem.customLabel, s) || contains(appItem.label, s)) {
-                match = new PartialMatch(PartialMatch.Type.CONTAINS);
+            if (item instanceof AppDescriptor) {
+                match = testApp((AppDescriptor) item, query);
+            } else if (item instanceof ShortcutDescriptor) {
+                match = testShortcut((ShortcutDescriptor) item, query);
             }
             if (match != null) {
-                match.color = item.getVisibleColor();
-                match.label = appItem.getVisibleLabel();
-                match.intent = packageManager.getLaunchIntentForPackage(appItem.packageName);
-                if (match.intent != null && appItem.componentName != null) {
-                    match.intent.setComponent(ComponentName.unflattenFromString(appItem.componentName));
-                }
-                match.icon = PackageManagerRequestHandler.uriFrom(appItem.packageName);
                 matches.add(match);
             }
         }
@@ -72,13 +62,52 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
         }
 
-        matches.add(new WebSearchMatch(constraint.toString(), s));
+        matches.add(new WebSearchMatch(constraint.toString(), query));
 
-        if (WEB_URL.matcher(s).matches() || WEB_URL.matcher("http://" + s).matches()) {
-            matches.add(new UrlMatch(s));
+        if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
+            matches.add(new UrlMatch(query));
         }
 
         return matches;
+    }
+
+    public PartialMatch testApp(AppDescriptor item, String query) {
+        PartialMatch match = null;
+        if (startsWith(item.customLabel, query) || startsWith(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
+        } else if (containsWord(item.customLabel, query) || containsWord(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
+        } else if (contains(item.customLabel, query) || contains(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.CONTAINS);
+        }
+        if (match != null) {
+            match.color = item.getVisibleColor();
+            match.label = item.getVisibleLabel();
+            match.intent = packageManager.getLaunchIntentForPackage(item.packageName);
+            if (match.intent != null && item.componentName != null) {
+                match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
+            }
+            match.icon = PackageManagerRequestHandler.uriFrom(item.packageName);
+        }
+        return match;
+    }
+
+    private PartialMatch testShortcut(ShortcutDescriptor item, String query) {
+        PartialMatch match = null;
+        if (startsWith(item.customLabel, query) || startsWith(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
+        } else if (containsWord(item.customLabel, query) || containsWord(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
+        } else if (contains(item.customLabel, query) || contains(item.label, query)) {
+            match = new PartialMatch(PartialMatch.Type.CONTAINS);
+        }
+        if (match != null) {
+            match.color = item.getVisibleColor();
+            match.label = item.getVisibleLabel();
+            match.intent = IntentUtils.fromUri(item.uri);
+            match.iconRes = R.drawable.ic_shortcut;
+        }
+        return match;
     }
 }
 
