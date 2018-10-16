@@ -3,11 +3,13 @@ package com.italankin.lnch.model.repository.descriptors.model;
 import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
+import com.italankin.lnch.model.repository.descriptors.CustomColorDescriptor;
+import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.UUID;
 
-public class ShortcutDescriptor implements Descriptor {
+public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     private static final String UNKNOWN_NAME = "???";
 
@@ -45,6 +47,11 @@ public class ShortcutDescriptor implements Descriptor {
     }
 
     @Override
+    public int getColor() {
+        return color;
+    }
+
+    @Override
     public int getVisibleColor() {
         return customColor != null ? customColor : color;
     }
@@ -52,6 +59,16 @@ public class ShortcutDescriptor implements Descriptor {
     @Override
     public void setCustomColor(Integer color) {
         customColor = color;
+    }
+
+    @Override
+    public Integer getCustomColor() {
+        return customColor;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 
     @Override
@@ -65,13 +82,8 @@ public class ShortcutDescriptor implements Descriptor {
     }
 
     @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public void setHidden(boolean hidden) {
-        // empty
+    public String getCustomLabel() {
+        return customLabel;
     }
 
     @Override

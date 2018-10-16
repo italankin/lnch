@@ -3,11 +3,13 @@ package com.italankin.lnch.model.repository.descriptors.model;
 import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
+import com.italankin.lnch.model.repository.descriptors.CustomColorDescriptor;
+import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.UUID;
 
-public class GroupDescriptor implements Descriptor {
+public class GroupDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     @SerializedName("id")
     public String id;
@@ -40,6 +42,11 @@ public class GroupDescriptor implements Descriptor {
     }
 
     @Override
+    public int getColor() {
+        return color;
+    }
+
+    @Override
     public int getVisibleColor() {
         return customColor != null ? customColor : color;
     }
@@ -47,6 +54,16 @@ public class GroupDescriptor implements Descriptor {
     @Override
     public void setCustomColor(Integer color) {
         this.customColor = color;
+    }
+
+    @Override
+    public Integer getCustomColor() {
+        return customColor;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 
     @Override
@@ -60,13 +77,8 @@ public class GroupDescriptor implements Descriptor {
     }
 
     @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public void setHidden(boolean hidden) {
-        // empty
+    public String getCustomLabel() {
+        return customLabel;
     }
 
     @Override

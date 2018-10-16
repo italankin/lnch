@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.LabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static android.util.Patterns.WEB_URL;
+import static com.italankin.lnch.model.repository.search.match.PartialMatch.Type;
 import static com.italankin.lnch.util.SearchUtils.contains;
 import static com.italankin.lnch.util.SearchUtils.containsWord;
 import static com.italankin.lnch.util.SearchUtils.startsWith;
@@ -27,6 +30,7 @@ import static com.italankin.lnch.util.SearchUtils.startsWith;
 public class SearchRepositoryImpl implements SearchRepository {
 
     public static final int MAX_RESULTS = 4;
+
     private final AppsRepository appsRepository;
     private final PackageManager packageManager;
 
@@ -45,12 +49,12 @@ public class SearchRepositoryImpl implements SearchRepository {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(8);
-        for (Descriptor item : appsRepository.items()) {
+        for (Descriptor descriptor : appsRepository.items()) {
             PartialMatch match = null;
-            if (item instanceof AppDescriptor) {
-                match = testApp((AppDescriptor) item, query);
-            } else if (item instanceof ShortcutDescriptor) {
-                match = testShortcut((ShortcutDescriptor) item, query);
+            if (descriptor instanceof AppDescriptor) {
+                match = testApp((AppDescriptor) descriptor, query, packageManager);
+            } else if (descriptor instanceof ShortcutDescriptor) {
+                match = testShortcut((ShortcutDescriptor) descriptor, query);
             }
             if (match != null) {
                 matches.add(match);
@@ -71,18 +75,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         return matches;
     }
 
-    public PartialMatch testApp(AppDescriptor item, String query) {
-        PartialMatch match = null;
-        if (startsWith(item.customLabel, query) || startsWith(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
-        } else if (containsWord(item.customLabel, query) || containsWord(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
-        } else if (contains(item.customLabel, query) || contains(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.CONTAINS);
-        }
+    private static PartialMatch testApp(AppDescriptor item, String query, PackageManager packageManager) {
+        PartialMatch match = test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
-            match.label = item.getVisibleLabel();
             match.intent = packageManager.getLaunchIntentForPackage(item.packageName);
             if (match.intent != null && item.componentName != null) {
                 match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
@@ -92,20 +88,44 @@ public class SearchRepositoryImpl implements SearchRepository {
         return match;
     }
 
-    private PartialMatch testShortcut(ShortcutDescriptor item, String query) {
-        PartialMatch match = null;
-        if (startsWith(item.customLabel, query) || startsWith(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.STARTS_WITH);
-        } else if (containsWord(item.customLabel, query) || containsWord(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.CONTAINS_WORD);
-        } else if (contains(item.customLabel, query) || contains(item.label, query)) {
-            match = new PartialMatch(PartialMatch.Type.CONTAINS);
-        }
+    private static PartialMatch testShortcut(ShortcutDescriptor item, String query) {
+        PartialMatch match = test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
-            match.label = item.getVisibleLabel();
             match.intent = IntentUtils.fromUri(item.uri);
             match.iconRes = R.drawable.ic_shortcut;
+        }
+        return match;
+    }
+
+    private static PartialMatch test(Descriptor descriptor, String query) {
+        PartialMatch match = null;
+        if (descriptor instanceof CustomLabelDescriptor) {
+            CustomLabelDescriptor item = (CustomLabelDescriptor) descriptor;
+            String label = item.getLabel();
+            String customLabel = item.getCustomLabel();
+            if (startsWith(customLabel, query) || startsWith(label, query)) {
+                match = new PartialMatch(Type.STARTS_WITH);
+            } else if (containsWord(customLabel, query) || containsWord(label, query)) {
+                match = new PartialMatch(Type.CONTAINS_WORD);
+            } else if (contains(customLabel, query) || contains(label, query)) {
+                match = new PartialMatch(Type.CONTAINS);
+            }
+            if (match != null) {
+                match.label = item.getVisibleLabel();
+            }
+        } else if (descriptor instanceof LabelDescriptor) {
+            String label = ((LabelDescriptor) descriptor).getLabel();
+            if (startsWith(label, query)) {
+                match = new PartialMatch(Type.STARTS_WITH);
+            } else if (containsWord(label, query)) {
+                match = new PartialMatch(Type.CONTAINS_WORD);
+            } else if (contains(label, query)) {
+                match = new PartialMatch(Type.CONTAINS);
+            }
+            if (match != null) {
+                match.label = label;
+            }
         }
         return match;
     }

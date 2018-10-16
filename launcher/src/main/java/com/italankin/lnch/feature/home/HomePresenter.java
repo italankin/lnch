@@ -21,7 +21,10 @@ import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
+import com.italankin.lnch.model.repository.descriptors.CustomColorDescriptor;
+import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.HiddenDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
@@ -98,21 +101,21 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void renameItem(int position, CustomLabelItem item, String customLabel) {
         requireEditor();
         String s = customLabel.trim().isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item.getDescriptor(), s));
+        editor.enqueue(new RenameAction((CustomLabelDescriptor) item.getDescriptor(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
     void changeItemCustomColor(int position, CustomColorItem item, Integer color) {
         requireEditor();
-        editor.enqueue(new RecolorAction(item.getDescriptor(), color));
+        editor.enqueue(new RecolorAction((CustomColorDescriptor) item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
     void hideItem(int position, HiddenItem item) {
         requireEditor();
-        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), false));
+        editor.enqueue(new SetVisibilityAction((HiddenDescriptor) item.getDescriptor(), false));
         item.setHidden(true);
         getViewState().onItemChanged(position);
     }

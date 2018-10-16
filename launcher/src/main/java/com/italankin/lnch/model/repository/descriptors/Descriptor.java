@@ -4,18 +4,6 @@ public interface Descriptor {
 
     String getId();
 
-    int getVisibleColor();
-
-    void setCustomColor(Integer color);
-
-    String getVisibleLabel();
-
-    void setCustomLabel(String label);
-
-    boolean isHidden();
-
-    void setHidden(boolean hidden);
-
     @Override
     boolean equals(Object o);
 

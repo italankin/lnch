@@ -3,11 +3,13 @@ package com.italankin.lnch.model.repository.descriptors.model;
 import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
+import com.italankin.lnch.model.repository.descriptors.CustomColorDescriptor;
+import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.repository.descriptors.HiddenDescriptor;
 
-import java.util.Comparator;
-
-public class AppDescriptor implements Descriptor {
+public class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+        HiddenDescriptor {
 
     @SerializedName("package_name")
     public String packageName;
@@ -42,6 +44,16 @@ public class AppDescriptor implements Descriptor {
     }
 
     @Override
+    public String getId() {
+        return componentName != null ? componentName : packageName;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
     public String getVisibleLabel() {
         return customLabel != null ? customLabel : label;
     }
@@ -52,13 +64,23 @@ public class AppDescriptor implements Descriptor {
     }
 
     @Override
+    public String getCustomLabel() {
+        return customLabel;
+    }
+
+    @Override
     public void setCustomColor(Integer color) {
         customColor = color;
     }
 
     @Override
-    public String getId() {
-        return componentName != null ? componentName : packageName;
+    public Integer getCustomColor() {
+        return customColor;
+    }
+
+    @Override
+    public int getColor() {
+        return color;
     }
 
     @Override
@@ -104,19 +126,4 @@ public class AppDescriptor implements Descriptor {
         result = 31 * result + (componentName != null ? componentName.hashCode() : 0);
         return result;
     }
-
-    static class NameComparator implements Comparator<AppDescriptor> {
-        private final boolean asc;
-
-        NameComparator(boolean asc) {
-            this.asc = asc;
-        }
-
-        @Override
-        public int compare(AppDescriptor lhs, AppDescriptor rhs) {
-            int compare = String.CASE_INSENSITIVE_ORDER.compare(lhs.label, rhs.label);
-            return asc ? compare : -compare;
-        }
-    }
-
 }
