@@ -94,9 +94,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
         if (item.getItemId() == R.id.action_system_settings) {
             Context context = getContext();
             Intent intent = IntentUtils.getPackageSystemSettings(context.getPackageName());
-            if (intent.resolveActivity(context.getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
+            if (!IntentUtils.safeStartActivity(getContext(), intent)) {
                 Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
             }
             return true;

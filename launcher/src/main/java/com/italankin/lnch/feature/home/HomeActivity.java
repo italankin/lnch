@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home;
 
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -338,7 +338,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void showError(Throwable e) {
-        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        showErrorToast(e.getMessage());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -424,14 +424,11 @@ public class HomeActivity extends AppActivity implements HomeView,
             if (item.componentName != null) {
                 intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
-            try {
-                startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                showError(e);
+            if (IntentUtils.safeStartActivity(this, intent)) {
+                return;
             }
-        } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
+        showError(R.string.error);
     }
 
     private void showAppPopup(int position, AppViewModel item) {
@@ -451,33 +448,35 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void startAppSettings(AppViewModel item) {
         Intent intent = IntentUtils.getPackageSystemSettings(item.packageName);
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        if (!IntentUtils.safeStartActivity(this, intent)) {
+            showError(R.string.error);
         }
     }
 
     private void startAppUninstall(AppViewModel item) {
         Intent intent = IntentUtils.getUninstallIntent(item.packageName);
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        if (!IntentUtils.safeStartActivity(this, intent)) {
+            showError(R.string.error);
         }
     }
 
     private void startShortcut(ShortcutViewModel item) {
         try {
             Intent intent = Intent.parseUri(item.uri, 0);
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            if (!IntentUtils.safeStartActivity(this, intent)) {
+                showError(R.string.error);
             }
         } catch (URISyntaxException e) {
             Timber.e(e, "startShortcut:");
         }
+    }
+
+    private void showErrorToast(CharSequence message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showError(@StringRes int message) {
+        showErrorToast(getText(message));
     }
 
     private void startDrag(int position) {
@@ -521,10 +520,8 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
             return;
         }
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        if (!IntentUtils.safeStartActivity(this, intent)) {
+            showError(R.string.error);
         }
     }
 
