@@ -64,10 +64,7 @@ import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
-import java.net.URISyntaxException;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
@@ -477,13 +474,9 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void startShortcut(ShortcutViewModel item) {
-        try {
-            Intent intent = Intent.parseUri(item.uri, 0);
-            if (!IntentUtils.safeStartActivity(this, intent)) {
-                showError(R.string.error);
-            }
-        } catch (URISyntaxException e) {
-            Timber.e(e, "startShortcut:");
+        Intent intent = IntentUtils.fromUri(item.uri);
+        if (!IntentUtils.safeStartActivity(this, intent)) {
+            showError(R.string.error);
         }
     }
 
@@ -531,7 +524,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     .setShowTitle(true)
                     .build();
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (customTabsIntent.intent.resolveActivity(packageManager) != null) {
+            if (IntentUtils.canHandleIntent(this, customTabsIntent.intent)) {
                 customTabsIntent.launchUrl(this, intent.getData());
             }
             return;

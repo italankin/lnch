@@ -10,6 +10,8 @@ import android.provider.Settings;
 
 import com.italankin.lnch.BuildConfig;
 
+import java.net.URISyntaxException;
+
 import timber.log.Timber;
 
 public final class IntentUtils {
@@ -40,11 +42,22 @@ public final class IntentUtils {
     }
 
     public static boolean canHandleIntent(PackageManager packageManager, Intent intent) {
+        if (intent == null) {
+            return false;
+        }
         ActivityInfo activityInfo = intent.resolveActivityInfo(packageManager, 0);
         if (activityInfo != null) {
             return BuildConfig.APPLICATION_ID.equals(activityInfo.packageName) || activityInfo.exported;
         }
         return false;
+    }
+
+    public static Intent fromUri(String uri) {
+        try {
+            return Intent.parseUri(uri, 0);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 
     public static boolean canHandleIntent(Context context, Intent intent) {

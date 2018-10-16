@@ -165,8 +165,8 @@ public class LauncherAppsRepository implements AppsRepository {
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
                         for (Descriptor item : savedItems) {
                             if (item instanceof ShortcutDescriptor) {
-                                ShortcutDescriptor sd = (ShortcutDescriptor) item;
-                                Intent intent = Intent.parseUri(sd.uri, 0);
+                                String uri = ((ShortcutDescriptor) item).uri;
+                                Intent intent = IntentUtils.fromUri(uri);
                                 if (IntentUtils.canHandleIntent(packageManager, intent)) {
                                     items.add(item);
                                 } else {
