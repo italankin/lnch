@@ -3,8 +3,12 @@ package com.italankin.lnch.util;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
+
+import com.italankin.lnch.BuildConfig;
 
 import timber.log.Timber;
 
@@ -23,6 +27,9 @@ public final class IntentUtils {
     }
 
     public static boolean safeStartActivity(Context context, Intent intent) {
+        if (!canHandleIntent(context, intent)) {
+            return false;
+        }
         try {
             context.startActivity(intent);
             return true;
@@ -30,6 +37,18 @@ public final class IntentUtils {
             Timber.w(e, "safeStartActivity:");
             return false;
         }
+    }
+
+    public static boolean canHandleIntent(PackageManager packageManager, Intent intent) {
+        ActivityInfo activityInfo = intent.resolveActivityInfo(packageManager, 0);
+        if (activityInfo != null) {
+            return BuildConfig.APPLICATION_ID.equals(activityInfo.packageName) || activityInfo.exported;
+        }
+        return false;
+    }
+
+    public static boolean canHandleIntent(Context context, Intent intent) {
+        return canHandleIntent(context.getPackageManager(), intent);
     }
 
     private IntentUtils() {
