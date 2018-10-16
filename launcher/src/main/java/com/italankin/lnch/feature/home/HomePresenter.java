@@ -7,6 +7,7 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.descriptor.CustomColorItem;
 import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
 import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
+import com.italankin.lnch.feature.home.descriptor.ExpandableItem;
 import com.italankin.lnch.feature.home.descriptor.HiddenItem;
 import com.italankin.lnch.feature.home.descriptor.VisibleItem;
 import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
@@ -74,9 +75,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
         update();
     }
 
-    void hideGroup(int position) {
-        GroupViewModel group = (GroupViewModel) items.get(position);
-        setGroupExpanded(position, !group.expanded);
+    void toggleExpandableItemState(ExpandableItem item) {
+        setItemExpanded(item, !item.isExpanded());
     }
 
     void startCustomize() {
@@ -84,7 +84,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
             throw new IllegalStateException("Editor is not null!");
         }
         editor = appsRepository.edit();
-        expandGroups();
+        expandAll();
         getViewState().onStartCustomize();
     }
 
@@ -158,6 +158,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
         editor = null;
     }
 
+    private void requireEditor() {
+        if (editor == null) {
+            throw new IllegalStateException();
+        }
+    }
+
     private void update() {
         appsRepository.update()
                 .subscribeOn(Schedulers.io())
@@ -218,43 +224,47 @@ public class HomePresenter extends AppPresenter<HomeView> {
         return result;
     }
 
-    private void setGroupExpanded(int position, boolean expanded) {
-        GroupViewModel group = (GroupViewModel) items.get(position);
-        int startIndex = position + 1;
-        int endIndex = position + 1;
-        for (int i = startIndex, size = items.size(); i < size; i++) {
-            endIndex = i;
-            if (!(items.get(i) instanceof VisibleItem)) {
-                break;
-            }
-        }
-        int count = endIndex - startIndex;
-        if (count == 0) {
+    private void setItemExpanded(ExpandableItem item, boolean expanded) {
+        int position = items.indexOf(item);
+        if (position < 0) {
             return;
         }
-        group.expanded = expanded;
-        for (int i = startIndex; i < endIndex; i++) {
-            VisibleItem item = (VisibleItem) items.get(i);
-            item.setVisible(group.expanded);
+        int startIndex = position + 1;
+        int endIndex = findExpandableItemIndex(startIndex);
+        if (endIndex < 0) {
+            endIndex = items.size();
         }
-        if (group.expanded) {
+        int count = endIndex - startIndex;
+        if (count <= 0) {
+            return;
+        }
+        item.setExpanded(expanded);
+        for (int i = startIndex; i < endIndex; i++) {
+            VisibleItem visibleItem = (VisibleItem) items.get(i);
+            visibleItem.setVisible(expanded);
+        }
+        if (expanded) {
             getViewState().onItemsInserted(startIndex, count);
         } else {
             getViewState().onItemsRemoved(startIndex, count);
         }
     }
 
-    private void expandGroups() {
-        for (int i = 0, size = items.size(); i < size; i++) {
-            if (items.get(i) instanceof GroupViewModel) {
-                setGroupExpanded(i, true);
+    private int findExpandableItemIndex(int startPosition) {
+        for (int i = startPosition; i < items.size(); i++) {
+            if (items.get(i) instanceof ExpandableItem) {
+                return i;
             }
         }
+        return -1;
     }
 
-    private void requireEditor() {
-        if (editor == null) {
-            throw new IllegalStateException();
+    private void expandAll() {
+        for (int i = 0, size = items.size(); i < size; i++) {
+            DescriptorItem item = items.get(i);
+            if (item instanceof ExpandableItem) {
+                setItemExpanded((ExpandableItem) item, true);
+            }
         }
     }
 }

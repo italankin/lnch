@@ -59,7 +59,7 @@ public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutVi
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof ShortcutViewModel;
+        return item instanceof ShortcutViewModel && ((ShortcutViewModel) item).isVisible();
     }
 
     public interface Listener {

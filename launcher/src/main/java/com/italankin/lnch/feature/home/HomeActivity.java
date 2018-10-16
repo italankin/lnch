@@ -363,7 +363,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (editMode) {
             customize(position, item);
         } else {
-            presenter.hideGroup(position);
+            presenter.toggleExpandableItemState(item);
         }
     }
 
