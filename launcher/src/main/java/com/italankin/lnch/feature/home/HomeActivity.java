@@ -165,6 +165,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
         switch (action) {
             case Intent.ACTION_MAIN: {
+                dismissPopup();
                 if (searchBarBehavior.isShown()) {
                     searchBarBehavior.hide();
                 } else {
@@ -199,8 +200,10 @@ public class HomeActivity extends AppActivity implements HomeView,
         touchHelper.attachToRecyclerView(list);
         list.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                dismissPopup();
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    dismissPopup();
+                }
             }
         });
     }
@@ -280,6 +283,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
         root.showContent();
+        dismissPopup();
     }
 
     @Override
