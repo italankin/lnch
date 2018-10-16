@@ -69,7 +69,8 @@ import java.util.List;
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
-        GroupViewModelAdapter.Listener, ShortcutViewModelAdapter.Listener {
+        GroupViewModelAdapter.Listener,
+        ShortcutViewModelAdapter.Listener {
 
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
