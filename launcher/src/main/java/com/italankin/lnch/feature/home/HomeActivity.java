@@ -316,6 +316,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onItemsInserted(int startIndex, int count) {
         list.getAdapter().notifyItemRangeInserted(startIndex, count);
+        list.smoothScrollToPosition(startIndex + Math.min(1, count));
     }
 
     @Override
