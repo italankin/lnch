@@ -107,6 +107,7 @@ public class ActionPopupWindow extends PopupWindow {
     public ActionPopupWindow addShortcut(CharSequence label, Drawable icon, View.OnClickListener listener, View.OnLongClickListener longClickListener) {
         TextView item = (TextView) inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
         item.setText(label);
+        icon.mutate().setTint(context.getColor(R.color.accent));
         item.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
         item.setOnClickListener(v -> {
             listener.onClick(v);
@@ -148,7 +149,7 @@ public class ActionPopupWindow extends PopupWindow {
             arrowCenter += contentWidth / 2;
         }
         if (bounds.bottom - anchorViewBottom < contentHeight + yoffset) {
-            yOffset = -contentHeight - anchorHeight;
+            yOffset = -contentHeight - anchorHeight + yoffset / 2;
             contentView.setPadding(0, 0, 0, arrowPadding);
             contentView.setBackground(new ArrowDrawable(
                     lightArrowColor, arrowCenter, arrowWidth, arrowHeight, true));
