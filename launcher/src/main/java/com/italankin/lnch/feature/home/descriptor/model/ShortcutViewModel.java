@@ -6,18 +6,17 @@ import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
 import com.italankin.lnch.feature.home.descriptor.GroupedItem;
 import com.italankin.lnch.feature.home.descriptor.RemovableItem;
 import com.italankin.lnch.feature.home.descriptor.VisibleItem;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 
 public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         GroupedItem, RemovableItem, VisibleItem {
-    public final ShortcutDescriptor item;
     public final String uri;
-    public final String label;
-    public String customLabel;
-    public int color;
-    public Integer customColor;
-    public boolean visible = true;
+    private final ShortcutDescriptor item;
+    private final String label;
+    private String customLabel;
+    private int color;
+    private Integer customColor;
+    private boolean visible = true;
 
     public ShortcutViewModel(ShortcutDescriptor item) {
         this.item = item;
@@ -29,7 +28,7 @@ public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, Custo
     }
 
     @Override
-    public Descriptor getDescriptor() {
+    public ShortcutDescriptor getDescriptor() {
         return item;
     }
 

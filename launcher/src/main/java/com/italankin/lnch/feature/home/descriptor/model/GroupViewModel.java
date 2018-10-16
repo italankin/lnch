@@ -5,29 +5,28 @@ import com.italankin.lnch.feature.home.descriptor.CustomLabelItem;
 import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
 import com.italankin.lnch.feature.home.descriptor.ExpandableItem;
 import com.italankin.lnch.feature.home.descriptor.RemovableItem;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.GroupDescriptor;
 
 public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLabelItem,
         RemovableItem, ExpandableItem {
-    public final GroupDescriptor item;
-    public final String label;
-    public String customLabel;
-    public boolean expanded = true;
-    public int color;
-    public Integer customColor;
+    private final GroupDescriptor descriptor;
+    private final String label;
+    private String customLabel;
+    private boolean expanded = true;
+    private int color;
+    private Integer customColor;
 
-    public GroupViewModel(GroupDescriptor item) {
-        this.item = item;
-        this.label = item.label;
-        this.customLabel = item.customLabel;
-        this.color = item.color;
-        this.customColor = item.customColor;
+    public GroupViewModel(GroupDescriptor descriptor) {
+        this.descriptor = descriptor;
+        this.label = descriptor.label;
+        this.customLabel = descriptor.customLabel;
+        this.color = descriptor.color;
+        this.customColor = descriptor.customColor;
     }
 
     @Override
-    public Descriptor getDescriptor() {
-        return item;
+    public GroupDescriptor getDescriptor() {
+        return descriptor;
     }
 
     @Override

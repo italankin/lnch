@@ -6,36 +6,35 @@ import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
 import com.italankin.lnch.feature.home.descriptor.GroupedItem;
 import com.italankin.lnch.feature.home.descriptor.HiddenItem;
 import com.italankin.lnch.feature.home.descriptor.VisibleItem;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 
 public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
         VisibleItem, GroupedItem {
-    public final AppDescriptor item;
-    public final String packageName;
     public final String componentName;
-    public final int color;
-    public final String label;
-    public boolean hidden;
-    public boolean visible;
-    public String customLabel;
-    public Integer customColor;
+    public final String packageName;
+    private final AppDescriptor descriptor;
+    private final int color;
+    private final String label;
+    private boolean hidden;
+    private boolean visible;
+    private String customLabel;
+    private Integer customColor;
 
-    public AppViewModel(AppDescriptor item) {
-        this.item = item;
-        this.packageName = item.packageName;
-        this.componentName = item.componentName;
-        this.label = item.label;
-        this.hidden = item.hidden;
-        this.visible = !item.hidden;
-        this.customLabel = item.customLabel;
-        this.color = item.color;
-        this.customColor = item.customColor;
+    public AppViewModel(AppDescriptor descriptor) {
+        this.descriptor = descriptor;
+        this.packageName = descriptor.packageName;
+        this.componentName = descriptor.componentName;
+        this.label = descriptor.label;
+        this.hidden = descriptor.hidden;
+        this.visible = !descriptor.hidden;
+        this.customLabel = descriptor.customLabel;
+        this.color = descriptor.color;
+        this.customColor = descriptor.customColor;
     }
 
     @Override
-    public Descriptor getDescriptor() {
-        return item;
+    public AppDescriptor getDescriptor() {
+        return descriptor;
     }
 
     @Override
@@ -89,6 +88,6 @@ public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColo
 
     @Override
     public String toString() {
-        return item.toString();
+        return descriptor.toString();
     }
 }
