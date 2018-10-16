@@ -243,13 +243,29 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
             return true;
         });
-        editSearch.setOnItemClickListener((parent, view, position, id) -> {
-            onFireSearch(position);
-        });
         editSearch.setThreshold(1);
         MainComponent mainComponent = daggerService().main();
         Picasso picasso = mainComponent.getPicassoFactory().create(this);
-        editSearch.setAdapter(new SearchAdapter(picasso, mainComponent.getSearchRepository()));
+        SearchAdapter.Listener listener = new SearchAdapter.Listener() {
+            @Override
+            public void onItemClick(int position, Match match) {
+                onFireSearch(position);
+            }
+
+            @Override
+            public void onItemLongClick(int position, Match match) {
+                String packageName = match.getIntent().getPackage();
+                if (packageName == null) {
+                    return;
+                }
+                Intent intent = IntentUtils.getPackageSystemSettings(packageName);
+                IntentUtils.safeStartActivity(HomeActivity.this, intent);
+                if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
+                    showError(R.string.error);
+                }
+            }
+        };
+        editSearch.setAdapter(new SearchAdapter(picasso, mainComponent.getSearchRepository(), listener));
 
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();

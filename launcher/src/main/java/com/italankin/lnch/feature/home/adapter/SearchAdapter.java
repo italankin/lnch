@@ -22,10 +22,11 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private final Picasso picasso;
     private final Filter filter;
+    private final Listener listener;
 
     private List<? extends Match> dataset = new ArrayList<>(0);
 
-    public SearchAdapter(Picasso picasso, SearchRepository searchRepository) {
+    public SearchAdapter(Picasso picasso, SearchRepository searchRepository, Listener listener) {
         this.picasso = picasso;
         this.filter = new SearchFilter(searchRepository) {
             @SuppressWarnings("unchecked")
@@ -35,6 +36,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                 notifyDataSetChanged();
             }
         };
+        this.listener = listener;
     }
 
     @Override
@@ -77,6 +79,16 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             holder.image.setImageResource(item.getIconResource());
         }
 
+        if (listener != null) {
+            convertView.setOnClickListener(v -> {
+                listener.onItemClick(position, item);
+            });
+            convertView.setOnLongClickListener(v -> {
+                listener.onItemLongClick(position, item);
+                return true;
+            });
+        }
+
         return convertView;
     }
 
@@ -93,6 +105,12 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             this.text = itemView.findViewById(R.id.text);
             this.image = itemView.findViewById(R.id.image);
         }
+    }
+
+    public interface Listener {
+        void onItemClick(int position, Match match);
+
+        void onItemLongClick(int position, Match match);
     }
 }
 
