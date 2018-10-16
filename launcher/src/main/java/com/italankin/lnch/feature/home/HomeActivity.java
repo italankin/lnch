@@ -259,7 +259,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                 IntentUtils.safeStartActivity(HomeActivity.this, intent);
                 if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
                     showError(R.string.error);
+                    return;
                 }
+                searchBarBehavior.hide();
             }
         };
         editSearch.setAdapter(new SearchAdapter(picasso, mainComponent.getSearchRepository(), listener));
