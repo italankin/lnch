@@ -22,9 +22,9 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (intent.getCategories() != null
-                && intent.getCategories().contains(Intent.CATEGORY_LAUNCHER)
-                && Intent.ACTION_MAIN.equals(intent.getAction())) {
+        if (target.getCategories() != null
+                && target.getCategories().contains(Intent.CATEGORY_LAUNCHER)
+                && Intent.ACTION_MAIN.equals(target.getAction())) {
             // probably initiated by PlayStore
             Timber.e("Ignoring intent: %s", intent);
             return;
