@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.repository.apps;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
@@ -10,6 +11,8 @@ import android.os.UserHandle;
 import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
+import com.italankin.lnch.util.IntentUtils;
 
 import java.io.File;
 import java.util.ArrayDeque;
@@ -161,6 +164,16 @@ public class LauncherAppsRepository implements AppsRepository {
                         List<Descriptor> deleted = new ArrayList<>(8);
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
                         for (Descriptor item : savedItems) {
+                            if (item instanceof ShortcutDescriptor) {
+                                ShortcutDescriptor sd = (ShortcutDescriptor) item;
+                                Intent intent = Intent.parseUri(sd.uri, 0);
+                                if (IntentUtils.canHandleIntent(packageManager, intent)) {
+                                    items.add(item);
+                                } else {
+                                    deleted.add(item);
+                                }
+                                continue;
+                            }
                             if (!(item instanceof AppDescriptor)) {
                                 items.add(item);
                                 continue;
