@@ -61,6 +61,8 @@ public class ActionPopupWindow extends PopupWindow {
         shortcutContainer = contentView.findViewById(R.id.shortcut_container);
         shortcutContainer.setClipToOutline(true);
         setContentView(contentView);
+        setOutsideTouchable(true);
+        setFocusable(true);
 
         this.arrowPadding = context.getResources()
                 .getDimensionPixelSize(R.dimen.popup_window_arrow_padding);

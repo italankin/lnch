@@ -195,14 +195,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void setupList() {
         touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
         touchHelper.attachToRecyclerView(list);
-        list.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    dismissPopup();
-                }
-            }
-        });
     }
 
     private void setupRoot() {
@@ -370,7 +362,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         View.OnClickListener startAppUninstall = v -> startAppUninstall(item);
         boolean uninstallAvailable = !PackageUtils.isSystem(packageManager, item.packageName);
 
-        dismissPopup();
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (shortcuts.isEmpty()) {
             popup.addShortcut(R.string.popup_app_info, R.drawable.ic_app_info, startAppSettings);
@@ -397,7 +388,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
+        showPopupWindow(popup, itemView);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -520,7 +511,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void startDrag(int position) {
-        dismissPopup();
         View view = list.getLayoutManager().findViewByPosition(position);
         touchHelper.startDrag(list.getChildViewHolder(view));
     }
@@ -615,9 +605,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void customize(int position, DescriptorItem item) {
-        if (popupWindow != null && popupWindow.isShowing()) {
-            popupWindow.dismiss();
-        }
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (item instanceof HiddenItem) {
             popup.addAction(R.drawable.ic_action_hide, v -> {
@@ -652,7 +639,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             });
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
+        showPopupWindow(popup, itemView);
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
@@ -692,6 +679,14 @@ public class HomeActivity extends AppActivity implements HomeView,
                     presenter.changeItemCustomColor(position, item, null);
                 })
                 .show();
+    }
+
+    private void showPopupWindow(ActionPopupWindow popup, View anchor) {
+        dismissPopup();
+        list.setLayoutFrozen(true);
+        popup.setOnDismissListener(() -> list.setLayoutFrozen(false));
+        popup.showAtAnchor(anchor, anchor.getPaddingTop(), computeScreenBounds());
+        popupWindow = popup;
     }
 
     private Rect computeScreenBounds() {
