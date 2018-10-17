@@ -59,7 +59,7 @@ public class ActionPopupWindow extends PopupWindow {
         this.contentView = (ViewGroup) inflater.inflate(R.layout.widget_action_popup, null);
         actionContainer = contentView.findViewById(R.id.action_container);
         shortcutContainer = contentView.findViewById(R.id.shortcut_container);
-        shortcutContainer.setClipToOutline(true);
+        contentView.getChildAt(0).setClipToOutline(true);
         setContentView(contentView);
         setOutsideTouchable(true);
         setFocusable(true);
