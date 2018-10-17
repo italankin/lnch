@@ -5,5 +5,4 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 public interface DescriptorItem {
 
     Descriptor getDescriptor();
-
 }

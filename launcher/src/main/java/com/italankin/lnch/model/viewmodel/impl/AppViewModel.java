@@ -38,6 +38,11 @@ public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColo
     }
 
     @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
     public String getCustomLabel() {
         return customLabel;
     }
@@ -48,8 +53,8 @@ public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColo
     }
 
     @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
+    public int getColor() {
+        return color;
     }
 
     @Override
@@ -60,10 +65,6 @@ public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColo
     @Override
     public Integer getCustomColor() {
         return customColor;
-    }
-
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
     }
 
     @Override

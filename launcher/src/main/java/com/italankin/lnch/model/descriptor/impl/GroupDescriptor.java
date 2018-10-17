@@ -47,11 +47,6 @@ public class GroupDescriptor implements Descriptor, CustomColorDescriptor, Custo
     }
 
     @Override
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
-    }
-
-    @Override
     public void setCustomColor(Integer color) {
         this.customColor = color;
     }
@@ -64,11 +59,6 @@ public class GroupDescriptor implements Descriptor, CustomColorDescriptor, Custo
     @Override
     public String getLabel() {
         return label;
-    }
-
-    @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
     }
 
     @Override

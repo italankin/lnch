@@ -6,5 +6,8 @@ public interface CustomLabelDescriptor extends LabelDescriptor {
 
     String getCustomLabel();
 
-    String getVisibleLabel();
+    default String getVisibleLabel() {
+        String customLabel = getCustomLabel();
+        return customLabel != null ? customLabel : getLabel();
+    }
 }

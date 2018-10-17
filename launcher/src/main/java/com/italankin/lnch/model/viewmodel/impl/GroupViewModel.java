@@ -30,8 +30,13 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
     }
 
     @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
+    public int getColor() {
+        return color;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 
     @Override
@@ -42,11 +47,6 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
     @Override
     public void setCustomLabel(String label) {
         this.customLabel = label;
-    }
-
-    @Override
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
     }
 
     @Override

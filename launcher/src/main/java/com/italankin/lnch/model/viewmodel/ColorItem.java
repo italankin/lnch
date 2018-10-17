@@ -8,6 +8,5 @@ import android.support.annotation.ColorInt;
 public interface ColorItem extends DescriptorItem {
 
     @ColorInt
-    int getVisibleColor();
-
+    int getColor();
 }

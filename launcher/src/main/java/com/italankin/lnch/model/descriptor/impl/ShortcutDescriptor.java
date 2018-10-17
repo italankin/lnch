@@ -52,11 +52,6 @@ public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, Cu
     }
 
     @Override
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
-    }
-
-    @Override
     public void setCustomColor(Integer color) {
         customColor = color;
     }
@@ -69,11 +64,6 @@ public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, Cu
     @Override
     public String getLabel() {
         return label;
-    }
-
-    @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
     }
 
     @Override

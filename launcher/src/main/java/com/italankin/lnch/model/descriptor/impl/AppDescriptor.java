@@ -54,11 +54,6 @@ public class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomL
     }
 
     @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
-    }
-
-    @Override
     public void setCustomLabel(String label) {
         customLabel = label;
     }
@@ -81,11 +76,6 @@ public class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomL
     @Override
     public int getColor() {
         return color;
-    }
-
-    @Override
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
     }
 
     @Override

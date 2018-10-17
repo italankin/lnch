@@ -4,10 +4,14 @@ import android.support.annotation.ColorInt;
 
 public interface CustomColorDescriptor extends ColorDescriptor {
 
-    void setCustomColor(Integer color);
+    void setCustomColor(@ColorInt Integer color);
 
+    @ColorInt
     Integer getCustomColor();
 
     @ColorInt
-    int getVisibleColor();
+    default int getVisibleColor() {
+        Integer customColor = getCustomColor();
+        return customColor != null ? customColor : getColor();
+    }
 }

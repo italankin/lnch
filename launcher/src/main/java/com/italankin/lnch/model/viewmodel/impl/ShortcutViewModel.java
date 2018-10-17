@@ -33,8 +33,13 @@ public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, Custo
     }
 
     @Override
-    public String getVisibleLabel() {
-        return customLabel != null ? customLabel : label;
+    public int getColor() {
+        return color;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 
     @Override
@@ -45,11 +50,6 @@ public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, Custo
     @Override
     public void setCustomLabel(String label) {
         this.customLabel = label;
-    }
-
-    @Override
-    public int getVisibleColor() {
-        return customColor != null ? customColor : color;
     }
 
     @Override
