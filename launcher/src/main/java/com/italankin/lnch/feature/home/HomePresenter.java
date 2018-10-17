@@ -20,6 +20,8 @@ import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
@@ -44,6 +46,7 @@ import timber.log.Timber;
 public class HomePresenter extends AppPresenter<HomeView> {
 
     private final AppsRepository appsRepository;
+    private final ShortcutsRepository shortcutsRepository;
     private final Preferences preferences;
     /**
      * View commands will dispatch this instance on every state restore, so any changes
@@ -54,8 +57,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private final UserPrefs userPrefs = new UserPrefs();
 
     @Inject
-    HomePresenter(AppsRepository appsRepository, Preferences preferences) {
+    HomePresenter(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
         this.appsRepository = appsRepository;
+        this.shortcutsRepository = shortcutsRepository;
         this.preferences = preferences;
     }
 
@@ -170,6 +174,11 @@ public class HomePresenter extends AppPresenter<HomeView> {
         editor = null;
     }
 
+    void showAppPopup(int position, AppViewModel item) {
+        List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
+        getViewState().showAppPopup(position, item, shortcuts);
+    }
+
     private void requireEditor() {
         if (editor == null) {
             throw new IllegalStateException();
@@ -178,6 +187,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void update() {
         appsRepository.update()
+                .andThen(shortcutsRepository.loadShortcuts().onErrorComplete())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
                     @Override

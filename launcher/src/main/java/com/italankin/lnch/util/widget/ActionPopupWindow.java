@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -23,12 +24,15 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.ViewUtils;
+import com.squareup.picasso.Picasso;
 
 public class ActionPopupWindow extends PopupWindow {
 
     private static final int MS = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 
     private final Context context;
+    private final Picasso picasso;
     private final LayoutInflater inflater;
     private final ViewGroup contentView;
     private final ViewGroup actionContainer;
@@ -45,9 +49,10 @@ public class ActionPopupWindow extends PopupWindow {
     private final int[] tmp = new int[2];
 
     @SuppressLint("InflateParams")
-    public ActionPopupWindow(Context context) {
+    public ActionPopupWindow(Context context, Picasso picasso) {
         super(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         this.context = context;
+        this.picasso = picasso;
         this.horizontalPadding = context.getResources()
                 .getDimensionPixelSize(R.dimen.popup_window_horizontal_padding);
         this.inflater = LayoutInflater.from(context);
@@ -96,23 +101,51 @@ public class ActionPopupWindow extends PopupWindow {
                 shortcutInfo.longClickListener);
     }
 
-    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon, View.OnClickListener listener) {
+    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon,
+            View.OnClickListener listener) {
         return addShortcut(context.getText(label), context.getDrawable(icon), listener, null);
     }
 
-    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon, View.OnClickListener listener, View.OnLongClickListener longClickListener) {
+    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon,
+            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
         return addShortcut(context.getText(label), context.getDrawable(icon), listener, longClickListener);
     }
 
-    public ActionPopupWindow addShortcut(CharSequence label, Drawable icon, View.OnClickListener listener, View.OnLongClickListener longClickListener) {
-        TextView item = (TextView) inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
-        item.setText(label);
-        icon.mutate().setTint(context.getColor(R.color.accent));
-        item.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+    public ActionPopupWindow addShortcut(CharSequence label, Drawable icon,
+            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
+        return addShortcut(label, new Icon(icon), listener, longClickListener);
+    }
+
+    public ActionPopupWindow addShortcut(CharSequence label, Uri uri,
+            View.OnClickListener listener) {
+        return addShortcut(label, uri, listener, null);
+    }
+
+    public ActionPopupWindow addShortcut(CharSequence label, Uri uri,
+            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
+        return addShortcut(label, new Icon(uri), listener, longClickListener);
+    }
+
+    public ActionPopupWindow addShortcut(CharSequence label, Icon icon,
+            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
+        View item = inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
+        ImageView imageView = item.findViewById(R.id.icon);
+        TextView labelView = item.findViewById(R.id.label);
+        labelView.setText(label);
+        if (icon.drawable != null) {
+            Drawable drawable = icon.drawable.mutate();
+            drawable.setTint(context.getColor(R.color.accent));
+            imageView.setImageDrawable(drawable);
+        } else if (icon.uri != null) {
+            ViewUtils.onGlobalLayout(imageView, () -> picasso.load(icon.uri)
+                    .resizeDimen(R.dimen.popup_shortcut_icon_size, R.dimen.popup_shortcut_icon_size)
+                    .into(imageView));
+        }
         item.setOnClickListener(v -> {
             listener.onClick(v);
             dismiss();
         });
+        item.setOnLongClickListener(longClickListener);
         shortcutContainer.addView(item);
         return this;
     }
@@ -188,6 +221,24 @@ public class ActionPopupWindow extends PopupWindow {
             this.icon = icon;
             this.listener = listener;
             this.longClickListener = longClickListener;
+        }
+    }
+
+    private static class Icon {
+        private final Drawable drawable;
+        private final Uri uri;
+
+        Icon(Drawable drawable) {
+            this(drawable, null);
+        }
+
+        Icon(Uri uri) {
+            this(null, uri);
+        }
+
+        Icon(Drawable drawable, Uri uri) {
+            this.drawable = drawable;
+            this.uri = uri;
         }
     }
 

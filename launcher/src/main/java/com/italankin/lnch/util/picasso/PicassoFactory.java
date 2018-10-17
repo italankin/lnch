@@ -1,7 +1,7 @@
 package com.italankin.lnch.util.picasso;
 
 import android.content.Context;
-import android.net.Uri;
+import android.os.Build;
 
 import com.italankin.lnch.BuildConfig;
 import com.squareup.picasso.LruCache;
@@ -9,13 +9,10 @@ import com.squareup.picasso.Picasso;
 
 import timber.log.Timber;
 
-public class PicassoFactory implements Picasso.Listener {
-
-    private final PackageManagerRequestHandler requestHandler;
+public class PicassoFactory {
     private final LruCache memoryCache;
 
     public PicassoFactory(Context context) {
-        requestHandler = new PackageManagerRequestHandler(context);
         memoryCache = new LruCache(context);
     }
 
@@ -25,15 +22,15 @@ public class PicassoFactory implements Picasso.Listener {
         }
         Picasso.Builder builder = new Picasso.Builder(context);
         if (BuildConfig.DEBUG) {
-            builder.listener(this);
+            builder.listener((picasso, uri, exception) -> {
+                Timber.tag("Picasso").e(exception, "Error while loading '%s'", uri);
+            });
         }
-        builder.addRequestHandler(requestHandler);
+        builder.addRequestHandler(new PackageManagerRequestHandler(context));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            builder.addRequestHandler(new ShortcutRequestHandler(context));
+        }
         builder.memoryCache(memoryCache);
         return builder.build();
-    }
-
-    @Override
-    public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-        Timber.tag("Picasso").e(exception, "Error while loading '%s'", uri);
     }
 }

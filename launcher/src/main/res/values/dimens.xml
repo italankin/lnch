@@ -9,4 +9,5 @@
     <dimen name="popup_window_arrow_padding">8dp</dimen>
     <dimen name="statusbar_size">24dp</dimen>
     <dimen name="navbar_size">48dp</dimen>
+    <dimen name="popup_shortcut_icon_size">32dp</dimen>
 </resources>

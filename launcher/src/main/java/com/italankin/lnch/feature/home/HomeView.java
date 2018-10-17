@@ -7,7 +7,9 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
 import java.util.List;
 
@@ -27,6 +29,9 @@ interface HomeView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showAppPopup(int position, AppViewModel item, List<Shortcut> shortcuts);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

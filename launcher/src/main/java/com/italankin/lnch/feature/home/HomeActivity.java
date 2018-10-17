@@ -46,6 +46,7 @@ import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
@@ -86,6 +87,8 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private InputMethodManager inputMethodManager;
     private PackageManager packageManager;
+    private Preferences preferences;
+    private Picasso picasso;
 
     private boolean editMode = false;
 
@@ -95,7 +98,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private PopupWindow popupWindow;
-    private Preferences preferences;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -109,6 +111,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         packageManager = getPackageManager();
         preferences = daggerService().main().getPreferences();
+        picasso = daggerService().main().getPicassoFactory().create(this);
 
         setupWindow();
 
@@ -239,7 +242,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         });
         editSearch.setThreshold(1);
         MainComponent mainComponent = daggerService().main();
-        Picasso picasso = mainComponent.getPicassoFactory().create(this);
         SearchAdapter.Listener listener = new SearchAdapter.Listener() {
             @Override
             public void onItemClick(int position, Match match) {
@@ -362,6 +364,42 @@ public class HomeActivity extends AppActivity implements HomeView,
         showErrorToast(e.getMessage());
     }
 
+    @Override
+    public void showAppPopup(int position, AppViewModel item, List<Shortcut> shortcuts) {
+        View.OnClickListener startAppSettings = v -> startAppSettings(item);
+        View.OnClickListener startAppUninstall = v -> startAppUninstall(item);
+        boolean uninstallAvailable = !PackageUtils.isSystem(packageManager, item.packageName);
+
+        dismissPopup();
+        ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
+        if (shortcuts.isEmpty()) {
+            popup.addShortcut(R.string.popup_app_info, R.drawable.ic_app_info, startAppSettings);
+            if (uninstallAvailable) {
+                popup.addShortcut(R.string.popup_app_uninstall, R.drawable.ic_action_delete, startAppUninstall);
+            }
+        } else {
+            popup.addAction(R.drawable.ic_app_info, startAppSettings, v -> {
+                Toast.makeText(this, R.string.popup_app_info, Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            if (uninstallAvailable) {
+                popup.addAction(R.drawable.ic_action_delete, startAppUninstall, v -> {
+                    Toast.makeText(this, R.string.popup_app_uninstall, Toast.LENGTH_SHORT).show();
+                    return true;
+                });
+            }
+            for (Shortcut shortcut : shortcuts) {
+                popup.addShortcut(shortcut.getShortLabel(), shortcut.getIconUri(), v -> {
+                    if (!shortcut.start(null, null)) {
+                        showError(R.string.error);
+                    }
+                });
+            }
+        }
+        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
+        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Adapter listeners
     ///////////////////////////////////////////////////////////////////////////
@@ -380,7 +418,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (editMode) {
             startDrag(position);
         } else {
-            showAppPopup(position, item);
+            presenter.showAppPopup(position, item);
         }
     }
 
@@ -450,21 +488,6 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
         }
         showError(R.string.error);
-    }
-
-    private void showAppPopup(int position, AppViewModel item) {
-        dismissPopup();
-        ActionPopupWindow popup = new ActionPopupWindow(this);
-        popup.addShortcut(R.string.popup_app_info, R.drawable.ic_app_info, v -> {
-            startAppSettings(item);
-        });
-        if (!PackageUtils.isSystem(packageManager, item.packageName)) {
-            popup.addShortcut(R.string.popup_app_uninstall, R.drawable.ic_action_delete, v -> {
-                startAppUninstall(item);
-            });
-        }
-        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        popupWindow = popup.showAtAnchor(itemView, itemView.getPaddingTop(), computeScreenBounds());
     }
 
     private void startAppSettings(AppViewModel item) {
@@ -595,7 +618,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (popupWindow != null && popupWindow.isShowing()) {
             popupWindow.dismiss();
         }
-        ActionPopupWindow popup = new ActionPopupWindow(this);
+        ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (item instanceof HiddenItem) {
             popup.addAction(R.drawable.ic_action_hide, v -> {
                 presenter.hideItem(position, (HiddenItem) item);

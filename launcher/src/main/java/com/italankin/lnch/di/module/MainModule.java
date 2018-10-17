@@ -2,6 +2,7 @@ package com.italankin.lnch.di.module;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
@@ -13,6 +14,9 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
+import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.repository.shortcuts.StubShortcutsRepository;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
@@ -62,5 +66,15 @@ public class MainModule {
     @Singleton
     public PicassoFactory providePicassoFactory(Context context) {
         return new PicassoFactory(context);
+    }
+
+    @Provides
+    @Singleton
+    public ShortcutsRepository provideShortcutsRepository(Context context, AppsRepository appsRepository) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            return new AppShortcutsRepository(context, appsRepository);
+        } else {
+            return new StubShortcutsRepository();
+        }
     }
 }

@@ -14,7 +14,7 @@ import com.squareup.picasso.RequestHandler;
 
 public class PackageManagerRequestHandler extends RequestHandler {
 
-    public static final String SCHEME = "pm";
+    private static final String SCHEME = "pm";
 
     public static Uri uriFrom(String packageName) {
         return new Uri.Builder().scheme(SCHEME).authority(packageName).build();
@@ -22,7 +22,7 @@ public class PackageManagerRequestHandler extends RequestHandler {
 
     private final PackageManager packageManager;
 
-    public PackageManagerRequestHandler(Context context) {
+    PackageManagerRequestHandler(Context context) {
         packageManager = context.getPackageManager();
     }
 
