@@ -2,10 +2,10 @@ package com.italankin.lnch.feature.settings_apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
+import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
-import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
 
 import java.util.List;
 
@@ -33,9 +33,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         loadApps();
     }
 
-    void toggleAppVisibility(int position, AppViewModel item) {
-        item.hidden = !item.hidden;
-        editor.enqueue(new SetVisibilityAction(item.item, !item.hidden));
+    void toggleAppVisibility(int position, DecoratedAppViewModel item) {
+        boolean hidden = !item.isHidden();
+        item.setHidden(hidden);
+        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), hidden));
         getViewState().onItemChanged(position);
     }
 
@@ -56,13 +57,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .take(1)
                 .concatMapIterable(Functions.identity())
                 .ofType(AppDescriptor.class)
-                .map(AppViewModel::new)
-                .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER.compare(lhs.label, rhs.label))
+                .map(DecoratedAppViewModel::new)
+                .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
+                        .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<AppViewModel>>() {
+                .subscribe(new SingleState<List<DecoratedAppViewModel>>() {
                     @Override
-                    protected void onSuccess(AppsView viewState, List<AppViewModel> apps) {
+                    protected void onSuccess(AppsView viewState, List<DecoratedAppViewModel> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 

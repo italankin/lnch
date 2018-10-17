@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.graphics.Color;
 
 import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
-import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 
 import timber.log.Timber;
 

@@ -1,8 +1,8 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
 
 import java.util.List;
 

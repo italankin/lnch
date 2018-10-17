@@ -8,10 +8,10 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.os.UserHandle;
 
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
-import com.italankin.lnch.model.repository.descriptors.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
-import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.util.IntentUtils;
 
 import java.io.File;

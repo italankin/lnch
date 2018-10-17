@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.descriptor.model.AppViewModel;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
 public class AppViewModelAdapter extends BaseHomeAdapterDelegate<AppViewModelHolder, AppViewModel> {
 

@@ -6,8 +6,8 @@ import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
-import com.italankin.lnch.feature.home.descriptor.DescriptorItem;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.model.viewmodel.DescriptorItem;
 
 import java.util.List;
 

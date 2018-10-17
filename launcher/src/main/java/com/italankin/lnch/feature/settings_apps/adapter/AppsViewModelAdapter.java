@@ -8,11 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
+import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 import com.squareup.picasso.Picasso;
 
-public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, AppViewModel> {
+public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, DecoratedAppViewModel> {
     private final Picasso picasso;
     private final Listener listener;
 
@@ -48,19 +48,19 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     @Override
-    public void onBind(AppViewModelHolder holder, int position, AppViewModel item) {
+    public void onBind(AppViewModelHolder holder, int position, DecoratedAppViewModel item) {
         holder.bind(item);
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof AppViewModel;
+        return item instanceof DecoratedAppViewModel;
     }
 
     public interface Listener {
-        void onItemClick(int position, AppViewModel item);
+        void onItemClick(int position, DecoratedAppViewModel item);
 
-        void onVisibilityClick(int position, AppViewModel item);
+        void onVisibilityClick(int position, DecoratedAppViewModel item);
     }
 
     class AppViewModelHolder extends RecyclerView.ViewHolder {
@@ -80,15 +80,15 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
             visibility = itemView.findViewById(R.id.visibility);
         }
 
-        void bind(AppViewModel item) {
-            visibility.setImageResource(item.hidden ? R.drawable.ic_visibility_off :
+        void bind(DecoratedAppViewModel item) {
+            visibility.setImageResource(item.isHidden() ? R.drawable.ic_visibility_off :
                     R.drawable.ic_visibility_on);
-            label.setText(item.label);
+            label.setText(item.getVisibleLabel());
             packageName.setText(item.packageName);
             picasso.load(item.icon)
                     .fit()
                     .into(icon);
-            float alpha = item.hidden ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;
+            float alpha = item.isHidden() ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;
             label.setAlpha(alpha);
             icon.setAlpha(alpha);
         }

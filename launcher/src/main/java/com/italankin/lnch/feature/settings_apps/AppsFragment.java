@@ -19,7 +19,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings_apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings_apps.adapter.AppsViewModelAdapter;
-import com.italankin.lnch.feature.settings_apps.model.AppViewModel;
+import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
@@ -33,7 +33,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
 
     private LceLayout lce;
     private RecyclerView list;
-    private FilterCompositeAdapter<AppViewModel> adapter;
+    private FilterCompositeAdapter<DecoratedAppViewModel> adapter;
     private AppsFilter filter;
 
     @ProvidePresenter
@@ -105,11 +105,11 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     }
 
     @Override
-    public void onAppsLoaded(List<AppViewModel> apps) {
+    public void onAppsLoaded(List<DecoratedAppViewModel> apps) {
         filter = new AppsFilter(apps, this);
         Picasso picasso = daggerService().main().getPicassoFactory().create(getContext());
-        adapter = (FilterCompositeAdapter<AppViewModel>)
-                new FilterCompositeAdapter.Builder<AppViewModel>(getContext())
+        adapter = (FilterCompositeAdapter<DecoratedAppViewModel>)
+                new FilterCompositeAdapter.Builder<DecoratedAppViewModel>(getContext())
                         .filter(filter)
                         .add(new AppsViewModelAdapter(picasso, this))
                         .recyclerView(list)
@@ -132,17 +132,17 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     }
 
     @Override
-    public void onItemClick(int position, AppViewModel item) {
+    public void onItemClick(int position, DecoratedAppViewModel item) {
         onVisibilityClick(position, item);
     }
 
     @Override
-    public void onVisibilityClick(int position, AppViewModel item) {
+    public void onVisibilityClick(int position, DecoratedAppViewModel item) {
         presenter.toggleAppVisibility(position, item);
     }
 
     @Override
-    public void onFilterResult(String query, List<AppViewModel> items) {
+    public void onFilterResult(String query, List<DecoratedAppViewModel> items) {
         if (items.isEmpty()) {
             String message = TextUtils.isEmpty(query) ? getString(R.string.search_empty)
                     : getString(R.string.search_placeholder, query);

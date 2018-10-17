@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.repository.apps;
 
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.List;
 

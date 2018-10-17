@@ -1,7 +1,7 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.List;

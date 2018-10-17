@@ -4,12 +4,12 @@ import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.LabelDescriptor;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.descriptors.CustomLabelDescriptor;
-import com.italankin.lnch.model.repository.descriptors.Descriptor;
-import com.italankin.lnch.model.repository.descriptors.LabelDescriptor;
-import com.italankin.lnch.model.repository.descriptors.model.AppDescriptor;
-import com.italankin.lnch.model.repository.descriptors.model.ShortcutDescriptor;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
