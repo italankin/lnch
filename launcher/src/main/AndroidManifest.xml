@@ -74,5 +74,14 @@
                 <action android:name="com.android.launcher.action.UNINSTALL_SHORTCUT" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".feature.receiver.StartShortcutReceiver"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.italankin.lnch.action.START_SHORTCUT" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

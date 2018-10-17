@@ -12,5 +12,11 @@ public interface Shortcut {
 
     Uri getIconUri();
 
+    String getPackageName();
+
+    String getId();
+
+    boolean isDynamic();
+
     boolean start(Rect bounds, Bundle options);
 }

@@ -13,6 +13,7 @@ import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
@@ -25,6 +26,10 @@ public class ShortcutRequestHandler extends RequestHandler {
 
     private static final String SCHEME = "shortcut";
     private static final String ID = "id";
+
+    public static Uri uriFrom(Shortcut shortcut) {
+        return uriFrom(shortcut.getPackageName(), shortcut.getId());
+    }
 
     public static Uri uriFrom(String packageName, String shortcutId) {
         return new Uri.Builder()

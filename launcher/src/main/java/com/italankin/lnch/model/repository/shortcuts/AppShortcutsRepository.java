@@ -82,15 +82,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     class AppShortcut implements Shortcut, Comparable<AppShortcut> {
         private final ShortcutInfo shortcutInfo;
-        private final CharSequence shortLabel;
-        private final CharSequence longLabel;
-        private final Uri icon;
 
         public AppShortcut(ShortcutInfo info) {
             shortcutInfo = info;
-            shortLabel = info.getShortLabel();
-            longLabel = info.getLongLabel();
-            icon = ShortcutRequestHandler.uriFrom(info.getPackage(), info.getId());
         }
 
         @Override
@@ -106,17 +100,32 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         @Override
         public CharSequence getShortLabel() {
-            return shortLabel;
+            return shortcutInfo.getShortLabel();
         }
 
         @Override
         public CharSequence getLongLabel() {
-            return longLabel;
+            return shortcutInfo.getLongLabel();
         }
 
         @Override
         public Uri getIconUri() {
-            return icon;
+            return ShortcutRequestHandler.uriFrom(this);
+        }
+
+        @Override
+        public String getPackageName() {
+            return shortcutInfo.getPackage();
+        }
+
+        @Override
+        public String getId() {
+            return shortcutInfo.getId();
+        }
+
+        @Override
+        public boolean isDynamic() {
+            return shortcutInfo.isDynamic();
         }
 
         @Override

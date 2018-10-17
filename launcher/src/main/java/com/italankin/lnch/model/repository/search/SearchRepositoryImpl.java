@@ -2,8 +2,12 @@ package com.italankin.lnch.model.repository.search;
 
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.LabelDescriptor;
@@ -14,6 +18,8 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
 import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
 
@@ -33,10 +39,13 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final AppsRepository appsRepository;
     private final PackageManager packageManager;
+    private final ShortcutsRepository shortcutsRepository;
 
-    public SearchRepositoryImpl(PackageManager packageManager, AppsRepository appsRepository) {
+    public SearchRepositoryImpl(PackageManager packageManager, AppsRepository appsRepository,
+            ShortcutsRepository shortcutsRepository) {
         this.appsRepository = appsRepository;
         this.packageManager = packageManager;
+        this.shortcutsRepository = shortcutsRepository;
     }
 
     @Override
@@ -61,6 +70,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            List<PartialMatch> shortcutMatches = searchShortcuts(appsRepository.items(), query);
+            matches.addAll(shortcutMatches);
+        }
+
         if (matches.size() > 1) {
             Collections.sort(matches);
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
@@ -73,6 +87,30 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         return matches;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private List<PartialMatch> searchShortcuts(List<Descriptor> descriptors, String query) {
+        List<PartialMatch> result = new ArrayList<>(1);
+        for (Descriptor descriptor : descriptors) {
+            if (descriptor instanceof AppDescriptor) {
+                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts((AppDescriptor) descriptor);
+                if (shortcuts == null || shortcuts.isEmpty()) {
+                    continue;
+                }
+                for (Shortcut shortcut : shortcuts) {
+                    if (!shortcut.isDynamic() && contains(shortcut.getShortLabel().toString(), query)) {
+                        PartialMatch match = new PartialMatch(Type.OTHER);
+                        match.icon = PackageManagerRequestHandler.uriFrom(shortcut.getPackageName());
+                        match.label = shortcut.getShortLabel();
+                        match.color = Color.WHITE;
+                        match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
+                        result.add(match);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private static PartialMatch testApp(AppDescriptor item, String query, PackageManager packageManager) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -43,6 +44,7 @@ import com.italankin.lnch.feature.home.adapter.ShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
+import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -548,6 +550,11 @@ public class HomeActivity extends AppActivity implements HomeView,
             if (IntentUtils.canHandleIntent(this, customTabsIntent.intent)) {
                 customTabsIntent.launchUrl(this, intent.getData());
             }
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
+                StartShortcutReceiver.ACTION.equals(intent.getAction())) {
+            sendBroadcast(intent);
             return;
         }
         if (!IntentUtils.safeStartActivity(this, intent)) {

@@ -58,8 +58,9 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public SearchRepository provideSearchRepository(PackageManager packageManager, AppsRepository appsRepository) {
-        return new SearchRepositoryImpl(packageManager, appsRepository);
+    public SearchRepository provideSearchRepository(PackageManager packageManager,
+            AppsRepository appsRepository, ShortcutsRepository shortcutsRepository) {
+        return new SearchRepositoryImpl(packageManager, appsRepository, shortcutsRepository);
     }
 
     @Provides
