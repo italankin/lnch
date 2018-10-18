@@ -96,7 +96,6 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
-    private CompositeAdapter<DescriptorItem> adapter;
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private PopupWindow popupWindow;
@@ -277,18 +276,16 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void onAppsLoaded(List<DescriptorItem> items, UserPrefs userPrefs) {
-        if (adapter == null) {
-            adapter = new CompositeAdapter.Builder<DescriptorItem>(this)
-                    .add(new AppViewModelAdapter(userPrefs, this))
-                    .add(new HiddenAppViewModelAdapter())
-                    .add(new GroupViewModelAdapter(userPrefs, this))
-                    .add(new ShortcutViewModelAdapter(userPrefs, this))
-                    .recyclerView(list)
-                    .setHasStableIds(true)
-                    .create();
-        }
+        new CompositeAdapter.Builder<DescriptorItem>(this)
+                .add(new AppViewModelAdapter(userPrefs, this))
+                .add(new HiddenAppViewModelAdapter())
+                .add(new GroupViewModelAdapter(userPrefs, this))
+                .add(new ShortcutViewModelAdapter(userPrefs, this))
+                .dataset(items)
+                .recyclerView(list)
+                .setHasStableIds(true)
+                .create();
         applyUserPrefs(userPrefs);
-        adapter.setDataset(items);
         list.setVisibility(View.VISIBLE);
         root.showContent();
         dismissPopup();
