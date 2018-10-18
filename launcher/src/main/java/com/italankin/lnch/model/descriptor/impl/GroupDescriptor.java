@@ -73,12 +73,19 @@ public class GroupDescriptor implements Descriptor, CustomColorDescriptor, Custo
 
     @Override
     public int hashCode() {
-        return label.hashCode();
+        return id.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj.getClass() == GroupDescriptor.class;
+        if (this == obj) {
+            return true;
+        }
+        if (obj.getClass() != GroupDescriptor.class) {
+            return false;
+        }
+        GroupDescriptor that = (GroupDescriptor) obj;
+        return this.id.equals(that.id);
     }
 
     @Override

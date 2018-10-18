@@ -77,8 +77,20 @@ public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, Cu
     }
 
     @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        return this == obj || obj.getClass() == ShortcutDescriptor.class;
+        if (this == obj) {
+            return true;
+        }
+        if (obj.getClass() != ShortcutDescriptor.class) {
+            return false;
+        }
+        ShortcutDescriptor that = (ShortcutDescriptor) obj;
+        return this.id.equals(that.id);
     }
 
     @Override
