@@ -2,23 +2,21 @@ package com.italankin.lnch.util.picasso;
 
 import android.content.Context;
 import android.content.pm.LauncherApps;
-import android.content.pm.LauncherApps.ShortcutQuery;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.util.ShortcutUtils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
 
-import java.util.Collections;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
@@ -53,13 +51,10 @@ public class ShortcutRequestHandler extends RequestHandler {
     @Nullable
     @Override
     public Result load(Request request, int networkPolicy) {
-        ShortcutQuery query = new ShortcutQuery();
-        query.setPackage(request.uri.getAuthority());
+        String packageName = request.uri.getAuthority();
         String shortcutId = request.uri.getQueryParameter(ID);
-        query.setShortcutIds(Collections.singletonList(shortcutId));
-        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC);
-        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-        if (shortcuts == null || shortcuts.isEmpty()) {
+        List<ShortcutInfo> shortcuts = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
+        if (shortcuts.isEmpty()) {
             return null;
         }
         Drawable icon = launcherApps.getShortcutIconDrawable(shortcuts.get(0), 0);

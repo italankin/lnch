@@ -7,14 +7,13 @@ import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
-import android.os.Process;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.util.ShortcutUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
@@ -43,14 +42,11 @@ public class StartShortcutReceiver extends BroadcastReceiver {
             return;
         }
         LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        //noinspection ConstantConditions
         if (!launcherApps.hasShortcutHostPermission()) {
             return;
         }
-        LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
-        query.setPackage(packageName);
-        query.setShortcutIds(Collections.singletonList(shortcutId));
-        query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST | LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC);
-        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
+        List<ShortcutInfo> shortcuts = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
         if (shortcuts == null || shortcuts.isEmpty()) {
             return;
         }

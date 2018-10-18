@@ -90,6 +90,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         @Override
         public boolean start(Rect bounds, Bundle options) {
             try {
+                //noinspection ConstantConditions
                 launcherApps.startShortcut(shortcutInfo, bounds, options);
                 return true;
             } catch (Exception e) {
