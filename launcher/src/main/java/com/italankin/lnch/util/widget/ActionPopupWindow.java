@@ -178,16 +178,17 @@ public class ActionPopupWindow extends PopupWindow {
 
         int contentWidth = contentView.getMeasuredWidth();
         int anchorWidth = anchorView.getMeasuredWidth();
-        int widthDiff = (anchorWidth - contentWidth) / 2;
-        int xOffset = widthDiff;
-        int contentRight = tmp[0] + xOffset + contentWidth;
+        int xOffset = (anchorWidth - contentWidth) / 2;
         boolean beyondLeft = false, beyondRight = false;
-        if (tmp[0] + xOffset + widthDiff < 0) {
+        if (tmp[0] + xOffset < 0) {
             xOffset = 0;
             beyondLeft = true;
-        } else if (contentRight > bounds.right) {
-            xOffset -= (contentRight - bounds.right);
-            beyondRight = true;
+        } else {
+            int contentRight = tmp[0] + xOffset + contentWidth;
+            if (contentRight > bounds.right) {
+                xOffset -= (contentRight - bounds.right);
+                beyondRight = true;
+            }
         }
 
         int anchorHeight = anchorView.getMeasuredHeight();
