@@ -9,7 +9,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
-public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     private static final String UNKNOWN_NAME = "???";
 
@@ -32,10 +32,10 @@ public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, Cu
     public Integer customColor;
 
     @Keep
-    public ShortcutDescriptor() {
+    public PinnedShortcutDescriptor() {
     }
 
-    public ShortcutDescriptor(String uri, String label) {
+    public PinnedShortcutDescriptor(String uri, String label) {
         this.id = UUID.randomUUID().toString();
         this.uri = uri;
         this.label = label != null ? label.toUpperCase() : UNKNOWN_NAME;
@@ -86,10 +86,10 @@ public class ShortcutDescriptor implements Descriptor, CustomColorDescriptor, Cu
         if (this == obj) {
             return true;
         }
-        if (obj.getClass() != ShortcutDescriptor.class) {
+        if (obj.getClass() != PinnedShortcutDescriptor.class) {
             return false;
         }
-        ShortcutDescriptor that = (ShortcutDescriptor) obj;
+        PinnedShortcutDescriptor that = (PinnedShortcutDescriptor) obj;
         return this.id.equals(that.id);
     }
 

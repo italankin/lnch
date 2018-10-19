@@ -57,7 +57,7 @@ import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.impl.ShortcutViewModel;
+import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
@@ -430,7 +430,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onShortcutClick(int position, ShortcutViewModel item) {
+    public void onShortcutClick(int position, PinnedShortcutViewModel item) {
         if (editMode) {
             customize(position, item);
         } else {
@@ -439,7 +439,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onShortcutLongClick(int position, ShortcutViewModel item) {
+    public void onShortcutLongClick(int position, PinnedShortcutViewModel item) {
         if (editMode) {
             startDrag(position);
         }
@@ -495,7 +495,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void startShortcut(ShortcutViewModel item) {
+    private void startShortcut(PinnedShortcutViewModel item) {
         Intent intent = IntentUtils.fromUri(item.uri);
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);

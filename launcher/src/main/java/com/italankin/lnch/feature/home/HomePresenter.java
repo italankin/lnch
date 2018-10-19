@@ -11,7 +11,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
 import com.italankin.lnch.model.repository.apps.actions.RecolorAction;
@@ -30,7 +30,7 @@ import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.impl.ShortcutViewModel;
+import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.ArrayList;
@@ -266,8 +266,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 result.add(new AppViewModel((AppDescriptor) descriptor));
             } else if (descriptor instanceof GroupDescriptor) {
                 result.add(new GroupViewModel((GroupDescriptor) descriptor));
-            } else if (descriptor instanceof ShortcutDescriptor) {
-                result.add(new ShortcutViewModel((ShortcutDescriptor) descriptor));
+            } else if (descriptor instanceof PinnedShortcutDescriptor) {
+                result.add(new PinnedShortcutViewModel((PinnedShortcutDescriptor) descriptor));
             }
         }
         return result;

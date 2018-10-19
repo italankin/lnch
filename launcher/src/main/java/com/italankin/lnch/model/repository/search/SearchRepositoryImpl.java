@@ -12,7 +12,7 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.LabelDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
@@ -62,8 +62,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             PartialMatch match = null;
             if (descriptor instanceof AppDescriptor) {
                 match = testApp((AppDescriptor) descriptor, query, packageManager);
-            } else if (descriptor instanceof ShortcutDescriptor) {
-                match = testShortcut((ShortcutDescriptor) descriptor, query);
+            } else if (descriptor instanceof PinnedShortcutDescriptor) {
+                match = testShortcut((PinnedShortcutDescriptor) descriptor, query);
             }
             if (match != null) {
                 matches.add(match);
@@ -126,7 +126,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return match;
     }
 
-    private static PartialMatch testShortcut(ShortcutDescriptor item, String query) {
+    private static PartialMatch testShortcut(PinnedShortcutDescriptor item, String query) {
         PartialMatch match = test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();

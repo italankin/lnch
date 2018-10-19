@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 
 import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
 
@@ -32,7 +32,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
         String uri = target.toUri(0);
 
-        ShortcutDescriptor descriptor = new ShortcutDescriptor(uri, name);
+        PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri, name);
         descriptor.color = Color.WHITE;
 
         AppsRepository apps = LauncherApp.getInstance(context)

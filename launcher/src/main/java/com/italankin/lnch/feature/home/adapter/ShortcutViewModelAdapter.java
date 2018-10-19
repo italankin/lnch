@@ -7,9 +7,9 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.model.viewmodel.impl.ShortcutViewModel;
+import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 
-public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutViewModelHolder, ShortcutViewModel> {
+public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutViewModelHolder, PinnedShortcutViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -48,24 +48,24 @@ public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutVi
     }
 
     @Override
-    public void onBind(ShortcutViewModelHolder holder, int position, ShortcutViewModel item) {
+    public void onBind(ShortcutViewModelHolder holder, int position, PinnedShortcutViewModel item) {
         holder.bind(item);
     }
 
     @Override
-    public long getItemId(int position, ShortcutViewModel item) {
+    public long getItemId(int position, PinnedShortcutViewModel item) {
         return item.hashCode();
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof ShortcutViewModel && ((ShortcutViewModel) item).isVisible();
+        return item instanceof PinnedShortcutViewModel && ((PinnedShortcutViewModel) item).isVisible();
     }
 
     public interface Listener {
-        void onShortcutClick(int position, ShortcutViewModel item);
+        void onShortcutClick(int position, PinnedShortcutViewModel item);
 
-        void onShortcutLongClick(int position, ShortcutViewModel item);
+        void onShortcutLongClick(int position, PinnedShortcutViewModel item);
     }
 }
 
@@ -77,7 +77,7 @@ class ShortcutViewModelHolder extends RecyclerView.ViewHolder {
         label = itemView.findViewById(R.id.label);
     }
 
-    void bind(ShortcutViewModel item) {
+    void bind(PinnedShortcutViewModel item) {
         label.setText(item.getVisibleLabel());
         label.setTextColor(item.getVisibleColor());
     }

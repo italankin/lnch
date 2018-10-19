@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.viewmodel.impl;
 
-import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
@@ -8,28 +8,28 @@ import com.italankin.lnch.model.viewmodel.GroupedItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
-public class ShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
+public class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         GroupedItem, RemovableItem, VisibleItem {
     public final String uri;
-    private final ShortcutDescriptor item;
+    private final PinnedShortcutDescriptor descriptor;
     private final String label;
     private String customLabel;
     private int color;
     private Integer customColor;
     private boolean visible = true;
 
-    public ShortcutViewModel(ShortcutDescriptor item) {
-        this.item = item;
-        this.uri = item.uri;
-        this.label = item.label;
-        this.customLabel = item.customLabel;
-        this.color = item.color;
-        this.customColor = item.customColor;
+    public PinnedShortcutViewModel(PinnedShortcutDescriptor descriptor) {
+        this.descriptor = descriptor;
+        this.uri = descriptor.uri;
+        this.label = descriptor.label;
+        this.customLabel = descriptor.customLabel;
+        this.color = descriptor.color;
+        this.customColor = descriptor.customColor;
     }
 
     @Override
-    public ShortcutDescriptor getDescriptor() {
-        return item;
+    public PinnedShortcutDescriptor getDescriptor() {
+        return descriptor;
     }
 
     @Override

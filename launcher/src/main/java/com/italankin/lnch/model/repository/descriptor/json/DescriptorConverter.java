@@ -14,7 +14,7 @@ import com.google.gson.JsonSerializer;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.descriptor.impl.ShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSe
         MAPPING = new HashMap<>();
         MAPPING.put(TYPE_APP, AppDescriptor.class);
         MAPPING.put(TYPE_GROUP, GroupDescriptor.class);
-        MAPPING.put(TYPE_SHORTCUT, ShortcutDescriptor.class);
+        MAPPING.put(TYPE_SHORTCUT, PinnedShortcutDescriptor.class);
     }
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
