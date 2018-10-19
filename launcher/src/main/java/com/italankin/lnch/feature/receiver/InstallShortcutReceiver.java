@@ -3,12 +3,14 @@ package com.italankin.lnch.feature.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 
 import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
+
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -32,8 +34,10 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
         String uri = target.toUri(0);
 
-        PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri, name);
-        descriptor.color = Color.WHITE;
+        String label = name != null ? name : context.getString(R.string.pinned_shortcut_label);
+        PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri,
+                label.toUpperCase(Locale.getDefault()),
+                context.getColor(R.color.pinned_shortcut_default));
 
         AppsRepository apps = LauncherApp.getInstance(context)
                 .daggerService

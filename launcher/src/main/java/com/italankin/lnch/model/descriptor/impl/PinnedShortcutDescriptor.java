@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import android.support.annotation.ColorInt;
 import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
@@ -10,8 +11,6 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import java.util.UUID;
 
 public class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
-
-    private static final String UNKNOWN_NAME = "???";
 
     @SerializedName("id")
     public String id;
@@ -35,10 +34,11 @@ public class PinnedShortcutDescriptor implements Descriptor, CustomColorDescript
     public PinnedShortcutDescriptor() {
     }
 
-    public PinnedShortcutDescriptor(String uri, String label) {
+    public PinnedShortcutDescriptor(String uri, String label, @ColorInt int color) {
         this.id = UUID.randomUUID().toString();
         this.uri = uri;
-        this.label = label != null ? label.toUpperCase() : UNKNOWN_NAME;
+        this.label = label;
+        this.color = color;
     }
 
     @Override
