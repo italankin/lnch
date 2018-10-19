@@ -2,8 +2,10 @@ package com.italankin.lnch.util.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -16,9 +18,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.StringRes;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -35,13 +40,11 @@ public class ActionPopupWindow extends PopupWindow {
     private final Picasso picasso;
     private final LayoutInflater inflater;
     private final ViewGroup contentView;
+    private final ViewGroup popupContainer;
     private final ViewGroup actionContainer;
     private final ViewGroup shortcutContainer;
-    private final int horizontalPadding;
 
-    private final int arrowPadding;
-    private final int arrowWidth;
-    private final int arrowHeight;
+    private final int arrowSize;
 
     private final int darkArrowColor;
     private final int lightArrowColor;
@@ -53,23 +56,39 @@ public class ActionPopupWindow extends PopupWindow {
         super(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         this.context = context;
         this.picasso = picasso;
-        this.horizontalPadding = context.getResources()
-                .getDimensionPixelSize(R.dimen.popup_window_horizontal_padding);
-        this.inflater = LayoutInflater.from(context);
-        this.contentView = (ViewGroup) inflater.inflate(R.layout.widget_action_popup, null);
+        inflater = LayoutInflater.from(context);
+        contentView = (ViewGroup) inflater.inflate(R.layout.widget_action_popup, null);
+        popupContainer = contentView.findViewById(R.id.popup_container);
         actionContainer = contentView.findViewById(R.id.action_container);
         shortcutContainer = contentView.findViewById(R.id.shortcut_container);
-        contentView.getChildAt(0).setClipToOutline(true);
+        popupContainer.setClipToOutline(true);
+        Resources res = context.getResources();
         setContentView(contentView);
         setOutsideTouchable(true);
         setFocusable(true);
+        setElevation(res.getDimensionPixelSize(R.dimen.popup_window_elevation));
 
-        this.arrowPadding = context.getResources()
-                .getDimensionPixelSize(R.dimen.popup_window_arrow_padding);
-        this.arrowHeight = arrowPadding * 2;
-        this.arrowWidth = (int) (arrowHeight * 1.33);
-        this.darkArrowColor = context.getColor(R.color.popup_actions_background);
-        this.lightArrowColor = context.getColor(R.color.popup_background);
+        arrowSize = res
+                .getDimensionPixelSize(R.dimen.popup_window_arrow_size);
+        darkArrowColor = context.getColor(R.color.popup_actions_background);
+        lightArrowColor = context.getColor(R.color.popup_background);
+
+        contentView.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                boolean arrowBottom = ((ViewGroup) view).getChildAt(0) == popupContainer;
+                float radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                        view.getResources().getDisplayMetrics());
+                Rect rect = new Rect(view.getPaddingLeft(),
+                        0,
+                        view.getWidth() - view.getPaddingRight(),
+                        view.getHeight() - arrowSize);
+                if (!arrowBottom) {
+                    rect.offset(0, arrowSize);
+                }
+                outline.setRoundRect(rect, radius);
+            }
+        });
     }
 
     public ActionPopupWindow addAction(ActionInfo actionInfo) {
@@ -152,7 +171,8 @@ public class ActionPopupWindow extends PopupWindow {
         return this;
     }
 
-    public ActionPopupWindow showAtAnchor(View anchorView, int yoffset, Rect bounds) {
+    @SuppressLint("RtlHardcoded")
+    public void showAtAnchor(View anchorView, Rect bounds) {
         contentView.measure(MS, MS);
         anchorView.getLocationOnScreen(tmp);
 
@@ -162,40 +182,43 @@ public class ActionPopupWindow extends PopupWindow {
         int xOffset = widthDiff;
         int contentRight = tmp[0] + xOffset + contentWidth;
         boolean beyondLeft = false, beyondRight = false;
-        if (tmp[0] + xOffset + widthDiff < horizontalPadding) {
-            xOffset = horizontalPadding;
+        if (tmp[0] + xOffset + widthDiff < 0) {
+            xOffset = 0;
             beyondLeft = true;
-        } else if (contentRight > bounds.right - horizontalPadding) {
-            xOffset -= (contentRight - bounds.right + horizontalPadding);
+        } else if (contentRight > bounds.right) {
+            xOffset -= (contentRight - bounds.right);
             beyondRight = true;
         }
 
         int anchorHeight = anchorView.getMeasuredHeight();
-        int anchorViewBottom = tmp[1] + anchorHeight;
-        int contentHeight = contentView.getMeasuredHeight();
-        int yOffset = -yoffset;
+        int contentHeight = contentView.getMeasuredHeight() + arrowSize;
+        int additionalVerticalOffset = (anchorView.getPaddingTop() + anchorView.getPaddingTop()) / 2;
+        int yOffset = -additionalVerticalOffset;
 
-        int arrowCenter = horizontalPadding;
+        int arrowCenter;
         if (beyondLeft) {
-            arrowCenter += anchorWidth / 2;
+            arrowCenter = anchorWidth / 2 - contentView.getPaddingLeft();
         } else if (beyondRight) {
-            arrowCenter += Math.abs(xOffset) + anchorWidth / 2;
+            arrowCenter = Math.abs(xOffset) + anchorWidth / 2 - contentView.getPaddingRight();
         } else {
-            arrowCenter += contentWidth / 2;
+            arrowCenter = contentWidth / 2 - contentView.getPaddingLeft();
         }
-        if (bounds.bottom - anchorViewBottom < contentHeight + yoffset) {
-            yOffset = -contentHeight - anchorHeight + yoffset / 2;
-            contentView.setPadding(0, 0, 0, arrowPadding);
-            contentView.setBackground(new ArrowDrawable(
-                    lightArrowColor, arrowCenter, arrowWidth, arrowHeight, true));
+        View arrowView = new View(context);
+        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(arrowSize, arrowSize);
+        lp.setMarginStart(arrowCenter - arrowSize / 2);
+        arrowView.setLayoutParams(lp);
+        int anchorViewBottom = tmp[1] + anchorHeight;
+        if (bounds.bottom - anchorViewBottom < contentHeight + additionalVerticalOffset) {
+            yOffset = -contentHeight - anchorHeight + additionalVerticalOffset;
+            arrowView.setBackground(new ArrowDrawable(lightArrowColor, arrowSize, true));
+            contentView.addView(arrowView);
         } else {
             int color = actionContainer.getChildCount() > 0 ? darkArrowColor : lightArrowColor;
-            contentView.setBackground(new ArrowDrawable(
-                    color, arrowCenter, arrowWidth, arrowHeight, false));
+            arrowView.setBackground(new ArrowDrawable(color, arrowSize, false));
+            contentView.addView(arrowView, 0);
         }
 
-        showAsDropDown(anchorView, xOffset, yOffset);
-        return this;
+        showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
     }
 
     public static class ShortcutInfo {
@@ -245,39 +268,31 @@ public class ActionPopupWindow extends PopupWindow {
     }
 
     private static class ArrowDrawable extends Drawable {
+        public static final float HEIGHT_FACTOR = .66f;
         private final Paint paint;
         private final Path path;
-        private final boolean down;
-        private final int height;
-        private int xOffset;
 
-        public ArrowDrawable(@ColorInt int color, @Px int centerX, @Px int width, @Px int height, boolean down) {
-            this.height = height;
-            this.down = down;
-            xOffset = centerX - width / 2;
-
+        public ArrowDrawable(@ColorInt int color, @Px int size, boolean pointDown) {
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(color);
 
             path = new Path();
-            if (down) {
+            int height = (int) (size * HEIGHT_FACTOR);
+            if (pointDown) {
                 path.moveTo(0, 0);
-                path.lineTo(width, 0);
-                path.lineTo(width / 2, height);
+                path.lineTo(size, 0);
+                path.lineTo(size / 2, height);
             } else {
-                path.moveTo(width / 2, 0);
-                path.lineTo(width, height);
-                path.lineTo(0, height);
+                path.moveTo(size / 2, size - height);
+                path.lineTo(size, size);
+                path.lineTo(0, size);
             }
             path.close();
         }
 
         @Override
         public void draw(@NonNull Canvas canvas) {
-            canvas.save();
-            canvas.translate(xOffset, down ? getBounds().height() - height : 0);
             canvas.drawPath(path, paint);
-            canvas.restore();
         }
 
         @Override

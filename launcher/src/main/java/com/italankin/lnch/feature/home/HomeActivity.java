@@ -689,7 +689,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         dismissPopup();
         list.setLayoutFrozen(true);
         popup.setOnDismissListener(() -> list.setLayoutFrozen(false));
-        popup.showAtAnchor(anchor, anchor.getPaddingTop(), computeScreenBounds());
+        popup.showAtAnchor(anchor, computeScreenBounds());
         popupWindow = popup;
     }
 
