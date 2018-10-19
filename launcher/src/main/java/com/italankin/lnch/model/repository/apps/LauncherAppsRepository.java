@@ -114,6 +114,17 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
+    public Descriptor findDescriptor(String id) {
+        List<Descriptor> items = items();
+        for (Descriptor item : items) {
+            if (item.getId().equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public AppsRepository.Editor edit() {
         return new Editor(updatesSubject.getValue());
     }

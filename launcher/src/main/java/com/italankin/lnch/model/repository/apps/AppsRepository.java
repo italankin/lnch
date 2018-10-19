@@ -22,6 +22,8 @@ public interface AppsRepository {
 
     List<Descriptor> items();
 
+    Descriptor findDescriptor(String id);
+
     interface Editor {
 
         Editor enqueue(Action action);
