@@ -17,4 +17,9 @@ public class StubShortcutsRepository implements ShortcutsRepository {
     public List<Shortcut> getShortcuts(AppDescriptor descriptor) {
         return Collections.emptyList();
     }
+
+    @Override
+    public Completable loadShortcuts(AppDescriptor descriptor) {
+        return Completable.complete();
+    }
 }

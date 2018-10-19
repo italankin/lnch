@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
@@ -32,7 +33,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     private final LauncherApps launcherApps;
     private final AppsRepository appsRepository;
 
-    private volatile Map<String, List<Shortcut>> shortcuts = Collections.emptyMap();
+    private final ConcurrentHashMap<String, List<Shortcut>> shortcuts = new ConcurrentHashMap<>();
 
     public AppShortcutsRepository(Context context, AppsRepository appsRepository) {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
@@ -47,30 +48,12 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         return Observable.defer(() -> Observable.fromIterable(appsRepository.items()))
                 .ofType(AppDescriptor.class)
                 .collectInto(new HashMap<String, List<Shortcut>>(), (map, descriptor) -> {
-                    ShortcutQuery query = new ShortcutQuery();
-                    query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST
-                            | ShortcutQuery.FLAG_MATCH_DYNAMIC);
-                    if (descriptor.componentName != null) {
-                        query.setActivity(ComponentName.unflattenFromString(descriptor.componentName));
-                    } else {
-                        query.setPackage(descriptor.packageName);
-                    }
-                    List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-                    if (shortcuts == null) {
-                        map.put(descriptor.getId(), Collections.emptyList());
-                        return;
-                    }
-                    List<AppShortcut> result = new ArrayList<>(shortcuts.size());
-                    for (ShortcutInfo info : shortcuts) {
-                        if (!info.isEnabled()) {
-                            continue;
-                        }
-                        result.add(new AppShortcut(info));
-                    }
-                    Collections.sort(result);
-                    map.put(descriptor.getId(), new ArrayList<>(result));
+                    map.put(descriptor.getId(), getShortcutsFor(descriptor));
                 })
-                .doOnSuccess(result -> shortcuts = result)
+                .doOnSuccess(result -> {
+                    shortcuts.clear();
+                    shortcuts.putAll(result);
+                })
                 .ignoreElement();
     }
 
@@ -78,6 +61,37 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     public List<Shortcut> getShortcuts(AppDescriptor descriptor) {
         List<Shortcut> list = shortcuts.get(descriptor.getId());
         return list != null ? list : Collections.emptyList();
+    }
+
+    @Override
+    public Completable loadShortcuts(AppDescriptor descriptor) {
+        return Single.fromCallable(() -> getShortcutsFor(descriptor))
+                .doOnSuccess(list -> shortcuts.put(descriptor.getId(), list))
+                .ignoreElement();
+    }
+
+    private List<Shortcut> getShortcutsFor(AppDescriptor descriptor) {
+        ShortcutQuery query = new ShortcutQuery();
+        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST
+                | ShortcutQuery.FLAG_MATCH_DYNAMIC);
+        if (descriptor.componentName != null) {
+            query.setActivity(ComponentName.unflattenFromString(descriptor.componentName));
+        } else {
+            query.setPackage(descriptor.packageName);
+        }
+        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
+        if (shortcuts == null) {
+            return Collections.emptyList();
+        }
+        List<AppShortcut> result = new ArrayList<>(shortcuts.size());
+        for (ShortcutInfo info : shortcuts) {
+            if (!info.isEnabled()) {
+                continue;
+            }
+            result.add(new AppShortcut(info));
+        }
+        Collections.sort(result);
+        return new ArrayList<>(result);
     }
 
     class AppShortcut implements Shortcut, Comparable<AppShortcut> {

@@ -179,6 +179,17 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().showAppPopup(position, item, shortcuts);
     }
 
+    void updateShortcuts(AppDescriptor descriptor) {
+        shortcutsRepository.loadShortcuts(descriptor)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Shortcuts updated for id=%s", descriptor.getId());
+                    }
+                });
+    }
+
     private void requireEditor() {
         if (editor == null) {
             throw new IllegalStateException();

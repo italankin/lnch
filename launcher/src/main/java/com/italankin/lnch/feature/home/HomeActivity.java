@@ -382,6 +382,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 popup.addShortcut(shortcut.getShortLabel(), shortcut.getIconUri(), v -> {
                     if (!shortcut.start(null, null)) {
                         showError(R.string.error);
+                        presenter.updateShortcuts(item.getDescriptor());
                     }
                 });
             }

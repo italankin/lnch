@@ -11,4 +11,6 @@ public interface ShortcutsRepository {
     Completable loadShortcuts();
 
     List<Shortcut> getShortcuts(AppDescriptor descriptor);
+
+    Completable loadShortcuts(AppDescriptor descriptor);
 }
