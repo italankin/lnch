@@ -187,12 +187,27 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private void update() {
         appsRepository.update()
-                .andThen(shortcutsRepository.loadShortcuts().onErrorComplete())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
                         Timber.d("Apps updated");
+                    }
+                });
+    }
+
+    private void updateShortcuts() {
+        shortcutsRepository.loadShortcuts()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Shortcuts updated");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e, "updateShortcuts");
                     }
                 });
     }
@@ -209,6 +224,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         items = list;
                         updateUserPrefs();
                         viewState.onAppsLoaded(items, userPrefs);
+                        updateShortcuts();
                     }
 
                     @Override
