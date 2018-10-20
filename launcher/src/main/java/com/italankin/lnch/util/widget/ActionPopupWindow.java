@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -179,18 +180,17 @@ public class ActionPopupWindow extends PopupWindow {
             arrowCenter = contentWidth / 2 - contentView.getPaddingLeft();
         }
         View arrowView = new View(context);
-        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(arrowSize, arrowSize);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(arrowSize, arrowSize);
         lp.setMarginStart(arrowCenter - arrowSize / 2);
-        arrowView.setLayoutParams(lp);
         int anchorViewBottom = tmp[1] + anchorHeight;
         if (bounds.bottom - anchorViewBottom < contentHeight + additionalVerticalOffset) {
             yOffset = -contentHeight - anchorHeight + additionalVerticalOffset;
             arrowView.setBackground(new ArrowDrawable(lightArrowColor, arrowSize, true));
-            contentView.addView(arrowView);
+            contentView.addView(arrowView, lp);
         } else {
             int color = actionContainer.getChildCount() > 0 ? darkArrowColor : lightArrowColor;
             arrowView.setBackground(new ArrowDrawable(color, arrowSize, false));
-            contentView.addView(arrowView, 0);
+            contentView.addView(arrowView, 0, lp);
         }
 
         setWidth(contentWidth);
