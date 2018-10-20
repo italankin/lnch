@@ -95,17 +95,19 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             if (!info.isEnabled()) {
                 continue;
             }
-            result.add(new AppShortcut(info));
+            result.add(new AppShortcut(launcherApps, info));
         }
         Collections.sort(result);
         return new ArrayList<>(result);
     }
 
-    class AppShortcut implements Shortcut, Comparable<AppShortcut> {
+    private static class AppShortcut implements Shortcut, Comparable<AppShortcut> {
+        private final LauncherApps launcherApps;
         private final ShortcutInfo shortcutInfo;
 
-        public AppShortcut(ShortcutInfo info) {
-            shortcutInfo = info;
+        public AppShortcut(LauncherApps launcherApps, ShortcutInfo info) {
+            this.launcherApps = launcherApps;
+            this.shortcutInfo = info;
         }
 
         @Override
