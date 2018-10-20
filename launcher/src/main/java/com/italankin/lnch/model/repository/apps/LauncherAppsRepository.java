@@ -240,28 +240,25 @@ public class LauncherAppsRepository implements AppsRepository {
 
     private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppDescriptor item) {
         List<LauncherActivityInfo> infos = map.get(item.packageName);
-        if (infos == null) {
+        if (infos == null || infos.isEmpty()) {
             return null;
         }
-        LauncherActivityInfo result = null;
         if (infos.size() == 1) {
-            result = infos.remove(0);
+            LauncherActivityInfo result = infos.remove(0);
+            map.remove(item.packageName);
+            return result;
         } else if (item.componentName != null) {
-            for (LauncherActivityInfo info : infos) {
+            Iterator<LauncherActivityInfo> iter = infos.iterator();
+            while (iter.hasNext()) {
+                LauncherActivityInfo info = iter.next();
                 String componentName = getComponentName(info);
                 if (componentName.equals(item.componentName)) {
-                    result = info;
-                    break;
+                    iter.remove();
+                    return info;
                 }
             }
         }
-        if (result != null) {
-            infos.remove(result);
-            if (infos.isEmpty()) {
-                map.remove(item.packageName);
-            }
-        }
-        return result;
+        return null;
     }
 
     private AppDescriptor createItem(LauncherActivityInfo info) {
