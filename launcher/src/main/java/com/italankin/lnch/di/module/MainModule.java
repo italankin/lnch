@@ -11,6 +11,8 @@ import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.json.VersioningDescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.SeparatorState;
+import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
@@ -84,5 +86,11 @@ public class MainModule {
         } else {
             return new StubShortcutsRepository();
         }
+    }
+
+    @Provides
+    @Singleton
+    public SeparatorState provideSeparatorState(Context context) {
+        return new SeparatorStateImpl(context);
     }
 }

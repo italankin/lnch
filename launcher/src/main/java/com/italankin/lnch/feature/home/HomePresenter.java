@@ -18,10 +18,12 @@ import com.italankin.lnch.model.repository.apps.actions.AddAction;
 import com.italankin.lnch.model.repository.apps.actions.RecolorAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
+import com.italankin.lnch.model.repository.apps.actions.RunnableAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
 import com.italankin.lnch.model.repository.apps.actions.UnpinShortcutAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
@@ -51,6 +53,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private final AppsRepository appsRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final Preferences preferences;
+    private final SeparatorState separatorState;
     /**
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
@@ -60,10 +63,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private final UserPrefs userPrefs = new UserPrefs();
 
     @Inject
-    HomePresenter(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
+    HomePresenter(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository,
+            Preferences preferences, SeparatorState separatorState) {
         this.appsRepository = appsRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.preferences = preferences;
+        this.separatorState = separatorState;
     }
 
     @Override
@@ -86,7 +91,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void toggleExpandableItemState(ExpandableItem item) {
-        setItemExpanded(item, !item.isExpanded());
+        setItemExpanded(item, !item.isExpanded(), true);
     }
 
     void startCustomize() {
@@ -142,6 +147,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
             editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) item));
         } else {
             editor.enqueue(new RemoveAction(position));
+            editor.enqueue(new RunnableAction(() -> separatorState.remove(item.getId())));
         }
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
@@ -268,6 +274,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, List<DescriptorItem> list) {
                         Timber.d("Receive update: %s", list);
                         items = list;
+                        restoreGroupsState(items);
                         updateUserPrefs();
                         viewState.onAppsLoaded(items, userPrefs);
                         updateShortcuts();
@@ -312,7 +319,20 @@ public class HomePresenter extends AppPresenter<HomeView> {
         return result;
     }
 
-    private void setItemExpanded(ExpandableItem item, boolean expanded) {
+    private void restoreGroupsState(List<DescriptorItem> items) {
+        for (DescriptorItem item : items) {
+            if (item instanceof ExpandableItem) {
+                ExpandableItem expandableItem = (ExpandableItem) item;
+                String id = expandableItem.getDescriptor().getId();
+                setItemExpanded(expandableItem, separatorState.isExpanded(id), false);
+            }
+        }
+    }
+
+    private void setItemExpanded(ExpandableItem item, boolean expanded, boolean notify) {
+        if (expanded == item.isExpanded()) {
+            return;
+        }
         int position = items.indexOf(item);
         if (position < 0) {
             return;
@@ -327,9 +347,13 @@ public class HomePresenter extends AppPresenter<HomeView> {
             return;
         }
         item.setExpanded(expanded);
+        separatorState.setExanded(item.getDescriptor().getId(), expanded);
         for (int i = startIndex; i < endIndex; i++) {
             VisibleItem visibleItem = (VisibleItem) items.get(i);
             visibleItem.setVisible(expanded);
+        }
+        if (!notify) {
+            return;
         }
         if (expanded) {
             getViewState().onItemsInserted(startIndex, count);
@@ -351,7 +375,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         for (int i = 0, size = items.size(); i < size; i++) {
             DescriptorItem item = items.get(i);
             if (item instanceof ExpandableItem) {
-                setItemExpanded((ExpandableItem) item, true);
+                setItemExpanded((ExpandableItem) item, true, true);
             }
         }
     }
