@@ -39,7 +39,7 @@ interface HomeView extends MvpView {
     @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
     void onStopCustomize();
 
-    @StateStrategyType(value = OneExecutionTagStrategy.class)
+    @StateStrategyType(value = OneExecutionStateStrategy.class)
     void onConfirmDiscardChanges();
 
     @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
