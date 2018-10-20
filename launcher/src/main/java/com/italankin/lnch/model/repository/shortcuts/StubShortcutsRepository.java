@@ -27,4 +27,18 @@ public class StubShortcutsRepository implements ShortcutsRepository {
     public Shortcut getShortcut(String packageName, String shortcutId) {
         return null;
     }
+
+    @Override
+    public Completable pinShortcut(Shortcut shortcut) {
+        return Completable.complete();
+    }
+
+    @Override
+    public void unpinShortcut(String packageName, String shortcutId) {
+    }
+
+    @Override
+    public List<Shortcut> getPinnedShortcuts() {
+        return Collections.emptyList();
+    }
 }

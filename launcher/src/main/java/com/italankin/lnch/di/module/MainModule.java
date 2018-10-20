@@ -21,6 +21,7 @@ import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
 
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
@@ -42,8 +43,8 @@ public class MainModule {
     @Provides
     @Singleton
     public AppsRepository provideAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository) {
-        return new LauncherAppsRepository(context, packageManager, descriptorRepository);
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
+        return new LauncherAppsRepository(context, packageManager, descriptorRepository, shortcutsRepository);
     }
 
     @Provides
@@ -71,9 +72,15 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public ShortcutsRepository provideShortcutsRepository(Context context, AppsRepository appsRepository) {
+    public ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<AppsRepository> lazy) {
+        return () -> lazy.get().items();
+    }
+
+    @Provides
+    @Singleton
+    public ShortcutsRepository provideShortcutsRepository(Context context, ShortcutsRepository.DescriptorProvider descriptorProvider) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            return new AppShortcutsRepository(context, appsRepository);
+            return new AppShortcutsRepository(context, descriptorProvider);
         } else {
             return new StubShortcutsRepository();
         }

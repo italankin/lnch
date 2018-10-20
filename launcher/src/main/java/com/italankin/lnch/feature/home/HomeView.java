@@ -46,6 +46,12 @@ interface HomeView extends MvpView {
     void onChangesDiscarded();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutPinned();
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void startShortcut(Shortcut shortcut);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsSwap(int from, int to);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -60,4 +66,6 @@ interface HomeView extends MvpView {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsRemoved(int startIndex, int count);
 
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutNotFound();
 }

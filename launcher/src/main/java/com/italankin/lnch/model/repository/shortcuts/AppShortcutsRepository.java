@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.picasso.ShortcutRequestHandler;
 
@@ -31,14 +30,17 @@ import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class AppShortcutsRepository implements ShortcutsRepository {
+    private static final int ALL = ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC;
+    private static final int PINNED = ShortcutQuery.FLAG_MATCH_PINNED;
+
     private final LauncherApps launcherApps;
-    private final AppsRepository appsRepository;
+    private final DescriptorProvider descriptorProvider;
 
     private final ConcurrentHashMap<String, List<Shortcut>> shortcuts = new ConcurrentHashMap<>();
 
-    public AppShortcutsRepository(Context context, AppsRepository appsRepository) {
+    public AppShortcutsRepository(Context context, DescriptorProvider descriptorProvider) {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-        this.appsRepository = appsRepository;
+        this.descriptorProvider = descriptorProvider;
     }
 
     @Override
@@ -46,10 +48,10 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (!launcherApps.hasShortcutHostPermission()) {
             return Completable.complete();
         }
-        return Observable.defer(() -> Observable.fromIterable(appsRepository.items()))
+        return Observable.defer(() -> Observable.fromIterable(descriptorProvider.getDescriptors()))
                 .ofType(AppDescriptor.class)
                 .collectInto(new HashMap<String, List<Shortcut>>(), (map, descriptor) -> {
-                    map.put(descriptor.getId(), getShortcutsFor(descriptor));
+                    map.put(descriptor.getId(), queryShortcuts(descriptor));
                 })
                 .doOnSuccess(result -> {
                     shortcuts.clear();
@@ -66,7 +68,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public Completable loadShortcuts(AppDescriptor descriptor) {
-        return Single.fromCallable(() -> getShortcutsFor(descriptor))
+        return Single.fromCallable(() -> queryShortcuts(descriptor))
                 .doOnSuccess(list -> shortcuts.put(descriptor.getId(), list))
                 .ignoreElement();
     }
@@ -77,10 +79,55 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         return list.isEmpty() ? null : new AppShortcut(launcherApps, list.get(0));
     }
 
-    private List<Shortcut> getShortcutsFor(AppDescriptor descriptor) {
+    @Override
+    public Completable pinShortcut(Shortcut shortcut) {
+        return Completable.fromRunnable(() -> {
+            String packageName = shortcut.getPackageName();
+            List<String> pinned = getPinnedShortcutIds(packageName);
+            pinned.add(shortcut.getId());
+            launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
+        });
+    }
+
+    @Override
+    public void unpinShortcut(String packageName, String shortcutId) {
+        List<String> pinned = getPinnedShortcutIds(packageName);
+        pinned.remove(shortcutId);
+        launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
+    }
+
+    @Override
+    public List<Shortcut> getPinnedShortcuts() {
+        ShortcutQuery query = new ShortcutQuery().setQueryFlags(PINNED);
+        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
+        if (shortcuts == null || shortcuts.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Shortcut> result = new ArrayList<>();
+        for (ShortcutInfo shortcut : shortcuts) {
+            result.add(new AppShortcut(launcherApps, shortcut));
+        }
+        Collections.sort(result);
+        return result;
+    }
+
+    private List<String> getPinnedShortcutIds(String packageName) {
+        ShortcutQuery query = new ShortcutQuery()
+                .setQueryFlags(PINNED)
+                .setPackage(packageName);
+        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
+        List<String> pinned = new ArrayList<>();
+        if (shortcuts != null && !shortcuts.isEmpty()) {
+            for (ShortcutInfo shortcutInfo : shortcuts) {
+                pinned.add(shortcutInfo.getId());
+            }
+        }
+        return pinned;
+    }
+
+    private List<Shortcut> queryShortcuts(AppDescriptor descriptor) {
         ShortcutQuery query = new ShortcutQuery();
-        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST
-                | ShortcutQuery.FLAG_MATCH_DYNAMIC);
+        query.setQueryFlags(ALL);
         if (descriptor.componentName != null) {
             query.setActivity(ComponentName.unflattenFromString(descriptor.componentName));
         } else {
@@ -90,7 +137,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (shortcuts == null) {
             return Collections.emptyList();
         }
-        List<AppShortcut> result = new ArrayList<>(shortcuts.size());
+        List<Shortcut> result = new ArrayList<>(shortcuts.size());
         for (ShortcutInfo info : shortcuts) {
             if (!info.isEnabled()) {
                 continue;
@@ -98,10 +145,10 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             result.add(new AppShortcut(launcherApps, info));
         }
         Collections.sort(result);
-        return new ArrayList<>(result);
+        return result;
     }
 
-    private static class AppShortcut implements Shortcut, Comparable<AppShortcut> {
+    private static class AppShortcut implements Shortcut {
         private final LauncherApps launcherApps;
         private final ShortcutInfo shortcutInfo;
 
@@ -124,12 +171,14 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         @Override
         public CharSequence getShortLabel() {
-            return shortcutInfo.getShortLabel();
+            CharSequence label = shortcutInfo.getShortLabel();
+            return label != null ? label : getLongLabel();
         }
 
         @Override
         public CharSequence getLongLabel() {
-            return shortcutInfo.getLongLabel();
+            CharSequence longLabel = shortcutInfo.getLongLabel();
+            return longLabel != null ? longLabel : "";
         }
 
         @Override
@@ -153,11 +202,16 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
 
         @Override
-        public int compareTo(@NonNull AppShortcut that) {
-            if (this.shortcutInfo.isDynamic() == that.shortcutInfo.isDynamic()) {
-                return Integer.compare(this.shortcutInfo.getRank(), that.shortcutInfo.getRank());
+        public int getRank() {
+            return shortcutInfo.getRank();
+        }
+
+        @Override
+        public int compareTo(@NonNull Shortcut that) {
+            if (this.isDynamic() == that.isDynamic()) {
+                return Integer.compare(this.getRank(), that.getRank());
             }
-            return this.shortcutInfo.isDynamic() ? 1 : -1;
+            return this.isDynamic() ? 1 : -1;
         }
     }
 }

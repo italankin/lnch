@@ -13,6 +13,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 
@@ -25,6 +26,7 @@ public class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSe
     private static final String TYPE_APP = "app";
     private static final String TYPE_GROUP = "group";
     private static final String TYPE_SHORTCUT = "shortcut";
+    private static final String TYPE_DEEP_SHORTCUT = "deep_shortcut";
 
     private static final Map<String, Class<? extends Descriptor>> MAPPING;
 
@@ -33,6 +35,7 @@ public class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSe
         MAPPING.put(TYPE_APP, AppDescriptor.class);
         MAPPING.put(TYPE_GROUP, GroupDescriptor.class);
         MAPPING.put(TYPE_SHORTCUT, PinnedShortcutDescriptor.class);
+        MAPPING.put(TYPE_DEEP_SHORTCUT, DeepShortcutDescriptor.class);
     }
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

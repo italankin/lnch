@@ -7,14 +7,14 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
+import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 
-public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutViewModelHolder, PinnedShortcutViewModel> {
+public class DeepShortcutViewModelAdapter extends BaseHomeAdapterDelegate<DeepShortcutViewModelHolder, DeepShortcutViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
 
-    public ShortcutViewModelAdapter(UserPrefs userPrefs, Listener listener) {
+    public DeepShortcutViewModelAdapter(UserPrefs userPrefs, Listener listener) {
         this.userPrefs = userPrefs;
         this.listener = listener;
     }
@@ -26,19 +26,19 @@ public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutVi
 
     @NonNull
     @Override
-    protected ShortcutViewModelHolder createViewHolder(View itemView) {
-        ShortcutViewModelHolder holder = new ShortcutViewModelHolder(itemView);
+    protected DeepShortcutViewModelHolder createViewHolder(View itemView) {
+        DeepShortcutViewModelHolder holder = new DeepShortcutViewModelHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onShortcutClick(pos, getItem(pos));
+                    listener.onDeepShortcutClick(pos, getItem(pos));
                 }
             });
             itemView.setOnLongClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onShortcutLongClick(pos, getItem(pos));
+                    listener.onDeepShortcutLongClick(pos, getItem(pos));
                 }
                 return true;
             });
@@ -48,36 +48,36 @@ public class ShortcutViewModelAdapter extends BaseHomeAdapterDelegate<ShortcutVi
     }
 
     @Override
-    public void onBind(ShortcutViewModelHolder holder, int position, PinnedShortcutViewModel item) {
+    public void onBind(DeepShortcutViewModelHolder holder, int position, DeepShortcutViewModel item) {
         holder.bind(item);
     }
 
     @Override
-    public long getItemId(int position, PinnedShortcutViewModel item) {
+    public long getItemId(int position, DeepShortcutViewModel item) {
         return item.hashCode();
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof PinnedShortcutViewModel && ((PinnedShortcutViewModel) item).isVisible();
+        return item instanceof DeepShortcutViewModel && ((DeepShortcutViewModel) item).isVisible();
     }
 
     public interface Listener {
-        void onShortcutClick(int position, PinnedShortcutViewModel item);
+        void onDeepShortcutClick(int position, DeepShortcutViewModel item);
 
-        void onShortcutLongClick(int position, PinnedShortcutViewModel item);
+        void onDeepShortcutLongClick(int position, DeepShortcutViewModel item);
     }
 }
 
-class ShortcutViewModelHolder extends RecyclerView.ViewHolder {
+class DeepShortcutViewModelHolder extends RecyclerView.ViewHolder {
     final TextView label;
 
-    ShortcutViewModelHolder(View itemView) {
+    DeepShortcutViewModelHolder(View itemView) {
         super(itemView);
         label = itemView.findViewById(R.id.label);
     }
 
-    void bind(PinnedShortcutViewModel item) {
+    void bind(DeepShortcutViewModel item) {
         label.setText(item.getVisibleLabel());
         label.setTextColor(item.getVisibleColor());
     }

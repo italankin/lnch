@@ -10,6 +10,7 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
@@ -19,6 +20,7 @@ import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
 import com.italankin.lnch.model.repository.apps.actions.RenameAction;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.apps.actions.SwapAction;
+import com.italankin.lnch.model.repository.apps.actions.UnpinShortcutAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -29,6 +31,7 @@ import com.italankin.lnch.model.viewmodel.ExpandableItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.ListUtils;
@@ -134,7 +137,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void removeItem(int position) {
         requireEditor();
-        editor.enqueue(new RemoveAction(position));
+        Descriptor item = items.get(position).getDescriptor();
+        if (item instanceof DeepShortcutDescriptor) {
+            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) item));
+        } else {
+            editor.enqueue(new RemoveAction(position));
+        }
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
@@ -188,6 +196,33 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         Timber.d("Shortcuts updated for id=%s", descriptor.getId());
                     }
                 });
+    }
+
+    void pinShortcut(Shortcut shortcut) {
+        shortcutsRepository.pinShortcut(shortcut)
+                .andThen(appsRepository.update())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableState() {
+                    @Override
+                    protected void onComplete(HomeView viewState) {
+                        viewState.onShortcutPinned();
+                    }
+
+                    @Override
+                    protected void onError(HomeView viewState, Throwable e) {
+                        viewState.showError(e);
+                    }
+                });
+    }
+
+    void startShortcut(DeepShortcutViewModel item) {
+        Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
+        if (shortcut != null) {
+            getViewState().startShortcut(shortcut);
+        } else {
+            getViewState().onShortcutNotFound();
+        }
     }
 
     private void requireEditor() {
@@ -268,6 +303,10 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 result.add(new GroupViewModel((GroupDescriptor) descriptor));
             } else if (descriptor instanceof PinnedShortcutDescriptor) {
                 result.add(new PinnedShortcutViewModel((PinnedShortcutDescriptor) descriptor));
+            } else if (descriptor instanceof DeepShortcutDescriptor) {
+                result.add(new DeepShortcutViewModel((DeepShortcutDescriptor) descriptor));
+            } else {
+                throw new IllegalArgumentException("Unknown descriptor: " + descriptor.toString());
             }
         }
         return result;

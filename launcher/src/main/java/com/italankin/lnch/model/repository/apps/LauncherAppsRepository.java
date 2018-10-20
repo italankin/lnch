@@ -7,11 +7,15 @@ import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.os.Process;
 import android.os.UserHandle;
+import android.text.TextUtils;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.IntentUtils;
 
 import java.io.File;
@@ -21,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +52,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
     private final DescriptorRepository descriptorRepository;
+    private final ShortcutsRepository shortcutsRepository;
     private final LauncherApps launcherApps;
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
@@ -54,10 +60,11 @@ public class LauncherAppsRepository implements AppsRepository {
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository) {
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
         this.context = context;
         this.packageManager = packageManager;
         this.descriptorRepository = descriptorRepository;
+        this.shortcutsRepository = shortcutsRepository;
         launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         updater = loadAll()
                 .doOnSuccess(appsData -> {
@@ -174,6 +181,8 @@ public class LauncherAppsRepository implements AppsRepository {
                         List<Descriptor> items = new ArrayList<>(savedItems.size());
                         List<Descriptor> deleted = new ArrayList<>(8);
                         Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
+                        List<Shortcut> pinnedShortcuts = shortcutsRepository.getPinnedShortcuts();
+                        Map<String, AppDescriptor> installedApps = new HashMap<>(savedItems.size());
                         for (Descriptor item : savedItems) {
                             if (item instanceof PinnedShortcutDescriptor) {
                                 String uri = ((PinnedShortcutDescriptor) item).uri;
@@ -182,6 +191,29 @@ public class LauncherAppsRepository implements AppsRepository {
                                     items.add(item);
                                 } else {
                                     deleted.add(item);
+                                }
+                                continue;
+                            }
+                            if (item instanceof DeepShortcutDescriptor) {
+                                DeepShortcutDescriptor descriptor = (DeepShortcutDescriptor) item;
+                                if (pinnedShortcuts.isEmpty()) {
+                                    deleted.add(descriptor);
+                                    continue;
+                                }
+                                boolean found = false;
+                                for (Iterator<Shortcut> iter = pinnedShortcuts.iterator(); iter.hasNext(); ) {
+                                    Shortcut pinned = iter.next();
+                                    if (pinned.getPackageName().equals(descriptor.packageName)
+                                            && pinned.getId().equals(descriptor.id)) {
+                                        iter.remove();
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) {
+                                    items.add(descriptor);
+                                } else {
+                                    deleted.add(descriptor);
                                 }
                                 continue;
                             }
@@ -202,6 +234,7 @@ public class LauncherAppsRepository implements AppsRepository {
                                     app.componentName = getComponentName(info);
                                 }
                                 items.add(app);
+                                installedApps.put(app.packageName, app);
                             } else {
                                 deleted.add(app);
                             }
@@ -214,10 +247,26 @@ public class LauncherAppsRepository implements AppsRepository {
                                     AppDescriptor item = createItem(info);
                                     item.componentName = getComponentName(info);
                                     items.add(item);
+                                    installedApps.put(item.packageName, item);
                                 }
                             }
                         }
-                        boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty();
+                        for (Shortcut shortcut : pinnedShortcuts) {
+                            String packageName = shortcut.getPackageName();
+                            DeepShortcutDescriptor item = new DeepShortcutDescriptor(
+                                    packageName, shortcut.getId());
+                            AppDescriptor app = installedApps.get(packageName);
+                            item.color = app.color;
+                            String label = shortcut.getShortLabel().toString();
+                            if (TextUtils.isEmpty(label)) {
+                                item.label = app.getVisibleLabel();
+                            } else {
+                                item.label = label.toUpperCase(Locale.getDefault());
+                            }
+                            items.add(item);
+                        }
+                        boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty()
+                                || !pinnedShortcuts.isEmpty();
                         emitter.onSuccess(new AppsData(items, changed));
                     }
                     emitter.onComplete();

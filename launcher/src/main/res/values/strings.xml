@@ -6,6 +6,7 @@
     <string name="error">Error</string>
     <string name="retry">Retry</string>
     <string name="save">Save</string>
+    <string name="error_shortcut_not_found">Not found</string>
 
     <string name="hint_search">Search</string>
 

@@ -37,10 +37,11 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.MainComponent;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
-import com.italankin.lnch.feature.home.adapter.ShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
@@ -56,6 +57,7 @@ import com.italankin.lnch.model.viewmodel.GroupedItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
@@ -73,7 +75,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
         GroupViewModelAdapter.Listener,
-        ShortcutViewModelAdapter.Listener {
+        PinnedShortcutViewModelAdapter.Listener, DeepShortcutViewModelAdapter.Listener {
 
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
@@ -280,7 +282,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .add(new AppViewModelAdapter(userPrefs, this))
                 .add(new HiddenAppViewModelAdapter())
                 .add(new GroupViewModelAdapter(userPrefs, this))
-                .add(new ShortcutViewModelAdapter(userPrefs, this))
+                .add(new PinnedShortcutViewModelAdapter(userPrefs, this))
+                .add(new DeepShortcutViewModelAdapter(userPrefs, this))
                 .dataset(items)
                 .recyclerView(list)
                 .setHasStableIds(true)
@@ -317,6 +320,18 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
+    public void onShortcutPinned() {
+        Toast.makeText(this, "Pinned", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void startShortcut(Shortcut shortcut) {
+        if (!shortcut.start(null, null)) {
+            showError(R.string.error);
+        }
+    }
+
+    @Override
     public void onItemsSwap(int from, int to) {
         list.getAdapter().notifyItemMoved(from, to);
     }
@@ -340,6 +355,11 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onItemsRemoved(int startIndex, int count) {
         list.getAdapter().notifyItemRangeRemoved(startIndex, count);
+    }
+
+    @Override
+    public void onShortcutNotFound() {
+        showError(R.string.error_shortcut_not_found);
     }
 
     @Override
@@ -384,6 +404,10 @@ public class HomeActivity extends AppActivity implements HomeView,
                         showError(R.string.error);
                         presenter.updateShortcuts(item.getDescriptor());
                     }
+                }, v -> {
+                    presenter.pinShortcut(shortcut);
+                    dismissPopup();
+                    return true;
                 });
             }
         }
@@ -430,7 +454,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onShortcutClick(int position, PinnedShortcutViewModel item) {
+    public void onPinnedShortcutClick(int position, PinnedShortcutViewModel item) {
         if (editMode) {
             customize(position, item);
         } else {
@@ -439,7 +463,23 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onShortcutLongClick(int position, PinnedShortcutViewModel item) {
+    public void onPinnedShortcutLongClick(int position, PinnedShortcutViewModel item) {
+        if (editMode) {
+            startDrag(position);
+        }
+    }
+
+    @Override
+    public void onDeepShortcutClick(int position, DeepShortcutViewModel item) {
+        if (editMode) {
+            customize(position, item);
+        } else {
+            presenter.startShortcut(item);
+        }
+    }
+
+    @Override
+    public void onDeepShortcutLongClick(int position, DeepShortcutViewModel item) {
         if (editMode) {
             startDrag(position);
         }
