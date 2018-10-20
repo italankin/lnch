@@ -4,12 +4,11 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
-import com.italankin.lnch.model.viewmodel.GroupedItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
 public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
-        VisibleItem, GroupedItem {
+        VisibleItem {
     public final String componentName;
     public final String packageName;
     private final AppDescriptor descriptor;

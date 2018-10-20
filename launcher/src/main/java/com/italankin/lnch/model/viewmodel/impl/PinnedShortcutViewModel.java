@@ -4,12 +4,11 @@ import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
-import com.italankin.lnch.model.viewmodel.GroupedItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
 public class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
-        GroupedItem, RemovableItem, VisibleItem {
+        RemovableItem, VisibleItem {
     public final String uri;
     private final PinnedShortcutDescriptor descriptor;
     private final String label;

@@ -53,9 +53,9 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
-import com.italankin.lnch.model.viewmodel.GroupedItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
+import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
@@ -673,7 +673,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     .setOnClickListener(v -> setItemColor(position, (CustomColorItem) item))
             );
         }
-        if (item instanceof GroupedItem) {
+        if (item instanceof VisibleItem) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setLabel(R.string.customize_item_add_group)
                     .setIcon(R.drawable.ic_action_add_group)
