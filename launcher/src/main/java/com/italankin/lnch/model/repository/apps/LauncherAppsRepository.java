@@ -111,11 +111,6 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
-    public Single<List<Descriptor>> fetch() {
-        return loadAll().map(appsData -> appsData.items);
-    }
-
-    @Override
     public List<Descriptor> items() {
         return updatesSubject.getValue();
     }
