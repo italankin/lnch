@@ -198,6 +198,9 @@ public class LauncherAppsRepository implements AppsRepository {
                                     app.label = getLabel(info);
                                     app.color = getDominantIconColor(info);
                                 }
+                                if (app.componentName != null) {
+                                    app.componentName = getComponentName(info);
+                                }
                                 items.add(app);
                             } else {
                                 deleted.add(app);
