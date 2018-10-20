@@ -19,6 +19,8 @@
     <string name="color_picker_edit_value_title">Enter value</string>
     <string name="color_picker_edit_value_hint">Value from %1$d to %2$d</string>
 
+    <string name="deep_shortcut_pinned">\'%1$s\' pinned</string>
+
     <string name="customize_snackbar_hint">Customize</string>
     <string name="customize_save">Save</string>
     <string name="customize_saved">Saved</string>

@@ -320,8 +320,9 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onShortcutPinned() {
-        Toast.makeText(this, "Pinned", Toast.LENGTH_SHORT).show();
+    public void onShortcutPinned(Shortcut shortcut) {
+        Toast.makeText(this, getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -377,38 +378,39 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     public void showAppPopup(int position, AppViewModel item, List<Shortcut> shortcuts) {
-        View.OnClickListener startAppSettings = v -> startAppSettings(item);
-        View.OnClickListener startAppUninstall = v -> startAppUninstall(item);
         boolean uninstallAvailable = !PackageUtils.isSystem(packageManager, item.packageName);
+        ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(this)
+                .setLabel(R.string.popup_app_info)
+                .setIcon(R.drawable.ic_app_info)
+                .setOnClickListener(v -> startAppSettings(item));
+        ActionPopupWindow.ItemBuilder uninstallItem = new ActionPopupWindow.ItemBuilder(this)
+                .setLabel(R.string.popup_app_uninstall)
+                .setIcon(R.drawable.ic_action_delete)
+                .setOnClickListener(v -> startAppUninstall(item));
 
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (shortcuts.isEmpty()) {
-            popup.addShortcut(R.string.popup_app_info, R.drawable.ic_app_info, startAppSettings);
+            popup.addShortcut(infoItem);
             if (uninstallAvailable) {
-                popup.addShortcut(R.string.popup_app_uninstall, R.drawable.ic_action_delete, startAppUninstall);
+                popup.addShortcut(uninstallItem);
             }
         } else {
-            popup.addAction(R.drawable.ic_app_info, startAppSettings, v -> {
-                Toast.makeText(this, R.string.popup_app_info, Toast.LENGTH_SHORT).show();
-                return true;
-            });
+            popup.addAction(infoItem);
             if (uninstallAvailable) {
-                popup.addAction(R.drawable.ic_action_delete, startAppUninstall, v -> {
-                    Toast.makeText(this, R.string.popup_app_uninstall, Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                popup.addAction(uninstallItem);
             }
             for (Shortcut shortcut : shortcuts) {
-                popup.addShortcut(shortcut.getShortLabel(), shortcut.getIconUri(), v -> {
-                    if (!shortcut.start(null, null)) {
-                        showError(R.string.error);
-                        presenter.updateShortcuts(item.getDescriptor());
-                    }
-                }, v -> {
-                    presenter.pinShortcut(shortcut);
-                    dismissPopup();
-                    return true;
-                });
+                popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                        .setLabel(shortcut.getShortLabel())
+                        .setIcon(shortcut.getIconUri())
+                        .setOnClickListener(v -> {
+                            if (!shortcut.start(null, null)) {
+                                showError(R.string.error);
+                                presenter.updateShortcuts(item.getDescriptor());
+                            }
+                        })
+                        .setOnPinClickListener(v -> presenter.pinShortcut(shortcut))
+                );
             }
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;
@@ -652,36 +654,40 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void customize(int position, DescriptorItem item) {
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (item instanceof HiddenItem) {
-            popup.addAction(R.drawable.ic_action_hide, v -> {
-                presenter.hideItem(position, (HiddenItem) item);
-            }, v -> {
-                Toast.makeText(this, R.string.customize_item_hide, Toast.LENGTH_SHORT).show();
-                return true;
-            });
+            popup.addAction(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_action_hide)
+                    .setOnClickListener(v -> presenter.hideItem(position, (HiddenItem) item))
+            );
         }
         if (item instanceof CustomLabelItem) {
-            popup.addShortcut(R.string.customize_item_rename, R.drawable.ic_action_rename, v -> {
-                setItemCustomLabel(position, (CustomLabelItem) item);
-            });
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setLabel(R.string.customize_item_rename)
+                    .setIcon(R.drawable.ic_action_rename)
+                    .setOnClickListener(v -> setItemCustomLabel(position, (CustomLabelItem) item))
+            );
         }
         if (item instanceof CustomColorItem) {
-            popup.addShortcut(R.string.customize_item_color, R.drawable.ic_action_color, v -> {
-                setItemColor(position, (CustomColorItem) item);
-            });
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setLabel(R.string.customize_item_color)
+                    .setIcon(R.drawable.ic_action_color)
+                    .setOnClickListener(v -> setItemColor(position, (CustomColorItem) item))
+            );
         }
         if (item instanceof GroupedItem) {
-            popup.addShortcut(R.string.customize_item_add_group, R.drawable.ic_action_add_group, v -> {
-                presenter.addGroup(position, getString(R.string.new_group_label),
-                        getColor(R.color.group_default));
-            });
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setLabel(R.string.customize_item_add_group)
+                    .setIcon(R.drawable.ic_action_add_group)
+                    .setOnClickListener(v -> {
+                        presenter.addGroup(position, getString(R.string.new_group_label),
+                                getColor(R.color.group_default));
+                    })
+            );
         }
         if (item instanceof RemovableItem) {
-            popup.addAction(R.drawable.ic_action_delete, v -> {
-                presenter.removeItem(position);
-            }, v -> {
-                Toast.makeText(this, R.string.customize_item_delete, Toast.LENGTH_SHORT).show();
-                return true;
-            });
+            popup.addAction(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_action_delete)
+                    .setOnClickListener(v -> presenter.removeItem(position))
+            );
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;
         showPopupWindow(popup, itemView);

@@ -34,7 +34,7 @@ import com.squareup.picasso.Picasso;
 
 public class ActionPopupWindow extends PopupWindow {
 
-    private static final int MS = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+    private static final float MAX_WIDTH_FACTOR = 0.66f;
 
     private final Context context;
     private final Picasso picasso;
@@ -68,8 +68,7 @@ public class ActionPopupWindow extends PopupWindow {
         setFocusable(true);
         setElevation(res.getDimensionPixelSize(R.dimen.popup_window_elevation));
 
-        arrowSize = res
-                .getDimensionPixelSize(R.dimen.popup_window_arrow_size);
+        arrowSize = res.getDimensionPixelSize(R.dimen.popup_window_arrow_size);
         darkArrowColor = context.getColor(R.color.popup_actions_background);
         lightArrowColor = context.getColor(R.color.popup_background);
 
@@ -91,89 +90,64 @@ public class ActionPopupWindow extends PopupWindow {
         });
     }
 
-    public ActionPopupWindow addAction(ActionInfo actionInfo) {
-        return addAction(actionInfo.icon, actionInfo.listener, actionInfo.longClickListener);
-    }
-
-    public ActionPopupWindow addAction(@DrawableRes int icon, View.OnClickListener listener) {
-        return addAction(context.getDrawable(icon), listener, null);
-    }
-
-    public ActionPopupWindow addAction(@DrawableRes int icon, View.OnClickListener listener,
-            @Nullable View.OnLongClickListener longClickListener) {
-        return addAction(context.getDrawable(icon), listener, longClickListener);
-    }
-
-    public ActionPopupWindow addAction(Drawable icon, View.OnClickListener listener,
-            View.OnLongClickListener longClickListener) {
-        ImageView item = (ImageView) inflater.inflate(R.layout.item_popup_action, actionContainer, false);
-        item.setImageDrawable(icon);
-        item.setOnClickListener(v -> {
-            listener.onClick(v);
-            dismiss();
-        });
-        item.setOnLongClickListener(longClickListener);
-        actionContainer.addView(item);
+    public ActionPopupWindow addAction(ItemBuilder item) {
+        ImageView imageView = (ImageView) inflater.inflate(R.layout.item_popup_action, actionContainer, false);
+        if (item.iconDrawable != null) {
+            imageView.setImageDrawable(item.iconDrawable);
+        } else if (item.iconUri != null) {
+            ViewUtils.onGlobalLayout(imageView, () -> picasso.load(item.iconUri)
+                    .resizeDimen(R.dimen.popup_action_icon_size, R.dimen.popup_action_icon_size)
+                    .into(imageView));
+        }
+        if (item.onClickListener != null) {
+            imageView.setOnClickListener(v -> {
+                item.onClickListener.onClick(v);
+                dismiss();
+            });
+        }
+        imageView.setOnLongClickListener(item.onLongClickListener);
+        actionContainer.addView(imageView);
         return this;
     }
 
-    public ActionPopupWindow addShortcut(ShortcutInfo shortcutInfo) {
-        return addShortcut(shortcutInfo.label, shortcutInfo.icon, shortcutInfo.listener,
-                shortcutInfo.longClickListener);
-    }
-
-    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon,
-            View.OnClickListener listener) {
-        return addShortcut(context.getText(label), context.getDrawable(icon), listener, null);
-    }
-
-    public ActionPopupWindow addShortcut(@StringRes int label, @DrawableRes int icon,
-            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
-        return addShortcut(context.getText(label), context.getDrawable(icon), listener, longClickListener);
-    }
-
-    public ActionPopupWindow addShortcut(CharSequence label, Drawable icon,
-            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
-        return addShortcut(label, new Icon(icon), listener, longClickListener);
-    }
-
-    public ActionPopupWindow addShortcut(CharSequence label, Uri uri,
-            View.OnClickListener listener) {
-        return addShortcut(label, uri, listener, null);
-    }
-
-    public ActionPopupWindow addShortcut(CharSequence label, Uri uri,
-            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
-        return addShortcut(label, new Icon(uri), listener, longClickListener);
-    }
-
-    public ActionPopupWindow addShortcut(CharSequence label, Icon icon,
-            View.OnClickListener listener, View.OnLongClickListener longClickListener) {
-        View item = inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
-        ImageView imageView = item.findViewById(R.id.icon);
-        TextView labelView = item.findViewById(R.id.label);
-        labelView.setText(label);
-        if (icon.drawable != null) {
-            Drawable drawable = icon.drawable.mutate();
+    public ActionPopupWindow addShortcut(ItemBuilder item) {
+        View view = inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
+        ImageView iconView = view.findViewById(R.id.icon);
+        ImageView pinIconView = view.findViewById(R.id.icon_pin);
+        TextView labelView = view.findViewById(R.id.label);
+        labelView.setText(item.label);
+        if (item.iconDrawable != null) {
+            Drawable drawable = item.iconDrawable.mutate();
             drawable.setTint(context.getColor(R.color.accent));
-            imageView.setImageDrawable(drawable);
-        } else if (icon.uri != null) {
-            ViewUtils.onGlobalLayout(imageView, () -> picasso.load(icon.uri)
+            iconView.setImageDrawable(drawable);
+        } else if (item.iconUri != null) {
+            ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
                     .resizeDimen(R.dimen.popup_shortcut_icon_size, R.dimen.popup_shortcut_icon_size)
-                    .into(imageView));
+                    .into(iconView));
         }
-        item.setOnClickListener(v -> {
-            listener.onClick(v);
-            dismiss();
-        });
-        item.setOnLongClickListener(longClickListener);
-        shortcutContainer.addView(item);
+        if (item.onClickListener != null) {
+            view.setOnClickListener(v -> {
+                item.onClickListener.onClick(v);
+                dismiss();
+            });
+        }
+        view.setOnLongClickListener(item.onLongClickListener);
+        if (item.onPinClickListener != null) {
+            pinIconView.setVisibility(View.VISIBLE);
+            pinIconView.setOnClickListener(v -> {
+                item.onPinClickListener.onClick(v);
+                dismiss();
+            });
+        }
+        shortcutContainer.addView(view);
         return this;
     }
 
     @SuppressLint("RtlHardcoded")
     public void showAtAnchor(View anchorView, Rect bounds) {
-        contentView.measure(MS, MS);
+        int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
+        contentView.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         anchorView.getLocationOnScreen(tmp);
 
         int contentWidth = contentView.getMeasuredWidth();
@@ -219,52 +193,59 @@ public class ActionPopupWindow extends PopupWindow {
             contentView.addView(arrowView, 0);
         }
 
+        setWidth(contentWidth);
         showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
     }
 
-    public static class ShortcutInfo {
-        private final CharSequence label;
-        private final Drawable icon;
-        private final View.OnClickListener listener;
-        private final View.OnLongClickListener longClickListener;
+    public static class ItemBuilder {
+        private final Context context;
+        private CharSequence label;
+        private Drawable iconDrawable;
+        private Uri iconUri;
+        private View.OnClickListener onClickListener;
+        private View.OnLongClickListener onLongClickListener;
+        private View.OnClickListener onPinClickListener;
 
-        public ShortcutInfo(CharSequence label, Drawable icon, View.OnClickListener listener,
-                View.OnLongClickListener longClickListener) {
+        public ItemBuilder(Context context) {
+            this.context = context;
+        }
+
+        public ItemBuilder setLabel(@StringRes int label) {
+            return setLabel(context.getText(label));
+        }
+
+        public ItemBuilder setLabel(CharSequence label) {
             this.label = label;
-            this.icon = icon;
-            this.listener = listener;
-            this.longClickListener = longClickListener;
-        }
-    }
-
-    public static class ActionInfo {
-        private final Drawable icon;
-        private final View.OnClickListener listener;
-        private final View.OnLongClickListener longClickListener;
-
-        public ActionInfo(Drawable icon, View.OnClickListener listener,
-                View.OnLongClickListener longClickListener) {
-            this.icon = icon;
-            this.listener = listener;
-            this.longClickListener = longClickListener;
-        }
-    }
-
-    private static class Icon {
-        private final Drawable drawable;
-        private final Uri uri;
-
-        Icon(Drawable drawable) {
-            this(drawable, null);
+            return this;
         }
 
-        Icon(Uri uri) {
-            this(null, uri);
+        public ItemBuilder setIcon(Uri uri) {
+            this.iconUri = uri;
+            return this;
         }
 
-        Icon(Drawable drawable, Uri uri) {
-            this.drawable = drawable;
-            this.uri = uri;
+        public ItemBuilder setIcon(@DrawableRes int icon) {
+            return setIcon(context.getDrawable(icon));
+        }
+
+        public ItemBuilder setIcon(Drawable icon) {
+            this.iconDrawable = icon;
+            return this;
+        }
+
+        public ItemBuilder setOnClickListener(View.OnClickListener listener) {
+            this.onClickListener = listener;
+            return this;
+        }
+
+        public ItemBuilder setOnLongClickListener(View.OnLongClickListener listener) {
+            this.onLongClickListener = listener;
+            return this;
+        }
+
+        public ItemBuilder setOnPinClickListener(View.OnClickListener listener) {
+            this.onPinClickListener = listener;
+            return this;
         }
     }
 

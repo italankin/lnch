@@ -206,7 +206,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .subscribe(new CompletableState() {
                     @Override
                     protected void onComplete(HomeView viewState) {
-                        viewState.onShortcutPinned();
+                        viewState.onShortcutPinned(shortcut);
                     }
 
                     @Override
