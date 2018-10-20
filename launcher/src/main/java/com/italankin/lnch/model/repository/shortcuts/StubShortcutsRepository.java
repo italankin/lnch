@@ -22,4 +22,9 @@ public class StubShortcutsRepository implements ShortcutsRepository {
     public Completable loadShortcuts(AppDescriptor descriptor) {
         return Completable.complete();
     }
+
+    @Override
+    public Shortcut getShortcut(String packageName, String shortcutId) {
+        return null;
+    }
 }

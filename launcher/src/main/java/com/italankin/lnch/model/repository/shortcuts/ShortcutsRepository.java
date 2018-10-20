@@ -13,4 +13,6 @@ public interface ShortcutsRepository {
     List<Shortcut> getShortcuts(AppDescriptor descriptor);
 
     Completable loadShortcuts(AppDescriptor descriptor);
+
+    Shortcut getShortcut(String packageName, String shortcutId);
 }

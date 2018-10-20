@@ -15,6 +15,7 @@ import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.picasso.ShortcutRequestHandler;
 
 import java.util.ArrayList;
@@ -68,6 +69,12 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         return Single.fromCallable(() -> getShortcutsFor(descriptor))
                 .doOnSuccess(list -> shortcuts.put(descriptor.getId(), list))
                 .ignoreElement();
+    }
+
+    @Override
+    public Shortcut getShortcut(String packageName, String shortcutId) {
+        List<ShortcutInfo> list = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
+        return list.isEmpty() ? null : new AppShortcut(launcherApps, list.get(0));
     }
 
     private List<Shortcut> getShortcutsFor(AppDescriptor descriptor) {
