@@ -28,14 +28,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     public SearchAdapter(Picasso picasso, SearchRepository searchRepository, Listener listener) {
         this.picasso = picasso;
-        this.filter = new SearchFilter(searchRepository) {
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                dataset = (List<Match>) results.values;
-                notifyDataSetChanged();
-            }
-        };
+        this.filter = new SearchFilter(searchRepository);
         this.listener = listener;
     }
 
@@ -112,21 +105,29 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
         void onItemLongClick(int position, Match match);
     }
+
+    class SearchFilter extends Filter {
+        private final SearchRepository searchRepository;
+
+        public SearchFilter(SearchRepository searchRepository) {
+            this.searchRepository = searchRepository;
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            List<? extends Match> matches = searchRepository.search(constraint);
+            results.values = matches;
+            results.count = matches.size();
+            return results;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            dataset = (List<Match>) results.values;
+            notifyDataSetChanged();
+        }
+    }
 }
 
-abstract class SearchFilter extends Filter {
-    private final SearchRepository searchRepository;
-
-    public SearchFilter(SearchRepository searchRepository) {
-        this.searchRepository = searchRepository;
-    }
-
-    @Override
-    protected FilterResults performFiltering(CharSequence constraint) {
-        FilterResults results = new FilterResults();
-        List<? extends Match> matches = searchRepository.search(constraint);
-        results.values = matches;
-        results.count = matches.size();
-        return results;
-    }
-}

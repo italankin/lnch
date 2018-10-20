@@ -9,7 +9,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 
-public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewModelHolder, GroupViewModel> {
+public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewModelAdapter.ViewHolder, GroupViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -26,8 +26,8 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
 
     @NonNull
     @Override
-    protected GroupViewModelHolder createViewHolder(View itemView) {
-        GroupViewModelHolder holder = new GroupViewModelHolder(itemView);
+    protected ViewHolder createViewHolder(View itemView) {
+        ViewHolder holder = new ViewHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
@@ -48,7 +48,7 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
     }
 
     @Override
-    public void onBind(GroupViewModelHolder holder, int position, GroupViewModel item) {
+    public void onBind(ViewHolder holder, int position, GroupViewModel item) {
         holder.bind(item);
     }
 
@@ -67,19 +67,18 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
 
         void onGroupLongClick(int position, GroupViewModel item);
     }
-}
 
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView label;
 
-class GroupViewModelHolder extends RecyclerView.ViewHolder {
-    final TextView label;
+        ViewHolder(View itemView) {
+            super(itemView);
+            label = itemView.findViewById(R.id.label);
+        }
 
-    GroupViewModelHolder(View itemView) {
-        super(itemView);
-        label = itemView.findViewById(R.id.label);
-    }
-
-    void bind(GroupViewModel item) {
-        label.setText(item.getVisibleLabel());
-        label.setTextColor(item.getVisibleColor());
+        void bind(GroupViewModel item) {
+            label.setText(item.getVisibleLabel());
+            label.setTextColor(item.getVisibleColor());
+        }
     }
 }

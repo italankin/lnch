@@ -9,7 +9,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
-public class AppViewModelAdapter extends BaseHomeAdapterDelegate<AppViewModelHolder, AppViewModel> {
+public class AppViewModelAdapter extends
+        BaseHomeAdapterDelegate<AppViewModelAdapter.ViewHolder, AppViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -26,8 +27,8 @@ public class AppViewModelAdapter extends BaseHomeAdapterDelegate<AppViewModelHol
 
     @NonNull
     @Override
-    protected AppViewModelHolder createViewHolder(View itemView) {
-        AppViewModelHolder holder = new AppViewModelHolder(itemView);
+    protected ViewHolder createViewHolder(View itemView) {
+        ViewHolder holder = new ViewHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
@@ -54,7 +55,7 @@ public class AppViewModelAdapter extends BaseHomeAdapterDelegate<AppViewModelHol
     }
 
     @Override
-    public void onBind(AppViewModelHolder holder, int position, AppViewModel item) {
+    public void onBind(ViewHolder holder, int position, AppViewModel item) {
         holder.bind(item);
     }
 
@@ -68,18 +69,18 @@ public class AppViewModelAdapter extends BaseHomeAdapterDelegate<AppViewModelHol
 
         void onAppLongClick(int position, AppViewModel item);
     }
-}
 
-class AppViewModelHolder extends RecyclerView.ViewHolder {
-    final TextView label;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView label;
 
-    AppViewModelHolder(View itemView) {
-        super(itemView);
-        label = itemView.findViewById(R.id.label);
-    }
+        ViewHolder(View itemView) {
+            super(itemView);
+            label = itemView.findViewById(R.id.label);
+        }
 
-    void bind(AppViewModel item) {
-        label.setText(item.getVisibleLabel());
-        label.setTextColor(item.getVisibleColor());
+        void bind(AppViewModel item) {
+            label.setText(item.getVisibleLabel());
+            label.setTextColor(item.getVisibleColor());
+        }
     }
 }

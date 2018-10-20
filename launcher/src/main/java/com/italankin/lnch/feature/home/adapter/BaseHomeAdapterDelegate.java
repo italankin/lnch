@@ -8,7 +8,8 @@ import android.widget.TextView;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
-abstract class BaseHomeAdapterDelegate<VH extends RecyclerView.ViewHolder, T> extends BaseAdapterDelegate<VH, T> {
+abstract class BaseHomeAdapterDelegate<VH extends RecyclerView.ViewHolder, T> extends
+        BaseAdapterDelegate<VH, T> {
 
     protected void applyUserPrefs(TextView label, UserPrefs userPrefs) {
         DisplayMetrics dm = label.getResources().getDisplayMetrics();

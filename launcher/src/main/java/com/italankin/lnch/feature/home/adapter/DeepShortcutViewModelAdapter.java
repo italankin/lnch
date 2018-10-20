@@ -9,7 +9,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 
-public class DeepShortcutViewModelAdapter extends BaseHomeAdapterDelegate<DeepShortcutViewModelHolder, DeepShortcutViewModel> {
+public class DeepShortcutViewModelAdapter extends
+        BaseHomeAdapterDelegate<DeepShortcutViewModelAdapter.ViewHolder, DeepShortcutViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -26,8 +27,8 @@ public class DeepShortcutViewModelAdapter extends BaseHomeAdapterDelegate<DeepSh
 
     @NonNull
     @Override
-    protected DeepShortcutViewModelHolder createViewHolder(View itemView) {
-        DeepShortcutViewModelHolder holder = new DeepShortcutViewModelHolder(itemView);
+    protected ViewHolder createViewHolder(View itemView) {
+        ViewHolder holder = new ViewHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
@@ -48,7 +49,7 @@ public class DeepShortcutViewModelAdapter extends BaseHomeAdapterDelegate<DeepSh
     }
 
     @Override
-    public void onBind(DeepShortcutViewModelHolder holder, int position, DeepShortcutViewModel item) {
+    public void onBind(ViewHolder holder, int position, DeepShortcutViewModel item) {
         holder.bind(item);
     }
 
@@ -67,18 +68,18 @@ public class DeepShortcutViewModelAdapter extends BaseHomeAdapterDelegate<DeepSh
 
         void onDeepShortcutLongClick(int position, DeepShortcutViewModel item);
     }
-}
 
-class DeepShortcutViewModelHolder extends RecyclerView.ViewHolder {
-    final TextView label;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView label;
 
-    DeepShortcutViewModelHolder(View itemView) {
-        super(itemView);
-        label = itemView.findViewById(R.id.label);
-    }
+        ViewHolder(View itemView) {
+            super(itemView);
+            label = itemView.findViewById(R.id.label);
+        }
 
-    void bind(DeepShortcutViewModel item) {
-        label.setText(item.getVisibleLabel());
-        label.setTextColor(item.getVisibleColor());
+        void bind(DeepShortcutViewModel item) {
+            label.setText(item.getVisibleLabel());
+            label.setTextColor(item.getVisibleColor());
+        }
     }
 }

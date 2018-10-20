@@ -11,7 +11,7 @@ import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.StubView;
 
-public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewModelHolder, VisibleItem> {
+public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewModelAdapter.ViewHolder, VisibleItem> {
     @Override
     public void onAttached(CompositeAdapter<VisibleItem> adapter) {
         // empty
@@ -19,17 +19,17 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
 
     @NonNull
     @Override
-    public HiddenAppViewModelHolder onCreate(LayoutInflater inflater, ViewGroup parent) {
-        return new HiddenAppViewModelHolder(new StubView(inflater.getContext()));
+    public ViewHolder onCreate(LayoutInflater inflater, ViewGroup parent) {
+        return new ViewHolder(new StubView(inflater.getContext()));
     }
 
     @Override
-    public void onBind(HiddenAppViewModelHolder holder, int position, VisibleItem item) {
+    public void onBind(ViewHolder holder, int position, VisibleItem item) {
         // empty
     }
 
     @Override
-    public void onRecycled(HiddenAppViewModelHolder holder) {
+    public void onRecycled(ViewHolder holder) {
         // empty
     }
 
@@ -42,10 +42,10 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
     public long getItemId(int position, VisibleItem item) {
         return item.hashCode();
     }
-}
 
-class HiddenAppViewModelHolder extends RecyclerView.ViewHolder {
-    HiddenAppViewModelHolder(View itemView) {
-        super(itemView);
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 }

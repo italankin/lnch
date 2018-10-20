@@ -9,7 +9,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 
-public class PinnedShortcutViewModelAdapter extends BaseHomeAdapterDelegate<PinnedShortcutViewModelHolder, PinnedShortcutViewModel> {
+public class PinnedShortcutViewModelAdapter extends
+        BaseHomeAdapterDelegate<PinnedShortcutViewModelAdapter.ViewHolder, PinnedShortcutViewModel> {
 
     private final UserPrefs userPrefs;
     private final Listener listener;
@@ -26,8 +27,8 @@ public class PinnedShortcutViewModelAdapter extends BaseHomeAdapterDelegate<Pinn
 
     @NonNull
     @Override
-    protected PinnedShortcutViewModelHolder createViewHolder(View itemView) {
-        PinnedShortcutViewModelHolder holder = new PinnedShortcutViewModelHolder(itemView);
+    protected ViewHolder createViewHolder(View itemView) {
+        ViewHolder holder = new ViewHolder(itemView);
         if (listener != null) {
             itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
@@ -48,7 +49,7 @@ public class PinnedShortcutViewModelAdapter extends BaseHomeAdapterDelegate<Pinn
     }
 
     @Override
-    public void onBind(PinnedShortcutViewModelHolder holder, int position, PinnedShortcutViewModel item) {
+    public void onBind(ViewHolder holder, int position, PinnedShortcutViewModel item) {
         holder.bind(item);
     }
 
@@ -67,18 +68,18 @@ public class PinnedShortcutViewModelAdapter extends BaseHomeAdapterDelegate<Pinn
 
         void onPinnedShortcutLongClick(int position, PinnedShortcutViewModel item);
     }
-}
 
-class PinnedShortcutViewModelHolder extends RecyclerView.ViewHolder {
-    final TextView label;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView label;
 
-    PinnedShortcutViewModelHolder(View itemView) {
-        super(itemView);
-        label = itemView.findViewById(R.id.label);
-    }
+        ViewHolder(View itemView) {
+            super(itemView);
+            label = itemView.findViewById(R.id.label);
+        }
 
-    void bind(PinnedShortcutViewModel item) {
-        label.setText(item.getVisibleLabel());
-        label.setTextColor(item.getVisibleColor());
+        void bind(PinnedShortcutViewModel item) {
+            label.setText(item.getVisibleLabel());
+            label.setTextColor(item.getVisibleColor());
+        }
     }
 }
