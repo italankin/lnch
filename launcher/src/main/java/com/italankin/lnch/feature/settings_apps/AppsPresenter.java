@@ -36,7 +36,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     void toggleAppVisibility(int position, DecoratedAppViewModel item) {
         boolean hidden = !item.isHidden();
         item.setHidden(hidden);
-        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), hidden));
+        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !hidden));
         getViewState().onItemChanged(position);
     }
 
