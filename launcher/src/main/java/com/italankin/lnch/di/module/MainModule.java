@@ -8,8 +8,9 @@ import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
+import com.italankin.lnch.model.repository.descriptor.BackupDescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.json.VersioningDescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.VersioningDescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
@@ -56,7 +57,7 @@ public class MainModule {
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
-        return new VersioningDescriptorRepository(gsonBuilder);
+        return new BackupDescriptorRepository(new VersioningDescriptorRepository(gsonBuilder));
     }
 
     @Provides
