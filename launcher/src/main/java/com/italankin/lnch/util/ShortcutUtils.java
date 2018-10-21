@@ -14,6 +14,9 @@ public final class ShortcutUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     public static List<ShortcutInfo> findById(LauncherApps launcherApps, String packageName, String shortcutId) {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return Collections.emptyList();
+        }
         ShortcutQuery query = new ShortcutQuery();
         query.setPackage(packageName);
         query.setShortcutIds(Collections.singletonList(shortcutId));

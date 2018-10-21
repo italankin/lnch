@@ -81,6 +81,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public Completable pinShortcut(Shortcut shortcut) {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return Completable.error(new RuntimeException("No permission"));
+        }
         return Completable.fromRunnable(() -> {
             String packageName = shortcut.getPackageName();
             List<String> pinned = getPinnedShortcutIds(packageName);
@@ -91,6 +94,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public void unpinShortcut(String packageName, String shortcutId) {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return;
+        }
         List<String> pinned = getPinnedShortcutIds(packageName);
         pinned.remove(shortcutId);
         launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
@@ -98,6 +104,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public List<Shortcut> getPinnedShortcuts() {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return Collections.emptyList();
+        }
         ShortcutQuery query = new ShortcutQuery().setQueryFlags(PINNED);
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
         if (shortcuts == null || shortcuts.isEmpty()) {
@@ -112,6 +121,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     }
 
     private List<String> getPinnedShortcutIds(String packageName) {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return Collections.emptyList();
+        }
         ShortcutQuery query = new ShortcutQuery()
                 .setQueryFlags(PINNED)
                 .setPackage(packageName);
@@ -126,6 +138,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     }
 
     private List<Shortcut> queryShortcuts(AppDescriptor descriptor) {
+        if (!launcherApps.hasShortcutHostPermission()) {
+            return Collections.emptyList();
+        }
         ShortcutQuery query = new ShortcutQuery();
         query.setQueryFlags(ALL);
         if (descriptor.componentName != null) {
