@@ -11,10 +11,10 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
         RemovableItem, ExpandableItem {
     private final GroupDescriptor descriptor;
     private final String label;
+    private final int color;
     private String customLabel;
-    private boolean expanded = true;
-    private int color;
     private Integer customColor;
+    private boolean expanded = true;
 
     public GroupViewModel(GroupDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -67,5 +67,39 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
     @Override
     public boolean isExpanded() {
         return expanded;
+    }
+
+    @Override
+    public boolean is(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        GroupViewModel that = (GroupViewModel) another;
+        return this.getDescriptor().getId().equals(that.getDescriptor().getId());
+    }
+
+    @Override
+    public boolean deepEquals(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        GroupViewModel that = (GroupViewModel) another;
+        if (this.customLabel != null
+                ? !this.customLabel.equals(that.customLabel)
+                : that.customLabel != null) {
+            return false;
+        }
+        if (this.customColor != null
+                ? !this.customColor.equals(that.customColor)
+                : that.customColor != null) {
+            return false;
+        }
+        return this.expanded == that.expanded;
     }
 }

@@ -47,6 +47,7 @@ import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
+import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
@@ -108,6 +109,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private PopupWindow popupWindow;
+    private CompositeAdapter<DescriptorItem> adapter;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -290,21 +292,25 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(List<DescriptorItem> items, UserPrefs userPrefs) {
-        new CompositeAdapter.Builder<DescriptorItem>(this)
-                .add(new AppViewModelAdapter(userPrefs, this))
-                .add(new HiddenAppViewModelAdapter())
-                .add(new GroupViewModelAdapter(userPrefs, this))
-                .add(new PinnedShortcutViewModelAdapter(userPrefs, this))
-                .add(new DeepShortcutViewModelAdapter(userPrefs, this))
-                .dataset(items)
-                .recyclerView(list)
-                .setHasStableIds(true)
-                .create();
+    public void onAppsLoaded(Update update, UserPrefs userPrefs) {
+        if (adapter == null) {
+            adapter = new CompositeAdapter.Builder<DescriptorItem>(this)
+                    .add(new AppViewModelAdapter(userPrefs, this))
+                    .add(new HiddenAppViewModelAdapter())
+                    .add(new GroupViewModelAdapter(userPrefs, this))
+                    .add(new PinnedShortcutViewModelAdapter(userPrefs, this))
+                    .add(new DeepShortcutViewModelAdapter(userPrefs, this))
+                    .recyclerView(list)
+                    .setHasStableIds(true)
+                    .create();
+        }
+        adapter.setDataset(update.items);
         applyUserPrefs(userPrefs);
         list.setVisibility(View.VISIBLE);
         root.showContent();
         dismissPopup();
+
+        update.dispatchTo(adapter);
     }
 
     @Override

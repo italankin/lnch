@@ -40,7 +40,7 @@ public class HiddenAppViewModelAdapter implements AdapterDelegate<HiddenAppViewM
 
     @Override
     public long getItemId(int position, VisibleItem item) {
-        return item.hashCode();
+        return item.getDescriptor().getId().hashCode();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

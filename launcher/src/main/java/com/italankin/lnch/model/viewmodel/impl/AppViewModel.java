@@ -90,4 +90,39 @@ public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColo
     public String toString() {
         return descriptor.toString();
     }
+
+    @Override
+    public boolean is(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        VisibleItem that = (VisibleItem) another;
+        return this.getDescriptor().getId().equals(that.getDescriptor().getId())
+                && this.isVisible() == that.isVisible();
+    }
+
+    @Override
+    public boolean deepEquals(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        AppViewModel that = (AppViewModel) another;
+        if (this.customLabel != null
+                ? !this.customLabel.equals(that.customLabel)
+                : that.customLabel != null) {
+            return false;
+        }
+        if (this.customColor != null
+                ? !this.customColor.equals(that.customColor)
+                : that.customColor != null) {
+            return false;
+        }
+        return this.isVisible() == that.isVisible();
+    }
 }

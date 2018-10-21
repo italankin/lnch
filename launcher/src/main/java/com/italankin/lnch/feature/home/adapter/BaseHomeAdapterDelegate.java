@@ -6,9 +6,10 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
-abstract class BaseHomeAdapterDelegate<VH extends RecyclerView.ViewHolder, T> extends
+abstract class BaseHomeAdapterDelegate<VH extends RecyclerView.ViewHolder, T extends DescriptorItem> extends
         BaseAdapterDelegate<VH, T> {
 
     protected void applyUserPrefs(TextView label, UserPrefs userPrefs) {
@@ -20,5 +21,10 @@ abstract class BaseHomeAdapterDelegate<VH extends RecyclerView.ViewHolder, T> ex
         label.setShadowLayer(userPrefs.itemShadowRadius, label.getShadowDx(), label.getShadowDy(),
                 label.getShadowColor());
         label.setTypeface(userPrefs.itemFont);
+    }
+
+    @Override
+    public long getItemId(int position, T item) {
+        return item.getDescriptor().getId().hashCode();
     }
 }

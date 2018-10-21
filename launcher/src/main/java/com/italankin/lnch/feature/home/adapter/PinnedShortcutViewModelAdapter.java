@@ -54,11 +54,6 @@ public class PinnedShortcutViewModelAdapter extends
     }
 
     @Override
-    public long getItemId(int position, PinnedShortcutViewModel item) {
-        return item.hashCode();
-    }
-
-    @Override
     public boolean isType(int position, Object item) {
         return item instanceof PinnedShortcutViewModel && ((PinnedShortcutViewModel) item).isVisible();
     }

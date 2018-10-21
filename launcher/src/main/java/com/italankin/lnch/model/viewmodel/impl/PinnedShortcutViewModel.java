@@ -12,8 +12,8 @@ public class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem,
     public final String uri;
     private final PinnedShortcutDescriptor descriptor;
     private final String label;
+    private final int color;
     private String customLabel;
-    private int color;
     private Integer customColor;
     private boolean visible = true;
 
@@ -69,5 +69,40 @@ public class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem,
     @Override
     public boolean isVisible() {
         return visible;
+    }
+
+    @Override
+    public boolean is(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        PinnedShortcutViewModel that = (PinnedShortcutViewModel) another;
+        return this.getDescriptor().getId().equals(that.getDescriptor().getId())
+                && this.isVisible() == that.isVisible();
+    }
+
+    @Override
+    public boolean deepEquals(DescriptorItem another) {
+        if (this == another) {
+            return true;
+        }
+        if (this.getClass() != another.getClass()) {
+            return false;
+        }
+        PinnedShortcutViewModel that = (PinnedShortcutViewModel) another;
+        if (this.customLabel != null
+                ? !this.customLabel.equals(that.customLabel)
+                : that.customLabel != null) {
+            return false;
+        }
+        if (this.customColor != null
+                ? !this.customColor.equals(that.customColor)
+                : that.customColor != null) {
+            return false;
+        }
+        return this.visible == that.visible;
     }
 }

@@ -42,8 +42,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param data new dataset
      */
     public void setDataset(@Nullable List<T> data) {
-        dataset = data != null ? data : new ArrayList<T>();
-        notifyDataSetChanged();
+        dataset = data != null ? data : new ArrayList<>();
     }
 
     /**

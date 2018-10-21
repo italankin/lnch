@@ -50,11 +50,6 @@ public class AppViewModelAdapter extends
     }
 
     @Override
-    public long getItemId(int position, AppViewModel item) {
-        return item.hashCode();
-    }
-
-    @Override
     public void onBind(ViewHolder holder, int position, AppViewModel item) {
         holder.bind(item);
     }

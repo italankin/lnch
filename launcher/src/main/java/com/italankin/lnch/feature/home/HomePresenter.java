@@ -1,9 +1,11 @@
 package com.italankin.lnch.feature.home;
 
 import android.support.annotation.ColorInt;
+import android.support.v7.util.DiffUtil;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
@@ -35,6 +37,7 @@ import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.ViewModelFactory;
+import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.List;
@@ -44,6 +47,8 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.support.v7.util.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {
@@ -89,7 +94,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void toggleExpandableItemState(ExpandableItem item) {
-        setItemExpanded(item, !item.isExpanded(), true);
+        setItemExpanded(items, item, !item.isExpanded(), true);
     }
 
     void startCustomize() {
@@ -291,15 +296,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
         appsRepository.observe()
                 .filter(appItems -> editor == null)
                 .map(ViewModelFactory.INSTANCE::createItems)
+                .doOnNext(this::restoreGroupsState)
+                .scan(Update.EMPTY, this::calculateUpdates)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<DescriptorItem>>() {
+                .subscribe(new State<Update>() {
                     @Override
-                    protected void onNext(HomeView viewState, List<DescriptorItem> list) {
-                        Timber.d("Receive update: %s", list);
-                        items = list;
-                        restoreGroupsState(items);
+                    protected void onNext(HomeView viewState, Update update) {
+                        Timber.d("Receive update: %s", update.items);
+                        items = update.items;
                         updateUserPrefs();
-                        viewState.onAppsLoaded(items, userPrefs);
+                        viewState.onAppsLoaded(update, userPrefs);
                         updateShortcuts();
                     }
 
@@ -329,12 +335,18 @@ public class HomePresenter extends AppPresenter<HomeView> {
             if (item instanceof ExpandableItem) {
                 ExpandableItem expandableItem = (ExpandableItem) item;
                 String id = expandableItem.getDescriptor().getId();
-                setItemExpanded(expandableItem, separatorState.isExpanded(id), false);
+                setItemExpanded(items, expandableItem, separatorState.isExpanded(id), false);
             }
         }
     }
 
-    private void setItemExpanded(ExpandableItem item, boolean expanded, boolean notify) {
+    private Update calculateUpdates(Update previous, List<DescriptorItem> newItems) {
+        DescriptorItemDiffCallback callback = new DescriptorItemDiffCallback(previous.items, newItems);
+        DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
+        return new Update(newItems, diffResult);
+    }
+
+    private void setItemExpanded(List<DescriptorItem> items, ExpandableItem item, boolean expanded, boolean notify) {
         if (expanded == item.isExpanded()) {
             return;
         }
@@ -345,7 +357,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         int startIndex = position + 1;
         int endIndex = findExpandableItemIndex(startIndex);
         if (endIndex < 0) {
-            endIndex = items.size();
+            endIndex = this.items.size();
         }
         int count = endIndex - startIndex;
         if (count <= 0) {
@@ -354,7 +366,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         item.setExpanded(expanded);
         separatorState.setExanded(item.getDescriptor().getId(), expanded);
         for (int i = startIndex; i < endIndex; i++) {
-            VisibleItem visibleItem = (VisibleItem) items.get(i);
+            VisibleItem visibleItem = (VisibleItem) this.items.get(i);
             visibleItem.setVisible(expanded);
         }
         if (!notify) {
@@ -380,8 +392,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
         for (int i = 0, size = items.size(); i < size; i++) {
             DescriptorItem item = items.get(i);
             if (item instanceof ExpandableItem) {
-                setItemExpanded((ExpandableItem) item, true, true);
+                setItemExpanded(items, (ExpandableItem) item, true, true);
             }
         }
     }
+
 }

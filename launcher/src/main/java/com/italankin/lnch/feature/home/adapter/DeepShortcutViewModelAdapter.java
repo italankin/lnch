@@ -54,11 +54,6 @@ public class DeepShortcutViewModelAdapter extends
     }
 
     @Override
-    public long getItemId(int position, DeepShortcutViewModel item) {
-        return item.hashCode();
-    }
-
-    @Override
     public boolean isType(int position, Object item) {
         return item instanceof DeepShortcutViewModel && ((DeepShortcutViewModel) item).isVisible();
     }
