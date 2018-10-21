@@ -1,22 +1,20 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
-public class AppViewModelAdapter extends
-        BaseHomeAdapterDelegate<AppViewModelAdapter.ViewHolder, AppViewModel> {
+public class AppViewModelAdapter
+        extends HomeAdapterDelegate<AppViewModelAdapter.ViewHolder, AppViewModel> {
 
-    private final UserPrefs userPrefs;
     private final Listener listener;
 
-    public AppViewModelAdapter(UserPrefs userPrefs, Listener listener) {
-        this.userPrefs = userPrefs;
+    public AppViewModelAdapter(Listener listener) {
         this.listener = listener;
     }
 
@@ -29,29 +27,21 @@ public class AppViewModelAdapter extends
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        if (listener != null) {
-            itemView.setOnClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onAppClick(pos, getItem(pos));
-                }
-            });
-            itemView.setOnLongClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onAppLongClick(pos, getItem(pos));
-                    return true;
-                }
-                return false;
-            });
-        }
-        applyUserPrefs(holder.label, userPrefs);
+        itemView.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onAppClick(pos, getItem(pos));
+            }
+        });
+        itemView.setOnLongClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onAppLongClick(pos, getItem(pos));
+                return true;
+            }
+            return false;
+        });
         return holder;
-    }
-
-    @Override
-    public void onBind(ViewHolder holder, int position, AppViewModel item) {
-        holder.bind(item);
     }
 
     @Override
@@ -65,7 +55,7 @@ public class AppViewModelAdapter extends
         void onAppLongClick(int position, AppViewModel item);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<AppViewModel> {
         final TextView label;
 
         ViewHolder(View itemView) {
@@ -73,9 +63,16 @@ public class AppViewModelAdapter extends
             label = itemView.findViewById(R.id.label);
         }
 
+        @Override
         void bind(AppViewModel item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+        }
+
+        @Nullable
+        @Override
+        TextView getLabel() {
+            return label;
         }
     }
 }

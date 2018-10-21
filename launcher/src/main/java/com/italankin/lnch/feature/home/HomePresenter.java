@@ -63,7 +63,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
      */
     private List<DescriptorItem> items;
     private AppsRepository.Editor editor;
-    private final UserPrefs userPrefs = new UserPrefs();
 
     @Inject
     HomePresenter(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository,
@@ -304,8 +303,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, Update update) {
                         Timber.d("Receive update: %s", update.items);
                         items = update.items;
-                        updateUserPrefs();
-                        viewState.onAppsLoaded(update, userPrefs);
+                        viewState.onAppsLoaded(update, getUserPrefs());
                         updateShortcuts();
                     }
 
@@ -320,14 +318,18 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
-    private void updateUserPrefs() {
+    private UserPrefs getUserPrefs() {
+        UserPrefs userPrefs = new UserPrefs();
         userPrefs.homeLayout = preferences.homeLayout();
         userPrefs.overlayColor = preferences.overlayColor();
         userPrefs.showScrollbar = preferences.showScrollbar();
-        userPrefs.itemTextSize = preferences.itemTextSize();
-        userPrefs.itemPadding = preferences.itemPadding();
-        userPrefs.itemShadowRadius = preferences.itemShadowRadius();
-        userPrefs.itemFont = preferences.itemFont().typeface();
+        UserPrefs.ItemPrefs itemPrefs = new UserPrefs.ItemPrefs();
+        itemPrefs.itemTextSize = preferences.itemTextSize();
+        itemPrefs.itemPadding = preferences.itemPadding();
+        itemPrefs.itemShadowRadius = preferences.itemShadowRadius();
+        itemPrefs.itemFont = preferences.itemFont().typeface();
+        userPrefs.itemPrefs = itemPrefs;
+        return userPrefs;
     }
 
     private void restoreGroupsState(List<DescriptorItem> items) {

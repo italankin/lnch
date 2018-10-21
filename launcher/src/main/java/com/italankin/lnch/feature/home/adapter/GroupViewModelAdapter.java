@@ -1,21 +1,20 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 
-public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewModelAdapter.ViewHolder, GroupViewModel> {
+public class GroupViewModelAdapter
+        extends HomeAdapterDelegate<GroupViewModelAdapter.ViewHolder, GroupViewModel> {
 
-    private final UserPrefs userPrefs;
     private final Listener listener;
 
-    public GroupViewModelAdapter(UserPrefs userPrefs, Listener listener) {
-        this.userPrefs = userPrefs;
+    public GroupViewModelAdapter(Listener listener) {
         this.listener = listener;
     }
 
@@ -28,28 +27,20 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        if (listener != null) {
-            itemView.setOnClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onGroupClick(pos, getItem(pos));
-                }
-            });
-            itemView.setOnLongClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onGroupLongClick(pos, getItem(pos));
-                }
-                return true;
-            });
-        }
-        applyUserPrefs(holder.label, userPrefs);
+        itemView.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onGroupClick(pos, getItem(pos));
+            }
+        });
+        itemView.setOnLongClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onGroupLongClick(pos, getItem(pos));
+            }
+            return true;
+        });
         return holder;
-    }
-
-    @Override
-    public void onBind(ViewHolder holder, int position, GroupViewModel item) {
-        holder.bind(item);
     }
 
     @Override
@@ -63,7 +54,7 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
         void onGroupLongClick(int position, GroupViewModel item);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<GroupViewModel> {
         final TextView label;
 
         ViewHolder(View itemView) {
@@ -71,9 +62,16 @@ public class GroupViewModelAdapter extends BaseHomeAdapterDelegate<GroupViewMode
             label = itemView.findViewById(R.id.label);
         }
 
+        @Override
         void bind(GroupViewModel item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+        }
+
+        @Nullable
+        @Override
+        TextView getLabel() {
+            return null;
         }
     }
 }

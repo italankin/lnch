@@ -45,6 +45,7 @@ import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.model.Update;
@@ -68,7 +69,6 @@ import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -109,7 +109,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private Preferences.HomeLayout layout;
     private Snackbar editModeSnackbar;
     private PopupWindow popupWindow;
-    private CompositeAdapter<DescriptorItem> adapter;
+    private HomeAdapter adapter;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -294,12 +294,12 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppsLoaded(Update update, UserPrefs userPrefs) {
         if (adapter == null) {
-            adapter = new CompositeAdapter.Builder<DescriptorItem>(this)
-                    .add(new AppViewModelAdapter(userPrefs, this))
+            adapter = new HomeAdapter.Builder(this)
+                    .add(new AppViewModelAdapter(this))
                     .add(new HiddenAppViewModelAdapter())
-                    .add(new GroupViewModelAdapter(userPrefs, this))
-                    .add(new PinnedShortcutViewModelAdapter(userPrefs, this))
-                    .add(new DeepShortcutViewModelAdapter(userPrefs, this))
+                    .add(new GroupViewModelAdapter(this))
+                    .add(new PinnedShortcutViewModelAdapter(this))
+                    .add(new DeepShortcutViewModelAdapter(this))
                     .recyclerView(list)
                     .setHasStableIds(true)
                     .create();
@@ -310,7 +310,12 @@ public class HomeActivity extends AppActivity implements HomeView,
         root.showContent();
         dismissPopup();
 
-        update.dispatchTo(adapter);
+        boolean needsFullUpdate = adapter.updateUserPrefs(userPrefs);
+        if (needsFullUpdate) {
+            adapter.notifyDataSetChanged();
+        } else {
+            update.dispatchTo(adapter);
+        }
     }
 
     @Override

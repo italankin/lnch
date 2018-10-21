@@ -1,22 +1,20 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 
-public class PinnedShortcutViewModelAdapter extends
-        BaseHomeAdapterDelegate<PinnedShortcutViewModelAdapter.ViewHolder, PinnedShortcutViewModel> {
+public class PinnedShortcutViewModelAdapter
+        extends HomeAdapterDelegate<PinnedShortcutViewModelAdapter.ViewHolder, PinnedShortcutViewModel> {
 
-    private final UserPrefs userPrefs;
     private final Listener listener;
 
-    public PinnedShortcutViewModelAdapter(UserPrefs userPrefs, Listener listener) {
-        this.userPrefs = userPrefs;
+    public PinnedShortcutViewModelAdapter(Listener listener) {
         this.listener = listener;
     }
 
@@ -29,28 +27,20 @@ public class PinnedShortcutViewModelAdapter extends
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        if (listener != null) {
-            itemView.setOnClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onPinnedShortcutClick(pos, getItem(pos));
-                }
-            });
-            itemView.setOnLongClickListener(v -> {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onPinnedShortcutLongClick(pos, getItem(pos));
-                }
-                return true;
-            });
-        }
-        applyUserPrefs(holder.label, userPrefs);
+        itemView.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onPinnedShortcutClick(pos, getItem(pos));
+            }
+        });
+        itemView.setOnLongClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onPinnedShortcutLongClick(pos, getItem(pos));
+            }
+            return true;
+        });
         return holder;
-    }
-
-    @Override
-    public void onBind(ViewHolder holder, int position, PinnedShortcutViewModel item) {
-        holder.bind(item);
     }
 
     @Override
@@ -64,7 +54,7 @@ public class PinnedShortcutViewModelAdapter extends
         void onPinnedShortcutLongClick(int position, PinnedShortcutViewModel item);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<PinnedShortcutViewModel> {
         final TextView label;
 
         ViewHolder(View itemView) {
@@ -72,9 +62,16 @@ public class PinnedShortcutViewModelAdapter extends
             label = itemView.findViewById(R.id.label);
         }
 
+        @Override
         void bind(PinnedShortcutViewModel item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+        }
+
+        @Nullable
+        @Override
+        TextView getLabel() {
+            return null;
         }
     }
 }
