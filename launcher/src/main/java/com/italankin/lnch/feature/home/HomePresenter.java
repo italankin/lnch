@@ -93,8 +93,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
         update();
     }
 
-    void toggleExpandableItemState(ExpandableItem item) {
-        setItemExpanded(items, item, !item.isExpanded(), true);
+    void toggleExpandableItemState(int position, ExpandableItem item) {
+        setItemExpanded(items, position, !item.isExpanded(), true);
     }
 
     void startCustomize() {
@@ -331,11 +331,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     private void restoreGroupsState(List<DescriptorItem> items) {
-        for (DescriptorItem item : items) {
+        for (int i = 0, size = items.size(); i < size; i++) {
+            DescriptorItem item = items.get(i);
             if (item instanceof ExpandableItem) {
                 ExpandableItem expandableItem = (ExpandableItem) item;
                 String id = expandableItem.getDescriptor().getId();
-                setItemExpanded(items, expandableItem, separatorState.isExpanded(id), false);
+                setItemExpanded(items, i, separatorState.isExpanded(id), false);
             }
         }
     }
@@ -346,18 +347,15 @@ public class HomePresenter extends AppPresenter<HomeView> {
         return new Update(newItems, diffResult);
     }
 
-    private void setItemExpanded(List<DescriptorItem> items, ExpandableItem item, boolean expanded, boolean notify) {
+    private void setItemExpanded(List<DescriptorItem> items, int position, boolean expanded, boolean notify) {
+        ExpandableItem item = (ExpandableItem) items.get(position);
         if (expanded == item.isExpanded()) {
             return;
         }
-        int position = items.indexOf(item);
-        if (position < 0) {
-            return;
-        }
         int startIndex = position + 1;
-        int endIndex = findExpandableItemIndex(startIndex);
+        int endIndex = findNextExpandableItemIndex(items, startIndex);
         if (endIndex < 0) {
-            endIndex = this.items.size();
+            endIndex = items.size();
         }
         int count = endIndex - startIndex;
         if (count <= 0) {
@@ -366,7 +364,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         item.setExpanded(expanded);
         separatorState.setExanded(item.getDescriptor().getId(), expanded);
         for (int i = startIndex; i < endIndex; i++) {
-            VisibleItem visibleItem = (VisibleItem) this.items.get(i);
+            VisibleItem visibleItem = (VisibleItem) items.get(i);
             visibleItem.setVisible(expanded);
         }
         if (!notify) {
@@ -379,7 +377,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
     }
 
-    private int findExpandableItemIndex(int startPosition) {
+    private void expandAll() {
+        for (int i = 0, size = items.size(); i < size; i++) {
+            DescriptorItem item = items.get(i);
+            if (item instanceof ExpandableItem) {
+                setItemExpanded(items, i, true, true);
+            }
+        }
+    }
+
+    private static int findNextExpandableItemIndex(List<DescriptorItem> items, int startPosition) {
         for (int i = startPosition; i < items.size(); i++) {
             if (items.get(i) instanceof ExpandableItem) {
                 return i;
@@ -387,14 +394,4 @@ public class HomePresenter extends AppPresenter<HomeView> {
         }
         return -1;
     }
-
-    private void expandAll() {
-        for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorItem item = items.get(i);
-            if (item instanceof ExpandableItem) {
-                setItemExpanded(items, (ExpandableItem) item, true, true);
-            }
-        }
-    }
-
 }
