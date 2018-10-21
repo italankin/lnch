@@ -144,6 +144,17 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                 .start();
     }
 
+    public void showNow() {
+        dragInProgress = false;
+        shown = true;
+        topView.setTranslationY(0);
+        topView.setAlpha(1);
+        if (listener != null) {
+            listener.onShow();
+        }
+        bottomView.setTranslationY(maxOffset);
+    }
+
     public boolean isShown() {
         return shown;
     }

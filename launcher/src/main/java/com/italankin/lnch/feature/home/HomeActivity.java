@@ -1,5 +1,9 @@
 package com.italankin.lnch.feature.home;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +26,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
@@ -80,6 +85,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
 
+    private static final int ANIM_LIST_APPEARANCE_DURATION = 500;
+
     @InjectPresenter
     HomePresenter presenter;
 
@@ -130,8 +137,14 @@ public class HomeActivity extends AppActivity implements HomeView,
         setupSearchBar();
 
         if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_SEARCH_SHOWN, false)) {
-            searchBarBehavior.show();
+            searchBarBehavior.showNow();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        animateListAppearance();
     }
 
     @Override
@@ -606,6 +619,38 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
+    }
+
+    private void animateListAppearance() {
+        float endY = searchBarBehavior.isShown() ? list.getTranslationY() : 0;
+        float startY = -endY - getResources().getDimension(R.dimen.list_start_translation_y);
+        list.setTranslationY(startY);
+        list.setAlpha(0);
+        ValueAnimator translationAnimator = ValueAnimator.ofFloat(startY, endY);
+        translationAnimator.addUpdateListener(animation -> {
+            list.setTranslationY((float) animation.getAnimatedValue());
+        });
+        ValueAnimator alphaAnimator = ValueAnimator.ofFloat(0, 1);
+        alphaAnimator.addUpdateListener(animation -> {
+            list.setAlpha(animation.getAnimatedFraction());
+        });
+        AnimatorSet animations = new AnimatorSet();
+        animations.playTogether(translationAnimator, alphaAnimator);
+        animations.setInterpolator(new DecelerateInterpolator(3));
+        animations.setDuration(ANIM_LIST_APPEARANCE_DURATION);
+        animations.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                searchBarBehavior.setEnabled(true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                searchBarBehavior.setEnabled(true);
+            }
+        });
+        animations.start();
+        searchBarBehavior.setEnabled(false);
     }
 
     private void setEditMode(boolean value) {
