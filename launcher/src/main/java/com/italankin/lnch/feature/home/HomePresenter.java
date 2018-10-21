@@ -36,8 +36,8 @@ import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.impl.ViewModelFactory;
 import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
+import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.List;
@@ -295,7 +295,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private void observeApps() {
         appsRepository.observe()
                 .filter(appItems -> editor == null)
-                .map(ViewModelFactory.INSTANCE::createItems)
+                .map(ViewModelFactory::createItems)
                 .doOnNext(this::restoreGroupsState)
                 .scan(Update.EMPTY, this::calculateUpdates)
                 .observeOn(AndroidSchedulers.mainThread())
