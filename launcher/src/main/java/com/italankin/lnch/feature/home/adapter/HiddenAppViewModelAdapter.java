@@ -25,11 +25,6 @@ public class HiddenAppViewModelAdapter
     }
 
     @Override
-    public long getItemId(int position, VisibleItem item) {
-        return item.getDescriptor().getId().hashCode();
-    }
-
-    @Override
     protected int getLayoutRes() {
         throw new UnsupportedOperationException();
     }

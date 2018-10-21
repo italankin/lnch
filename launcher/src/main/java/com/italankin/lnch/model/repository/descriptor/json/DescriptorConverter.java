@@ -23,15 +23,15 @@ import java.util.Map;
 
 public class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSerializer<Descriptor> {
     private static final String PROP_TYPE = "type";
+
     private static final String TYPE_APP = "app";
     private static final String TYPE_GROUP = "group";
     private static final String TYPE_SHORTCUT = "shortcut";
     private static final String TYPE_DEEP_SHORTCUT = "deep_shortcut";
 
-    private static final Map<String, Class<? extends Descriptor>> MAPPING;
+    private static final Map<String, Class<? extends Descriptor>> MAPPING = new HashMap<>();
 
     static {
-        MAPPING = new HashMap<>();
         MAPPING.put(TYPE_APP, AppDescriptor.class);
         MAPPING.put(TYPE_GROUP, GroupDescriptor.class);
         MAPPING.put(TYPE_SHORTCUT, PinnedShortcutDescriptor.class);
