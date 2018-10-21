@@ -18,7 +18,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -700,8 +699,6 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private RecyclerView.LayoutManager getLayoutManager(Preferences.HomeLayout layout) {
         switch (layout) {
-            case GRID:
-                return new GridLayoutManager(this, 2);
             case LINEAR:
                 return new LinearLayoutManager(this);
             case COMPACT:

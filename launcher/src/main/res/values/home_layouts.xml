@@ -2,12 +2,10 @@
 <resources>
     <string-array name="home_layouts">
         <item>compact</item>
-        <item>grid</item>
         <item>linear</item>
     </string-array>
     <string-array name="home_layout_desc">
         <item>Compact</item>
-        <item>Grid</item>
         <item>List</item>
     </string-array>
 </resources>

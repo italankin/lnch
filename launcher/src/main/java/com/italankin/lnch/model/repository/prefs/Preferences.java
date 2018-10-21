@@ -40,7 +40,6 @@ public interface Preferences {
 
     enum HomeLayout {
         COMPACT("compact"),
-        GRID("grid"),
         LINEAR("linear");
 
         static HomeLayout from(String s) {
