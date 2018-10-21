@@ -382,7 +382,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(this)
                 .setLabel(R.string.popup_app_info)
                 .setIcon(R.drawable.ic_app_info)
-                .setOnClickListener(v -> startAppSettings(item));
+                .setOnClickListener(v -> startAppSettings(item.packageName));
         ActionPopupWindow.ItemBuilder uninstallItem = new ActionPopupWindow.ItemBuilder(this)
                 .setLabel(R.string.popup_app_uninstall)
                 .setIcon(R.drawable.ic_action_delete)
@@ -424,7 +424,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onAppClick(int position, AppViewModel item) {
         if (editMode) {
-            customize(position, item);
+            showCustomizePopup(position, item);
         } else {
             startApp(item);
         }
@@ -442,7 +442,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     public void onGroupClick(int position, GroupViewModel item) {
         if (editMode) {
-            customize(position, item);
+            showCustomizePopup(position, item);
         } else {
             presenter.toggleExpandableItemState(item);
         }
@@ -452,13 +452,15 @@ public class HomeActivity extends AppActivity implements HomeView,
     public void onGroupLongClick(int position, GroupViewModel item) {
         if (editMode) {
             startDrag(position);
+        } else {
+            showItemPopup(position, item);
         }
     }
 
     @Override
     public void onPinnedShortcutClick(int position, PinnedShortcutViewModel item) {
         if (editMode) {
-            customize(position, item);
+            showCustomizePopup(position, item);
         } else {
             startShortcut(item);
         }
@@ -468,13 +470,15 @@ public class HomeActivity extends AppActivity implements HomeView,
     public void onPinnedShortcutLongClick(int position, PinnedShortcutViewModel item) {
         if (editMode) {
             startDrag(position);
+        } else {
+            showItemPopup(position, item);
         }
     }
 
     @Override
     public void onDeepShortcutClick(int position, DeepShortcutViewModel item) {
         if (editMode) {
-            customize(position, item);
+            showCustomizePopup(position, item);
         } else {
             presenter.startShortcut(item);
         }
@@ -484,6 +488,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     public void onDeepShortcutLongClick(int position, DeepShortcutViewModel item) {
         if (editMode) {
             startDrag(position);
+        } else {
+            showItemPopup(position, item);
         }
     }
 
@@ -523,8 +529,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         showError(R.string.error);
     }
 
-    private void startAppSettings(AppViewModel item) {
-        Intent intent = IntentUtils.getPackageSystemSettings(item.packageName);
+    private void startAppSettings(String packageName) {
+        Intent intent = IntentUtils.getPackageSystemSettings(packageName);
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
@@ -651,7 +657,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void customize(int position, DescriptorItem item) {
+    private void showCustomizePopup(int position, DescriptorItem item) {
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (item instanceof HiddenItem) {
             popup.addAction(new ActionPopupWindow.ItemBuilder(this)
@@ -686,7 +692,40 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (item instanceof RemovableItem) {
             popup.addAction(new ActionPopupWindow.ItemBuilder(this)
                     .setIcon(R.drawable.ic_action_delete)
-                    .setOnClickListener(v -> presenter.removeItem(position))
+                    .setOnClickListener(v -> presenter.removeItem(position, item))
+            );
+        }
+        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
+        showPopupWindow(popup, itemView);
+    }
+
+    private void showItemPopup(int position, DescriptorItem item) {
+        ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
+        if (item instanceof DeepShortcutViewModel) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_app_info)
+                    .setLabel(R.string.popup_app_info)
+                    .setOnClickListener(v -> {
+                        startAppSettings(((DeepShortcutViewModel) item).packageName);
+                    })
+            );
+        }
+        if (item instanceof RemovableItem) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_action_delete)
+                    .setLabel(R.string.customize_item_delete)
+                    .setOnClickListener(v -> {
+                        String visibleLabel = ((CustomLabelItem) item).getVisibleLabel();
+                        String message = getString(R.string.popup_delete_message, visibleLabel);
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.popup_delete_title)
+                                .setMessage(message)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
+                                    presenter.removeItemImmediate(position, item);
+                                })
+                                .show();
+                    })
             );
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;

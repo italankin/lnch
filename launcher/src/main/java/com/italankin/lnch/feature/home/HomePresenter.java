@@ -140,14 +140,14 @@ public class HomePresenter extends AppPresenter<HomeView> {
         getViewState().onItemInserted(position);
     }
 
-    void removeItem(int position) {
+    void removeItem(int position, DescriptorItem item) {
         requireEditor();
-        Descriptor item = items.get(position).getDescriptor();
-        if (item instanceof DeepShortcutDescriptor) {
-            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) item));
+        Descriptor descriptor = item.getDescriptor();
+        if (descriptor instanceof DeepShortcutDescriptor) {
+            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
         } else {
             editor.enqueue(new RemoveAction(position));
-            editor.enqueue(new RunnableAction(() -> separatorState.remove(item.getId())));
+            editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
@@ -230,6 +230,31 @@ public class HomePresenter extends AppPresenter<HomeView> {
             getViewState().onShortcutNotFound();
         }
     }
+
+    void removeItemImmediate(int position, DescriptorItem item) {
+        Descriptor descriptor = item.getDescriptor();
+        AppsRepository.Editor editor = appsRepository.edit();
+        if (descriptor instanceof DeepShortcutDescriptor) {
+            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
+        } else {
+            editor.enqueue(new RemoveAction(position));
+            if (descriptor instanceof GroupDescriptor) {
+                editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
+            }
+        }
+        editor.commit()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Item removed: %s", descriptor);
+                    }
+                });
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Private
+    ///////////////////////////////////////////////////////////////////////////
 
     private void requireEditor() {
         if (editor == null) {
