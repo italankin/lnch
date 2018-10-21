@@ -16,10 +16,12 @@ import timber.log.Timber;
 
 public class InstallShortcutReceiver extends BroadcastReceiver {
 
+    private static final String ACTION = "com.android.launcher.action.INSTALL_SHORTCUT";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent target = intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
-        if (target == null || target.getAction() == null) {
+        if (target == null || !ACTION.equals(target.getAction())) {
             Timber.e("Invalid intent: %s", intent);
             return;
         }
