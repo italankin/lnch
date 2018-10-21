@@ -12,7 +12,6 @@ import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
 import com.italankin.lnch.model.repository.apps.actions.RecolorAction;
@@ -35,10 +34,9 @@ import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
+import com.italankin.lnch.model.viewmodel.impl.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -292,7 +290,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private void observeApps() {
         appsRepository.observe()
                 .filter(appItems -> editor == null)
-                .map(this::mapItems)
+                .map(ViewModelFactory.INSTANCE::createItems)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<List<DescriptorItem>>() {
                     @Override
@@ -324,24 +322,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
         userPrefs.itemPadding = preferences.itemPadding();
         userPrefs.itemShadowRadius = preferences.itemShadowRadius();
         userPrefs.itemFont = preferences.itemFont().typeface();
-    }
-
-    private List<DescriptorItem> mapItems(List<Descriptor> descriptors) {
-        List<DescriptorItem> result = new ArrayList<>(descriptors.size());
-        for (Descriptor descriptor : descriptors) {
-            if (descriptor instanceof AppDescriptor) {
-                result.add(new AppViewModel((AppDescriptor) descriptor));
-            } else if (descriptor instanceof GroupDescriptor) {
-                result.add(new GroupViewModel((GroupDescriptor) descriptor));
-            } else if (descriptor instanceof PinnedShortcutDescriptor) {
-                result.add(new PinnedShortcutViewModel((PinnedShortcutDescriptor) descriptor));
-            } else if (descriptor instanceof DeepShortcutDescriptor) {
-                result.add(new DeepShortcutViewModel((DeepShortcutDescriptor) descriptor));
-            } else {
-                throw new IllegalArgumentException("Unknown descriptor: " + descriptor.toString());
-            }
-        }
-        return result;
     }
 
     private void restoreGroupsState(List<DescriptorItem> items) {
