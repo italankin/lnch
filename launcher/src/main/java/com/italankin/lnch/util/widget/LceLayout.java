@@ -60,11 +60,11 @@ public class LceLayout extends FrameLayout {
     ///////////////////////////////////////////////////////////////////////////
 
     public void showLoading() {
-        showLayerDelayed(Layer.LOADING);
+        showLayer(Layer.LOADING);
     }
 
     public void showContent() {
-        showLayerDelayed(Layer.CONTENT);
+        showLayer(Layer.CONTENT);
     }
 
     @CheckResult(suggest = "show()")
