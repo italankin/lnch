@@ -24,7 +24,7 @@ public class FilterCompositeAdapter<T> extends CompositeAdapter<T> implements Fi
         filter.filter(constaint);
     }
 
-    public static class Builder<T> extends CompositeAdapter.Builder<T> {
+    public static class Builder<T> extends BaseBuilder<T, Builder<T>> {
         private Filter filter;
 
         public Builder(Context context) {

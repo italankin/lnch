@@ -127,19 +127,25 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
         return delegate;
     }
 
+    public static class Builder<T> extends BaseBuilder<T, Builder<T>> {
+        public Builder(Context context) {
+            super(context);
+        }
+    }
+
     /**
      * Builder for {@link CompositeAdapter}.
      *
      * @param <T> list data type
      */
-    public static class Builder<T> {
+    protected abstract static class BaseBuilder<T, B> {
         protected final Context context;
         protected final SparseArray<AdapterDelegate> delegates = new SparseArray<>(1);
         protected boolean hasStableIds;
         protected List<T> dataset;
         protected RecyclerView recyclerView;
 
-        public Builder(Context context) {
+        protected BaseBuilder(Context context) {
             this.context = context;
         }
 
@@ -148,9 +154,9 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
          *
          * @return this builder
          */
-        public Builder<T> setHasStableIds(boolean hasStableIds) {
+        public B setHasStableIds(boolean hasStableIds) {
             this.hasStableIds = hasStableIds;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -159,7 +165,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param delegate delegate
          * @return this builder
          */
-        public Builder<T> add(AdapterDelegate<?, ? extends T> delegate) {
+        public B add(AdapterDelegate<?, ? extends T> delegate) {
             return add(delegates.size(), delegate);
         }
 
@@ -170,7 +176,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param delegate delegate
          * @return this builder
          */
-        public Builder<T> add(int viewType, AdapterDelegate<?, ? extends T> delegate) {
+        public B add(int viewType, AdapterDelegate<?, ? extends T> delegate) {
             if (delegate == null) {
                 throw new NullPointerException("delegate == null");
             }
@@ -178,7 +184,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
                 throw new IllegalArgumentException();
             }
             delegates.put(viewType, delegate);
-            return this;
+            return (B) this;
         }
 
         /**
@@ -187,9 +193,9 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param dataset dataset
          * @return this builder
          */
-        public Builder<T> dataset(List<T> dataset) {
+        public B dataset(List<T> dataset) {
             this.dataset = dataset;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -199,9 +205,9 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
          * @return this builder
          * @see RecyclerView#setAdapter(RecyclerView.Adapter)
          */
-        public Builder<T> recyclerView(RecyclerView recyclerView) {
+        public B recyclerView(RecyclerView recyclerView) {
             this.recyclerView = recyclerView;
-            return this;
+            return (B) this;
         }
 
         /**
