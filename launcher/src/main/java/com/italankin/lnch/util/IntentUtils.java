@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Settings;
 
 import com.italankin.lnch.BuildConfig;
@@ -29,11 +30,15 @@ public final class IntentUtils {
     }
 
     public static boolean safeStartActivity(Context context, Intent intent) {
+        return safeStartActivity(context, intent, null);
+    }
+
+    public static boolean safeStartActivity(Context context, Intent intent, Bundle options) {
         if (!canHandleIntent(context, intent)) {
             return false;
         }
         try {
-            context.startActivity(intent);
+            context.startActivity(intent, options);
             return true;
         } catch (ActivityNotFoundException e) {
             Timber.w(e, "safeStartActivity:");
