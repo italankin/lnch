@@ -85,7 +85,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int REQUEST_CODE_SETTINGS = 1;
 
-    private static final int ANIM_LIST_APPEARANCE_DURATION = 500;
+    private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
     @InjectPresenter
     HomePresenter presenter;
@@ -102,6 +102,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private Picasso picasso;
 
     private boolean editMode = false;
+    private boolean animateOnResume = false;
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
@@ -145,7 +146,16 @@ public class HomeActivity extends AppActivity implements HomeView,
     @Override
     protected void onStart() {
         super.onStart();
-        animateListAppearance();
+        animateOnResume = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (animateOnResume) {
+            animateOnResume = false;
+            animateListAppearance();
+        }
     }
 
     @Override
