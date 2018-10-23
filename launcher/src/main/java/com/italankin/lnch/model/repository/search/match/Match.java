@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 
+import com.italankin.lnch.model.descriptor.Descriptor;
+
 public interface Match {
 
     Uri getIcon();
@@ -21,5 +23,6 @@ public interface Match {
 
     Intent getIntent();
 
+    Descriptor getDescriptor();
 }
 

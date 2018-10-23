@@ -53,6 +53,9 @@ import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -269,12 +272,17 @@ public class HomeActivity extends AppActivity implements HomeView,
 
             @Override
             public void onItemLongClick(int position, Match match) {
-                String packageName = match.getIntent().getPackage();
+                Descriptor descriptor = match.getDescriptor();
+                String packageName = null;
+                if (descriptor instanceof AppDescriptor) {
+                    packageName = ((AppDescriptor) descriptor).packageName;
+                } else if (descriptor instanceof DeepShortcutDescriptor) {
+                    packageName = ((DeepShortcutDescriptor) descriptor).packageName;
+                }
                 if (packageName == null) {
                     return;
                 }
                 Intent intent = IntentUtils.getPackageSystemSettings(packageName);
-                IntentUtils.safeStartActivity(HomeActivity.this, intent);
                 if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
                     showError(R.string.error);
                     return;

@@ -138,6 +138,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
             match.icon = PackageManagerRequestHandler.uriFrom(item.packageName);
+            match.descriptor = item;
         }
         return match;
     }
@@ -148,6 +149,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             match.color = item.getVisibleColor();
             match.intent = IntentUtils.fromUri(item.uri);
             match.iconRes = R.drawable.ic_shortcut;
+            match.descriptor = item;
         }
         return match;
     }
@@ -167,6 +169,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             if (match != null) {
                 match.label = item.getVisibleLabel();
+                match.descriptor = descriptor;
             }
         } else if (descriptor instanceof LabelDescriptor) {
             String label = ((LabelDescriptor) descriptor).getLabel();
@@ -179,6 +182,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             if (match != null) {
                 match.label = label;
+                match.descriptor = descriptor;
             }
         }
         return match;
