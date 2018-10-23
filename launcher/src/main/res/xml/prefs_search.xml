@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <MultiSelectListPreference
+        android:defaultValue="@array/search_targets"
+        android:entries="@array/search_targets_desc"
+        android:entryValues="@array/search_targets"
+        android:key="@string/pref_search_targets"
+        android:negativeButtonText="@string/cancel"
+        android:positiveButtonText="@string/save"
+        android:summary="@string/title_settings_search_targets_summary"
+        android:title="@string/title_settings_search_targets" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/pref_search_show_soft_keyboard"
-        android:summaryOff="@string/title_settings_search_behavior_auto_show_summary_off"
-        android:summaryOn="@string/title_settings_search_behavior_auto_show_summary_on"
-        android:title="@string/title_settings_search_behavior_auto_show" />
+        android:summaryOff="@string/title_settings_search_auto_show_summary_off"
+        android:summaryOn="@string/title_settings_search_auto_show_summary_on"
+        android:title="@string/title_settings_search_auto_show" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/pref_search_use_custom_tabs"

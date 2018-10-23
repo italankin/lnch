@@ -2,6 +2,8 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.graphics.Typeface;
 
+import java.util.EnumSet;
+
 public interface Preferences {
 
     boolean searchShowSoftKeyboard();
@@ -15,6 +17,8 @@ public interface Preferences {
     boolean useCustomTabs();
 
     boolean showScrollbar();
+
+    EnumSet<SearchTarget> searchTargets();
 
     void setItemTextSize(float size);
 
@@ -93,6 +97,30 @@ public interface Preferences {
         @Override
         public String toString() {
             return name;
+        }
+    }
+
+    enum SearchTarget {
+        HIDDEN("hidden"),
+        SHORTCUT("shortcut"),
+        WEB("web"),
+        URL("url");
+
+        static final EnumSet<SearchTarget> ALL = EnumSet.allOf(SearchTarget.class);
+
+        static SearchTarget from(String s) {
+            for (SearchTarget target : values()) {
+                if (target.key.equals(s)) {
+                    return target;
+                }
+            }
+            return null;
+        }
+
+        private final String key;
+
+        SearchTarget(String key) {
+            this.key = key;
         }
     }
 }

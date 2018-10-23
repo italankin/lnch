@@ -14,6 +14,7 @@ import com.italankin.lnch.model.descriptor.LabelDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
@@ -25,9 +26,11 @@ import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import static android.util.Patterns.WEB_URL;
+import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
 import static com.italankin.lnch.model.repository.search.match.PartialMatch.Type;
 import static com.italankin.lnch.util.SearchUtils.contains;
 import static com.italankin.lnch.util.SearchUtils.containsWord;
@@ -40,12 +43,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final AppsRepository appsRepository;
     private final PackageManager packageManager;
     private final ShortcutsRepository shortcutsRepository;
+    private final Preferences preferences;
 
     public SearchRepositoryImpl(PackageManager packageManager, AppsRepository appsRepository,
-            ShortcutsRepository shortcutsRepository) {
+            ShortcutsRepository shortcutsRepository, Preferences preferences) {
         this.appsRepository = appsRepository;
         this.packageManager = packageManager;
         this.shortcutsRepository = shortcutsRepository;
+        this.preferences = preferences;
     }
 
     @Override
@@ -57,12 +62,18 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (query.isEmpty()) {
             return Collections.emptyList();
         }
+        EnumSet<SearchTarget> searchTargets = preferences.searchTargets();
         List<PartialMatch> matches = new ArrayList<>(8);
         for (Descriptor descriptor : appsRepository.items()) {
             PartialMatch match = null;
             if (descriptor instanceof AppDescriptor) {
-                match = testApp((AppDescriptor) descriptor, query, packageManager);
-            } else if (descriptor instanceof PinnedShortcutDescriptor) {
+                AppDescriptor appDescriptor = (AppDescriptor) descriptor;
+                if (appDescriptor.hidden && !searchTargets.contains(SearchTarget.HIDDEN)) {
+                    continue;
+                }
+                match = testApp(appDescriptor, query, packageManager);
+            } else if (descriptor instanceof PinnedShortcutDescriptor
+                    && searchTargets.contains(SearchTarget.SHORTCUT)) {
                 match = testShortcut((PinnedShortcutDescriptor) descriptor, query);
             }
             if (match != null) {
@@ -70,7 +81,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
+                && searchTargets.contains(SearchTarget.SHORTCUT)) {
             List<PartialMatch> shortcutMatches = searchShortcuts(appsRepository.items(), query);
             matches.addAll(shortcutMatches);
         }
@@ -80,10 +92,14 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
         }
 
-        matches.add(new WebSearchMatch(constraint.toString(), query));
+        if (searchTargets.contains(SearchTarget.WEB)) {
+            matches.add(new WebSearchMatch(constraint.toString(), query));
+        }
 
-        if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
-            matches.add(new UrlMatch(query));
+        if (searchTargets.contains(SearchTarget.URL)) {
+            if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
+                matches.add(new UrlMatch(query));
+            }
         }
 
         return matches;

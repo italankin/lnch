@@ -7,9 +7,14 @@ import android.preference.PreferenceManager;
 
 import com.italankin.lnch.R;
 
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 public class UserPreferences implements Preferences {
+
     private final Context context;
     private final SharedPreferences prefs;
 
@@ -53,6 +58,22 @@ public class UserPreferences implements Preferences {
     @Override
     public boolean showScrollbar() {
         return prefs.getBoolean(context.getString(R.string.pref_misc_show_scrollbar), false);
+    }
+
+    @Override
+    public EnumSet<SearchTarget> searchTargets() {
+        Set<String> set = prefs.getStringSet(context.getString(R.string.pref_search_targets), null);
+        if (set == null) {
+            return SearchTarget.ALL;
+        }
+        Set<SearchTarget> result = new HashSet<>();
+        for (String s : set) {
+            SearchTarget target = SearchTarget.from(s);
+            if (target != null) {
+                result.add(target);
+            }
+        }
+        return EnumSet.copyOf(result);
     }
 
     @Override

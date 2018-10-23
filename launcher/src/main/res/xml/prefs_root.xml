@@ -34,7 +34,7 @@
     <PreferenceCategory android:title="@string/title_settings_search">
         <Preference
             android:icon="@drawable/ic_settings_search"
-            android:key="@string/key_search_behavior"
-            android:title="@string/title_settings_search_behavior" />
+            android:key="@string/key_search_settings"
+            android:title="@string/title_settings_search_settings" />
     </PreferenceCategory>
 </PreferenceScreen>

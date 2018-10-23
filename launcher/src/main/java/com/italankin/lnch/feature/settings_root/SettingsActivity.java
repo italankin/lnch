@@ -77,7 +77,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
 
     @Override
     public void showSearchPreferences() {
-        showFragment(new SearchFragment(), R.string.title_settings_search_behavior);
+        showFragment(new SearchFragment(), R.string.title_settings_search);
     }
 
     @Override

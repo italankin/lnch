@@ -18,6 +18,7 @@ import com.italankin.lnch.feature.settings_item.ItemLookActivity;
 import com.italankin.lnch.util.IntentUtils;
 
 public class SettingsRootFragment extends PreferenceFragmentCompat {
+
     private Callbacks callbacks;
 
     @Override
@@ -52,7 +53,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
             }
             return true;
         });
-        findPreference(R.string.key_search_behavior).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_search_settings).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showSearchPreferences();
             }
@@ -107,6 +108,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
     }
 
     public interface Callbacks {
+
         void launchEditMode();
 
         void showSearchPreferences();
