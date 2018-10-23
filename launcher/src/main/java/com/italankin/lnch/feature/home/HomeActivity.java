@@ -643,7 +643,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void animateListAppearance() {
         float endY = searchBarBehavior.isShown() ? list.getTranslationY() : 0;
-        float startY = -endY - getResources().getDimension(R.dimen.list_start_translation_y);
+        float startY = -endY - getResources().getDimension(R.dimen.list_appearance_translation_offset);
         list.setTranslationY(startY);
         list.setAlpha(0);
         ValueAnimator translationAnimator = ValueAnimator.ofFloat(startY, endY);

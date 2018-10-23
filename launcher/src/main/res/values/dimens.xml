@@ -11,5 +11,5 @@
     <dimen name="navbar_size">48dp</dimen>
     <dimen name="popup_shortcut_icon_size">32dp</dimen>
     <dimen name="popup_action_icon_size">40dp</dimen>
-    <dimen name="list_start_translation_y">128dp</dimen>
+    <dimen name="list_appearance_translation_offset">96dp</dimen>
 </resources>
