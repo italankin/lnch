@@ -10,7 +10,7 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     android:paddingTop="12dp"
-    android:shadowColor="#60000000"
+    android:shadowColor="@color/item_default_shadow_color"
     android:shadowDx="2"
     android:shadowDy="2"
     android:shadowRadius="4"

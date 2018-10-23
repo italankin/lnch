@@ -32,6 +32,10 @@ public interface Preferences {
 
     float itemShadowRadius();
 
+    void setItemShadowColor(int color);
+
+    int itemShadowColor();
+
     void setItemFont(Font font);
 
     Font itemFont();

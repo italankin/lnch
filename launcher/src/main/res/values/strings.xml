@@ -84,5 +84,6 @@
     <string name="settings_item_look_text_size">Text size</string>
     <string name="settings_item_look_text_font">Font</string>
     <string name="settings_item_look_shadow_radius">Shadow radius</string>
+    <string name="settings_item_look_shadow_color">Shadow color</string>
     <string name="settings_item_look_padding">Padding</string>
 </resources>

@@ -151,7 +151,7 @@
 
             </RelativeLayout>
 
-            <!-- Shadow -->
+            <!-- Shadow radius -->
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -159,32 +159,46 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:id="@+id/shadow_icon"
+                    android:id="@+id/shadow_radius_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_settings_shadow" />
+                    android:src="@drawable/ic_settings_shadow_radius" />
 
                 <TextView
-                    android:id="@+id/shadow_title"
+                    android:id="@+id/shadow_radius_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@id/shadow_icon"
+                    android:layout_toEndOf="@id/shadow_radius_icon"
                     android:text="@string/settings_item_look_shadow_radius"
                     android:textSize="12sp" />
 
                 <SeekBar
-                    android:id="@+id/shadow_seekbar"
+                    android:id="@+id/shadow_radius_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/shadow_title"
+                    android:layout_below="@id/shadow_radius_title"
                     android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@id/shadow_icon"
+                    android:layout_toEndOf="@id/shadow_radius_icon"
                     tools:max="16"
                     tools:progress="4" />
 
             </RelativeLayout>
+
+            <!-- Shadow color -->
+
+            <TextView
+                android:id="@+id/shadow_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:drawableStart="@drawable/ic_settings_shadow_color"
+                android:drawablePadding="16dp"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:text="@string/settings_item_look_shadow_color"
+                android:textSize="12sp" />
 
         </LinearLayout>
 

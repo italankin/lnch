@@ -10,6 +10,7 @@
     <string name="pref_item_text_size">item_text_size</string>
     <string name="pref_item_padding">item_padding</string>
     <string name="pref_item_shadow_radius">item_shadow_radius</string>
+    <string name="pref_item_shadow_color">item_shadow_color</string>
     <string name="pref_item_font">item_font</string>
     <string name="pref_search_targets">search_targets</string>
 </resources>

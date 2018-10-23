@@ -107,6 +107,17 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public void setItemShadowColor(int color) {
+        prefs.edit().putInt(context.getString(R.string.pref_item_shadow_color), color).apply();
+    }
+
+    @Override
+    public int itemShadowColor() {
+        return prefs.getInt(context.getString(R.string.pref_item_shadow_color),
+                context.getColor(R.color.item_default_shadow_color));
+    }
+
+    @Override
     public void setItemFont(Font font) {
         prefs.edit().putString(context.getString(R.string.pref_item_font), font.toString()).apply();
     }

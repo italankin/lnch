@@ -15,6 +15,7 @@ public final class UserPrefs {
         public int itemPadding;
         public float itemShadowRadius;
         public Typeface itemFont;
+        public int itemShadowColor;
 
         @Override
         public boolean equals(Object o) {
@@ -34,6 +35,9 @@ public final class UserPrefs {
             if (Float.compare(itemPrefs.itemShadowRadius, itemShadowRadius) != 0) {
                 return false;
             }
+            if (itemShadowColor != itemPrefs.itemShadowColor) {
+                return false;
+            }
             return itemFont.equals(itemPrefs.itemFont);
         }
 
@@ -43,6 +47,7 @@ public final class UserPrefs {
             result = 31 * result + itemPadding;
             result = 31 * result + (itemShadowRadius != +0.0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
+            result = 31 * result + itemShadowColor;
             return result;
         }
     }
