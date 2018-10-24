@@ -68,7 +68,7 @@ public class WallpaperOverlayActivity extends AppActivity {
         itemPreview.setPadding(padding, padding, padding, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
         itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
-                itemPreview.getShadowDy(), itemPreview.getShadowColor());
+                itemPreview.getShadowDy(), preferences.itemShadowColor());
         itemPreview.setTypeface(preferences.itemFont().typeface());
     }
 
