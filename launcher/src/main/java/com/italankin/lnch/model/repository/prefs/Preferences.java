@@ -1,6 +1,8 @@
 package com.italankin.lnch.model.repository.prefs;
 
 import android.graphics.Typeface;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
 
 import java.util.EnumSet;
 
@@ -10,7 +12,7 @@ public interface Preferences {
 
     HomeLayout homeLayout();
 
-    void setOverlayColor(int color);
+    void setOverlayColor(@ColorInt int color);
 
     int overlayColor();
 
@@ -20,20 +22,23 @@ public interface Preferences {
 
     EnumSet<SearchTarget> searchTargets();
 
-    void setItemTextSize(float size);
+    void setItemTextSize(@Dimension float size);
 
+    @Dimension
     float itemTextSize();
 
-    void setItemPadding(int padding);
+    void setItemPadding(@Dimension int padding);
 
+    @Dimension
     int itemPadding();
 
     void setItemShadowRadius(float radius);
 
     float itemShadowRadius();
 
-    void setItemShadowColor(int color);
+    void setItemShadowColor(@ColorInt int color);
 
+    @ColorInt
     int itemShadowColor();
 
     void setItemFont(Font font);
@@ -41,6 +46,23 @@ public interface Preferences {
     Font itemFont();
 
     void resetItemSettings();
+
+    interface Constraints {
+        int ITEM_TEXT_SIZE_MIN = 12;
+        int ITEM_TEXT_SIZE_MAX = 40;
+        int ITEM_PADDING_MIN = 4;
+        int ITEM_PADDING_MAX = 28;
+        int ITEM_SHADOW_RADIUS_MIN = 0;
+        int ITEM_SHADOW_RADIUS_MAX = 16;
+    }
+
+    interface Defaults {
+        @Dimension
+        int ITEM_PADDING = 16;
+        @Dimension
+        float ITEM_TEXT_SIZE = 22;
+        float ITEM_SHADOW_RADIUS = 4;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Enums

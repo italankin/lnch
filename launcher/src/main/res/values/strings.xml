@@ -86,4 +86,10 @@
     <string name="settings_item_look_shadow_radius">Shadow radius</string>
     <string name="settings_item_look_shadow_color">Shadow color</string>
     <string name="settings_item_look_padding">Padding</string>
+    <string-array name="settings_item_look_text_font_titles">
+        <item>Default</item>
+        <item>Sans Serif</item>
+        <item>Serif</item>
+        <item>Monospace</item>
+    </string-array>
 </resources>

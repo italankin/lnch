@@ -12,4 +12,5 @@
     <dimen name="popup_shortcut_icon_size">32dp</dimen>
     <dimen name="popup_action_icon_size">40dp</dimen>
     <dimen name="list_appearance_translation_offset">96dp</dimen>
+    <dimen name="pref_view_padding">16dp</dimen>
 </resources>

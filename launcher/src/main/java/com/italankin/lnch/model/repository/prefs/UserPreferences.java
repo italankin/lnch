@@ -83,7 +83,7 @@ public class UserPreferences implements Preferences {
 
     @Override
     public float itemTextSize() {
-        return prefs.getFloat(context.getString(R.string.pref_item_text_size), 22);
+        return prefs.getFloat(context.getString(R.string.pref_item_text_size), Defaults.ITEM_TEXT_SIZE);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class UserPreferences implements Preferences {
 
     @Override
     public int itemPadding() {
-        return prefs.getInt(context.getString(R.string.pref_item_padding), 16);
+        return prefs.getInt(context.getString(R.string.pref_item_padding), Defaults.ITEM_PADDING);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class UserPreferences implements Preferences {
 
     @Override
     public float itemShadowRadius() {
-        return prefs.getFloat(context.getString(R.string.pref_item_shadow_radius), 4);
+        return prefs.getFloat(context.getString(R.string.pref_item_shadow_radius), Defaults.ITEM_SHADOW_RADIUS);
     }
 
     @Override

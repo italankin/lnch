@@ -12,15 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
+import com.italankin.lnch.util.widget.pref.SliderPrefView;
+import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
 public class ItemLookActivity extends AppActivity {
 
@@ -28,19 +30,15 @@ public class ItemLookActivity extends AppActivity {
         return new Intent(context, ItemLookActivity.class);
     }
 
-    private static final int TEXT_SIZE_MIN = 12;
-    private static final int TEXT_SIZE_MAX = 40;
-    private static final int PADDING_MIN = 4;
-    private static final int PADDING_MAX = 28;
-    private static final int SHADOW_RADIUS_MAX = 16;
-
     private Preferences preferences;
+
     private TextView preview;
-    private SeekBar paddingSeekBar;
-    private SeekBar textSizeSeekBar;
-    private SeekBar shadowRadiusSeekBar;
-    private TextView textFontValue;
-    private int fontFamily;
+
+    private SliderPrefView itemTextSize;
+    private ValuePrefView itemFont;
+    private SliderPrefView itemPadding;
+    private SliderPrefView itemShadowRadius;
+    private ValuePrefView itemShadowColor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +60,8 @@ public class ItemLookActivity extends AppActivity {
         initPadding();
         initShadowRadius();
         initShadowColor();
+
+        updatePreview();
     }
 
     @Override
@@ -109,102 +109,121 @@ public class ItemLookActivity extends AppActivity {
         preview.setText(R.string.settings_item_preview);
         preview.setAllCaps(true);
         preview.setTextColor(ContextCompat.getColor(this, R.color.accent));
-        preview.setOnClickListener(v -> {
-            ColorPickerDialog.builder(this)
-                    .setSelectedColor(preview.getCurrentTextColor())
-                    .setOnColorPickedListener(preview::setTextColor)
-                    .show();
-        });
-        preview.setTextSize(preferences.itemTextSize());
-        preview.setTypeface(preferences.itemFont().typeface());
-        setItemAppPadding(preferences.itemPadding());
-        setItemAppShadowRadius(preferences.itemShadowRadius());
-        setItemAppShadowColor(preferences.itemShadowColor());
+        preview.setOnClickListener(v -> ColorPickerDialog.builder(this)
+                .setSelectedColor(preview.getCurrentTextColor())
+                .setOnColorPickedListener(preview::setTextColor)
+                .show());
     }
 
     private void initTextSize() {
-        textSizeSeekBar = findViewById(R.id.text_size_seekbar);
-        textSizeSeekBar.setProgress((int) (preferences.itemTextSize() - TEXT_SIZE_MIN));
-        textSizeSeekBar.setMax(TEXT_SIZE_MAX - TEXT_SIZE_MIN);
-        textSizeSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
-            preview.setTextSize(TEXT_SIZE_MIN + progress);
+        itemTextSize = findViewById(R.id.item_text_size);
+        itemTextSize.setProgress((int) (preferences.itemTextSize() - Constraints.ITEM_TEXT_SIZE_MIN));
+        itemTextSize.setMax(Constraints.ITEM_TEXT_SIZE_MAX - Constraints.ITEM_TEXT_SIZE_MIN);
+        itemTextSize.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+            updatePreview();
         }));
     }
 
     private void initFont() {
-        CharSequence[] items = {"Default", "Sans Serif", "Serif", "Monospace"};
-        fontFamily = preferences.itemFont().ordinal();
-        View viewById = findViewById(R.id.text_font);
-        viewById.setOnClickListener(v -> {
+        String[] fontTitles = getResources().getStringArray(R.array.settings_item_look_text_font_titles);
+
+        itemFont = findViewById(R.id.item_font);
+        Preferences.Font font = preferences.itemFont();
+        itemFont.setValueHolder(new ValuePrefView.ValueHolder<Preferences.Font>() {
+            private Preferences.Font value;
+
+            @Override
+            public void set(Preferences.Font value) {
+                this.value = value;
+            }
+
+            @Override
+            public Preferences.Font get() {
+                return value;
+            }
+
+            @Override
+            public CharSequence getTitle() {
+                return fontTitles[value.ordinal()];
+            }
+        });
+        itemFont.setValue(font);
+        itemFont.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.settings_item_look_text_font);
-            builder.setItems(items, (dialog, which) -> {
-                preview.setTypeface(Preferences.Font.values()[which].typeface());
-                fontFamily = which;
-                textFontValue.setText(items[fontFamily]);
+            builder.setItems(fontTitles, (dialog, which) -> {
+                Preferences.Font newFont = Preferences.Font.values()[which];
+                itemFont.setValue(newFont);
+                updatePreview();
             });
             builder.show();
         });
-        textFontValue = findViewById(R.id.text_font_value);
-        textFontValue.setText(items[fontFamily]);
     }
 
     private void initPadding() {
-        paddingSeekBar = findViewById(R.id.padding_seekbar);
-        paddingSeekBar.setProgress(preferences.itemPadding() - PADDING_MIN);
-        paddingSeekBar.setMax(PADDING_MAX - PADDING_MIN);
-        paddingSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
-            setItemAppPadding(PADDING_MIN + progress);
+        itemPadding = findViewById(R.id.item_padding);
+        itemPadding.setProgress(preferences.itemPadding() - Constraints.ITEM_PADDING_MIN);
+        itemPadding.setMax(Constraints.ITEM_PADDING_MAX - Constraints.ITEM_PADDING_MIN);
+        itemPadding.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+            updatePreview();
         }));
     }
 
     private void initShadowRadius() {
-        shadowRadiusSeekBar = findViewById(R.id.shadow_radius_seekbar);
-        shadowRadiusSeekBar.setProgress((int) preferences.itemShadowRadius());
-        shadowRadiusSeekBar.setMax(SHADOW_RADIUS_MAX);
-        shadowRadiusSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
-            setItemAppShadowRadius(progress);
+        itemShadowRadius = findViewById(R.id.item_shadow_radius);
+        itemShadowRadius.setProgress((int) preferences.itemShadowRadius() - Constraints.ITEM_SHADOW_RADIUS_MIN);
+        itemShadowRadius.setMax(Constraints.ITEM_SHADOW_RADIUS_MAX - Constraints.ITEM_SHADOW_RADIUS_MIN);
+        itemShadowRadius.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+            updatePreview();
         }));
     }
 
     private void initShadowColor() {
-        findViewById(R.id.shadow_color).setOnClickListener(v -> {
+        itemShadowColor = findViewById(R.id.item_shadow_color);
+        int shadowColor = preferences.itemShadowColor();
+        itemShadowColor.setValueHolder(new ValuePrefView.ColorValueHolder());
+        itemShadowColor.setValue(shadowColor);
+        itemShadowColor.setOnClickListener(v -> {
             ColorPickerDialog.builder(this)
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(preview.getShadowColor())
-                    .setOnColorPickedListener(this::setItemAppShadowColor)
+                    .setOnColorPickedListener(color -> {
+                        itemShadowColor.setValue(color);
+                        updatePreview();
+                    })
                     .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                        setItemAppShadowColor(getColor(R.color.item_default_shadow_color));
+                        int color = getColor(R.color.item_default_shadow_color);
+                        itemShadowColor.setValue(color);
+                        updatePreview();
                     })
                     .show();
         });
     }
 
-    private void setItemAppPadding(int padding) {
+    private void updatePreview() {
+        Preferences.Font font = itemFont.getValue();
+        int textSize = Constraints.ITEM_TEXT_SIZE_MIN + itemTextSize.getProgress();
+        int padding = Constraints.ITEM_PADDING_MIN + itemPadding.getProgress();
+        int shadowRadius = itemShadowRadius.getProgress();
+        int shadowColor = itemShadowColor.getValue();
+        preview.setTypeface(font.typeface());
         int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 padding, getResources().getDisplayMetrics());
         preview.setPadding(p, p, p, p);
-    }
-
-    private void setItemAppShadowRadius(float radius) {
-        preview.setShadowLayer(radius, preview.getShadowDx(), preview.getShadowDy(),
-                preview.getShadowColor());
-    }
-
-    private void setItemAppShadowColor(int color) {
-        preview.setShadowLayer(preview.getShadowRadius(), preview.getShadowDx(),
-                preview.getShadowDy(), color);
+        preview.setTextSize(textSize);
+        preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);
     }
 
     private void save() {
-        float textSize = textSizeSeekBar.getProgress() + TEXT_SIZE_MIN;
-        int padding = paddingSeekBar.getProgress() + PADDING_MIN;
-        float shadowRadius = shadowRadiusSeekBar.getProgress();
-        int shadowColor = preview.getShadowColor();
+        float textSize = itemTextSize.getProgress() + Constraints.ITEM_TEXT_SIZE_MIN;
+        int padding = itemPadding.getProgress() + Constraints.ITEM_PADDING_MIN;
+        float shadowRadius = itemShadowRadius.getProgress();
+        int shadowColor = itemShadowColor.getValue();
+        Preferences.Font font = itemFont.getValue();
         preferences.setItemTextSize(textSize);
         preferences.setItemPadding(padding);
         preferences.setItemShadowRadius(shadowRadius);
         preferences.setItemShadowColor(shadowColor);
-        preferences.setItemFont(Preferences.Font.values()[fontFamily]);
+        preferences.setItemFont(font);
     }
 }

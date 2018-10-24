@@ -1,21 +1,27 @@
 package com.italankin.lnch.feature.home.model;
 
 import android.graphics.Typeface;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public final class UserPrefs {
     public Preferences.HomeLayout homeLayout;
+    @ColorInt
     public int overlayColor;
     public boolean showScrollbar;
     public ItemPrefs itemPrefs;
 
     public static final class ItemPrefs {
+        @Dimension
         public float itemTextSize;
+        @Dimension
         public int itemPadding;
         public float itemShadowRadius;
-        public Typeface itemFont;
+        @ColorInt
         public int itemShadowColor;
+        public Typeface itemFont;
 
         @Override
         public boolean equals(Object o) {

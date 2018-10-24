@@ -43,162 +43,40 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Text Size -->
-
-            <RelativeLayout
+            <com.italankin.lnch.util.widget.pref.SliderPrefView
+                android:id="@+id/item_text_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp">
+                app:spv_icon="@drawable/ic_settings_size"
+                app:spv_title="@string/settings_item_look_text_size" />
 
-                <ImageView
-                    android:id="@+id/text_size_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_settings_size" />
-
-                <TextView
-                    android:id="@+id/text_size_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@id/text_size_icon"
-                    android:text="@string/settings_item_look_text_size"
-                    android:textSize="12sp" />
-
-                <SeekBar
-                    android:id="@+id/text_size_seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/text_size_title"
-                    android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@id/text_size_icon"
-                    tools:max="42"
-                    tools:progress="25" />
-
-            </RelativeLayout>
-
-            <!-- Text Font -->
-
-            <RelativeLayout
-                android:id="@+id/text_font"
+            <com.italankin.lnch.util.widget.pref.ValuePrefView
+                android:id="@+id/item_font"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:padding="16dp">
+                app:tpv_icon="@drawable/ic_settings_font"
+                app:tpv_title="@string/settings_item_look_text_font" />
 
-                <ImageView
-                    android:id="@+id/text_font_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_settings_font" />
-
-                <TextView
-                    android:id="@+id/text_font_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/text_font_icon"
-                    android:text="@string/settings_item_look_text_font"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/text_font_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/text_font_title"
-                    android:layout_marginTop="8dp"
-                    android:layout_toEndOf="@id/text_font_icon"
-                    android:textColor="#888"
-                    android:textSize="12sp"
-                    tools:text="Default" />
-
-            </RelativeLayout>
-
-            <!-- Padding -->
-
-            <RelativeLayout
+            <com.italankin.lnch.util.widget.pref.SliderPrefView
+                android:id="@+id/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp">
+                app:spv_icon="@drawable/ic_settings_padding"
+                app:spv_title="@string/settings_item_look_padding" />
 
-                <ImageView
-                    android:id="@+id/padding_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_settings_padding" />
-
-                <TextView
-                    android:id="@+id/padding_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@id/padding_icon"
-                    android:text="@string/settings_item_look_padding"
-                    android:textSize="12sp" />
-
-                <SeekBar
-                    android:id="@+id/padding_seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/padding_title"
-                    android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@id/padding_icon"
-                    tools:max="32"
-                    tools:progress="8" />
-
-            </RelativeLayout>
-
-            <!-- Shadow radius -->
-
-            <RelativeLayout
+            <com.italankin.lnch.util.widget.pref.SliderPrefView
+                android:id="@+id/item_shadow_radius"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp">
+                app:spv_icon="@drawable/ic_settings_shadow_radius"
+                app:spv_title="@string/settings_item_look_shadow_radius" />
 
-                <ImageView
-                    android:id="@+id/shadow_radius_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_settings_shadow_radius" />
-
-                <TextView
-                    android:id="@+id/shadow_radius_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@id/shadow_radius_icon"
-                    android:text="@string/settings_item_look_shadow_radius"
-                    android:textSize="12sp" />
-
-                <SeekBar
-                    android:id="@+id/shadow_radius_seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/shadow_radius_title"
-                    android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@id/shadow_radius_icon"
-                    tools:max="16"
-                    tools:progress="4" />
-
-            </RelativeLayout>
-
-            <!-- Shadow color -->
-
-            <TextView
-                android:id="@+id/shadow_color"
+            <com.italankin.lnch.util.widget.pref.ValuePrefView
+                android:id="@+id/item_shadow_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:drawableStart="@drawable/ic_settings_shadow_color"
-                android:drawablePadding="16dp"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="@string/settings_item_look_shadow_color"
-                android:textSize="12sp" />
+                app:tpv_icon="@drawable/ic_settings_shadow_color"
+                app:tpv_title="@string/settings_item_look_shadow_color" />
 
         </LinearLayout>
 
