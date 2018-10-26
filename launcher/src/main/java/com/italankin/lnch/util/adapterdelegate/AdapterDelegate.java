@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 /**
  * Interface for adapter delegate.
  *
@@ -37,6 +39,17 @@ public interface AdapterDelegate<VH extends RecyclerView.ViewHolder, T> {
      * @see RecyclerView.Adapter#onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     void onBind(VH holder, int position, T item);
+
+    /**
+     * Bind {@code holder} to the {@code item}.
+     *
+     * @param holder   view holder
+     * @param position position of {@code item}
+     * @param item     item
+     * @param payloads optional payloads
+     * @see RecyclerView.Adapter#onBindViewHolder(RecyclerView.ViewHolder, int, List)
+     */
+    void onBind(VH holder, int position, T item, List<Object> payloads);
 
     /**
      * Called when {@code holder} gets {@link RecyclerView.Adapter#onViewRecycled(RecyclerView.ViewHolder) recycled}.

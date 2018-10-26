@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 /**
  * Basic implementation of {@link AdapterDelegate}.
  *
@@ -44,6 +46,11 @@ public abstract class BaseAdapterDelegate<VH extends RecyclerView.ViewHolder, T>
     public VH onCreate(LayoutInflater inflater, ViewGroup parent) {
         View view = inflater.inflate(getLayoutRes(), parent, false);
         return createViewHolder(view);
+    }
+
+    @Override
+    public void onBind(VH holder, int position, T item, List<Object> payloads) {
+        onBind(holder, position, item);
     }
 
     @Override

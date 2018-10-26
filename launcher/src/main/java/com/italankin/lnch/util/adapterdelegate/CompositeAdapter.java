@@ -84,6 +84,11 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        getDelegate(position).onBind(holder, position, getItem(position), payloads);
+    }
+
+    @Override
     public int getItemViewType(int position) {
         T item = getItem(position);
         for (int i = 0, s = delegates.size(); i < s; i++) {
