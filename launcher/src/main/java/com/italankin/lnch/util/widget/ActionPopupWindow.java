@@ -98,6 +98,7 @@ public class ActionPopupWindow extends PopupWindow {
         } else if (item.iconUri != null) {
             ViewUtils.onGlobalLayout(imageView, () -> picasso.load(item.iconUri)
                     .resizeDimen(R.dimen.popup_action_icon_size, R.dimen.popup_action_icon_size)
+                    .centerInside()
                     .into(imageView));
         }
         if (item.onClickListener != null) {
@@ -124,6 +125,7 @@ public class ActionPopupWindow extends PopupWindow {
         } else if (item.iconUri != null) {
             ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
                     .resizeDimen(R.dimen.popup_shortcut_icon_size, R.dimen.popup_shortcut_icon_size)
+                    .centerInside()
                     .into(iconView));
         }
         if (item.onClickListener != null) {
