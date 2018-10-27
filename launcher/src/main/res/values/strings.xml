@@ -25,7 +25,7 @@
     <string name="popup_delete_message">Delete \'%1$s\'? This operation cannot be undone</string>
     <string name="popup_delete_action">Delete</string>
 
-    <string name="customize_snackbar_hint">Customize</string>
+    <string name="customize_hint">Customize</string>
     <string name="customize_save">Save</string>
     <string name="customize_saved">Saved</string>
     <string name="customize_discard_message">Discard changes?</string>

@@ -17,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -53,6 +52,7 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.util.TopBarBehavior;
+import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings_root.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -115,7 +115,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
     private Preferences.HomeLayout layout;
-    private Snackbar editModeSnackbar;
+    private EditModePanel editModePanel;
     private PopupWindow popupWindow;
     private HomeAdapter adapter;
 
@@ -214,6 +214,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (requestCode == REQUEST_CODE_SETTINGS) {
             switch (resultCode) {
                 case SettingsActivity.RESULT_EDIT_MODE:
+                    animateOnResume = false;
                     presenter.startCustomize();
                     return;
                 default:
@@ -714,19 +715,21 @@ public class HomeActivity extends AppActivity implements HomeView,
         animations.playTogether(translationAnimator, alphaAnimator);
         animations.setInterpolator(new DecelerateInterpolator(3));
         animations.setDuration(ANIM_LIST_APPEARANCE_DURATION);
-        animations.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                searchBarBehavior.setEnabled(true);
-            }
+        if (searchBarBehavior.isEnabled()) {
+            animations.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    searchBarBehavior.setEnabled(true);
+                }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                searchBarBehavior.setEnabled(true);
-            }
-        });
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    searchBarBehavior.setEnabled(true);
+                }
+            });
+            searchBarBehavior.setEnabled(false);
+        }
         animations.start();
-        searchBarBehavior.setEnabled(false);
     }
 
     private void setEditMode(boolean value) {
@@ -735,21 +738,20 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
         editMode = value;
         searchBarBehavior.hide();
-        searchBarBehavior.setEnabled(!editMode);
-        if (editMode) {
+        searchBarBehavior.setEnabled(!value);
+        if (value) {
             inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-            editModeSnackbar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.customize_snackbar_hint,
-                    Snackbar.LENGTH_INDEFINITE);
-            editModeSnackbar.setAction(R.string.customize_save, v -> {
-                if (editModeSnackbar != null && editModeSnackbar.isShownOrQueued()) {
-                    presenter.stopCustomize();
-                }
-            });
-            editModeSnackbar.show();
-        } else if (editModeSnackbar != null) {
-            editModeSnackbar.dismiss();
-            editModeSnackbar = null;
+            editModePanel = new EditModePanel(this)
+                    .setMessage(R.string.customize_hint)
+                    .setOnSaveActionClickListener(v -> {
+                        if (editModePanel != null && editModePanel.isShown()) {
+                            presenter.stopCustomize();
+                        }
+                    })
+                    .show(findViewById(R.id.coordinator));
+        } else if (editModePanel != null) {
+            editModePanel.dismiss();
+            editModePanel = null;
         }
     }
 

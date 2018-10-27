@@ -161,6 +161,10 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         return shown;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
