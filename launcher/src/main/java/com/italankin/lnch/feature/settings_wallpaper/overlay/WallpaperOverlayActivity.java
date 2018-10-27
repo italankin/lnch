@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
@@ -63,8 +63,7 @@ public class WallpaperOverlayActivity extends AppActivity {
                     .show();
         });
 
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                preferences.itemPadding(), getResources().getDisplayMetrics());
+        int padding = ResUtils.px2dp(this, preferences.itemPadding());
         itemPreview.setPadding(padding, padding, padding, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
         itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),

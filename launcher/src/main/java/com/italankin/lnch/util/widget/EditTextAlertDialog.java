@@ -2,14 +2,14 @@ package com.italankin.lnch.util.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
-import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import com.italankin.lnch.util.ResUtils;
 
 public final class EditTextAlertDialog {
 
@@ -70,8 +70,7 @@ public final class EditTextAlertDialog {
 
         public AlertDialog build() {
             LinearLayout layout = new LinearLayout(builder.getContext());
-            int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,
-                    Resources.getSystem().getDisplayMetrics());
+            int p = ResUtils.px2dp(builder.getContext(), 16);
             layout.setPadding(p, p, p, p);
             layout.addView(editText, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

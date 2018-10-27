@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +17,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
+import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
@@ -207,8 +207,7 @@ public class ItemLookActivity extends AppActivity {
         int shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
         preview.setTypeface(font.typeface());
-        int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                padding, getResources().getDisplayMetrics());
+        int p = ResUtils.px2dp(this, padding);
         preview.setPadding(p, p, p, p);
         preview.setTextSize(textSize);
         preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);

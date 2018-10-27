@@ -18,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.StringRes;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +29,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.squareup.picasso.Picasso;
 
@@ -77,8 +77,7 @@ public class ActionPopupWindow extends PopupWindow {
             @Override
             public void getOutline(View view, Outline outline) {
                 boolean arrowBottom = ((ViewGroup) view).getChildAt(0) == popupContainer;
-                float radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
-                        view.getResources().getDisplayMetrics());
+                float radius = ResUtils.px2dp(view.getContext(), 8);
                 Rect rect = new Rect(view.getPaddingLeft(),
                         0,
                         view.getWidth() - view.getPaddingRight(),
