@@ -74,10 +74,10 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
         if (listener != null) {
             convertView.setOnClickListener(v -> {
-                listener.onItemClick(position, item);
+                listener.onSearchItemClick(position, item);
             });
             convertView.setOnLongClickListener(v -> {
-                listener.onItemLongClick(position, item);
+                listener.onSearchItemLongClick(position, item);
                 return true;
             });
         }
@@ -101,9 +101,9 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     }
 
     public interface Listener {
-        void onItemClick(int position, Match match);
+        void onSearchItemClick(int position, Match match);
 
-        void onItemLongClick(int position, Match match);
+        void onSearchItemLongClick(int position, Match match);
     }
 
     class SearchFilter extends Filter {

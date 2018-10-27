@@ -269,12 +269,12 @@ public class HomeActivity extends AppActivity implements HomeView,
         });
         SearchAdapter.Listener listener = new SearchAdapter.Listener() {
             @Override
-            public void onItemClick(int position, Match match) {
+            public void onSearchItemClick(int position, Match match) {
                 onFireSearch(position);
             }
 
             @Override
-            public void onItemLongClick(int position, Match match) {
+            public void onSearchItemLongClick(int position, Match match) {
                 Descriptor descriptor = match.getDescriptor();
                 String packageName = null;
                 if (descriptor instanceof AppDescriptor) {
