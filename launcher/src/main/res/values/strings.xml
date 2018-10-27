@@ -19,10 +19,10 @@
     <string name="color_picker_edit_value_title">Enter value</string>
     <string name="color_picker_edit_value_hint">Value from %1$d to %2$d</string>
 
-    <string name="deep_shortcut_pinned">\'%1$s\' pinned</string>
+    <string name="deep_shortcut_pinned">\"%1$s\" pinned</string>
 
-    <string name="popup_delete_title">Delete item</string>
-    <string name="popup_delete_message">Delete \'%1$s\'? This operation cannot be undone</string>
+    <string name="popup_delete_title">Delete</string>
+    <string name="popup_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
     <string name="popup_delete_action">Delete</string>
 
     <string name="customize_hint">Customize</string>
