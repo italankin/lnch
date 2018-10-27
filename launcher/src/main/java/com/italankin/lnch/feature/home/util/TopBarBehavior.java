@@ -7,6 +7,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 
+import com.italankin.lnch.R;
+
 public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 160;
@@ -24,10 +26,10 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private final Listener listener;
 
-    public TopBarBehavior(View topView, View bottomView, int maxOffset, Listener listener) {
+    public TopBarBehavior(View topView, View bottomView, Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
-        this.maxOffset = maxOffset;
+        this.maxOffset = topView.getResources().getDimensionPixelSize(R.dimen.searchbar_size);
         this.listener = listener;
 
         setupInitialState();

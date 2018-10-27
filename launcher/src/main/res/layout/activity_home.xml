@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.italankin.lnch.util.widget.LceLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -42,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#0000"
+                android:completionThreshold="1"
                 android:hint="@string/hint_search"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textAutoComplete"
@@ -70,6 +72,7 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:visibility="invisible"
+            app:layout_behavior="com.italankin.lnch.feature.home.util.AppsListBehavior"
             tools:layoutManager="android.support.v7.widget.GridLayoutManager"
             tools:listitem="@layout/item_app"
             tools:spanCount="2"

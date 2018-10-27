@@ -241,8 +241,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setupSearchBar() {
-        int maxOffset = getResources().getDimensionPixelSize(R.dimen.searchbar_size);
-        searchBarBehavior = new TopBarBehavior(searchBar, list, maxOffset, new TopBarBehavior.Listener() {
+        searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
                 if (preferences.searchShowSoftKeyboard()) {
@@ -269,7 +268,6 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
             return true;
         });
-        editSearch.setThreshold(1);
         MainComponent mainComponent = daggerService().main();
         SearchAdapter.Listener listener = new SearchAdapter.Listener() {
             @Override
@@ -739,6 +737,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
+            inputMethodManager.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
             editModeSnackbar = Snackbar.make(findViewById(R.id.coordinator),
                     R.string.customize_snackbar_hint,
                     Snackbar.LENGTH_INDEFINITE);
@@ -748,9 +747,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 }
             });
             editModeSnackbar.show();
-            list.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.snackbar_size));
         } else {
-            list.setPadding(0, 0, 0, 0);
             if (editModeSnackbar != null) {
                 editModeSnackbar.dismiss();
                 editModeSnackbar = null;

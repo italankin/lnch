@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="progress_indicator_size">48dp</dimen>
-    <dimen name="snackbar_size">48dp</dimen>
     <dimen name="color_picker_preview_size">128dp</dimen>
     <dimen name="searchbar_size">56dp</dimen>
     <dimen name="backdrop_grid_size">12dp</dimen>
