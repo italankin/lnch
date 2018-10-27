@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.home.model;
 
 import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
-import android.support.annotation.Dimension;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
@@ -15,9 +14,7 @@ public final class UserPrefs {
     public boolean globalSearch;
 
     public static final class ItemPrefs {
-        @Dimension
         public float itemTextSize;
-        @Dimension
         public int itemPadding;
         public float itemShadowRadius;
         @ColorInt

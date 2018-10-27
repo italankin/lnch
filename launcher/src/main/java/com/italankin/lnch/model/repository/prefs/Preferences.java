@@ -2,7 +2,6 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
-import android.support.annotation.Dimension;
 
 import java.util.EnumSet;
 
@@ -24,14 +23,12 @@ public interface Preferences {
 
     EnumSet<SearchTarget> searchTargets();
 
-    void setItemTextSize(@Dimension float size);
+    void setItemTextSize(float size);
 
-    @Dimension
     float itemTextSize();
 
-    void setItemPadding(@Dimension int padding);
+    void setItemPadding(int padding);
 
-    @Dimension
     int itemPadding();
 
     void setItemShadowRadius(float radius);
@@ -59,9 +56,7 @@ public interface Preferences {
     }
 
     interface Defaults {
-        @Dimension
         int ITEM_PADDING = 16;
-        @Dimension
         float ITEM_TEXT_SIZE = 22;
         float ITEM_SHADOW_RADIUS = 4;
     }
