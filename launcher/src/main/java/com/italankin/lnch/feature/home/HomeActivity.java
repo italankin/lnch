@@ -41,7 +41,6 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.MainComponent;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
@@ -268,7 +267,6 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
             return true;
         });
-        MainComponent mainComponent = daggerService().main();
         SearchAdapter.Listener listener = new SearchAdapter.Listener() {
             @Override
             public void onItemClick(int position, Match match) {
@@ -295,7 +293,8 @@ public class HomeActivity extends AppActivity implements HomeView,
                 searchBarBehavior.hide();
             }
         };
-        editSearch.setAdapter(new SearchAdapter(picasso, mainComponent.getSearchRepository(), listener));
+        editSearch.setAdapter(new SearchAdapter(picasso,
+                daggerService().main().getSearchRepository(), listener));
 
         btnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
@@ -747,11 +746,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                 }
             });
             editModeSnackbar.show();
-        } else {
-            if (editModeSnackbar != null) {
-                editModeSnackbar.dismiss();
-                editModeSnackbar = null;
-            }
+        } else if (editModeSnackbar != null) {
+            editModeSnackbar.dismiss();
+            editModeSnackbar = null;
         }
     }
 
