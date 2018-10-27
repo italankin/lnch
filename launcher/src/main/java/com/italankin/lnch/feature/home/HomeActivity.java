@@ -224,127 +224,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void setupWindow() {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
-                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
-    }
-
-    private void setupList() {
-        touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
-        touchHelper.attachToRecyclerView(list);
-    }
-
-    private void setupRoot() {
-        root.setBackgroundColor(preferences.overlayColor());
-        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-    }
-
-    private void setupSearchBar() {
-        searchBarBehavior = new TopBarBehavior(searchContainer, list, new TopBarBehavior.Listener() {
-            @Override
-            public void onShow() {
-                if (preferences.searchShowSoftKeyboard()) {
-                    searchEditText.requestFocus();
-                }
-                inputMethodManager.showSoftInput(searchEditText, 0);
-            }
-
-            @Override
-            public void onHide() {
-                searchEditText.setText("");
-                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-                searchEditText.clearFocus();
-            }
-        });
-        searchBarBehavior.setEnabled(!editMode);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchContainer.getLayoutParams();
-        lp.setBehavior(searchBarBehavior);
-        searchContainer.setLayoutParams(lp);
-
-        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO) {
-                onFireSearch(0);
-            }
-            return true;
-        });
-        SearchAdapter.Listener listener = new SearchAdapter.Listener() {
-            @Override
-            public void onSearchItemClick(int position, Match match) {
-                onFireSearch(position);
-            }
-
-            @Override
-            public void onSearchItemLongClick(int position, Match match) {
-                Descriptor descriptor = match.getDescriptor();
-                String packageName = null;
-                if (descriptor instanceof AppDescriptor) {
-                    packageName = ((AppDescriptor) descriptor).packageName;
-                } else if (descriptor instanceof DeepShortcutDescriptor) {
-                    packageName = ((DeepShortcutDescriptor) descriptor).packageName;
-                }
-                if (packageName == null) {
-                    return;
-                }
-                Intent intent = IntentUtils.getPackageSystemSettings(packageName);
-                if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
-                    showError(R.string.error);
-                    return;
-                }
-                searchBarBehavior.hide();
-            }
-        };
-        searchEditText.setAdapter(new SearchAdapter(picasso,
-                daggerService().main().getSearchRepository(), listener));
-
-        searchBtnSettings.setOnClickListener(v -> {
-            searchBarBehavior.hide();
-            Intent intent = SettingsActivity.getStartIntent(this);
-            startActivityForResult(intent, REQUEST_CODE_SETTINGS);
-        });
-        searchBtnSettings.setOnLongClickListener(v -> {
-            presenter.startCustomize();
-            return true;
-        });
-
-        if (preferences.searchShowGlobal()) {
-            setupGlobalSearchButton();
-        }
-    }
-
-    private void setupGlobalSearchButton() {
-        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        if (searchManager != null) {
-            ComponentName searchActivity = searchManager.getGlobalSearchActivity();
-            if (searchActivity == null) {
-                return;
-            }
-            try {
-                ActivityInfo activityInfo = packageManager.getActivityInfo(searchActivity, 0);
-                if (activityInfo == null || !activityInfo.exported) {
-                    return;
-                }
-            } catch (PackageManager.NameNotFoundException ignored) {
-                return;
-            }
-            searchBtnGlobal.setVisibility(View.VISIBLE);
-            searchBtnGlobal.setOnClickListener(v -> {
-                Intent intent = new Intent().setComponent(searchActivity);
-                if (IntentUtils.safeStartActivity(this, intent)) {
-                    searchBarBehavior.hide();
-                } else {
-                    showError(R.string.error);
-                }
-            });
-            searchEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.searchbar_size),
-                    searchEditText.getPaddingTop(), searchEditText.getPaddingRight(),
-                    searchEditText.getPaddingBottom());
-            picasso.load(PackageManagerRequestHandler.uriFrom(searchActivity.getPackageName()))
-                    .error(R.drawable.ic_action_search)
-                    .into(searchBtnGlobal);
-        }
-    }
-
     @Override
     public void showProgress() {
         root.showLoading();
@@ -586,17 +465,137 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Private
+    // Setup
     ///////////////////////////////////////////////////////////////////////////
 
-    private boolean dismissPopup() {
-        if (popupWindow != null && popupWindow.isShowing()) {
-            popupWindow.dismiss();
-            popupWindow = null;
-            return true;
-        }
-        return false;
+    private void setupWindow() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
+                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
     }
+
+    private void setupList() {
+        touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
+        touchHelper.attachToRecyclerView(list);
+    }
+
+    private void setupRoot() {
+        root.setBackgroundColor(preferences.overlayColor());
+        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    }
+
+    private void setupSearchBar() {
+        searchBarBehavior = new TopBarBehavior(searchContainer, list, new TopBarBehavior.Listener() {
+            @Override
+            public void onShow() {
+                if (preferences.searchShowSoftKeyboard()) {
+                    searchEditText.requestFocus();
+                }
+                inputMethodManager.showSoftInput(searchEditText, 0);
+            }
+
+            @Override
+            public void onHide() {
+                searchEditText.setText("");
+                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+                searchEditText.clearFocus();
+            }
+        });
+        searchBarBehavior.setEnabled(!editMode);
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchContainer.getLayoutParams();
+        lp.setBehavior(searchBarBehavior);
+        searchContainer.setLayoutParams(lp);
+
+        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                onFireSearch(0);
+            }
+            return true;
+        });
+        SearchAdapter.Listener listener = new SearchAdapter.Listener() {
+            @Override
+            public void onSearchItemClick(int position, Match match) {
+                onFireSearch(position);
+            }
+
+            @Override
+            public void onSearchItemLongClick(int position, Match match) {
+                Descriptor descriptor = match.getDescriptor();
+                String packageName = null;
+                if (descriptor instanceof AppDescriptor) {
+                    packageName = ((AppDescriptor) descriptor).packageName;
+                } else if (descriptor instanceof DeepShortcutDescriptor) {
+                    packageName = ((DeepShortcutDescriptor) descriptor).packageName;
+                }
+                if (packageName == null) {
+                    return;
+                }
+                Intent intent = IntentUtils.getPackageSystemSettings(packageName);
+                if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
+                    showError(R.string.error);
+                    return;
+                }
+                searchBarBehavior.hide();
+            }
+        };
+        searchEditText.setAdapter(new SearchAdapter(picasso,
+                daggerService().main().getSearchRepository(), listener));
+
+        searchBtnSettings.setOnClickListener(v -> {
+            searchBarBehavior.hide();
+            Intent intent = SettingsActivity.getStartIntent(this);
+            startActivityForResult(intent, REQUEST_CODE_SETTINGS);
+        });
+        searchBtnSettings.setOnLongClickListener(v -> {
+            presenter.startCustomize();
+            return true;
+        });
+
+        if (preferences.searchShowGlobal()) {
+            setupGlobalSearchButton();
+        }
+    }
+
+    private void setupGlobalSearchButton() {
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        if (searchManager != null) {
+            ComponentName searchActivity = searchManager.getGlobalSearchActivity();
+            if (searchActivity == null) {
+                return;
+            }
+            try {
+                ActivityInfo activityInfo = packageManager.getActivityInfo(searchActivity, 0);
+                if (activityInfo == null || !activityInfo.exported) {
+                    return;
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {
+                return;
+            }
+            searchBtnGlobal.setVisibility(View.VISIBLE);
+            searchBtnGlobal.setOnClickListener(v -> {
+                Intent intent = new Intent().setComponent(searchActivity);
+                if (IntentUtils.safeStartActivity(this, intent)) {
+                    searchBarBehavior.hide();
+                } else {
+                    showError(R.string.error);
+                }
+            });
+            searchBtnGlobal.setOnLongClickListener(v -> {
+                startAppSettings(searchActivity.getPackageName());
+                return true;
+            });
+            searchEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.searchbar_size),
+                    searchEditText.getPaddingTop(), searchEditText.getPaddingRight(),
+                    searchEditText.getPaddingBottom());
+            picasso.load(PackageManagerRequestHandler.uriFrom(searchActivity.getPackageName()))
+                    .error(R.drawable.ic_action_search)
+                    .into(searchBtnGlobal);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Start
+    ///////////////////////////////////////////////////////////////////////////
 
     private void startApp(AppViewModel item) {
         searchBarBehavior.hide();
@@ -633,6 +632,10 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Errors
+    ///////////////////////////////////////////////////////////////////////////
+
     private void showErrorToast(CharSequence message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -640,6 +643,10 @@ public class HomeActivity extends AppActivity implements HomeView,
     private void showError(@StringRes int message) {
         showErrorToast(getText(message));
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Other
+    ///////////////////////////////////////////////////////////////////////////
 
     private void startDrag(int position) {
         View view = list.getLayoutManager().findViewByPosition(position);
@@ -656,6 +663,25 @@ public class HomeActivity extends AppActivity implements HomeView,
             searchEditText.setPadding(ResUtils.px2dp(this, 16), searchEditText.getPaddingTop(),
                     searchEditText.getPaddingRight(), searchEditText.getPaddingBottom());
             searchBtnGlobal.setVisibility(View.GONE);
+        }
+    }
+
+    private void setLayout(Preferences.HomeLayout layout) {
+        if (layout != this.layout) {
+            this.layout = layout;
+            RecyclerView.LayoutManager layoutManager;
+            switch (layout) {
+                case LINEAR:
+                    layoutManager = new LinearLayoutManager(this);
+                    break;
+                case COMPACT:
+                default:
+                    FlexboxLayoutManager lm = new FlexboxLayoutManager(this);
+                    lm.setFlexDirection(FlexDirection.ROW);
+                    lm.setAlignItems(AlignItems.FLEX_START);
+                    layoutManager = lm;
+            }
+            list.setLayoutManager(layoutManager);
         }
     }
 
@@ -755,26 +781,6 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
-    private void setLayout(Preferences.HomeLayout layout) {
-        if (layout != this.layout) {
-            this.layout = layout;
-            list.setLayoutManager(getLayoutManager(layout));
-        }
-    }
-
-    private RecyclerView.LayoutManager getLayoutManager(Preferences.HomeLayout layout) {
-        switch (layout) {
-            case LINEAR:
-                return new LinearLayoutManager(this);
-            case COMPACT:
-            default:
-                FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-                layoutManager.setFlexDirection(FlexDirection.ROW);
-                layoutManager.setAlignItems(AlignItems.FLEX_START);
-                return layoutManager;
-        }
-    }
-
     private void showCustomizePopup(int position, DescriptorItem item) {
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (item instanceof HiddenItem) {
@@ -811,39 +817,6 @@ public class HomeActivity extends AppActivity implements HomeView,
             popup.addAction(new ActionPopupWindow.ItemBuilder(this)
                     .setIcon(R.drawable.ic_action_delete)
                     .setOnClickListener(v -> presenter.removeItem(position, item))
-            );
-        }
-        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        showPopupWindow(popup, itemView);
-    }
-
-    private void showItemPopup(int position, DescriptorItem item) {
-        ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
-        if (item instanceof DeepShortcutViewModel) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
-                    .setIcon(R.drawable.ic_app_info)
-                    .setLabel(R.string.popup_app_info)
-                    .setOnClickListener(v -> {
-                        startAppSettings(((DeepShortcutViewModel) item).packageName);
-                    })
-            );
-        }
-        if (item instanceof RemovableItem) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
-                    .setIcon(R.drawable.ic_action_delete)
-                    .setLabel(R.string.customize_item_delete)
-                    .setOnClickListener(v -> {
-                        String visibleLabel = ((CustomLabelItem) item).getVisibleLabel();
-                        String message = getString(R.string.popup_delete_message, visibleLabel);
-                        new AlertDialog.Builder(this)
-                                .setTitle(R.string.popup_delete_title)
-                                .setMessage(message)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
-                                    presenter.removeItemImmediate(position, item);
-                                })
-                                .show();
-                    })
             );
         }
         View itemView = list.findViewHolderForAdapterPosition(position).itemView;
@@ -889,6 +862,43 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .show();
     }
 
+    private void showItemPopup(int position, DescriptorItem item) {
+        ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
+        if (item instanceof DeepShortcutViewModel) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_app_info)
+                    .setLabel(R.string.popup_app_info)
+                    .setOnClickListener(v -> {
+                        startAppSettings(((DeepShortcutViewModel) item).packageName);
+                    })
+            );
+        }
+        if (item instanceof RemovableItem) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
+                    .setIcon(R.drawable.ic_action_delete)
+                    .setLabel(R.string.customize_item_delete)
+                    .setOnClickListener(v -> {
+                        String visibleLabel = ((CustomLabelItem) item).getVisibleLabel();
+                        String message = getString(R.string.popup_delete_message, visibleLabel);
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.popup_delete_title)
+                                .setMessage(message)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
+                                    presenter.removeItemImmediate(position, item);
+                                })
+                                .show();
+                    })
+            );
+        }
+        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
+        showPopupWindow(popup, itemView);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Popup
+    ///////////////////////////////////////////////////////////////////////////
+
     private void showPopupWindow(ActionPopupWindow popup, View anchor) {
         dismissPopup();
         list.setLayoutFrozen(true);
@@ -903,6 +913,15 @@ public class HomeActivity extends AppActivity implements HomeView,
         int navBarSize = res.getDimensionPixelSize(R.dimen.navbar_size);
         DisplayMetrics dm = res.getDisplayMetrics();
         return new Rect(0, statusBarSize, dm.widthPixels, dm.heightPixels - navBarSize);
+    }
+
+    private boolean dismissPopup() {
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+            popupWindow = null;
+            return true;
+        }
+        return false;
     }
 }
 
