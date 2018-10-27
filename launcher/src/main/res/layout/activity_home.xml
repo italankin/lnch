@@ -16,7 +16,7 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/searchbar_size"
@@ -26,17 +26,27 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <ImageView
+                android:id="@+id/global_search"
+                android:layout_width="@dimen/searchbar_size"
+                android:layout_height="@dimen/searchbar_size"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:src="@drawable/ic_action_search"
+                tools:visibility="visible" />
+
             <AutoCompleteTextView
                 android:id="@+id/edit_search"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="#0000"
                 android:hint="@string/hint_search"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textAutoComplete"
-                android:paddingLeft="16dp"
                 android:paddingTop="16dp"
-                android:paddingRight="64dp"
+                android:paddingRight="16dp"
                 android:paddingBottom="16dp"
                 android:selectAllOnFocus="true" />
 
@@ -45,12 +55,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:background="?selectableItemBackground"
+                android:background="?selectableItemBackgroundBorderless"
                 android:padding="16dp"
                 android:src="@drawable/ic_settings"
                 tools:ignore="ContentDescription" />
 
-        </FrameLayout>
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list"

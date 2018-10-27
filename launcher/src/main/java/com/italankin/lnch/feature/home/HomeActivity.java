@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -29,6 +31,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -71,6 +74,8 @@ import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
+import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -96,6 +101,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private LceLayout root;
     private ViewGroup searchBar;
     private AutoCompleteTextView editSearch;
+    private ImageView globalSearchButton;
     private View btnSettings;
     private RecyclerView list;
 
@@ -136,6 +142,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBar = findViewById(R.id.search_bar);
         editSearch = findViewById(R.id.edit_search);
         btnSettings = findViewById(R.id.btn_settings);
+        globalSearchButton = findViewById(R.id.global_search);
 
         setupRoot();
         setupList();
@@ -301,6 +308,42 @@ public class HomeActivity extends AppActivity implements HomeView,
             presenter.startCustomize();
             return true;
         });
+
+        if (preferences.searchShowGlobal()) {
+            setupGlobalSearchButton();
+        }
+    }
+
+    private void setupGlobalSearchButton() {
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        if (searchManager != null) {
+            ComponentName searchActivity = searchManager.getGlobalSearchActivity();
+            if (searchActivity == null) {
+                return;
+            }
+            try {
+                ActivityInfo activityInfo = packageManager.getActivityInfo(searchActivity, 0);
+                if (activityInfo == null || !activityInfo.exported) {
+                    return;
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {
+                return;
+            }
+            globalSearchButton.setVisibility(View.VISIBLE);
+            globalSearchButton.setOnClickListener(v -> {
+                Intent intent = new Intent().setComponent(searchActivity);
+                if (IntentUtils.safeStartActivity(this, intent)) {
+                    searchBarBehavior.hide();
+                } else {
+                    showError(R.string.error);
+                }
+            });
+            editSearch.setPadding(0, editSearch.getPaddingTop(),
+                    editSearch.getPaddingRight(), editSearch.getPaddingBottom());
+            picasso.load(PackageManagerRequestHandler.uriFrom(searchActivity.getPackageName()))
+                    .error(R.drawable.ic_action_search)
+                    .into(globalSearchButton);
+        }
     }
 
     @Override
@@ -608,6 +651,13 @@ public class HomeActivity extends AppActivity implements HomeView,
         setLayout(userPrefs.homeLayout);
         root.setBackgroundColor(userPrefs.overlayColor);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
+        if (userPrefs.globalSearch && globalSearchButton.getVisibility() != View.VISIBLE) {
+            setupGlobalSearchButton();
+        } else if (!userPrefs.globalSearch && globalSearchButton.getVisibility() == View.VISIBLE) {
+            editSearch.setPadding(ResUtils.px2dp(this, 16), editSearch.getPaddingTop(),
+                    editSearch.getPaddingRight(), editSearch.getPaddingBottom());
+            globalSearchButton.setVisibility(View.GONE);
+        }
     }
 
     private void onFireSearch(int pos) {

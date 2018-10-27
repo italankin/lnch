@@ -12,6 +12,7 @@ public final class UserPrefs {
     public int overlayColor;
     public boolean showScrollbar;
     public ItemPrefs itemPrefs;
+    public boolean globalSearch;
 
     public static final class ItemPrefs {
         @Dimension

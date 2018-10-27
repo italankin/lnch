@@ -10,6 +10,8 @@ public interface Preferences {
 
     boolean searchShowSoftKeyboard();
 
+    boolean searchShowGlobal();
+
     HomeLayout homeLayout();
 
     void setOverlayColor(@ColorInt int color);

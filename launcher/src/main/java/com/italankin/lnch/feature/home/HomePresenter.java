@@ -330,6 +330,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         itemPrefs.itemFont = preferences.itemFont().typeface();
         itemPrefs.itemShadowColor = preferences.itemShadowColor();
         userPrefs.itemPrefs = itemPrefs;
+        userPrefs.globalSearch = preferences.searchShowGlobal();
         return userPrefs;
     }
 

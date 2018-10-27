@@ -30,6 +30,11 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public boolean searchShowGlobal() {
+        return prefs.getBoolean(context.getString(R.string.pref_search_show_global_search), true);
+    }
+
+    @Override
     public HomeLayout homeLayout() {
         String pref = prefs.getString(context.getString(R.string.pref_home_layout), null);
         return HomeLayout.from(pref);

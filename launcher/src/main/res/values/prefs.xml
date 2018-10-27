@@ -2,6 +2,7 @@
 <resources>
     <!-- actual prefs which are stored on disk -->
     <string name="pref_search_show_soft_keyboard">search_show_soft_keyboard</string>
+    <string name="pref_search_show_global_search">search_show_global_search</string>
     <string name="pref_search_use_custom_tabs">search_use_custom_tabs</string>
     <string name="pref_wallpaper_overlay_show">wallpaper_overlay_show</string>
     <string name="pref_wallpaper_overlay_color">wallpaper_overlay_color</string>
