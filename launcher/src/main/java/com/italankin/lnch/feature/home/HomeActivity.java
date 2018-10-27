@@ -687,6 +687,10 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private void onFireSearch(int pos) {
         if (searchEditText.getText().length() > 0) {
+            if (!searchEditText.isPopupShowing()) {
+                searchEditText.showDropDown();
+                return;
+            }
             SearchAdapter adapter = (SearchAdapter) searchEditText.getAdapter();
             if (adapter.getCount() > 0) {
                 Match item = adapter.getItem(pos);
