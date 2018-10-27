@@ -98,10 +98,10 @@ public class HomeActivity extends AppActivity implements HomeView,
     HomePresenter presenter;
 
     private LceLayout root;
-    private ViewGroup searchBar;
-    private AutoCompleteTextView editSearch;
-    private ImageView globalSearchButton;
-    private View btnSettings;
+    private ViewGroup searchContainer;
+    private AutoCompleteTextView searchEditText;
+    private ImageView searchBtnGlobal;
+    private View searchBtnSettings;
     private RecyclerView list;
 
     private InputMethodManager inputMethodManager;
@@ -125,8 +125,8 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         packageManager = getPackageManager();
@@ -138,16 +138,16 @@ public class HomeActivity extends AppActivity implements HomeView,
         setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
         list = findViewById(R.id.list);
-        searchBar = findViewById(R.id.search_bar);
-        editSearch = findViewById(R.id.edit_search);
-        btnSettings = findViewById(R.id.btn_settings);
-        globalSearchButton = findViewById(R.id.global_search);
+        searchContainer = findViewById(R.id.search_container);
+        searchEditText = findViewById(R.id.search_edit_text);
+        searchBtnSettings = findViewById(R.id.search_settings);
+        searchBtnGlobal = findViewById(R.id.search_global);
 
         setupRoot();
         setupList();
         setupSearchBar();
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_SEARCH_SHOWN, false)) {
+        if (state != null && state.getBoolean(KEY_SEARCH_SHOWN, false)) {
             searchBarBehavior.showNow();
         }
     }
@@ -240,28 +240,28 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setupSearchBar() {
-        searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
+        searchBarBehavior = new TopBarBehavior(searchContainer, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
                 if (preferences.searchShowSoftKeyboard()) {
-                    editSearch.requestFocus();
+                    searchEditText.requestFocus();
                 }
-                inputMethodManager.showSoftInput(editSearch, 0);
+                inputMethodManager.showSoftInput(searchEditText, 0);
             }
 
             @Override
             public void onHide() {
-                editSearch.setText("");
-                inputMethodManager.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
-                editSearch.clearFocus();
+                searchEditText.setText("");
+                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+                searchEditText.clearFocus();
             }
         });
         searchBarBehavior.setEnabled(!editMode);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchBar.getLayoutParams();
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchContainer.getLayoutParams();
         lp.setBehavior(searchBarBehavior);
-        searchBar.setLayoutParams(lp);
+        searchContainer.setLayoutParams(lp);
 
-        editSearch.setOnEditorActionListener((v, actionId, event) -> {
+        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 onFireSearch(0);
             }
@@ -293,15 +293,15 @@ public class HomeActivity extends AppActivity implements HomeView,
                 searchBarBehavior.hide();
             }
         };
-        editSearch.setAdapter(new SearchAdapter(picasso,
+        searchEditText.setAdapter(new SearchAdapter(picasso,
                 daggerService().main().getSearchRepository(), listener));
 
-        btnSettings.setOnClickListener(v -> {
+        searchBtnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
             Intent intent = SettingsActivity.getStartIntent(this);
             startActivityForResult(intent, REQUEST_CODE_SETTINGS);
         });
-        btnSettings.setOnLongClickListener(v -> {
+        searchBtnSettings.setOnLongClickListener(v -> {
             presenter.startCustomize();
             return true;
         });
@@ -326,8 +326,8 @@ public class HomeActivity extends AppActivity implements HomeView,
             } catch (PackageManager.NameNotFoundException ignored) {
                 return;
             }
-            globalSearchButton.setVisibility(View.VISIBLE);
-            globalSearchButton.setOnClickListener(v -> {
+            searchBtnGlobal.setVisibility(View.VISIBLE);
+            searchBtnGlobal.setOnClickListener(v -> {
                 Intent intent = new Intent().setComponent(searchActivity);
                 if (IntentUtils.safeStartActivity(this, intent)) {
                     searchBarBehavior.hide();
@@ -335,11 +335,12 @@ public class HomeActivity extends AppActivity implements HomeView,
                     showError(R.string.error);
                 }
             });
-            editSearch.setPadding(0, editSearch.getPaddingTop(),
-                    editSearch.getPaddingRight(), editSearch.getPaddingBottom());
+            searchEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.searchbar_size),
+                    searchEditText.getPaddingTop(), searchEditText.getPaddingRight(),
+                    searchEditText.getPaddingBottom());
             picasso.load(PackageManagerRequestHandler.uriFrom(searchActivity.getPackageName()))
                     .error(R.drawable.ic_action_search)
-                    .into(globalSearchButton);
+                    .into(searchBtnGlobal);
         }
     }
 
@@ -648,23 +649,23 @@ public class HomeActivity extends AppActivity implements HomeView,
         setLayout(userPrefs.homeLayout);
         root.setBackgroundColor(userPrefs.overlayColor);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
-        if (userPrefs.globalSearch && globalSearchButton.getVisibility() != View.VISIBLE) {
+        if (userPrefs.globalSearch && searchBtnGlobal.getVisibility() != View.VISIBLE) {
             setupGlobalSearchButton();
-        } else if (!userPrefs.globalSearch && globalSearchButton.getVisibility() == View.VISIBLE) {
-            editSearch.setPadding(ResUtils.px2dp(this, 16), editSearch.getPaddingTop(),
-                    editSearch.getPaddingRight(), editSearch.getPaddingBottom());
-            globalSearchButton.setVisibility(View.GONE);
+        } else if (!userPrefs.globalSearch && searchBtnGlobal.getVisibility() == View.VISIBLE) {
+            searchEditText.setPadding(ResUtils.px2dp(this, 16), searchEditText.getPaddingTop(),
+                    searchEditText.getPaddingRight(), searchEditText.getPaddingBottom());
+            searchBtnGlobal.setVisibility(View.GONE);
         }
     }
 
     private void onFireSearch(int pos) {
-        if (editSearch.getText().length() > 0) {
-            SearchAdapter adapter = (SearchAdapter) editSearch.getAdapter();
+        if (searchEditText.getText().length() > 0) {
+            SearchAdapter adapter = (SearchAdapter) searchEditText.getAdapter();
             if (adapter.getCount() > 0) {
                 Match item = adapter.getItem(pos);
                 handleSearchIntent(item.getIntent());
             }
-            editSearch.setText("");
+            searchEditText.setText("");
         }
         searchBarBehavior.hide();
     }
@@ -736,7 +737,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!editMode);
         if (editMode) {
-            inputMethodManager.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
             editModeSnackbar = Snackbar.make(findViewById(R.id.coordinator),
                     R.string.customize_snackbar_hint,
                     Snackbar.LENGTH_INDEFINITE);
