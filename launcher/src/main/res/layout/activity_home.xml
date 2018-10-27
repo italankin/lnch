@@ -20,7 +20,7 @@
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/searchbar_size"
-            android:background="#1fff"
+            android:background="@color/search_bar_background"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
@@ -70,7 +70,9 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:visibility="invisible"
+            tools:layoutManager="android.support.v7.widget.GridLayoutManager"
             tools:listitem="@layout/item_app"
+            tools:spanCount="2"
             tools:translationY="64dp"
             tools:visibility="visible" />
 
