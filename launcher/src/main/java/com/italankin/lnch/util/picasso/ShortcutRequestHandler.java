@@ -63,14 +63,14 @@ public class ShortcutRequestHandler extends RequestHandler {
         if (icon == null) {
             return null;
         }
-        float ratio = icon.getIntrinsicWidth() / (float) icon.getIntrinsicHeight();
-        int width = Math.max(icon.getIntrinsicWidth(), request.targetWidth);
-        if (width <= 0) {
-            throw new IllegalArgumentException("width must be > 0");
+        int width = request.targetWidth, height = request.targetHeight;
+        if (icon.getIntrinsicWidth() != icon.getIntrinsicHeight()) {
+            float ratio = icon.getIntrinsicWidth() / (float) icon.getIntrinsicHeight();
+            width = Math.max(icon.getIntrinsicWidth(), request.targetWidth);
+            height = (int) (width / ratio);
         }
-        int height = (int) (width / ratio);
-        if (height <= 0) {
-            throw new IllegalArgumentException("height must be > 0");
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("width and height must be > 0");
         }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas();
