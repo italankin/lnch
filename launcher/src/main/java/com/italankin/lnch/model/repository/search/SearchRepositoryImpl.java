@@ -121,6 +121,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         match.label = shortcut.getShortLabel();
                         match.color = Color.WHITE;
                         match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
+                        match.descriptor = descriptor;
                         result.add(match);
                     }
                 }
