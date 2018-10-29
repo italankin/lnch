@@ -83,10 +83,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, int type) {
-        if (!enabled) {
-            return;
-        }
-        if (dragInProgress && type == ViewCompat.TYPE_TOUCH) {
+        if (enabled && dragInProgress && type == ViewCompat.TYPE_TOUCH) {
             jumpToActualState();
         }
     }
@@ -98,10 +95,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (!enabled) {
-            return false;
-        }
-        if (shown && velocityY > 0) {
+        if (enabled && velocityY > 0 && (shown || dragInProgress)) {
             hide();
             return true;
         }
