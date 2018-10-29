@@ -6,7 +6,8 @@
         <item name="colorAccent">#f9a825</item>
         <item name="android:statusBarColor">?colorPrimaryDark</item>
 
-        <item name="colorGroupTitleDefault">#ffffff</item>
+        <item name="colorIconTint">#fff</item>
+        <item name="colorGroupTitleDefault">#fff</item>
         <item name="colorPopupBackground">#212121</item>
         <item name="colorPopupActionsBackground">#424242</item>
         <item name="colorItemShadowDefault">#60000000</item>

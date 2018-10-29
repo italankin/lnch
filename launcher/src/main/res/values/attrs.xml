@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorIconTint" format="color" />
     <attr name="colorGroupTitleDefault" format="color" />
     <attr name="colorPopupBackground" format="color" />
     <attr name="colorPopupActionsBackground" format="color" />
