@@ -2,7 +2,7 @@ package com.italankin.lnch.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.util.TypedValue;
@@ -19,22 +19,35 @@ public final class ResUtils {
                 Resources.getSystem().getDisplayMetrics());
     }
 
-    public static int resolveAttribute(Context context, @AttrRes int attr) {
+    public static TypedValue resolveAttribute(Context context, @AttrRes int attr) {
         if (context == context.getApplicationContext()) {
             throw new IllegalArgumentException("Cannot accept app context");
         }
         TypedValue out = new TypedValue();
-        context.getTheme().resolveAttribute(attr, out, true);
-        return out.resourceId;
-    }
-
-    public static Drawable resolveDrawable(Context context, @AttrRes int attr) {
-        return context.getDrawable(resolveAttribute(context, attr));
+        if (context.getTheme().resolveAttribute(attr, out, true)) {
+            return out;
+        }
+        return null;
     }
 
     @ColorInt
     public static int resolveColor(Context context, @AttrRes int attr) {
-        return context.getColor(resolveAttribute(context, attr));
+        TypedValue out = resolveAttribute(context, attr);
+        if (out == null) {
+            return Color.BLACK;
+        }
+        switch (out.type) {
+            case TypedValue.TYPE_REFERENCE:
+            case TypedValue.TYPE_ATTRIBUTE:
+                return resolveColor(context, out.resourceId);
+            case TypedValue.TYPE_INT_COLOR_ARGB4:
+            case TypedValue.TYPE_INT_COLOR_ARGB8:
+            case TypedValue.TYPE_INT_COLOR_RGB4:
+            case TypedValue.TYPE_INT_COLOR_RGB8:
+                return out.data;
+            default:
+                return context.getColor(out.resourceId);
+        }
     }
 
     private ResUtils() {
