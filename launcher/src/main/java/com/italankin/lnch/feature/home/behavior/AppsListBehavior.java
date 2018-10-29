@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.util;
+package com.italankin.lnch.feature.home.behavior;
 
 import android.content.Context;
 import android.support.annotation.Keep;

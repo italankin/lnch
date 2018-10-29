@@ -73,7 +73,7 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:visibility="invisible"
-            app:layout_behavior="com.italankin.lnch.feature.home.util.AppsListBehavior"
+            app:layout_behavior="com.italankin.lnch.feature.home.behavior.AppsListBehavior"
             tools:layoutManager="android.support.v7.widget.GridLayoutManager"
             tools:listitem="@layout/item_app"
             tools:spanCount="2"

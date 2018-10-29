@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.util;
+package com.italankin.lnch.feature.home.behavior;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -47,12 +47,15 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View directTargetChild, @NonNull View target, int axes, int type) {
-        return enabled && type == ViewCompat.TYPE_TOUCH && (axes & ViewCompat.SCROLL_AXIS_VERTICAL) > 0;
+        return type == ViewCompat.TYPE_TOUCH && (axes & ViewCompat.SCROLL_AXIS_VERTICAL) > 0;
     }
 
     @Override
     public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+        if (!enabled) {
+            return;
+        }
         if (!dragInProgress && shown) {
             dragInProgress = dy > 0;
         }
@@ -66,6 +69,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target,
             int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+        if (!enabled) {
+            return;
+        }
         if (!dragInProgress) {
             dragInProgress = dyUnconsumed < 0;
         }
@@ -77,6 +83,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, int type) {
+        if (!enabled) {
+            return;
+        }
         if (dragInProgress && type == ViewCompat.TYPE_TOUCH) {
             jumpToActualState();
         }
@@ -89,6 +98,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
+        if (!enabled) {
+            return false;
+        }
         if (shown && velocityY > 0) {
             hide();
             return true;

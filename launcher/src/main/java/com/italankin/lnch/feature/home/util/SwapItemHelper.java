@@ -4,6 +4,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 public class SwapItemHelper extends ItemTouchHelper.Callback {
+
+    private static final int DRAG_FLAGS = ItemTouchHelper.UP | ItemTouchHelper.DOWN |
+            ItemTouchHelper.START | ItemTouchHelper.END;
+
     private final Callback callback;
 
     public SwapItemHelper(Callback callback) {
@@ -19,9 +23,7 @@ public class SwapItemHelper extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN |
-                ItemTouchHelper.START | ItemTouchHelper.END;
-        return makeMovementFlags(dragFlags, 0);
+        return makeMovementFlags(DRAG_FLAGS, 0);
     }
 
     @Override
