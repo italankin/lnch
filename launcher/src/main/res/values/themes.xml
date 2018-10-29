@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="DarkTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#1a1a1a</item>
         <item name="colorAccent">#f9a825</item>
@@ -15,14 +15,14 @@
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
     </style>
 
-    <style name="DarkLauncherTheme" parent="DarkTheme">
+    <style name="AppTheme.Dark.Launcher">
         <item name="android:statusBarColor">#8000</item>
         <item name="android:navigationBarColor">#8000</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>
 
-    <style name="DarkPreferenceTheme" parent="DarkTheme">
+    <style name="AppTheme.Dark.Preferences">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:textColorSecondary">#fff</item>
     </style>

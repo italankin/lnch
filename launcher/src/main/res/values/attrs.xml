@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="colorIconTint" format="color" />
-    <attr name="colorGroupTitleDefault" format="color" />
-    <attr name="colorPopupBackground" format="color" />
-    <attr name="colorPopupActionsBackground" format="color" />
-    <attr name="colorItemShadowDefault" format="color" />
-    <attr name="colorSearchBarBackground" format="color" />
-    <attr name="colorEditPanelBackground" format="color" />
+    <attr name="colorIconTint" format="color|reference" />
+    <attr name="colorGroupTitleDefault" format="color|reference" />
+    <attr name="colorPopupBackground" format="color|reference" />
+    <attr name="colorPopupActionsBackground" format="color|reference" />
+    <attr name="colorItemShadowDefault" format="color|reference" />
+    <attr name="colorSearchBarBackground" format="color|reference" />
+    <attr name="colorEditPanelBackground" format="color|reference" />
 </resources>
