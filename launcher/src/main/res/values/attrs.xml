@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ColorPickerView">
-        <attr name="cp_model" format="enum">
-            <enum name="rgb" value="0" />
-            <enum name="argb" value="1" />
-        </attr>
-        <attr name="cp_previewVisible" format="boolean" />
-        <attr name="cp_previewHeight" format="dimension" />
-        <attr name="cp_selectedColor" format="color" />
-        <attr name="cp_hexVisible" format="boolean" />
-    </declare-styleable>
-
-    <declare-styleable name="SliderPrefView">
-        <attr name="spv_title" format="string" />
-        <attr name="spv_icon" format="reference" />
-    </declare-styleable>
-
-    <declare-styleable name="ValuePrefView">
-        <attr name="tpv_title" format="string" />
-        <attr name="tpv_icon" format="reference" />
-    </declare-styleable>
+    <attr name="colorGroupTitleDefault" format="color" />
+    <attr name="colorPopupBackground" format="color" />
+    <attr name="colorPopupActionsBackground" format="color" />
+    <attr name="colorItemShadowDefault" format="color" />
+    <attr name="colorSearchBarBackground" format="color" />
+    <attr name="colorEditPanelBackground" format="color" />
 </resources>

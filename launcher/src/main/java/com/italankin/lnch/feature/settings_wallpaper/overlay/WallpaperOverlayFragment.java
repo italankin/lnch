@@ -119,7 +119,7 @@ public class WallpaperOverlayFragment extends AppFragment {
         TextView itemPreview = view.findViewById(R.id.item_preview);
         itemPreview.setText(R.string.settings_overlay_preview);
         itemPreview.setAllCaps(true);
-        itemPreview.setTextColor(getContext().getColor(R.color.accent));
+        itemPreview.setTextColor(ResUtils.resolveColor(getContext(), R.attr.colorAccent));
         itemPreview.setOnClickListener(v -> {
             ColorPickerDialog.builder(getContext())
                     .setSelectedColor(itemPreview.getCurrentTextColor())

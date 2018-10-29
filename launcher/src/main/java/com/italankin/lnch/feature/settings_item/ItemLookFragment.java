@@ -167,7 +167,7 @@ public class ItemLookFragment extends AppFragment {
         preview.setBackgroundColor(0x20ffffff);
         preview.setText(R.string.settings_item_preview);
         preview.setAllCaps(true);
-        preview.setTextColor(getContext().getColor(R.color.accent));
+        preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
         preview.setOnClickListener(v -> ColorPickerDialog.builder(getContext())
                 .setSelectedColor(preview.getCurrentTextColor())
                 .setOnColorPickedListener(preview::setTextColor)
@@ -251,7 +251,7 @@ public class ItemLookFragment extends AppFragment {
                         updatePreview();
                     })
                     .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                        int color = getContext().getColor(R.color.item_default_shadow_color);
+                        int color = ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault);
                         itemShadowColor.setValue(color);
                         updatePreview();
                     })

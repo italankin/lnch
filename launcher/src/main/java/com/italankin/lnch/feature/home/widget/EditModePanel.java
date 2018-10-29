@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.ResUtils;
 
 public class EditModePanel extends LinearLayout {
 
@@ -41,7 +42,7 @@ public class EditModePanel extends LinearLayout {
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setBackgroundColor(context.getColor(R.color.edit_mode_background));
+        setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorEditPanelBackground));
         message = findViewById(R.id.message);
         undo = findViewById(R.id.undo);
         save = findViewById(R.id.save);

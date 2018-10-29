@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:background="@color/primary"
+        android:background="?colorPrimary"
         android:elevation="4dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"

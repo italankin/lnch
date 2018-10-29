@@ -728,7 +728,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (preferences.useCustomTabs() && Intent.ACTION_VIEW.equals(intent.getAction()) &&
                 intent.getData() != null) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setToolbarColor(getColor(R.color.primary))
+                    .setToolbarColor(ResUtils.resolveColor(this, R.attr.colorPrimary))
                     .addDefaultShareMenuItem()
                     .setShowTitle(true)
                     .build();
@@ -833,7 +833,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     .setIcon(R.drawable.ic_action_add_group)
                     .setOnClickListener(v -> {
                         presenter.addGroup(position, getString(R.string.new_group_label),
-                                getColor(R.color.group_default));
+                                ResUtils.resolveColor(this, R.attr.colorGroupTitleDefault));
                     })
             );
         }

@@ -1,24 +1,27 @@
 <resources>
 
-    <style name="ActivityTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
+    <style name="DarkTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#212121</item>
+        <item name="colorPrimaryDark">#1a1a1a</item>
+        <item name="colorAccent">#f9a825</item>
+        <item name="android:statusBarColor">?colorPrimaryDark</item>
+
+        <item name="colorGroupTitleDefault">#ffffff</item>
+        <item name="colorPopupBackground">#212121</item>
+        <item name="colorPopupActionsBackground">#424242</item>
+        <item name="colorItemShadowDefault">#60000000</item>
+        <item name="colorSearchBarBackground">#1fff</item>
+        <item name="colorEditPanelBackground">?colorPrimaryDark</item>
     </style>
 
-    <style name="LauncherTheme" parent="ActivityTheme">
-        <item name="android:statusBarColor">@color/status_bar_launcher</item>
-        <item name="android:navigationBarColor">@color/navigation_bar</item>
+    <style name="DarkLauncherTheme" parent="DarkTheme">
+        <item name="android:statusBarColor">#8000</item>
+        <item name="android:navigationBarColor">#8000</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>
 
-    <style name="PreferenceTheme" parent="ActivityTheme">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
+    <style name="DarkPreferenceTheme" parent="DarkTheme">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:textColorSecondary">#fff</item>
     </style>

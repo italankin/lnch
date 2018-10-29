@@ -24,7 +24,7 @@
             android:id="@+id/action_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/popup_actions_background"
+            android:background="?colorPopupActionsBackground"
             android:divider="@drawable/popup_action_divider"
             android:gravity="end"
             android:orientation="horizontal"

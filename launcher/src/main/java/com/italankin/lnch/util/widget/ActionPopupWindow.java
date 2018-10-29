@@ -71,8 +71,8 @@ public class ActionPopupWindow extends PopupWindow {
         setElevation(res.getDimensionPixelSize(R.dimen.popup_window_elevation));
 
         arrowSize = res.getDimensionPixelSize(R.dimen.popup_window_arrow_size);
-        darkArrowColor = context.getColor(R.color.popup_actions_background);
-        lightArrowColor = context.getColor(R.color.popup_background);
+        darkArrowColor = ResUtils.resolveColor(context, R.attr.colorPopupActionsBackground);
+        lightArrowColor = ResUtils.resolveColor(context, R.attr.colorPopupBackground);
 
         contentView.setOutlineProvider(new ViewOutlineProvider() {
             @Override
@@ -123,7 +123,7 @@ public class ActionPopupWindow extends PopupWindow {
         labelView.setText(item.label);
         if (item.iconDrawable != null) {
             Drawable drawable = item.iconDrawable.mutate();
-            drawable.setTint(context.getColor(R.color.accent));
+            drawable.setTint(ResUtils.resolveColor(context, R.attr.colorAccent));
             iconView.setImageDrawable(drawable);
         } else if (item.iconUri != null) {
             ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
