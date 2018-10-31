@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.squareup.picasso.Picasso;
@@ -55,12 +58,19 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             convertView = inflater.inflate(R.layout.item_search_match, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
+            convertView.setOnClickListener(v -> {
+                listener.onSearchItemClick(holder.adapterPosition, getItem(holder.adapterPosition));
+            });
+            holder.info.setOnClickListener(v -> {
+                listener.onSearchItemInfoClick(holder.adapterPosition, getItem(holder.adapterPosition));
+            });
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         Match item = getItem(position);
         holder.text.setText(item.getLabel());
         holder.text.setTextColor(item.getColor());
+        holder.adapterPosition = position;
 
         Uri icon = item.getIcon();
         if (icon != null) {
@@ -72,14 +82,14 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             holder.image.setImageResource(item.getIconResource());
         }
 
-        if (listener != null) {
-            convertView.setOnClickListener(v -> {
-                listener.onSearchItemClick(position, item);
-            });
-            convertView.setOnLongClickListener(v -> {
-                listener.onSearchItemLongClick(position, item);
-                return true;
-            });
+        convertView.setOnClickListener(v -> {
+            listener.onSearchItemClick(position, item);
+        });
+        Descriptor descriptor = item.getDescriptor();
+        if (descriptor instanceof AppDescriptor || descriptor instanceof DeepShortcutDescriptor) {
+            holder.info.setVisibility(View.VISIBLE);
+        } else {
+            holder.info.setVisibility(View.GONE);
         }
 
         return convertView;
@@ -93,17 +103,20 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     private static class ViewHolder {
         final TextView text;
         final ImageView image;
+        final ImageView info;
+        int adapterPosition;
 
         public ViewHolder(View itemView) {
             this.text = itemView.findViewById(R.id.text);
             this.image = itemView.findViewById(R.id.image);
+            this.info = itemView.findViewById(R.id.info);
         }
     }
 
     public interface Listener {
         void onSearchItemClick(int position, Match match);
 
-        void onSearchItemLongClick(int position, Match match);
+        void onSearchItemInfoClick(int position, Match match);
     }
 
     class SearchFilter extends Filter {

@@ -519,7 +519,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             }
 
             @Override
-            public void onSearchItemLongClick(int position, Match match) {
+            public void onSearchItemInfoClick(int position, Match match) {
                 Descriptor descriptor = match.getDescriptor();
                 String packageName = null;
                 if (descriptor instanceof AppDescriptor) {
