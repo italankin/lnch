@@ -35,13 +35,17 @@
 
         <activity
             android:name=".feature.settings_root.SettingsActivity"
-            android:label="@string/title_settings"
+            android:label="@string/title_settings_lnch"
             android:launchMode="singleInstance"
             android:theme="@style/PreferenceTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

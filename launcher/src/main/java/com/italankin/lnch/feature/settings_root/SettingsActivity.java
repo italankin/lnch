@@ -45,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         setContentView(R.layout.activity_settings);
 
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.title_settings);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
