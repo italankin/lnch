@@ -397,7 +397,15 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (editMode) {
             startDrag(position);
         } else {
-            presenter.showAppPopup(position, item);
+            switch (preferences.appLongClickAction()) {
+                case INFO:
+                    startAppSettings(item.packageName);
+                    break;
+                case POPUP:
+                default:
+                    presenter.showAppPopup(position, item);
+                    break;
+            }
         }
     }
 

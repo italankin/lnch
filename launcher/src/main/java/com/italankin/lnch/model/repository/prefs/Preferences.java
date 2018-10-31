@@ -46,6 +46,8 @@ public interface Preferences {
 
     void resetItemSettings();
 
+    LongClickAction appLongClickAction();
+
     interface Constraints {
         int ITEM_TEXT_SIZE_MIN = 12;
         int ITEM_TEXT_SIZE_MAX = 40;
@@ -144,6 +146,31 @@ public interface Preferences {
 
         SearchTarget(String key) {
             this.key = key;
+        }
+    }
+
+    enum LongClickAction {
+        POPUP("popup"),
+        INFO("info");
+
+        static LongClickAction from(String s) {
+            for (LongClickAction item : values()) {
+                if (item.action.equals(s)) {
+                    return item;
+                }
+            }
+            return POPUP;
+        }
+
+        private final String action;
+
+        LongClickAction(String action) {
+            this.action = action;
+        }
+
+        @Override
+        public String toString() {
+            return action;
         }
     }
 }
