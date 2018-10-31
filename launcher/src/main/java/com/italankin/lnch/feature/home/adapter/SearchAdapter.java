@@ -100,13 +100,13 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
-    private static class ViewHolder {
+    static class ViewHolder {
         final TextView text;
         final ImageView image;
         final ImageView info;
         int adapterPosition;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             this.text = itemView.findViewById(R.id.text);
             this.image = itemView.findViewById(R.id.image);
             this.info = itemView.findViewById(R.id.info);
@@ -122,7 +122,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     class SearchFilter extends Filter {
         private final SearchRepository searchRepository;
 
-        public SearchFilter(SearchRepository searchRepository) {
+        SearchFilter(SearchRepository searchRepository) {
             this.searchRepository = searchRepository;
         }
 
