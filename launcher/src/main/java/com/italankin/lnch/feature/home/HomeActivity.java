@@ -17,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -717,7 +716,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (preferences.useCustomTabs() && Intent.ACTION_VIEW.equals(intent.getAction()) &&
                 intent.getData() != null) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setToolbarColor(ContextCompat.getColor(this, R.color.primary))
+                    .setToolbarColor(getColor(R.color.primary))
                     .addDefaultShareMenuItem()
                     .setShowTitle(true)
                     .build();
