@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings_wallpaper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +10,22 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.View;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_wallpaper.overlay.WallpaperOverlayActivity;
 
 public class WallpaperFragment extends PreferenceFragmentCompat {
+
+    private Callbacks callbacks;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        callbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        callbacks = null;
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -29,14 +43,18 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(R.string.pref_wallpaper_overlay_color).setOnPreferenceClickListener(preference -> {
-            Intent intent = WallpaperOverlayActivity.getStartIntent(getContext());
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            startActivity(intent);
+            if (callbacks != null) {
+                callbacks.showWallpaperOverlayPreferences();
+            }
             return true;
         });
     }
 
     private Preference findPreference(@StringRes int key) {
         return findPreference(getString(key));
+    }
+
+    public interface Callbacks {
+        void showWallpaperOverlayPreferences();
     }
 }

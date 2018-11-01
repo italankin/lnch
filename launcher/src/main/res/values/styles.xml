@@ -22,9 +22,4 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:textColorSecondary">#fff</item>
     </style>
-
-    <style name="OverlayTheme" parent="PreferenceTheme">
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@drawable/window_background</item>
-    </style>
 </resources>

@@ -18,13 +18,16 @@ import com.italankin.lnch.feature.settings_item.ItemLookFragment;
 import com.italankin.lnch.feature.settings_misc.MiscFragment;
 import com.italankin.lnch.feature.settings_search.SearchFragment;
 import com.italankin.lnch.feature.settings_wallpaper.WallpaperFragment;
+import com.italankin.lnch.feature.settings_wallpaper.overlay.WallpaperOverlayFragment;
 
 import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         SettingsRootFragment.Callbacks,
-        ItemLookFragment.Callbacks {
+        ItemLookFragment.Callbacks,
+        WallpaperFragment.Callbacks,
+        WallpaperOverlayFragment.Callbacks {
 
     public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER;
     private Toolbar toolbar;
@@ -106,6 +109,16 @@ public class SettingsActivity extends AppCompatActivity
 
     @Override
     public void onItemLookFinish() {
+        fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void showWallpaperOverlayPreferences() {
+        showFragment(new WallpaperOverlayFragment(), R.string.title_settings_wallpaper_overlay);
+    }
+
+    @Override
+    public void onWallpaperOverlayFinish() {
         fragmentManager.popBackStack();
     }
 

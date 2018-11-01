@@ -51,11 +51,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".feature.settings_wallpaper.overlay.WallpaperOverlayActivity"
-            android:label=""
-            android:theme="@style/OverlayTheme" />
-
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">

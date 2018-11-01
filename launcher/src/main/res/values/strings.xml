@@ -55,7 +55,7 @@
     <string name="title_settings_wallpaper_change">Change wallpaper</string>
     <string name="title_settings_wallpaper_overlay">Overlay</string>
     <string name="title_settings_wallpaper_overlay_show">Show overlay</string>
-    <string name="title_settings_wallpaper_overlay_color">Color</string>
+    <string name="title_settings_wallpaper_overlay_color">Overlay color</string>
     <string name="title_settings_search">Search</string>
     <string name="title_settings_search_settings">Search settings</string>
     <string name="title_settings_search_auto_show">Automatically show keyboard</string>
