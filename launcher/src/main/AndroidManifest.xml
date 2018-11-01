@@ -7,6 +7,8 @@
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="normal" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".LauncherApp"
         android:allowBackup="true"
@@ -52,11 +54,6 @@
         <activity
             android:name=".feature.settings_wallpaper.overlay.WallpaperOverlayActivity"
             android:label=""
-            android:theme="@style/OverlayTheme" />
-
-        <activity
-            android:name=".feature.settings_item.ItemLookActivity"
-            android:label="@string/title_settings_home_item_look"
             android:theme="@style/OverlayTheme" />
 
         <receiver

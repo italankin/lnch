@@ -14,14 +14,17 @@ import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings_apps.AppsFragment;
+import com.italankin.lnch.feature.settings_item.ItemLookFragment;
 import com.italankin.lnch.feature.settings_misc.MiscFragment;
 import com.italankin.lnch.feature.settings_search.SearchFragment;
 import com.italankin.lnch.feature.settings_wallpaper.WallpaperFragment;
 
 import timber.log.Timber;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsRootFragment.Callbacks,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsActivity extends AppCompatActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener,
+        SettingsRootFragment.Callbacks,
+        ItemLookFragment.Callbacks {
 
     public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER;
     private Toolbar toolbar;
@@ -87,6 +90,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
     }
 
     @Override
+    public void showItemLookPreferences() {
+        showFragment(new ItemLookFragment(), R.string.title_settings_home_item_look);
+    }
+
+    @Override
     public void showMiscPreferences() {
         showFragment(new MiscFragment(), R.string.title_settings_home_misc);
     }
@@ -96,15 +104,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         showFragment(new WallpaperFragment(), R.string.title_settings_wallpaper);
     }
 
-    private void showFragment(Fragment fragment, @StringRes int title) {
-        fragmentManager
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fragment_in, R.animator.fragment_out,
-                        R.animator.fragment_in, R.animator.fragment_out)
-                .replace(R.id.container, fragment)
-                .setBreadCrumbTitle(title)
-                .addToBackStack(null)
-                .commit();
+    @Override
+    public void onItemLookFinish() {
+        fragmentManager.popBackStack();
     }
 
     @Override
@@ -124,5 +126,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsRootF
         return index < 0
                 ? getString(R.string.title_settings)
                 : fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
+    }
+
+    private void showFragment(Fragment fragment, @StringRes int title) {
+        fragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fragment_in, R.animator.fragment_out,
+                        R.animator.fragment_in, R.animator.fragment_out)
+                .replace(R.id.container, fragment)
+                .setBreadCrumbTitle(title)
+                .addToBackStack(null)
+                .commit();
     }
 }

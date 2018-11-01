@@ -96,4 +96,6 @@
         <item>Serif</item>
         <item>Monospace</item>
     </string-array>
+
+    <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
 </resources>

@@ -8,18 +8,6 @@
     android:orientation="vertical"
     tools:background="@color/accent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/primary"
-        android:elevation="4dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        tools:title="Item look" />
-
     <LinearLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"

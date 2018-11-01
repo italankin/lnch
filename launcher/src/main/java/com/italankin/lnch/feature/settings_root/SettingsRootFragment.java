@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_item.ItemLookActivity;
 import com.italankin.lnch.util.IntentUtils;
 
 public class SettingsRootFragment extends PreferenceFragmentCompat {
@@ -72,9 +71,9 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(R.string.key_home_item_look).setOnPreferenceClickListener(preference -> {
-            Intent intent = ItemLookActivity.getStartIntent(getContext());
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            startActivity(intent);
+            if (callbacks != null) {
+                callbacks.showItemLookPreferences();
+            }
             return true;
         });
         findPreference(R.string.key_home_misc).setOnPreferenceClickListener(preference -> {
@@ -114,6 +113,8 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
         void showSearchPreferences();
 
         void showAppsPreferences();
+
+        void showItemLookPreferences();
 
         void showMiscPreferences();
 
