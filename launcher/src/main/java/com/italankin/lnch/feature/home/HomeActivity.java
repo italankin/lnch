@@ -22,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -841,6 +842,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
                     editText.setText(customLabel);
+                    editText.setSingleLine(true);
+                    editText.setInputType(
+                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                     if (customLabel != null) {
                         editText.setSelection(customLabel.length());
                     }
