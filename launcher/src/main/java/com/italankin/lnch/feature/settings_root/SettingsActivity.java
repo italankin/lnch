@@ -114,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity
 
     @Override
     public void showWallpaperOverlayPreferences() {
-        showFragment(new WallpaperOverlayFragment(), R.string.title_settings_wallpaper_overlay);
+        showFragment(new WallpaperOverlayFragment(), R.string.title_settings_wallpaper_overlay_color);
     }
 
     @Override
