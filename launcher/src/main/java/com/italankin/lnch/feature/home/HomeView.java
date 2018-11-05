@@ -68,4 +68,7 @@ interface HomeView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShortcutNotFound();
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutDisabled(CharSequence disabledMessage);
 }

@@ -18,6 +18,10 @@ public interface Shortcut extends Comparable<Shortcut> {
 
     boolean isDynamic();
 
+    boolean isEnabled();
+
+    CharSequence getDisabledMessage();
+
     int getRank();
 
     boolean start(Rect bounds, Bundle options);

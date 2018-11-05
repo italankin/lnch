@@ -191,26 +191,23 @@ public class LauncherAppsRepository implements AppsRepository {
                                 continue;
                             }
                             if (item instanceof DeepShortcutDescriptor) {
+                                items.add(item);
                                 DeepShortcutDescriptor descriptor = (DeepShortcutDescriptor) item;
                                 if (pinnedShortcuts.isEmpty()) {
-                                    deleted.add(descriptor);
+                                    descriptor.enabled = false;
                                     continue;
                                 }
-                                boolean found = false;
+                                boolean enabled = false;
                                 for (Iterator<Shortcut> iter = pinnedShortcuts.iterator(); iter.hasNext(); ) {
                                     Shortcut pinned = iter.next();
                                     if (pinned.getPackageName().equals(descriptor.packageName)
                                             && pinned.getId().equals(descriptor.id)) {
                                         iter.remove();
-                                        found = true;
+                                        enabled = pinned.isEnabled();
                                         break;
                                     }
                                 }
-                                if (found) {
-                                    items.add(descriptor);
-                                } else {
-                                    deleted.add(descriptor);
-                                }
+                                descriptor.enabled = enabled;
                                 continue;
                             }
                             if (!(item instanceof AppDescriptor)) {

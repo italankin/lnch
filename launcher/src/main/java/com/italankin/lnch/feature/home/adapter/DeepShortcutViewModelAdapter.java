@@ -12,6 +12,8 @@ import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 public class DeepShortcutViewModelAdapter
         extends HomeAdapterDelegate<DeepShortcutViewModelAdapter.ViewHolder, DeepShortcutViewModel> {
 
+    private static final float DISABLED_ALPHA = 0.5f;
+
     private final Listener listener;
 
     public DeepShortcutViewModelAdapter(Listener listener) {
@@ -66,6 +68,7 @@ public class DeepShortcutViewModelAdapter
         void bind(DeepShortcutViewModel item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+            label.setAlpha(item.enabled ? 1 : DISABLED_ALPHA);
         }
 
         @Nullable

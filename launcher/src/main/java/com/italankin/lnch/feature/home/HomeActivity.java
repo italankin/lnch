@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -324,6 +325,14 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
+    public void onShortcutDisabled(CharSequence disabledMessage) {
+        CharSequence message = TextUtils.isEmpty(disabledMessage)
+                ? getText(R.string.error_shortcut_disabled)
+                : disabledMessage;
+        showErrorToast(message);
+    }
+
+    @Override
     public void onAppsLoadError(Throwable e) {
         root.error()
                 .button(v -> presenter.reloadApps())
@@ -363,8 +372,11 @@ public class HomeActivity extends AppActivity implements HomeView,
                 popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                         .setLabel(shortcut.getShortLabel())
                         .setIcon(shortcut.getIconUri())
+                        .setEnabled(shortcut.isEnabled())
                         .setOnClickListener(v -> {
-                            if (!shortcut.start(null, null)) {
+                            if (!shortcut.isEnabled()) {
+                                onShortcutDisabled(shortcut.getDisabledMessage());
+                            } else if (!shortcut.start(null, null)) {
                                 showError(R.string.error);
                                 presenter.updateShortcuts(item.getDescriptor());
                             }

@@ -27,6 +27,9 @@ public class DeepShortcutDescriptor implements Descriptor, CustomColorDescriptor
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("enabled")
+    public boolean enabled = true;
+
     @Keep
     public DeepShortcutDescriptor() {
     }

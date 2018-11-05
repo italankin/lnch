@@ -227,7 +227,11 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void startShortcut(DeepShortcutViewModel item) {
         Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
         if (shortcut != null) {
-            getViewState().startShortcut(shortcut);
+            if (shortcut.isEnabled()) {
+                getViewState().startShortcut(shortcut);
+            } else {
+                getViewState().onShortcutDisabled(shortcut.getDisabledMessage());
+            }
         } else {
             getViewState().onShortcutNotFound();
         }

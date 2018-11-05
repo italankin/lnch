@@ -36,6 +36,7 @@ import com.squareup.picasso.Picasso;
 public class ActionPopupWindow extends PopupWindow {
 
     private static final float MAX_WIDTH_FACTOR = 0.66f;
+    private static final float DISABLED_ALPHA = 0.33f;
 
     private final Context context;
     private final Picasso picasso;
@@ -106,6 +107,9 @@ public class ActionPopupWindow extends PopupWindow {
                 dismiss();
             });
         }
+        if (!item.enabled) {
+            imageView.setAlpha(DISABLED_ALPHA);
+        }
         imageView.setOnLongClickListener(item.onLongClickListener);
         actionContainer.addView(imageView);
         return this;
@@ -134,7 +138,11 @@ public class ActionPopupWindow extends PopupWindow {
             });
         }
         view.setOnLongClickListener(item.onLongClickListener);
-        if (item.onPinClickListener != null) {
+        if (!item.enabled) {
+            labelView.setAlpha(DISABLED_ALPHA);
+            iconView.setAlpha(DISABLED_ALPHA);
+        }
+        if (item.onPinClickListener != null && item.enabled) {
             pinIconView.setVisibility(View.VISIBLE);
             pinIconView.setOnClickListener(v -> {
                 item.onPinClickListener.onClick(v);
@@ -203,6 +211,7 @@ public class ActionPopupWindow extends PopupWindow {
         private CharSequence label;
         private Drawable iconDrawable;
         private Uri iconUri;
+        private boolean enabled = true;
         private View.OnClickListener onClickListener;
         private View.OnLongClickListener onLongClickListener;
         private View.OnClickListener onPinClickListener;
@@ -231,6 +240,11 @@ public class ActionPopupWindow extends PopupWindow {
 
         public ItemBuilder setIcon(Drawable icon) {
             this.iconDrawable = icon;
+            return this;
+        }
+
+        public ItemBuilder setEnabled(boolean enabled) {
+            this.enabled = enabled;
             return this;
         }
 

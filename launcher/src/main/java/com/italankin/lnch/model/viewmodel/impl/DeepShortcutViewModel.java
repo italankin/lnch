@@ -11,6 +11,7 @@ public class DeepShortcutViewModel implements DescriptorItem, CustomLabelItem, C
         RemovableItem, VisibleItem {
     public final String packageName;
     public final String id;
+    public final boolean enabled;
     private final DeepShortcutDescriptor descriptor;
     private final String label;
     private final int color;
@@ -22,6 +23,7 @@ public class DeepShortcutViewModel implements DescriptorItem, CustomLabelItem, C
         this.descriptor = descriptor;
         this.packageName = descriptor.packageName;
         this.id = descriptor.id;
+        this.enabled = descriptor.enabled;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;

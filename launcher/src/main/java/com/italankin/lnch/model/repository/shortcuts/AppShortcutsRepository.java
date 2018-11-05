@@ -217,6 +217,16 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
 
         @Override
+        public boolean isEnabled() {
+            return shortcutInfo.isEnabled();
+        }
+
+        @Override
+        public CharSequence getDisabledMessage() {
+            return shortcutInfo.getDisabledMessage();
+        }
+
+        @Override
         public int getRank() {
             return shortcutInfo.getRank();
         }
