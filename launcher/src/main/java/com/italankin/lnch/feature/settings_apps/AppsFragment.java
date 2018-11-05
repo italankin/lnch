@@ -151,6 +151,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
                     .show();
         } else {
             adapter.setDataset(items);
+            adapter.notifyDataSetChanged();
             lce.showContent();
         }
     }
