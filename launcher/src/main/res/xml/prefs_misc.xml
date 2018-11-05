@@ -9,5 +9,6 @@
         android:entries="@array/app_long_click_actions_desc"
         android:entryValues="@array/app_long_click_actions"
         android:key="@string/pref_misc_app_long_click_action"
+        android:summary="%s"
         android:title="@string/title_settings_home_misc_app_long_click_action" />
 </PreferenceScreen>
