@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -918,16 +916,10 @@ public class HomeActivity extends AppActivity implements HomeView,
         dismissPopup();
         list.setLayoutFrozen(true);
         popup.setOnDismissListener(() -> list.setLayoutFrozen(false));
-        popup.showAtAnchor(anchor, computeScreenBounds());
+        Rect bounds = new Rect();
+        root.getWindowVisibleDisplayFrame(bounds);
+        popup.showAtAnchor(anchor, bounds);
         popupWindow = popup;
-    }
-
-    private Rect computeScreenBounds() {
-        Resources res = getResources();
-        int statusBarSize = res.getDimensionPixelSize(R.dimen.statusbar_size);
-        int navBarSize = res.getDimensionPixelSize(R.dimen.navbar_size);
-        DisplayMetrics dm = res.getDisplayMetrics();
-        return new Rect(0, statusBarSize, dm.widthPixels, dm.heightPixels - navBarSize);
     }
 
     private boolean dismissPopup() {
