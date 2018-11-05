@@ -30,5 +30,6 @@
         android:entries="@array/search_engines_desc"
         android:entryValues="@array/search_engines"
         android:key="@string/pref_search_engine"
+        android:summary="%s"
         android:title="@string/title_settings_search_engine" />
 </PreferenceScreen>
