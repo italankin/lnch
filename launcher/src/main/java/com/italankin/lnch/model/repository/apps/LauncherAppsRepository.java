@@ -112,7 +112,8 @@ public class LauncherAppsRepository implements AppsRepository {
 
     @Override
     public List<Descriptor> items() {
-        return updatesSubject.getValue();
+        List<Descriptor> value = updatesSubject.getValue();
+        return value != null ? value : Collections.emptyList();
     }
 
     @Override
