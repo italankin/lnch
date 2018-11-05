@@ -21,6 +21,8 @@ public interface Preferences {
 
     boolean showScrollbar();
 
+    String searchEngine();
+
     EnumSet<SearchTarget> searchTargets();
 
     void setItemTextSize(float size);

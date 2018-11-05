@@ -18,7 +18,8 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
-import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
+import com.italankin.lnch.model.repository.search.web.WebSearchProvider;
+import com.italankin.lnch.model.repository.search.web.WebSearchProviderFactory;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.IntentUtils;
@@ -83,7 +84,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
                 && searchTargets.contains(SearchTarget.SHORTCUT)) {
-            List<PartialMatch> shortcutMatches = searchShortcuts(appsRepository.items(), query);
+            List<PartialMatch> shortcutMatches = searchShortcuts(shortcutsRepository,
+                    appsRepository.items(), query);
             matches.addAll(shortcutMatches);
         }
 
@@ -93,7 +95,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         if (searchTargets.contains(SearchTarget.WEB)) {
-            matches.add(new WebSearchMatch(constraint.toString(), query));
+            WebSearchProvider webSearchProvider = WebSearchProviderFactory.get(preferences.searchEngine());
+            matches.add(webSearchProvider.make(constraint.toString(), query));
         }
 
         if (searchTargets.contains(SearchTarget.URL)) {
@@ -106,7 +109,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private List<PartialMatch> searchShortcuts(List<Descriptor> descriptors, String query) {
+    private static List<PartialMatch> searchShortcuts(ShortcutsRepository shortcutsRepository,
+            List<Descriptor> descriptors, String query) {
         List<PartialMatch> result = new ArrayList<>(1);
         for (Descriptor descriptor : descriptors) {
             if (descriptor instanceof AppDescriptor) {

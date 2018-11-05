@@ -33,8 +33,16 @@
 
     <string-array name="search_engines">
         <item>google</item>
+        <item>yandex</item>
+        <item>ddg</item>
+        <item>bing</item>
+        <item>baidu</item>
     </string-array>
     <string-array name="search_engines_desc">
         <item>Google</item>
+        <item>Yandex</item>
+        <item>DuckDuckGo</item>
+        <item>Bing</item>
+        <item>Baidu</item>
     </string-array>
 </resources>

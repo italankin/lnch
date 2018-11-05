@@ -144,6 +144,11 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public String searchEngine() {
+        return prefs.getString(context.getString(R.string.pref_search_engine), null);
+    }
+
+    @Override
     public LongClickAction appLongClickAction() {
         String pref = prefs.getString(context.getString(R.string.pref_misc_app_long_click_action), null);
         return LongClickAction.from(pref);
