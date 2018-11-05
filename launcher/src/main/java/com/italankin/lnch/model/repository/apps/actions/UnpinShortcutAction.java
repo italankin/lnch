@@ -14,7 +14,6 @@ public class UnpinShortcutAction implements AppsRepository.Editor.Action {
 
     public UnpinShortcutAction(ShortcutsRepository shortcutsRepository, DeepShortcutDescriptor descriptor) {
         this.shortcutsRepository = shortcutsRepository;
-
         this.descriptor = descriptor;
     }
 
