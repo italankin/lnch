@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="home_layouts">
+        <item>compact</item>
+        <item>linear</item>
+    </string-array>
+    <string-array name="home_layout_desc">
+        <item>Compact</item>
+        <item>List</item>
+    </string-array>
+
+    <string-array name="app_long_click_actions">
+        <item>popup</item>
+        <item>info</item>
+    </string-array>
+    <string-array name="app_long_click_actions_desc">
+        <item>Show popup</item>
+        <item>Open app info</item>
+    </string-array>
+
+    <string-array name="search_targets">
+        <item>hidden</item>
+        <item>shortcut</item>
+        <item>web</item>
+        <item>url</item>
+    </string-array>
+    <string-array name="search_targets_desc">
+        <item>Hidden apps</item>
+        <item>Shortcuts</item>
+        <item>Web search</item>
+        <item>Detect URLs</item>
+    </string-array>
+
+    <string-array name="search_engines">
+        <item>google</item>
+    </string-array>
+    <string-array name="search_engines_desc">
+        <item>Google</item>
+    </string-array>
+</resources>

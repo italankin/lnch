@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="search_engines">
-        <item>google</item>
-    </string-array>
-    <string-array name="search_engines_desc">
-        <item>Google</item>
-    </string-array>
-</resources>
