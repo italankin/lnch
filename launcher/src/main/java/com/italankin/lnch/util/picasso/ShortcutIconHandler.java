@@ -3,7 +3,6 @@ package com.italankin.lnch.util.picasso;
 import android.content.Context;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -58,17 +57,13 @@ public class ShortcutIconHandler extends RequestHandler {
         if (shortcuts.isEmpty()) {
             return null;
         }
-        Drawable icon = launcherApps.getShortcutIconDrawable(shortcuts.get(0),
-                Resources.getSystem().getDisplayMetrics().densityDpi);
+        Drawable icon = launcherApps.getShortcutIconDrawable(shortcuts.get(0), 0);
         if (icon == null) {
             return null;
         }
-        int width = request.targetWidth, height = request.targetHeight;
-        if (icon.getIntrinsicWidth() != icon.getIntrinsicHeight()) {
-            float ratio = icon.getIntrinsicWidth() / (float) icon.getIntrinsicHeight();
-            width = Math.max(icon.getIntrinsicWidth(), request.targetWidth);
-            height = (int) (width / ratio);
-        }
+        float ratio = icon.getIntrinsicWidth() / (float) icon.getIntrinsicHeight();
+        int width = Math.max(icon.getIntrinsicWidth(), request.targetWidth);
+        int height = (int) (width / ratio);
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("width and height must be > 0");
         }
