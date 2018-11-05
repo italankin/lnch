@@ -21,7 +21,7 @@ import com.squareup.picasso.RequestHandler;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-public class ShortcutRequestHandler extends RequestHandler {
+public class ShortcutIconHandler extends RequestHandler {
 
     private static final String SCHEME = "shortcut";
     private static final String ID = "id";
@@ -40,7 +40,7 @@ public class ShortcutRequestHandler extends RequestHandler {
 
     private final LauncherApps launcherApps;
 
-    ShortcutRequestHandler(Context context) {
+    ShortcutIconHandler(Context context) {
         launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
     }
 

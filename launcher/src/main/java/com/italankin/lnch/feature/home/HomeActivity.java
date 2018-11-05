@@ -74,7 +74,7 @@ import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
+import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -595,7 +595,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             searchEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.searchbar_size),
                     searchEditText.getPaddingTop(), searchEditText.getPaddingRight(),
                     searchEditText.getPaddingBottom());
-            picasso.load(PackageManagerRequestHandler.uriFrom(searchActivity.getPackageName()))
+            picasso.load(PackageIconHandler.uriFrom(searchActivity.getPackageName()))
                     .error(R.drawable.ic_action_search)
                     .into(searchBtnGlobal);
         }

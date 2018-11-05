@@ -15,7 +15,7 @@ import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.ShortcutUtils;
-import com.italankin.lnch.util.picasso.ShortcutRequestHandler;
+import com.italankin.lnch.util.picasso.ShortcutIconHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -198,7 +198,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         @Override
         public Uri getIconUri() {
-            return ShortcutRequestHandler.uriFrom(this);
+            return ShortcutIconHandler.uriFrom(this);
         }
 
         @Override

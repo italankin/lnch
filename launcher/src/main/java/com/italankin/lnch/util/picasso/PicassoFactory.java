@@ -26,9 +26,9 @@ public class PicassoFactory {
                 Timber.tag("Picasso").e(exception, "Error while loading '%s'", uri);
             });
         }
-        builder.addRequestHandler(new PackageManagerRequestHandler(context));
+        builder.addRequestHandler(new PackageIconHandler(context));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            builder.addRequestHandler(new ShortcutRequestHandler(context));
+            builder.addRequestHandler(new ShortcutIconHandler(context));
         }
         builder.memoryCache(memoryCache);
         return builder.build();

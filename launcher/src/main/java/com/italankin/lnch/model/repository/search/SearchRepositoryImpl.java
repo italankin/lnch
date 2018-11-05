@@ -22,7 +22,7 @@ import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
+import com.italankin.lnch.util.picasso.PackageIconHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,7 +117,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 for (Shortcut shortcut : shortcuts) {
                     if (!shortcut.isDynamic() && contains(shortcut.getShortLabel().toString(), query)) {
                         PartialMatch match = new PartialMatch(Type.OTHER);
-                        match.icon = PackageManagerRequestHandler.uriFrom(shortcut.getPackageName());
+                        match.icon = PackageIconHandler.uriFrom(shortcut.getPackageName());
                         match.label = shortcut.getShortLabel();
                         match.color = Color.WHITE;
                         match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
@@ -138,7 +138,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (match.intent != null && item.componentName != null) {
                 match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
-            match.icon = PackageManagerRequestHandler.uriFrom(item.packageName);
+            match.icon = PackageIconHandler.uriFrom(item.packageName);
             match.descriptor = item;
         }
         return match;

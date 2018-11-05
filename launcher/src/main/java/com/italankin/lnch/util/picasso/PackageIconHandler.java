@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
 
-public class PackageManagerRequestHandler extends RequestHandler {
+public class PackageIconHandler extends RequestHandler {
 
     private static final String SCHEME = "pm";
 
@@ -22,7 +22,7 @@ public class PackageManagerRequestHandler extends RequestHandler {
 
     private final PackageManager packageManager;
 
-    PackageManagerRequestHandler(Context context) {
+    PackageIconHandler(Context context) {
         packageManager = context.getPackageManager();
     }
 

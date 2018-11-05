@@ -4,13 +4,13 @@ import android.net.Uri;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
-import com.italankin.lnch.util.picasso.PackageManagerRequestHandler;
+import com.italankin.lnch.util.picasso.PackageIconHandler;
 
 public class DecoratedAppViewModel extends AppViewModel {
     public final Uri icon;
 
     public DecoratedAppViewModel(AppDescriptor descriptor) {
         super(descriptor);
-        this.icon = PackageManagerRequestHandler.uriFrom(descriptor.packageName);
+        this.icon = PackageIconHandler.uriFrom(descriptor.packageName);
     }
 }
