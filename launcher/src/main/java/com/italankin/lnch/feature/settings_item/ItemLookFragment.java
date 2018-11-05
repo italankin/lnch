@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -145,10 +147,17 @@ public class ItemLookFragment extends AppFragment {
         View overlay = view.findViewById(R.id.overlay);
         overlay.setBackgroundColor(preferences.overlayColor());
         overlay.setOnClickListener(v -> {
+            Drawable background = v.getBackground();
+            int selectedColor;
+            if (background instanceof ColorDrawable) {
+                selectedColor = ((ColorDrawable) background).getColor();
+            } else {
+                selectedColor = preferences.overlayColor();
+            }
             ColorPickerDialog.builder(getContext())
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
-                    .setSelectedColor(preferences.overlayColor())
-                    .setOnColorPickedListener(overlay::setBackgroundColor)
+                    .setSelectedColor(selectedColor)
+                    .setOnColorPickedListener(v::setBackgroundColor)
                     .show();
         });
     }
