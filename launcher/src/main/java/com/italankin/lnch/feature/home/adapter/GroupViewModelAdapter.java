@@ -71,7 +71,7 @@ public class GroupViewModelAdapter
         @Nullable
         @Override
         TextView getLabel() {
-            return null;
+            return label;
         }
     }
 }
