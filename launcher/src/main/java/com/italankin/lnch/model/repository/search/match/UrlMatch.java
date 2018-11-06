@@ -9,6 +9,8 @@ import android.text.style.UnderlineSpan;
 
 import com.italankin.lnch.R;
 
+import java.util.Locale;
+
 public class UrlMatch extends PartialMatch {
 
     public UrlMatch(String url) {
@@ -16,7 +18,8 @@ public class UrlMatch extends PartialMatch {
         color = Color.WHITE;
         label = buildLabel(url);
         Uri uri;
-        if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
+        if (url.toLowerCase(Locale.getDefault()).startsWith("http://")
+                || url.toLowerCase(Locale.getDefault()).startsWith("https://")) {
             uri = Uri.parse(url);
         } else {
             uri = Uri.parse("http://" + url);

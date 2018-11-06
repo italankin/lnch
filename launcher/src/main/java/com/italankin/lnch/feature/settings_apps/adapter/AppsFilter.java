@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class AppsFilter extends Filter {
     public static final int FLAG_HIDDEN = 1;
@@ -70,7 +71,7 @@ public class AppsFilter extends Filter {
         if (TextUtils.isEmpty(constraint)) {
             return of(result);
         }
-        String query = constraint.toString().trim().toLowerCase();
+        String query = constraint.toString().trim().toLowerCase(Locale.getDefault());
         Iterator<DecoratedAppViewModel> iterator = result.iterator();
         while (iterator.hasNext()) {
             DecoratedAppViewModel item = iterator.next();

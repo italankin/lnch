@@ -12,7 +12,7 @@ public final class SearchUtils {
         if (what == null || word == null) {
             return false;
         }
-        String[] words = what.toLowerCase().split("\\s+");
+        String[] words = what.toLowerCase(Locale.getDefault()).split("\\s+");
         for (String w : words) {
             if (w.startsWith(word)) {
                 return true;

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 import static android.util.Patterns.WEB_URL;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
@@ -59,7 +60,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (constraint == null || constraint.length() == 0) {
             return Collections.emptyList();
         }
-        String query = constraint.toString().trim().toLowerCase();
+        String query = constraint.toString().trim().toLowerCase(Locale.getDefault());
         if (query.isEmpty()) {
             return Collections.emptyList();
         }
