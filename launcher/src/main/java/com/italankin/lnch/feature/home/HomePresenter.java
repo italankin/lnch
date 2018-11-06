@@ -40,6 +40,7 @@ import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
 import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,7 +62,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
      */
-    private List<DescriptorItem> items;
+    private List<DescriptorItem> items = Collections.emptyList();
     private AppsRepository.Editor editor;
 
     @Inject
