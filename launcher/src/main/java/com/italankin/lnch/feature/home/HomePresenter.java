@@ -302,6 +302,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .map(ViewModelFactory::createItems)
                 .doOnNext(this::restoreGroupsState)
                 .scan(Update.EMPTY, this::calculateUpdates)
+                .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Update>() {
                     @Override
