@@ -27,13 +27,11 @@
     <string name="popup_delete_action">Delete</string>
 
     <string name="customize_hint">Customize</string>
-    <string name="customize_save">Save</string>
     <string name="customize_saved">Saved</string>
     <string name="customize_discard_message">Discard changes?</string>
     <string name="customize_discard">Discard</string>
     <string name="customize_item_rename">Rename</string>
     <string name="customize_item_color">Color</string>
-    <string name="customize_item_hide">Hide</string>
     <string name="customize_item_add_group">Add separator</string>
     <string name="customize_item_delete">Delete</string>
     <string name="customize_action_reset">Reset</string>
