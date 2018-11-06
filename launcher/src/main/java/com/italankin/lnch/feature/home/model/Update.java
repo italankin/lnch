@@ -13,12 +13,18 @@ public final class Update {
     public static final Update EMPTY = new Update(Collections.emptyList(), null);
 
     public final List<DescriptorItem> items;
+    public UserPrefs userPrefs;
     @Nullable
     private final DiffUtil.DiffResult diffResult;
 
     public Update(List<DescriptorItem> items, @Nullable DiffUtil.DiffResult diffResult) {
-        this.diffResult = diffResult;
         this.items = items;
+        this.diffResult = diffResult;
+    }
+
+    public Update with(UserPrefs userPrefs) {
+        this.userPrefs = userPrefs;
+        return this;
     }
 
     public void dispatchTo(RecyclerView.Adapter<?> adapter) {
@@ -27,5 +33,13 @@ public final class Update {
         } else {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\nitems(" + items.size() + ")=" + items +
+                "\nuserPrefs=" + userPrefs +
+                "\n}";
     }
 }

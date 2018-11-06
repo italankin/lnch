@@ -52,7 +52,7 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
             label.setTextSize(itemPrefs.itemTextSize);
             label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
                     label.getShadowDy(), itemPrefs.itemShadowColor);
-            label.setTypeface(itemPrefs.itemFont);
+            label.setTypeface(itemPrefs.itemFont.typeface());
         } finally {
             holder.itemPrefs = itemPrefs;
         }

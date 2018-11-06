@@ -5,6 +5,8 @@ import android.support.annotation.ColorInt;
 
 import java.util.EnumSet;
 
+import io.reactivex.Observable;
+
 public interface Preferences {
 
     boolean searchShowSoftKeyboard();
@@ -49,6 +51,8 @@ public interface Preferences {
     void resetItemSettings();
 
     LongClickAction appLongClickAction();
+
+    Observable<String> observe();
 
     interface Constraints {
         int ITEM_TEXT_SIZE_MIN = 12;

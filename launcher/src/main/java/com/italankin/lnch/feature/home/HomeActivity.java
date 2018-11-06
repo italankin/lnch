@@ -211,17 +211,13 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_SETTINGS) {
-            switch (resultCode) {
-                case SettingsActivity.RESULT_EDIT_MODE:
-                    animateOnResume = false;
-                    presenter.startCustomize();
-                    return;
-                default:
-                    presenter.reloadAppsImmediate();
-            }
+        if (requestCode == REQUEST_CODE_SETTINGS && resultCode == SettingsActivity.RESULT_EDIT_MODE) {
+            animateOnResume = false;
+            presenter.startCustomize();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -243,11 +239,11 @@ public class HomeActivity extends AppActivity implements HomeView,
                     .create();
         }
         adapter.setDataset(update.items);
-        applyUserPrefs(userPrefs);
         list.setVisibility(View.VISIBLE);
         root.showContent();
         dismissPopup();
 
+        applyUserPrefs(userPrefs);
         boolean needsFullUpdate = adapter.updateUserPrefs(userPrefs);
         if (needsFullUpdate) {
             adapter.notifyDataSetChanged();

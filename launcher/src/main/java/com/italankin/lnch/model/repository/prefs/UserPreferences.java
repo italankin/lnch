@@ -2,6 +2,7 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 
@@ -10,18 +11,34 @@ import com.italankin.lnch.R;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
 
 public class UserPreferences implements Preferences {
 
     private final Context context;
     private final SharedPreferences prefs;
+    private final Observable<String> updates;
 
     @Inject
     public UserPreferences(Context context) {
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
+        this.updates = Observable
+                .<String>create(emitter -> {
+                    OnSharedPreferenceChangeListener listener = (sp, key) -> {
+                        if (!emitter.isDisposed()) {
+                            emitter.onNext(key);
+                        }
+                    };
+                    prefs.registerOnSharedPreferenceChangeListener(listener);
+                    emitter.setCancellable(() -> prefs.unregisterOnSharedPreferenceChangeListener(listener));
+                })
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .share();
     }
 
     @Override
@@ -152,5 +169,10 @@ public class UserPreferences implements Preferences {
     public LongClickAction appLongClickAction() {
         String pref = prefs.getString(context.getString(R.string.pref_misc_app_long_click_action), null);
         return LongClickAction.from(pref);
+    }
+
+    @Override
+    public Observable<String> observe() {
+        return updates;
     }
 }

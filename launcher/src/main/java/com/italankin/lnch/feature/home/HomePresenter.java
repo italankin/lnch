@@ -45,6 +45,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -79,17 +80,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
         reloadApps();
     }
 
-    void loadApps() {
-        getViewState().showProgress();
-        update();
-    }
-
     void reloadApps() {
-        observeApps();
-        loadApps();
-    }
-
-    void reloadAppsImmediate() {
+        observe();
+        getViewState().showProgress();
         update();
     }
 
@@ -102,7 +95,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
             throw new IllegalStateException("Editor is not null!");
         }
         editor = appsRepository.edit();
-        expandAll();
+        for (int i = 0, size = items.size(); i < size; i++) {
+            DescriptorItem item = items.get(i);
+            if (item instanceof ExpandableItem) {
+                setItemExpanded(items, i, true, true);
+            }
+        }
         getViewState().onStartCustomize();
     }
 
@@ -296,20 +294,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
-    private void observeApps() {
-        appsRepository.observe()
+    private void observe() {
+        Observable.combineLatest(observeApps(), observeUserPrefs(), Update::with)
                 .filter(appItems -> editor == null)
-                .map(ViewModelFactory::createItems)
-                .doOnNext(this::restoreGroupsState)
-                .scan(Update.EMPTY, this::calculateUpdates)
-                .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Update>() {
                     @Override
                     protected void onNext(HomeView viewState, Update update) {
-                        Timber.d("Receive update: %s", update.items);
+                        Timber.d("Update: %s", update);
                         items = update.items;
-                        viewState.onAppsLoaded(update, getUserPrefs());
+                        viewState.onAppsLoaded(update, update.userPrefs);
                         updateShortcuts();
                     }
 
@@ -324,20 +318,19 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
-    private UserPrefs getUserPrefs() {
-        UserPrefs userPrefs = new UserPrefs();
-        userPrefs.homeLayout = preferences.homeLayout();
-        userPrefs.overlayColor = preferences.overlayColor();
-        userPrefs.showScrollbar = preferences.showScrollbar();
-        UserPrefs.ItemPrefs itemPrefs = new UserPrefs.ItemPrefs();
-        itemPrefs.itemTextSize = preferences.itemTextSize();
-        itemPrefs.itemPadding = preferences.itemPadding();
-        itemPrefs.itemShadowRadius = preferences.itemShadowRadius();
-        itemPrefs.itemFont = preferences.itemFont().typeface();
-        itemPrefs.itemShadowColor = preferences.itemShadowColor();
-        userPrefs.itemPrefs = itemPrefs;
-        userPrefs.globalSearch = preferences.searchShowGlobal();
-        return userPrefs;
+    private Observable<Update> observeApps() {
+        return appsRepository.observe()
+                .map(ViewModelFactory::createItems)
+                .doOnNext(this::restoreGroupsState)
+                .scan(Update.EMPTY, this::calculateUpdates)
+                .skip(1);
+    }
+
+    private Observable<UserPrefs> observeUserPrefs() {
+        return preferences.observe()
+                .map(s -> new UserPrefs(preferences))
+                .startWith(new UserPrefs(preferences))
+                .distinctUntilChanged();
     }
 
     private void restoreGroupsState(List<DescriptorItem> items) {
@@ -384,15 +377,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
             getViewState().onItemsInserted(startIndex, count);
         } else {
             getViewState().onItemsRemoved(startIndex, count);
-        }
-    }
-
-    private void expandAll() {
-        for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorItem item = items.get(i);
-            if (item instanceof ExpandableItem) {
-                setItemExpanded(items, i, true, true);
-            }
         }
     }
 
