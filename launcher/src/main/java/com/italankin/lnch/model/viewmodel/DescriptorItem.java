@@ -2,8 +2,14 @@ package com.italankin.lnch.model.viewmodel;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 
+/**
+ * Visual representation of {@link Descriptor}
+ */
 public interface DescriptorItem {
 
+    /**
+     * @return descriptor this item represents
+     */
     Descriptor getDescriptor();
 
     /**
