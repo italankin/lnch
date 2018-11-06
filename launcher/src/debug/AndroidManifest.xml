@@ -4,6 +4,7 @@
 
     <application
         android:name=".DebugLauncherApp"
+        tools:ignore="all"
         tools:replace="name" />
 
 </manifest>
