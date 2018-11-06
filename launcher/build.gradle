@@ -55,5 +55,7 @@ dependencies {
     implementation customTabs
 
     implementation flexbox
-    implementation picasso
+    implementation(picasso) {
+        exclude group: 'com.android.support'
+    }
 }
