@@ -38,6 +38,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
@@ -252,6 +253,11 @@ public class HomeActivity extends AppActivity implements HomeView,
             adapter.notifyDataSetChanged();
         } else {
             update.dispatchTo(adapter);
+        }
+
+        if (BuildConfig.DEBUG && getIntent().hasExtra("EDIT_MODE")) {
+            getIntent().removeExtra("EDIT_MODE");
+            presenter.startCustomize();
         }
     }
 
