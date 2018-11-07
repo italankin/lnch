@@ -33,4 +33,8 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:textColorSecondary">?colorTextSecondary</item>
     </style>
+
+    <style name="AppTheme.Dark.Overlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorSecondary">?colorText</item>
+    </style>
 </resources>
