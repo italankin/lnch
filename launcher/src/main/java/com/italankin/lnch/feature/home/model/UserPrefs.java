@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home.model;
 
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
@@ -70,7 +71,8 @@ public final class UserPrefs {
         public int itemPadding;
         public float itemShadowRadius;
         @ColorInt
-        public int itemShadowColor;
+        @Nullable
+        public Integer itemShadowColor;
         public Preferences.Font itemFont;
 
         private ItemPrefs(Preferences preferences) {
@@ -99,7 +101,9 @@ public final class UserPrefs {
             if (Float.compare(itemPrefs.itemShadowRadius, itemShadowRadius) != 0) {
                 return false;
             }
-            if (itemShadowColor != itemPrefs.itemShadowColor) {
+            if (itemShadowColor != null
+                    ? itemShadowColor.equals(itemPrefs.itemShadowColor)
+                    : itemPrefs.itemShadowColor != null) {
                 return false;
             }
             return itemFont == itemPrefs.itemFont;
@@ -111,7 +115,9 @@ public final class UserPrefs {
             result = 31 * result + itemPadding;
             result = 31 * result + (itemShadowRadius != +0.0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
-            result = 31 * result + itemShadowColor;
+            if (itemShadowColor != null) {
+                result = 31 * result + itemShadowColor;
+            }
             return result;
         }
 
@@ -121,7 +127,7 @@ public final class UserPrefs {
                     "itemTextSize=" + itemTextSize +
                     ", itemPadding=" + itemPadding +
                     ", itemShadowRadius=" + itemShadowRadius +
-                    ", itemShadowColor=" + String.format("#%08x", itemShadowColor) +
+                    ", itemShadowColor=" + (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
                     ", itemFont=" + itemFont +
                     '}';
         }

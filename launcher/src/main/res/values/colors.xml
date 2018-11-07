@@ -2,6 +2,4 @@
 <resources>
     <color name="launcher_background">#212121</color>
     <color name="pinned_shortcut_default">#ffffff</color>
-    <color name="item_default_shadow_color">#60000000</color>
-    <color name="search_bar_background">#1fff</color>
 </resources>

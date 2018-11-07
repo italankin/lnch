@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 
 import com.italankin.lnch.R;
 
@@ -133,10 +134,11 @@ public class UserPreferences implements Preferences {
         prefs.edit().putInt(context.getString(R.string.pref_item_shadow_color), color).apply();
     }
 
+    @Nullable
     @Override
-    public int itemShadowColor() {
-        return prefs.getInt(context.getString(R.string.pref_item_shadow_color),
-                context.getColor(R.color.item_default_shadow_color));
+    public Integer itemShadowColor() {
+        String key = context.getString(R.string.pref_item_shadow_color);
+        return prefs.contains(key) ? prefs.getInt(key, 0) : null;
     }
 
     @Override

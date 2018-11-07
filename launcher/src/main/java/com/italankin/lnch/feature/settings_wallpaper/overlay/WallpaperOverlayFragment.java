@@ -130,8 +130,12 @@ public class WallpaperOverlayFragment extends AppFragment {
         int padding = ResUtils.px2dp(getContext(), preferences.itemPadding());
         itemPreview.setPadding(padding, padding, padding, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
+        Integer shadowColor = preferences.itemShadowColor();
+        if (shadowColor == null) {
+            shadowColor = ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault);
+        }
         itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
-                itemPreview.getShadowDy(), preferences.itemShadowColor());
+                itemPreview.getShadowDy(), shadowColor);
         itemPreview.setTypeface(preferences.itemFont().typeface());
     }
 

@@ -239,9 +239,11 @@ public class ItemLookFragment extends AppFragment {
 
     private void initShadowColor(View view) {
         itemShadowColor = view.findViewById(R.id.item_shadow_color);
-        int shadowColor = preferences.itemShadowColor();
+        Integer shadowColor = preferences.itemShadowColor();
         itemShadowColor.setValueHolder(new ValuePrefView.ColorValueHolder());
-        itemShadowColor.setValue(shadowColor);
+        itemShadowColor.setValue(shadowColor != null
+                ? shadowColor
+                : ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault));
         itemShadowColor.setOnClickListener(v -> {
             ColorPickerDialog.builder(getContext())
                     .setColorModel(ColorPickerView.ColorModel.ARGB)

@@ -2,6 +2,7 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 
@@ -41,8 +42,9 @@ public interface Preferences {
 
     void setItemShadowColor(@ColorInt int color);
 
+    @Nullable
     @ColorInt
-    int itemShadowColor();
+    Integer itemShadowColor();
 
     void setItemFont(Font font);
 
