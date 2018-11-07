@@ -3,6 +3,7 @@
     <attr name="colorText" format="color|reference" />
     <attr name="colorTextSecondary" format="color|reference" />
     <attr name="colorDivider" format="color|reference" />
+    <attr name="colorSelector" format="color|reference" />
     <attr name="colorIconTint" format="color|reference" />
     <attr name="colorGroupTitleDefault" format="color|reference" />
     <attr name="colorPopupBackground" format="color|reference" />
