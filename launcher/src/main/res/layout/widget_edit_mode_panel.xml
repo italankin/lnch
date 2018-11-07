@@ -18,7 +18,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
-        android:textColor="#fff"
+        android:textColor="?colorText"
         android:textSize="16sp"
         tools:ignore="RtlHardcoded"
         tools:text="@string/customize_hint" />

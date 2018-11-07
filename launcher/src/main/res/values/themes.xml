@@ -6,8 +6,11 @@
         <item name="colorAccent">#f9a825</item>
         <item name="android:statusBarColor">?colorPrimaryDark</item>
 
+        <item name="colorText">#fff</item>
+        <item name="colorTextSecondary">#888</item>
         <item name="colorIconTint">#fff</item>
-        <item name="colorGroupTitleDefault">#fff</item>
+        <item name="colorDivider">#17ffffff</item>
+        <item name="colorGroupTitleDefault">?colorText</item>
         <item name="colorPopupBackground">#212121</item>
         <item name="colorPopupActionsBackground">#424242</item>
         <item name="colorItemShadowDefault">#60000000</item>
@@ -24,6 +27,6 @@
 
     <style name="AppTheme.Dark.Preferences">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:textColorSecondary">#fff</item>
+        <item name="android:textColorSecondary">?colorText</item>
     </style>
 </resources>

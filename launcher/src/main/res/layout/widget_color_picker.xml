@@ -30,7 +30,7 @@
         android:fontFamily="monospace"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="#fff"
+        android:textColor="?colorText"
         android:visibility="gone"
         tools:text="#ffff0000"
         tools:visibility="visible" />

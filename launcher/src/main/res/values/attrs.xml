@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorText" format="color|reference" />
+    <attr name="colorTextSecondary" format="color|reference" />
+    <attr name="colorDivider" format="color|reference" />
     <attr name="colorIconTint" format="color|reference" />
     <attr name="colorGroupTitleDefault" format="color|reference" />
     <attr name="colorPopupBackground" format="color|reference" />
