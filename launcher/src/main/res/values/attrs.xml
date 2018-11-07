@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- primary text color -->
     <attr name="colorText" format="color|reference" />
+
+    <!-- secondary text color, muted -->
     <attr name="colorTextSecondary" format="color|reference" />
+
+    <!-- divier color (e.g. for lists) -->
     <attr name="colorDivider" format="color|reference" />
+
+    <!-- color for selectable backgrounds -->
     <attr name="colorSelector" format="color|reference" />
+
+    <!-- icons tint -->
     <attr name="colorIconTint" format="color|reference" />
+
+    <!-- default group title color -->
     <attr name="colorGroupTitleDefault" format="color|reference" />
+
+    <!-- background color of the popup -->
     <attr name="colorPopupBackground" format="color|reference" />
+
+    <!-- background color of the popup actions container -->
     <attr name="colorPopupActionsBackground" format="color|reference" />
+
+    <!-- default item shadow -->
     <attr name="colorItemShadowDefault" format="color|reference" />
+
+    <!-- background color of the search bar -->
     <attr name="colorSearchBarBackground" format="color|reference" />
+
+    <!-- background color for edit panel (home customization) -->
     <attr name="colorEditPanelBackground" format="color|reference" />
 </resources>
