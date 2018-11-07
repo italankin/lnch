@@ -1,5 +1,9 @@
 <resources>
 
+    <style name="AppTheme" />
+
+    <!-- Dark -->
+
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#1a1a1a</item>
@@ -27,6 +31,6 @@
 
     <style name="AppTheme.Dark.Preferences">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:textColorSecondary">?colorText</item>
+        <item name="android:textColorSecondary">?colorTextSecondary</item>
     </style>
 </resources>
