@@ -8,6 +8,9 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     android:fitsSystemWindows="true"
+    tools:background="@tools:sample/backgrounds/scenic"
+    tools:backgroundTint="#a000"
+    tools:backgroundTintMode="src_atop"
     tools:ignore="RtlSymmetry,RtlHardcoded">
 
     <android.support.design.widget.CoordinatorLayout

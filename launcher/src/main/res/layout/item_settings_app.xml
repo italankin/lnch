@@ -7,7 +7,6 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="16dp"
-    tools:background="#444"
     tools:ignore="RtlSymmetry">
 
     <ImageView
@@ -55,7 +54,6 @@
         android:layout_alignParentEnd="true"
         android:background="?selectableItemBackground"
         android:padding="16dp"
-        tools:background="#555"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_visibility_on" />
 
