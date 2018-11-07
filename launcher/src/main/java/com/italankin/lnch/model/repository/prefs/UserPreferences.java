@@ -43,6 +43,11 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public ColorTheme colorTheme() {
+        return ColorTheme.DARK;
+    }
+
+    @Override
     public boolean searchShowSoftKeyboard() {
         return prefs.getBoolean(context.getString(R.string.pref_search_show_soft_keyboard), true);
     }

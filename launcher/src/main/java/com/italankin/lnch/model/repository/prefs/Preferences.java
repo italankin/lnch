@@ -10,6 +10,8 @@ import io.reactivex.Observable;
 
 public interface Preferences {
 
+    ColorTheme colorTheme();
+
     boolean searchShowSoftKeyboard();
 
     boolean searchShowGlobal();
@@ -74,6 +76,26 @@ public interface Preferences {
     ///////////////////////////////////////////////////////////////////////////
     // Enums
     ///////////////////////////////////////////////////////////////////////////
+
+    enum ColorTheme {
+        DARK("dark"),
+        LIGHT("light");
+
+        static ColorTheme from(String s) {
+            for (ColorTheme value : values()) {
+                if (value.key.equals(s)) {
+                    return value;
+                }
+            }
+            return DARK;
+        }
+
+        private final String key;
+
+        ColorTheme(String key) {
+            this.key = key;
+        }
+    }
 
     enum HomeLayout {
         COMPACT("compact"),
