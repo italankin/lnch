@@ -13,6 +13,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.IntentUtils;
@@ -51,17 +52,21 @@ public class LauncherAppsRepository implements AppsRepository {
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final LauncherApps launcherApps;
+    private final Preferences preferences;
+
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+            Preferences preferences) {
         this.context = context;
         this.packageManager = packageManager;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        this.preferences = preferences;
         updater = loadAll()
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
@@ -214,7 +219,8 @@ public class LauncherAppsRepository implements AppsRepository {
                                 if (app.versionCode != versionCode) {
                                     app.versionCode = versionCode;
                                     app.label = getLabel(info);
-                                    app.color = getDominantIconColor(info);
+                                    app.color = getDominantIconColor(info,
+                                            preferences.colorTheme() == Preferences.ColorTheme.DARK);
                                 }
                                 if (app.componentName != null) {
                                     app.componentName = getComponentName(info);
@@ -301,7 +307,8 @@ public class LauncherAppsRepository implements AppsRepository {
         AppDescriptor item = new AppDescriptor(packageName);
         item.versionCode = getVersionCode(packageManager, packageName);
         item.label = getLabel(info);
-        item.color = getDominantIconColor(info);
+        item.color = getDominantIconColor(info,
+                preferences.colorTheme() == Preferences.ColorTheme.DARK);
         return item;
     }
 

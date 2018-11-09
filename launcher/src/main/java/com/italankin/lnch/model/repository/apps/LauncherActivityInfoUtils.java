@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
+import android.support.v7.graphics.Target;
 import android.util.TypedValue;
 
 import java.util.Locale;
@@ -36,17 +37,30 @@ final class LauncherActivityInfoUtils {
         return info.getComponentName().flattenToString();
     }
 
-    static int getDominantIconColor(LauncherActivityInfo info) {
+    static int getDominantIconColor(LauncherActivityInfo info, boolean darkTheme) {
         Bitmap bitmap = getIconBitmap(info.getIcon(0));
-        Palette palette = Palette.from(bitmap).generate();
-        int dominant = palette.getDominantColor(Color.WHITE);
-        float[] hsv = new float[3];
-        Color.colorToHSV(dominant, hsv);
-        if (hsv[2] < 0.25) {
-            hsv[2] = 0.25f;
-            return Color.HSVToColor(hsv);
+        int color;
+        if (darkTheme) {
+            color = new Palette.Builder(bitmap)
+                    .addTarget(Target.LIGHT_VIBRANT)
+                    .generate()
+                    .getLightVibrantColor(Color.WHITE);
+        } else {
+            color = new Palette.Builder(bitmap)
+                    .addTarget(Target.DARK_VIBRANT)
+                    .generate()
+                    .getDarkVibrantColor(Color.BLACK);
         }
-        return dominant;
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        if (darkTheme) {
+            if (hsv[2] < 0.25) {
+                hsv[2] = 0.25f;
+            }
+        } else if (hsv[2] > 0.75) {
+            hsv[2] = 0.75f;
+        }
+        return Color.HSVToColor(hsv);
     }
 
     private static Bitmap getIconBitmap(Drawable icon) {

@@ -46,8 +46,10 @@ public class MainModule {
     @Provides
     @Singleton
     public AppsRepository provideAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
-        return new LauncherAppsRepository(context, packageManager, descriptorRepository, shortcutsRepository);
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+            Preferences preferences) {
+        return new LauncherAppsRepository(context, packageManager, descriptorRepository,
+                shortcutsRepository, preferences);
     }
 
     @Provides
