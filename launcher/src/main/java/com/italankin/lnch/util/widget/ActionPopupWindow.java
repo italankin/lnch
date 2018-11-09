@@ -12,6 +12,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -94,7 +95,11 @@ public class ActionPopupWindow extends PopupWindow {
     public ActionPopupWindow addAction(ItemBuilder item) {
         ImageView imageView = (ImageView) inflater.inflate(R.layout.item_popup_action, actionContainer, false);
         if (item.iconDrawable != null) {
-            imageView.setImageDrawable(item.iconDrawable);
+            Drawable drawable = item.iconDrawable.mutate();
+            if (item.iconDrawableTint != null) {
+                drawable.setTint(item.iconDrawableTint);
+            }
+            imageView.setImageDrawable(drawable);
         } else if (item.iconUri != null) {
             ViewUtils.onGlobalLayout(imageView, () -> picasso.load(item.iconUri)
                     .resizeDimen(R.dimen.popup_action_icon_size, R.dimen.popup_action_icon_size)
@@ -123,7 +128,9 @@ public class ActionPopupWindow extends PopupWindow {
         labelView.setText(item.label);
         if (item.iconDrawable != null) {
             Drawable drawable = item.iconDrawable.mutate();
-            drawable.setTint(ResUtils.resolveColor(context, R.attr.colorAccent));
+            if (item.iconDrawableTint != null) {
+                drawable.setTint(item.iconDrawableTint);
+            }
             iconView.setImageDrawable(drawable);
         } else if (item.iconUri != null) {
             ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
@@ -210,6 +217,8 @@ public class ActionPopupWindow extends PopupWindow {
         private final Context context;
         private CharSequence label;
         private Drawable iconDrawable;
+        @ColorInt
+        private Integer iconDrawableTint;
         private Uri iconUri;
         private boolean enabled = true;
         private View.OnClickListener onClickListener;
@@ -241,6 +250,15 @@ public class ActionPopupWindow extends PopupWindow {
         public ItemBuilder setIcon(Drawable icon) {
             this.iconDrawable = icon;
             return this;
+        }
+
+        public ItemBuilder setIconDrawableTint(@ColorInt int tint) {
+            this.iconDrawableTint = tint;
+            return this;
+        }
+
+        public ItemBuilder setIconDrawableTintAttr(@AttrRes int attr) {
+            return setIconDrawableTint(ResUtils.resolveColor(context, attr));
         }
 
         public ItemBuilder setEnabled(boolean enabled) {

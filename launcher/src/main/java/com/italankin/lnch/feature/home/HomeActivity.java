@@ -361,9 +361,9 @@ public class HomeActivity extends AppActivity implements HomeView,
 
         ActionPopupWindow popup = new ActionPopupWindow(this, picasso);
         if (shortcuts.isEmpty()) {
-            popup.addShortcut(infoItem);
+            popup.addShortcut(infoItem.setIconDrawableTintAttr(R.attr.colorAccent));
             if (uninstallAvailable) {
-                popup.addShortcut(uninstallItem);
+                popup.addShortcut(uninstallItem.setIconDrawableTintAttr(R.attr.colorAccent));
             }
         } else {
             popup.addAction(infoItem);
@@ -817,6 +817,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setLabel(R.string.customize_item_rename)
                     .setIcon(R.drawable.ic_action_rename)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> setItemCustomLabel(position, (CustomLabelItem) item))
             );
         }
@@ -824,6 +825,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setLabel(R.string.customize_item_color)
                     .setIcon(R.drawable.ic_action_color)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> setItemColor(position, (CustomColorItem) item))
             );
         }
@@ -831,6 +833,7 @@ public class HomeActivity extends AppActivity implements HomeView,
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setLabel(R.string.customize_item_add_group)
                     .setIcon(R.drawable.ic_action_add_group)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> {
                         presenter.addGroup(position, getString(R.string.new_group_label),
                                 ResUtils.resolveColor(this, R.attr.colorGroupTitleDefault));
@@ -894,6 +897,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (item instanceof DeepShortcutViewModel) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setIcon(R.drawable.ic_app_info)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
                         startAppSettings(((DeepShortcutViewModel) item).packageName);
@@ -903,6 +907,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         if (item instanceof RemovableItem) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setIcon(R.drawable.ic_action_delete)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.customize_item_delete)
                     .setOnClickListener(v -> {
                         String visibleLabel = ((CustomLabelItem) item).getVisibleLabel();
