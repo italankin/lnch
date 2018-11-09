@@ -41,6 +41,7 @@
 
         <activity
             android:name=".feature.settings.SettingsActivity"
+            android:autoRemoveFromRecents="true"
             android:label="@string/title_settings_lnch"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Dark.Preferences"
