@@ -317,7 +317,7 @@ public class LauncherAppsRepository implements AppsRepository {
         final List<Descriptor> items;
         final boolean changed;
 
-        public AppsData(List<Descriptor> items, boolean changed) {
+        AppsData(List<Descriptor> items, boolean changed) {
             this.items = items;
             this.changed = changed;
         }
