@@ -20,10 +20,6 @@ public class FilterCompositeAdapter<T> extends CompositeAdapter<T> implements Fi
         return filter;
     }
 
-    public void filter(CharSequence constaint) {
-        filter.filter(constaint);
-    }
-
     public static class Builder<T> extends BaseBuilder<T, Builder<T>> {
         private Filter filter;
 

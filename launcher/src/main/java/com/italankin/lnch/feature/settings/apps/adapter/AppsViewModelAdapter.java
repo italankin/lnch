@@ -7,11 +7,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 import com.squareup.picasso.Picasso;
 
-public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, DecoratedAppViewModel> {
+public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, AppWithIconViewModel> {
     private final Picasso picasso;
     private final Listener listener;
 
@@ -29,12 +29,6 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     @Override
     protected AppViewModelHolder createViewHolder(View itemView) {
         AppViewModelHolder holder = new AppViewModelHolder(itemView);
-        holder.itemView.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
-            if (pos != RecyclerView.NO_POSITION) {
-                listener.onItemClick(pos, getItem(pos));
-            }
-        });
         holder.visibility.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
@@ -45,19 +39,17 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     @Override
-    public void onBind(AppViewModelHolder holder, int position, DecoratedAppViewModel item) {
+    public void onBind(AppViewModelHolder holder, int position, AppWithIconViewModel item) {
         holder.bind(item);
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof DecoratedAppViewModel;
+        return item instanceof AppWithIconViewModel;
     }
 
     public interface Listener {
-        void onItemClick(int position, DecoratedAppViewModel item);
-
-        void onVisibilityClick(int position, DecoratedAppViewModel item);
+        void onVisibilityClick(int position, AppWithIconViewModel item);
     }
 
     class AppViewModelHolder extends RecyclerView.ViewHolder {
@@ -77,7 +69,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
             visibility = itemView.findViewById(R.id.visibility);
         }
 
-        void bind(DecoratedAppViewModel item) {
+        void bind(AppWithIconViewModel item) {
             visibility.setImageResource(item.isHidden() ? R.drawable.ic_visibility_off :
                     R.drawable.ic_visibility_on);
             label.setText(item.getVisibleLabel());

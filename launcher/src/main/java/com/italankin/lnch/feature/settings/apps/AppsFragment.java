@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings.apps;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +21,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
-import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
+import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
@@ -36,7 +38,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private LceLayout lce;
     private RecyclerView list;
-    private FilterCompositeAdapter<DecoratedAppViewModel> adapter;
+    private CompositeAdapter<AppWithIconViewModel> adapter;
     private AppsFilter filter;
 
     @ProvidePresenter
@@ -72,13 +74,13 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                adapter.filter(query);
+                filter.filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
+                filter.filter(newText);
                 return false;
             }
         });
@@ -109,16 +111,16 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onAppsLoaded(List<DecoratedAppViewModel> apps) {
+    public void onAppsLoaded(List<AppWithIconViewModel> apps) {
+        Context context = requireContext();
+        Picasso picasso = daggerService().main().getPicassoFactory().create(context);
         filter = new AppsFilter(apps, this);
-        Picasso picasso = daggerService().main().getPicassoFactory().create(requireContext());
-        adapter = (FilterCompositeAdapter<DecoratedAppViewModel>)
-                new FilterCompositeAdapter.Builder<DecoratedAppViewModel>(requireContext())
-                        .filter(filter)
-                        .add(new AppsViewModelAdapter(picasso, this))
-                        .recyclerView(list)
-                        .dataset(apps)
-                        .create();
+        adapter = new FilterCompositeAdapter.Builder<AppWithIconViewModel>(context)
+                .filter(filter)
+                .add(new AppsViewModelAdapter(picasso, this))
+                .recyclerView(list)
+                .dataset(apps)
+                .create();
         lce.showContent();
     }
 
@@ -136,19 +138,15 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onItemClick(int position, DecoratedAppViewModel item) {
-        onVisibilityClick(position, item);
-    }
-
-    @Override
-    public void onVisibilityClick(int position, DecoratedAppViewModel item) {
+    public void onVisibilityClick(int position, AppWithIconViewModel item) {
         presenter.toggleAppVisibility(position, item);
     }
 
     @Override
-    public void onFilterResult(String query, List<DecoratedAppViewModel> items) {
+    public void onFilterResult(String query, List<AppWithIconViewModel> items) {
         if (items.isEmpty()) {
-            String message = TextUtils.isEmpty(query) ? getString(R.string.search_empty)
+            String message = TextUtils.isEmpty(query)
+                    ? getString(R.string.search_empty)
                     : getString(R.string.search_placeholder, query);
             lce.empty()
                     .message(message)
@@ -168,9 +166,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         };
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_apps_filter)
-                .setMultiChoiceItems(R.array.settings_apps_filter_items, itemsState, (dialog, which, isChecked) -> {
-                    itemsState[which] = isChecked;
-                })
+                .setMultiChoiceItems(R.array.settings_apps_filter_items, itemsState,
+                        (dialog, which, isChecked) -> itemsState[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.settings_apps_filter_reset, (dialog, which) -> {
                     filter.resetFlags();
@@ -192,9 +189,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_apps_reset)
                 .setMessage(R.string.settings_apps_reset_message)
-                .setPositiveButton(R.string.settings_apps_reset_action, (dialog, which) -> {
-                    presenter.resetAppsSettings();
-                })
+                .setPositiveButton(R.string.settings_apps_reset_action, (dialog, which) -> presenter.resetAppsSettings())
                 .setNegativeButton(R.string.cancel, null)
                 .show();
     }

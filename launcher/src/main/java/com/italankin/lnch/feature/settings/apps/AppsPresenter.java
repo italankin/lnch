@@ -2,7 +2,7 @@ package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
@@ -33,7 +33,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         loadApps();
     }
 
-    void toggleAppVisibility(int position, DecoratedAppViewModel item) {
+    void toggleAppVisibility(int position, AppWithIconViewModel item) {
         boolean hidden = !item.isHidden();
         item.setHidden(hidden);
         editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !hidden));
@@ -57,14 +57,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .take(1)
                 .concatMapIterable(Functions.identity())
                 .ofType(AppDescriptor.class)
-                .map(DecoratedAppViewModel::new)
+                .map(AppWithIconViewModel::new)
                 .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
                         .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<DecoratedAppViewModel>>() {
+                .subscribe(new SingleState<List<AppWithIconViewModel>>() {
                     @Override
-                    protected void onSuccess(AppsView viewState, List<DecoratedAppViewModel> apps) {
+                    protected void onSuccess(AppsView viewState, List<AppWithIconViewModel> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 

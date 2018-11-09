@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Filter;
 
-import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.util.SearchUtils;
 
 import java.util.ArrayList;
@@ -28,14 +28,14 @@ public class AppsFilter extends Filter {
     }
 
     @NonNull
-    private final List<DecoratedAppViewModel> unfiltered;
+    private final List<AppWithIconViewModel> unfiltered;
     @Nullable
     private final OnFilterResult onFilterResult;
 
     private volatile int flags = DEFAULT_FLAGS;
     private volatile CharSequence constraint;
 
-    public AppsFilter(@NonNull List<DecoratedAppViewModel> items, @Nullable OnFilterResult onFilterResult) {
+    public AppsFilter(@NonNull List<AppWithIconViewModel> items, @Nullable OnFilterResult onFilterResult) {
         this.unfiltered = items;
         this.onFilterResult = onFilterResult;
     }
@@ -58,8 +58,8 @@ public class AppsFilter extends Filter {
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         this.constraint = constraint;
-        List<DecoratedAppViewModel> result = new ArrayList<>(unfiltered.size());
-        for (DecoratedAppViewModel item : unfiltered) {
+        List<AppWithIconViewModel> result = new ArrayList<>(unfiltered.size());
+        for (AppWithIconViewModel item : unfiltered) {
             if (!item.isHidden() && (flags & FLAG_VISIBLE) == 0) {
                 continue;
             }
@@ -72,9 +72,9 @@ public class AppsFilter extends Filter {
             return of(result);
         }
         String query = constraint.toString().trim().toLowerCase(Locale.getDefault());
-        Iterator<DecoratedAppViewModel> iterator = result.iterator();
+        Iterator<AppWithIconViewModel> iterator = result.iterator();
         while (iterator.hasNext()) {
-            DecoratedAppViewModel item = iterator.next();
+            AppWithIconViewModel item = iterator.next();
             if (!SearchUtils.contains(item.getDescriptor().label, query) &&
                     !SearchUtils.contains(item.getCustomLabel(), query) &&
                     !SearchUtils.contains(item.packageName, query)) {
@@ -89,11 +89,11 @@ public class AppsFilter extends Filter {
     protected void publishResults(CharSequence constraint, FilterResults filterResults) {
         if (onFilterResult != null) {
             onFilterResult.onFilterResult(constraint == null ? null : constraint.toString(),
-                    (List<DecoratedAppViewModel>) filterResults.values);
+                    (List<AppWithIconViewModel>) filterResults.values);
         }
     }
 
-    private static FilterResults of(List<DecoratedAppViewModel> items) {
+    private static <T> FilterResults of(List<T> items) {
         if (items.size() == 0) {
             return EMPTY;
         }
@@ -104,6 +104,6 @@ public class AppsFilter extends Filter {
     }
 
     public interface OnFilterResult {
-        void onFilterResult(String query, List<DecoratedAppViewModel> items);
+        void onFilterResult(String query, List<AppWithIconViewModel> items);
     }
 }
