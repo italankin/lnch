@@ -60,6 +60,15 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+        if (fragment instanceof BackButtonHandler && !((BackButtonHandler) fragment).onBackPressed()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public void launchEditMode() {
         finish();
         startActivity(new Intent(HomeActivity.ACTION_EDIT_MODE));
