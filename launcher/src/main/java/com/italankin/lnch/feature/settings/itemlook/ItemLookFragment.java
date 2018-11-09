@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.settings.BackButtonHandler;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
@@ -30,7 +31,7 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
-public class ItemLookFragment extends AppFragment {
+public class ItemLookFragment extends AppFragment implements BackButtonHandler {
 
     private static final int REQUEST_CODE_PERMISSION = 1;
 
@@ -123,6 +124,23 @@ public class ItemLookFragment extends AppFragment {
                 Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (isChanged()) {
+            new AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.settings_item_look_discard_message)
+                    .setPositiveButton(R.string.settings_item_look_discard_button, (dialog, which) -> {
+                        if (callbacks != null) {
+                            callbacks.onItemLookFinish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+            return false;
+        }
+        return true;
     }
 
     private void initRoot(View view) {
@@ -287,6 +305,35 @@ public class ItemLookFragment extends AppFragment {
         preferences.setItemShadowRadius(shadowRadius);
         preferences.setItemShadowColor(shadowColor);
         preferences.setItemFont(font);
+    }
+
+    private boolean isChanged() {
+        float textSize = itemTextSize.getProgress() + Constraints.ITEM_TEXT_SIZE_MIN;
+        if (Float.compare(textSize, preferences.itemTextSize()) != 0) {
+            return true;
+        }
+
+        int padding = itemPadding.getProgress() + Constraints.ITEM_PADDING_MIN;
+        if (padding != preferences.itemPadding()) {
+            return true;
+        }
+
+        float shadowRadius = itemShadowRadius.getProgress();
+        if (Float.compare(shadowRadius, preferences.itemShadowRadius()) != 0) {
+            return true;
+        }
+
+        int shadowColor = itemShadowColor.getValue();
+        Integer currentShadowColor = preferences.itemShadowColor();
+        if (currentShadowColor == null) {
+            if (shadowColor != ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault)) {
+                return true;
+            }
+        } else if (currentShadowColor != shadowColor) {
+            return true;
+        }
+
+        return itemFont.getValue() != preferences.itemFont();
     }
 
     public interface Callbacks {

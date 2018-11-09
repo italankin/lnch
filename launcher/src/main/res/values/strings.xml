@@ -96,6 +96,8 @@
         <item>Serif</item>
         <item>Monospace</item>
     </string-array>
+    <string name="settings_item_look_discard_message">Discard changes?</string>
+    <string name="settings_item_look_discard_button">Discard</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
 </resources>
