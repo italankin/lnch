@@ -12,6 +12,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 abstract class AbstractColorModelController implements ColorModelController {
@@ -63,23 +64,12 @@ abstract class AbstractColorModelController implements ColorModelController {
         });
         root.addView(rowView);
         Row row = new Row(rowView, labelView, seekBarView, valueView);
-        seekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                row.update();
-                if (listener != null) {
-                    listener.onColorChanged(getColor());
-                }
+        seekBarView.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+            row.update();
+            if (listener != null) {
+                listener.onColorChanged(getColor());
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
+        }));
         return row;
     }
 
