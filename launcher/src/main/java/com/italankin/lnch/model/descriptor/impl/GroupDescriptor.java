@@ -31,7 +31,7 @@ public class GroupDescriptor implements Descriptor, CustomColorDescriptor, Custo
     }
 
     public GroupDescriptor(String label, int color) {
-        this.id = UUID.randomUUID().toString();
+        this.id = "group/" + UUID.randomUUID().toString();
         this.label = label;
         this.color = color;
     }
