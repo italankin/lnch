@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -175,7 +176,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
                 PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        view.setBackground(wm.getDrawable());
+        view.<ImageView>findViewById(R.id.wallpaper).setImageDrawable(wm.getDrawable());
     }
 
     private void initOverlay(View view) {

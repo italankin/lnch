@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class WallpaperOverlayFragment extends AppFragment {
 
     private Preferences preferences;
     private ColorPickerView colorPicker;
+    private ImageView wallpaper;
 
     private Callbacks callbacks;
 
@@ -63,12 +65,14 @@ public class WallpaperOverlayFragment extends AppFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initRoot(view);
         initItemPreview(view);
+
+        wallpaper = view.findViewById(R.id.wallpaper);
+        initWallpaper();
 
         colorPicker = view.findViewById(R.id.color_picker);
         colorPicker.setColorChangedListener(color -> {
-            Drawable background = view.getBackground();
+            Drawable background = wallpaper.getDrawable();
             if (background != null) {
                 background.setTint(color);
             }
@@ -98,17 +102,17 @@ public class WallpaperOverlayFragment extends AppFragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showWallpaper(getView());
+                showWallpaper();
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void initRoot(View view) {
+    private void initWallpaper() {
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-            showWallpaper(view);
+            showWallpaper();
         } else {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_CODE_PERMISSION);
@@ -140,7 +144,7 @@ public class WallpaperOverlayFragment extends AppFragment {
         itemPreview.setTypeface(preferences.itemFont().typeface());
     }
 
-    private void showWallpaper(View view) {
+    private void showWallpaper() {
         Context context = requireContext();
         WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
         if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
@@ -153,7 +157,7 @@ public class WallpaperOverlayFragment extends AppFragment {
         }
         drawable.setTintMode(PorterDuff.Mode.SRC_ATOP);
         drawable.setTint(preferences.overlayColor());
-        view.setBackground(drawable);
+        wallpaper.setImageDrawable(drawable);
     }
 
     public interface Callbacks {
