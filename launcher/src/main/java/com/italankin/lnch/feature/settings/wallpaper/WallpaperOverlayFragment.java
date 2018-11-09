@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings_wallpaper.overlay;
+package com.italankin.lnch.feature.settings.wallpaper;
 
 import android.Manifest;
 import android.app.WallpaperManager;
@@ -56,13 +56,13 @@ public class WallpaperOverlayFragment extends AppFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_wallpaper_overlay, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initRoot(view);
         initItemPreview(view);
 
@@ -100,13 +100,13 @@ public class WallpaperOverlayFragment extends AppFragment {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 showWallpaper(getView());
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(getContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private void initRoot(View view) {
-        if (getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
             showWallpaper(view);
         } else {
@@ -119,20 +119,21 @@ public class WallpaperOverlayFragment extends AppFragment {
         TextView itemPreview = view.findViewById(R.id.item_preview);
         itemPreview.setText(R.string.settings_overlay_preview);
         itemPreview.setAllCaps(true);
-        itemPreview.setTextColor(ResUtils.resolveColor(getContext(), R.attr.colorAccent));
+        itemPreview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
         itemPreview.setOnClickListener(v -> {
-            ColorPickerDialog.builder(getContext())
+            ColorPickerDialog.builder(requireContext())
                     .setSelectedColor(itemPreview.getCurrentTextColor())
                     .setOnColorPickedListener(itemPreview::setTextColor)
                     .show();
         });
 
-        int padding = ResUtils.px2dp(getContext(), preferences.itemPadding());
+        Context context = requireContext();
+        int padding = ResUtils.px2dp(context, preferences.itemPadding());
         itemPreview.setPadding(padding, padding, padding, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
         Integer shadowColor = preferences.itemShadowColor();
         if (shadowColor == null) {
-            shadowColor = ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault);
+            shadowColor = ResUtils.resolveColor(context, R.attr.colorItemShadowDefault);
         }
         itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
                 itemPreview.getShadowDy(), shadowColor);
@@ -140,8 +141,9 @@ public class WallpaperOverlayFragment extends AppFragment {
     }
 
     private void showWallpaper(View view) {
-        WallpaperManager wm = (WallpaperManager) getContext().getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm == null || getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
+        Context context = requireContext();
+        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
+        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             return;
         }

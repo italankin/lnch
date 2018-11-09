@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings_apps.model;
+package com.italankin.lnch.feature.settings.apps.model;
 
 import android.net.Uri;
 

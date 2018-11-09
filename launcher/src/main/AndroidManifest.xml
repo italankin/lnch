@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-            android:name=".feature.settings_root.SettingsActivity"
+            android:name=".feature.settings.SettingsActivity"
             android:label="@string/title_settings_lnch"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Dark.Preferences"

@@ -54,7 +54,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
-import com.italankin.lnch.feature.settings_root.SettingsActivity;
+import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;

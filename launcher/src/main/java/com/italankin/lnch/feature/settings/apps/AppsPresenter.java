@@ -1,8 +1,8 @@
-package com.italankin.lnch.feature.settings_apps;
+package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;

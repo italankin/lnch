@@ -1,11 +1,11 @@
-package com.italankin.lnch.feature.settings_apps.adapter;
+package com.italankin.lnch.feature.settings.apps.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Filter;
 
-import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
 import com.italankin.lnch.util.SearchUtils;
 
 import java.util.ArrayList;

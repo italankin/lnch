@@ -1,12 +1,10 @@
-package com.italankin.lnch.feature.settings_root;
+package com.italankin.lnch.feature.settings;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,9 +12,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
 
-public class SettingsRootFragment extends PreferenceFragmentCompat {
+public class SettingsRootFragment extends AppPreferenceFragment {
 
     private Callbacks callbacks;
 
@@ -44,7 +43,7 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.key_home_customize).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
@@ -92,18 +91,14 @@ public class SettingsRootFragment extends PreferenceFragmentCompat {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_system_settings) {
-            Context context = getContext();
+            Context context = requireContext();
             Intent intent = IntentUtils.getPackageSystemSettings(context.getPackageName());
-            if (!IntentUtils.safeStartActivity(getContext(), intent)) {
+            if (!IntentUtils.safeStartActivity(context, intent)) {
                 Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private Preference findPreference(@StringRes int key) {
-        return findPreference(getString(key));
     }
 
     public interface Callbacks {

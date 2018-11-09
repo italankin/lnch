@@ -1,6 +1,7 @@
-package com.italankin.lnch.feature.settings_apps;
+package com.italankin.lnch.feature.settings.apps;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -17,16 +18,18 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.settings_apps.adapter.AppsFilter;
-import com.italankin.lnch.feature.settings_apps.adapter.AppsViewModelAdapter;
-import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
+import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
+import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class AppsFragment extends AppFragment implements AppsView, AppsViewModelAdapter.Listener, AppsFilter.OnFilterResult {
+public class AppsFragment extends AppFragment implements AppsView,
+        AppsViewModelAdapter.Listener,
+        AppsFilter.OnFilterResult {
 
     @InjectPresenter
     AppsPresenter presenter;
@@ -50,12 +53,13 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_apps, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
     }
@@ -107,9 +111,9 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     @Override
     public void onAppsLoaded(List<DecoratedAppViewModel> apps) {
         filter = new AppsFilter(apps, this);
-        Picasso picasso = daggerService().main().getPicassoFactory().create(getContext());
+        Picasso picasso = daggerService().main().getPicassoFactory().create(requireContext());
         adapter = (FilterCompositeAdapter<DecoratedAppViewModel>)
-                new FilterCompositeAdapter.Builder<DecoratedAppViewModel>(getContext())
+                new FilterCompositeAdapter.Builder<DecoratedAppViewModel>(requireContext())
                         .filter(filter)
                         .add(new AppsViewModelAdapter(picasso, this))
                         .recyclerView(list)
@@ -162,7 +166,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
                 (flags & AppsFilter.FLAG_VISIBLE) > 0,
                 (flags & AppsFilter.FLAG_HIDDEN) > 0
         };
-        new AlertDialog.Builder(getContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_apps_filter)
                 .setMultiChoiceItems(R.array.settings_apps_filter_items, itemsState, (dialog, which, isChecked) -> {
                     itemsState[which] = isChecked;
@@ -185,7 +189,7 @@ public class AppsFragment extends AppFragment implements AppsView, AppsViewModel
     }
 
     private void showResetDialog() {
-        new AlertDialog.Builder(getContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_apps_reset)
                 .setMessage(R.string.settings_apps_reset_message)
                 .setPositiveButton(R.string.settings_apps_reset_action, (dialog, which) -> {

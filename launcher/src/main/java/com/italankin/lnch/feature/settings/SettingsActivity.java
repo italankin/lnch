@@ -1,49 +1,40 @@
-package com.italankin.lnch.feature.settings_root;
+package com.italankin.lnch.feature.settings;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings_apps.AppsFragment;
-import com.italankin.lnch.feature.settings_item.ItemLookFragment;
-import com.italankin.lnch.feature.settings_misc.MiscFragment;
-import com.italankin.lnch.feature.settings_search.SearchFragment;
-import com.italankin.lnch.feature.settings_wallpaper.WallpaperFragment;
-import com.italankin.lnch.feature.settings_wallpaper.overlay.WallpaperOverlayFragment;
+import com.italankin.lnch.feature.settings.apps.AppsFragment;
+import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
+import com.italankin.lnch.feature.settings.itemlook.ItemLookFragment;
+import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
+import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 
-import timber.log.Timber;
-
-public class SettingsActivity extends AppCompatActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener,
+public class SettingsActivity extends AppCompatActivity implements
         SettingsRootFragment.Callbacks,
         ItemLookFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks {
 
     public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER;
-    private Toolbar toolbar;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
     }
 
+    private Toolbar toolbar;
     private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener(this);
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
@@ -70,13 +61,6 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
     public void launchEditMode() {
         setResult(RESULT_EDIT_MODE);
         finish();
@@ -84,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity
 
     @Override
     public void showSearchPreferences() {
-        showFragment(new SearchFragment(), R.string.title_settings_search);
+        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_search), R.string.title_settings_search);
     }
 
     @Override
@@ -99,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity
 
     @Override
     public void showMiscPreferences() {
-        showFragment(new MiscFragment(), R.string.title_settings_home_misc);
+        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_misc), R.string.title_settings_home_misc);
     }
 
     @Override
@@ -120,11 +104,6 @@ public class SettingsActivity extends AppCompatActivity
     @Override
     public void onWallpaperOverlayFinish() {
         fragmentManager.popBackStack();
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Timber.d("onSharedPreferenceChanged: key=%s", key);
     }
 
     private void updateToolbar() {

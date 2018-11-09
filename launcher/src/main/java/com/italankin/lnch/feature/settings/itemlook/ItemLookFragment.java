@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings_item;
+package com.italankin.lnch.feature.settings.itemlook;
 
 import android.Manifest;
 import android.app.WallpaperManager;
@@ -69,13 +69,13 @@ public class ItemLookFragment extends AppFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_item_look, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initRoot(view);
 
         initOverlay(view);
@@ -120,13 +120,13 @@ public class ItemLookFragment extends AppFragment {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 showWallpaper(getView());
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(getContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private void initRoot(View view) {
-        if (getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
+        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
             return;
@@ -135,8 +135,9 @@ public class ItemLookFragment extends AppFragment {
     }
 
     private void showWallpaper(View view) {
-        WallpaperManager wm = (WallpaperManager) getContext().getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm == null || getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
+        Context context = requireContext();
+        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
+        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -154,7 +155,7 @@ public class ItemLookFragment extends AppFragment {
             } else {
                 selectedColor = preferences.overlayColor();
             }
-            ColorPickerDialog.builder(getContext())
+            ColorPickerDialog.builder(requireContext())
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
                     .setOnColorPickedListener(v::setBackgroundColor)
@@ -164,11 +165,12 @@ public class ItemLookFragment extends AppFragment {
 
     private void initPreview(View view) {
         preview = view.findViewById(R.id.item_preview);
-        preview.setBackgroundColor(0x20ffffff);
+        int backgroundColor = ResUtils.resolveColor(requireContext(), R.attr.colorSelector);
+        preview.setBackgroundColor(backgroundColor & 0x20ffffff);
         preview.setText(R.string.settings_item_preview);
         preview.setAllCaps(true);
         preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
-        preview.setOnClickListener(v -> ColorPickerDialog.builder(getContext())
+        preview.setOnClickListener(v -> ColorPickerDialog.builder(requireContext())
                 .setSelectedColor(preview.getCurrentTextColor())
                 .setOnColorPickedListener(preview::setTextColor)
                 .show());
@@ -208,7 +210,7 @@ public class ItemLookFragment extends AppFragment {
         });
         itemFont.setValue(font);
         itemFont.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(R.string.settings_item_look_text_font);
             builder.setItems(fontTitles, (dialog, which) -> {
                 Preferences.Font newFont = Preferences.Font.values()[which];
@@ -243,9 +245,9 @@ public class ItemLookFragment extends AppFragment {
         itemShadowColor.setValueHolder(new ValuePrefView.ColorValueHolder());
         itemShadowColor.setValue(shadowColor != null
                 ? shadowColor
-                : ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault));
+                : ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault));
         itemShadowColor.setOnClickListener(v -> {
-            ColorPickerDialog.builder(getContext())
+            ColorPickerDialog.builder(requireContext())
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(preview.getShadowColor())
                     .setOnColorPickedListener(color -> {
@@ -253,7 +255,7 @@ public class ItemLookFragment extends AppFragment {
                         updatePreview();
                     })
                     .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                        int color = ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault);
+                        int color = ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault);
                         itemShadowColor.setValue(color);
                         updatePreview();
                     })
@@ -268,7 +270,7 @@ public class ItemLookFragment extends AppFragment {
         int shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
         preview.setTypeface(font.typeface());
-        int p = ResUtils.px2dp(getContext(), padding);
+        int p = ResUtils.px2dp(requireContext(), padding);
         preview.setPadding(p, p, p, p);
         preview.setTextSize(textSize);
         preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);

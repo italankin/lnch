@@ -1,10 +1,10 @@
-package com.italankin.lnch.feature.settings_apps;
+package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.italankin.lnch.feature.settings_apps.model.DecoratedAppViewModel;
+import com.italankin.lnch.feature.settings.apps.model.DecoratedAppViewModel;
 
 import java.util.List;
 

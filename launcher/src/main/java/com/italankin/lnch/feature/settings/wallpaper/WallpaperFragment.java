@@ -1,17 +1,16 @@
-package com.italankin.lnch.feature.settings_wallpaper;
+package com.italankin.lnch.feature.settings.wallpaper;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.View;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 
-public class WallpaperFragment extends PreferenceFragmentCompat {
+public class WallpaperFragment extends AppPreferenceFragment {
 
     private Callbacks callbacks;
 
@@ -33,7 +32,7 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.key_wallpaper_change).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
@@ -48,10 +47,6 @@ public class WallpaperFragment extends PreferenceFragmentCompat {
             }
             return true;
         });
-    }
-
-    private Preference findPreference(@StringRes int key) {
-        return findPreference(getString(key));
     }
 
     public interface Callbacks {
