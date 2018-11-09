@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,12 +28,14 @@ import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
 public class ItemLookFragment extends AppFragment implements BackButtonHandler {
 
+    private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
     private static final int REQUEST_CODE_PERMISSION = 1;
 
     private Preferences preferences;
@@ -127,6 +130,19 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     }
 
     @Override
+    public void onAttachFragment(Fragment childFragment) {
+        if (TAG_OVERLAY_COLOR_PICKER.equals(childFragment.getTag())) {
+            ColorPickerDialogFragment fragment = (ColorPickerDialogFragment) childFragment;
+            fragment.setListener(newColor -> {
+                View view = getView();
+                if (view != null) {
+                    view.findViewById(R.id.overlay).setBackgroundColor(newColor);
+                }
+            });
+        }
+    }
+
+    @Override
     public boolean onBackPressed() {
         if (isChanged()) {
             new AlertDialog.Builder(requireContext())
@@ -173,11 +189,11 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
             } else {
                 selectedColor = preferences.overlayColor();
             }
-            ColorPickerDialog.builder(requireContext())
+            new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
-                    .setOnColorPickedListener(v::setBackgroundColor)
-                    .show();
+                    .build()
+                    .show(getChildFragmentManager(), TAG_OVERLAY_COLOR_PICKER);
         });
     }
 
