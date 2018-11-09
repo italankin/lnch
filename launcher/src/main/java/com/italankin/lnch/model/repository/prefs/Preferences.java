@@ -2,12 +2,15 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 
 import io.reactivex.Observable;
 
 public interface Preferences {
+
+    ColorTheme colorTheme();
 
     boolean searchShowSoftKeyboard();
 
@@ -41,8 +44,9 @@ public interface Preferences {
 
     void setItemShadowColor(@ColorInt int color);
 
+    @Nullable
     @ColorInt
-    int itemShadowColor();
+    Integer itemShadowColor();
 
     void setItemFont(Font font);
 
@@ -72,6 +76,26 @@ public interface Preferences {
     ///////////////////////////////////////////////////////////////////////////
     // Enums
     ///////////////////////////////////////////////////////////////////////////
+
+    enum ColorTheme {
+        DARK("dark"),
+        LIGHT("light");
+
+        static ColorTheme from(String s) {
+            for (ColorTheme value : values()) {
+                if (value.key.equals(s)) {
+                    return value;
+                }
+            }
+            return DARK;
+        }
+
+        private final String key;
+
+        ColorTheme(String key) {
+            this.key = key;
+        }
+    }
 
     enum HomeLayout {
         COMPACT("compact"),

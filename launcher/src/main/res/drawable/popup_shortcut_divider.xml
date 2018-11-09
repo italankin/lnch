@@ -4,7 +4,7 @@
         android:end="16dp"
         android:start="56dp">
         <shape>
-            <solid android:color="#17ffffff" />
+            <solid android:color="?colorDivider" />
             <size android:height="0.5dp" />
         </shape>
     </item>

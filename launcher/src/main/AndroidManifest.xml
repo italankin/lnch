@@ -18,7 +18,7 @@
         android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/LauncherTheme"
+        android:theme="@style/AppTheme.Dark.Launcher"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
@@ -39,7 +39,7 @@
             android:name=".feature.settings_root.SettingsActivity"
             android:label="@string/title_settings_lnch"
             android:launchMode="singleInstance"
-            android:theme="@style/PreferenceTheme"
+            android:theme="@style/AppTheme.Dark.Preferences"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />

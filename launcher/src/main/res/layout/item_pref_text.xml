@@ -19,6 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/icon"
+        android:textColor="?colorText"
         android:textSize="12sp"
         tools:text="Title" />
 
@@ -29,7 +30,7 @@
         android:layout_below="@id/title"
         android:layout_marginTop="8dp"
         android:layout_toEndOf="@id/icon"
-        android:textColor="#888"
+        android:textColor="?colorTextSecondary"
         android:textSize="12sp"
         tools:text="Value" />
 

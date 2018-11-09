@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/edit_panel_size"
-    android:background="@color/edit_mode_background"
+    android:background="?colorEditPanelBackground"
     android:divider="@drawable/edit_mode_panel_divider"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -18,7 +18,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
-        android:textColor="#fff"
+        android:textColor="?colorText"
         android:textSize="16sp"
         tools:ignore="RtlHardcoded"
         tools:text="@string/customize_hint" />

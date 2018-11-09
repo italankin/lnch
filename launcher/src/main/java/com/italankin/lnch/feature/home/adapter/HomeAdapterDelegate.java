@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.util.ResUtils;
@@ -50,8 +51,11 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
             int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
             label.setPadding(padding, padding, padding, padding);
             label.setTextSize(itemPrefs.itemTextSize);
+            Integer shadowColor = itemPrefs.itemShadowColor != null
+                    ? itemPrefs.itemShadowColor
+                    : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
             label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
-                    label.getShadowDy(), itemPrefs.itemShadowColor);
+                    label.getShadowDy(), shadowColor);
             label.setTypeface(itemPrefs.itemFont.typeface());
         } finally {
             holder.itemPrefs = itemPrefs;

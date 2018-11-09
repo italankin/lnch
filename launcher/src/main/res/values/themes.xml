@@ -1,0 +1,41 @@
+<resources>
+
+    <style name="AppTheme" />
+
+    <!-- Dark -->
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#212121</item>
+        <item name="colorPrimaryDark">#1a1a1a</item>
+        <item name="colorAccent">#f9a825</item>
+        <item name="android:statusBarColor">?colorPrimaryDark</item>
+
+        <item name="colorText">#fff</item>
+        <item name="colorTextSecondary">#888</item>
+        <item name="colorIconTint">#fff</item>
+        <item name="colorDivider">#17ffffff</item>
+        <item name="colorSelector">#6fff</item>
+        <item name="colorGroupTitleDefault">?colorText</item>
+        <item name="colorPopupBackground">#212121</item>
+        <item name="colorPopupActionsBackground">#424242</item>
+        <item name="colorItemShadowDefault">#60000000</item>
+        <item name="colorSearchBarBackground">#1fff</item>
+        <item name="colorEditPanelBackground">?colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTheme.Dark.Launcher">
+        <item name="android:statusBarColor">#8000</item>
+        <item name="android:navigationBarColor">#8000</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/window_background</item>
+    </style>
+
+    <style name="AppTheme.Dark.Preferences">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:textColorSecondary">?colorTextSecondary</item>
+    </style>
+
+    <style name="AppTheme.Dark.Overlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorSecondary">?colorText</item>
+    </style>
+</resources>

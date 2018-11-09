@@ -119,7 +119,7 @@ public class WallpaperOverlayFragment extends AppFragment {
         TextView itemPreview = view.findViewById(R.id.item_preview);
         itemPreview.setText(R.string.settings_overlay_preview);
         itemPreview.setAllCaps(true);
-        itemPreview.setTextColor(getContext().getColor(R.color.accent));
+        itemPreview.setTextColor(ResUtils.resolveColor(getContext(), R.attr.colorAccent));
         itemPreview.setOnClickListener(v -> {
             ColorPickerDialog.builder(getContext())
                     .setSelectedColor(itemPreview.getCurrentTextColor())
@@ -130,8 +130,12 @@ public class WallpaperOverlayFragment extends AppFragment {
         int padding = ResUtils.px2dp(getContext(), preferences.itemPadding());
         itemPreview.setPadding(padding, padding, padding, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
+        Integer shadowColor = preferences.itemShadowColor();
+        if (shadowColor == null) {
+            shadowColor = ResUtils.resolveColor(getContext(), R.attr.colorItemShadowDefault);
+        }
         itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
-                itemPreview.getShadowDy(), preferences.itemShadowColor());
+                itemPreview.getShadowDy(), shadowColor);
         itemPreview.setTypeface(preferences.itemFont().typeface());
     }
 

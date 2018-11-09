@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.ResUtils;
 
 /**
  * @author Igor Talankin
@@ -47,9 +48,10 @@ public class ValuePrefView extends RelativeLayout {
         icon.setImageDrawable(drawable);
         a.recycle();
 
-        TypedValue out = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.selectableItemBackground, out, true);
-        setBackgroundResource(out.resourceId);
+        TypedValue attribute = ResUtils.resolveAttribute(context, R.attr.selectableItemBackground);
+        if (attribute != null) {
+            setBackgroundResource(attribute.resourceId);
+        }
     }
 
     public void setValueHolder(ValueHolder<?> provider) {
