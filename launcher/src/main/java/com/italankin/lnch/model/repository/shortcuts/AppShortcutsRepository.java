@@ -10,9 +10,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
+import android.os.UserHandle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.picasso.ShortcutIconHandler;
@@ -20,7 +22,10 @@ import com.italankin.lnch.util.picasso.ShortcutIconHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Completable;
@@ -36,11 +41,13 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     private final LauncherApps launcherApps;
     private final DescriptorProvider descriptorProvider;
 
-    private final ConcurrentHashMap<String, List<Shortcut>> shortcuts = new ConcurrentHashMap<>();
+    private final Map<Descriptor, List<Shortcut>> shortcutsCache = new ConcurrentHashMap<>();
 
     public AppShortcutsRepository(Context context, DescriptorProvider descriptorProvider) {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.descriptorProvider = descriptorProvider;
+        //noinspection ConstantConditions
+        launcherApps.registerCallback(new Callback());
     }
 
     @Override
@@ -50,26 +57,25 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
         return Observable.defer(() -> Observable.fromIterable(descriptorProvider.getDescriptors()))
                 .ofType(AppDescriptor.class)
-                .collectInto(new HashMap<String, List<Shortcut>>(), (map, descriptor) -> {
-                    map.put(descriptor.getId(), queryShortcuts(descriptor));
-                })
+                .collectInto(new HashMap<Descriptor, List<Shortcut>>(),
+                        (map, descriptor) -> map.put(descriptor, queryShortcuts(descriptor)))
                 .doOnSuccess(result -> {
-                    shortcuts.clear();
-                    shortcuts.putAll(result);
+                    shortcutsCache.clear();
+                    shortcutsCache.putAll(result);
                 })
                 .ignoreElement();
     }
 
     @Override
     public List<Shortcut> getShortcuts(AppDescriptor descriptor) {
-        List<Shortcut> list = shortcuts.get(descriptor.getId());
+        List<Shortcut> list = shortcutsCache.get(descriptor);
         return list != null ? list : Collections.emptyList();
     }
 
     @Override
     public Completable loadShortcuts(AppDescriptor descriptor) {
         return Single.fromCallable(() -> queryShortcuts(descriptor))
-                .doOnSuccess(list -> shortcuts.put(descriptor.getId(), list))
+                .doOnSuccess(list -> shortcutsCache.put(descriptor, list))
                 .ignoreElement();
     }
 
@@ -109,15 +115,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
         ShortcutQuery query = new ShortcutQuery().setQueryFlags(PINNED);
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-        if (shortcuts == null || shortcuts.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<Shortcut> result = new ArrayList<>();
-        for (ShortcutInfo shortcut : shortcuts) {
-            result.add(new AppShortcut(launcherApps, shortcut));
-        }
-        Collections.sort(result);
-        return result;
+        return makeShortcuts(shortcuts);
     }
 
     private List<String> getPinnedShortcutIds(String packageName) {
@@ -149,19 +147,24 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             query.setPackage(descriptor.packageName);
         }
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-        if (shortcuts == null) {
+        return makeShortcuts(shortcuts);
+    }
+
+    private List<Shortcut> makeShortcuts(List<ShortcutInfo> shortcuts) {
+        if (shortcuts == null || shortcuts.isEmpty()) {
             return Collections.emptyList();
         }
         List<Shortcut> result = new ArrayList<>(shortcuts.size());
         for (ShortcutInfo info : shortcuts) {
-            if (!info.isEnabled()) {
-                continue;
-            }
             result.add(new AppShortcut(launcherApps, info));
         }
         Collections.sort(result);
         return result;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Shortcut
+    ///////////////////////////////////////////////////////////////////////////
 
     private static class AppShortcut implements Shortcut {
         private final LauncherApps launcherApps;
@@ -237,6 +240,102 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                 return Integer.compare(this.getRank(), that.getRank());
             }
             return this.isDynamic() ? 1 : -1;
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // LauncherApps.Callback
+    ///////////////////////////////////////////////////////////////////////////
+
+    private class Callback extends LauncherApps.Callback {
+        @Override
+        public void onShortcutsChanged(@NonNull String packageName,
+                @NonNull List<ShortcutInfo> shortcuts, @NonNull UserHandle user) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            Set<ComponentName> componentNames = new HashSet<>(shortcuts.size());
+            for (ShortcutInfo shortcut : shortcuts) {
+                componentNames.add(shortcut.getActivity());
+            }
+
+            List<AppDescriptor> updated = new ArrayList<>(1);
+            for (AppDescriptor descriptor : findByPackageName(packageName)) {
+                if (descriptor.componentName == null || componentNames.contains(
+                        ComponentName.unflattenFromString(descriptor.componentName))) {
+                    updated.add(descriptor);
+                }
+            }
+
+            updateCache(updated);
+        }
+
+        @Override
+        public void onPackageRemoved(String packageName, UserHandle user) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            for (AppDescriptor descriptor : findByPackageName(packageName)) {
+                shortcutsCache.remove(descriptor);
+            }
+        }
+
+        @Override
+        public void onPackageAdded(String packageName, UserHandle user) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            updateCache(findByPackageName(packageName));
+        }
+
+        @Override
+        public void onPackageChanged(String packageName, UserHandle user) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            updateCache(findByPackageName(packageName));
+        }
+
+        @Override
+        public void onPackagesAvailable(String[] packageNames, UserHandle user, boolean replacing) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            for (String packageName : packageNames) {
+                updateCache(findByPackageName(packageName));
+            }
+        }
+
+        @Override
+        public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            if (!Process.myUserHandle().equals(user)) {
+                return;
+            }
+            for (String packageName : packageNames) {
+                List<AppDescriptor> descriptors = findByPackageName(packageName);
+                for (AppDescriptor descriptor : descriptors) {
+                    shortcutsCache.remove(descriptor);
+                }
+            }
+        }
+
+        private List<AppDescriptor> findByPackageName(String packageName) {
+            List<AppDescriptor> result = new ArrayList<>(1);
+            for (Descriptor descriptor : descriptorProvider.getDescriptors()) {
+                if (descriptor instanceof AppDescriptor) {
+                    AppDescriptor appDescriptor = (AppDescriptor) descriptor;
+                    if (appDescriptor.packageName.equals(packageName)) {
+                        result.add(appDescriptor);
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void updateCache(List<AppDescriptor> descriptors) {
+            for (AppDescriptor descriptor : descriptors) {
+                shortcutsCache.put(descriptor, queryShortcuts(descriptor));
+            }
         }
     }
 }

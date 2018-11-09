@@ -1,9 +1,12 @@
 package com.italankin.lnch.model.repository.apps;
 
 import android.content.pm.LauncherApps;
+import android.content.pm.ShortcutInfo;
 import android.os.Process;
 import android.os.UserHandle;
+import android.support.annotation.NonNull;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Observable;
@@ -56,6 +59,11 @@ class LauncherAppsUpdates extends Observable<Object> {
 
         @Override
         public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            sendNotification(user);
+        }
+
+        @Override
+        public void onShortcutsChanged(@NonNull String packageName, @NonNull List<ShortcutInfo> shortcuts, @NonNull UserHandle user) {
             sendNotification(user);
         }
 
