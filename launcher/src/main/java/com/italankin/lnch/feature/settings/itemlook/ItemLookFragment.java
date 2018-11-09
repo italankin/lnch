@@ -159,7 +159,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
                 PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        view.setBackground(wm.getFastDrawable());
+        view.setBackground(wm.getDrawable());
     }
 
     private void initOverlay(View view) {
