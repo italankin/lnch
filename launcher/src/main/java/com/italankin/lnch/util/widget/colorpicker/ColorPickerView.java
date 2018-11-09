@@ -25,10 +25,10 @@ import com.italankin.lnch.R;
 
 public class ColorPickerView extends LinearLayout {
 
-    private static final String KEY_BASE_STATE = "BASE_STATE";
-    private static final String KEY_PREVIEW_VISIBLE = "PREVIEW_VISIBLE";
-    private static final String KEY_SELECTED_COLOR = "SELECTED_COLOR";
-    private static final String KEY_MODEL = "MODEL";
+    private static final String STATE_BASE_STATE = "base_state";
+    private static final String STATE_PREVIEW_VISIBLE = "preview_visible";
+    private static final String STATE_SELECTED_COLOR = "selected_color";
+    private static final String STATE_MODEL = "model";
 
     private final View preview;
     private final TextView hex;
@@ -147,30 +147,30 @@ public class ColorPickerView extends LinearLayout {
     protected Parcelable onSaveInstanceState() {
         Parcelable base = super.onSaveInstanceState();
         Bundle state = new Bundle();
-        state.putParcelable(KEY_BASE_STATE, base);
-        state.putBoolean(KEY_PREVIEW_VISIBLE, preview.getVisibility() == View.VISIBLE);
-        state.putInt(KEY_SELECTED_COLOR, colorModelController.getColor());
+        state.putParcelable(STATE_BASE_STATE, base);
+        state.putBoolean(STATE_PREVIEW_VISIBLE, preview.getVisibility() == View.VISIBLE);
+        state.putInt(STATE_SELECTED_COLOR, colorModelController.getColor());
         ColorModel model = null;
         if (colorModelController instanceof ARGB) {
             model = ColorModel.ARGB;
         } else if (colorModelController instanceof RGB) {
             model = ColorModel.RGB;
         }
-        state.putSerializable(KEY_MODEL, model);
+        state.putSerializable(STATE_MODEL, model);
         return state;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         Bundle myState = (Bundle) state;
-        super.onRestoreInstanceState(myState.getParcelable(KEY_BASE_STATE));
-        boolean previewVisible = myState.getBoolean(KEY_PREVIEW_VISIBLE, true);
+        super.onRestoreInstanceState(myState.getParcelable(STATE_BASE_STATE));
+        boolean previewVisible = myState.getBoolean(STATE_PREVIEW_VISIBLE, true);
         setPreviewVisible(previewVisible);
         //noinspection unchecked
-        ColorModel model = (ColorModel) myState.getSerializable(KEY_MODEL);
+        ColorModel model = (ColorModel) myState.getSerializable(STATE_MODEL);
         if (model != null) {
             setColorModel(model);
-            int selectedColor = myState.getInt(KEY_SELECTED_COLOR, Color.BLACK);
+            int selectedColor = myState.getInt(STATE_SELECTED_COLOR, Color.BLACK);
             setSelectedColor(selectedColor);
         }
     }
