@@ -233,14 +233,6 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         public int getRank() {
             return shortcutInfo.getRank();
         }
-
-        @Override
-        public int compareTo(@NonNull Shortcut that) {
-            if (this.isDynamic() == that.isDynamic()) {
-                return Integer.compare(this.getRank(), that.getRank());
-            }
-            return this.isDynamic() ? 1 : -1;
-        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
