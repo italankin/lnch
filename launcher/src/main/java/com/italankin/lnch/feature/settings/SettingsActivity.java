@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.AppsFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.itemlook.ItemLookFragment;
@@ -22,8 +23,6 @@ public class SettingsActivity extends AppCompatActivity implements
         ItemLookFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks {
-
-    public static final int RESULT_EDIT_MODE = RESULT_FIRST_USER;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -62,8 +61,8 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void launchEditMode() {
-        setResult(RESULT_EDIT_MODE);
         finish();
+        startActivity(new Intent(HomeActivity.ACTION_EDIT_MODE));
     }
 
     @Override

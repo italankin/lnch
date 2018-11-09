@@ -38,7 +38,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
-import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
@@ -89,9 +88,9 @@ public class HomeActivity extends AppActivity implements HomeView,
         GroupViewModelAdapter.Listener,
         PinnedShortcutViewModelAdapter.Listener, DeepShortcutViewModelAdapter.Listener {
 
-    private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
-    private static final int REQUEST_CODE_SETTINGS = 1;
+    public static final String ACTION_EDIT_MODE = "com.android.launcher.action.EDIT_MODE";
 
+    private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
     @InjectPresenter
@@ -147,7 +146,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         setupList();
         setupSearchBar();
 
-        if (state != null && state.getBoolean(KEY_SEARCH_SHOWN, false)) {
+        if (!ACTION_EDIT_MODE.equals(getIntent().getAction())
+                && state != null && state.getBoolean(KEY_SEARCH_SHOWN, false)) {
             searchBarBehavior.showNow();
         }
     }
@@ -206,18 +206,14 @@ public class HomeActivity extends AppActivity implements HomeView,
                 }
                 break;
             }
+            case ACTION_EDIT_MODE: {
+                if (!editMode) {
+                    animateOnResume = false;
+                    presenter.startCustomize();
+                }
+                break;
+            }
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_SETTINGS && resultCode == SettingsActivity.RESULT_EDIT_MODE) {
-            animateOnResume = false;
-            presenter.startCustomize();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
     }
 
     @Override
@@ -251,8 +247,9 @@ public class HomeActivity extends AppActivity implements HomeView,
             update.dispatchTo(adapter);
         }
 
-        if (BuildConfig.DEBUG && getIntent().hasExtra("EDIT_MODE")) {
-            getIntent().removeExtra("EDIT_MODE");
+        if (ACTION_EDIT_MODE.equals(getIntent().getAction())) {
+            // clear edit mode intent
+            setIntent(new Intent());
             presenter.startCustomize();
         }
     }
@@ -564,7 +561,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         searchBtnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
             Intent intent = SettingsActivity.getStartIntent(this);
-            startActivityForResult(intent, REQUEST_CODE_SETTINGS);
+            startActivity(intent);
         });
         searchBtnSettings.setOnLongClickListener(v -> {
             presenter.startCustomize();
