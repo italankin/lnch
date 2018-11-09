@@ -6,7 +6,6 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.os.Process;
-import android.os.UserHandle;
 import android.text.TextUtils;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -39,8 +38,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
 import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getComponentName;
@@ -56,7 +53,6 @@ public class LauncherAppsRepository implements AppsRepository {
     private final LauncherApps launcherApps;
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
-    private final Subject<String> packageChangesSubject = PublishSubject.create();
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager,
@@ -77,8 +73,7 @@ public class LauncherAppsRepository implements AppsRepository {
                 .doOnSuccess(updatesSubject::onNext)
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
-        packageChangesSubject
-                .doOnNext(Timber::d)
+        new LauncherAppsUpdates(launcherApps)
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMapCompletable(change -> updater.onErrorComplete())
                 .subscribe(new CompletableObserver() {
@@ -96,8 +91,6 @@ public class LauncherAppsRepository implements AppsRepository {
                         Timber.e(e, "change:");
                     }
                 });
-        //noinspection ConstantConditions
-        launcherApps.registerCallback(new LauncherCallbacks());
     }
 
     @Override
@@ -327,39 +320,6 @@ public class LauncherAppsRepository implements AppsRepository {
         public AppsData(List<Descriptor> items, boolean changed) {
             this.items = items;
             this.changed = changed;
-        }
-    }
-
-    final class LauncherCallbacks extends LauncherApps.Callback {
-        @Override
-        public void onPackageRemoved(String packageName, UserHandle user) {
-            notify(user, "package removed");
-        }
-
-        @Override
-        public void onPackageAdded(String packageName, UserHandle user) {
-            notify(user, "package added");
-        }
-
-        @Override
-        public void onPackageChanged(String packageName, UserHandle user) {
-            notify(user, "package changed");
-        }
-
-        @Override
-        public void onPackagesAvailable(String[] packageNames, UserHandle user, boolean replacing) {
-            notify(user, "packages available");
-        }
-
-        @Override
-        public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
-            notify(user, "packages unavailable");
-        }
-
-        private void notify(UserHandle user, String s) {
-            if (Process.myUserHandle().equals(user)) {
-                packageChangesSubject.onNext(s);
-            }
         }
     }
 
