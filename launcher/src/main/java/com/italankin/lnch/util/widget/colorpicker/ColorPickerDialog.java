@@ -14,11 +14,11 @@ public final class ColorPickerDialog {
     }
 
     public static class Builder {
-        private final ColorPickerView colorPicker;
-        private final AlertDialog.Builder alertDialogBuilder;
-        private OnColorPickedListener onColorPickedListener;
+        final ColorPickerView colorPicker;
+        final AlertDialog.Builder alertDialogBuilder;
+        OnColorPickedListener onColorPickedListener;
 
-        public Builder(Context context) {
+        private Builder(Context context) {
             colorPicker = new ColorPickerView(context);
             alertDialogBuilder = new AlertDialog.Builder(context)
                     .setView(colorPicker)
