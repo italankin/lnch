@@ -4,9 +4,11 @@ import android.content.pm.LauncherApps;
 import android.os.Process;
 import android.os.UserHandle;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.Disposable;
 
 class LauncherAppsUpdates extends Observable<Object> {
     private static final Object NOTIFICATION = new Object();
@@ -19,13 +21,14 @@ class LauncherAppsUpdates extends Observable<Object> {
 
     @Override
     protected void subscribeActual(Observer<? super Object> observer) {
-        LauncherApps.Callback callback = new Callback(observer);
-        observer.onSubscribe(Disposables.fromRunnable(() ->
-                launcherApps.unregisterCallback(callback)));
+        Callback callback = new Callback(observer);
+        observer.onSubscribe(callback);
+        launcherApps.registerCallback(callback);
     }
 
-    private final class Callback extends LauncherApps.Callback {
+    private final class Callback extends LauncherApps.Callback implements Disposable {
         private final Observer<? super Object> observer;
+        private AtomicBoolean disposed = new AtomicBoolean();
 
         public Callback(Observer<? super Object> observer) {
             this.observer = observer;
@@ -54,6 +57,18 @@ class LauncherAppsUpdates extends Observable<Object> {
         @Override
         public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
             sendNotification(user);
+        }
+
+        @Override
+        public void dispose() {
+            if (disposed.compareAndSet(false, true)) {
+                launcherApps.unregisterCallback(this);
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed.get();
         }
 
         private void sendNotification(UserHandle user) {
