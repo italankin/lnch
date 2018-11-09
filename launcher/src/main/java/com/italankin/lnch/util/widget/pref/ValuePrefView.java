@@ -3,7 +3,10 @@ package com.italankin.lnch.util.widget.pref;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -14,11 +17,16 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 
+import java.io.Serializable;
+
 /**
  * @author Igor Talankin
  */
 @SuppressWarnings("unchecked")
 public class ValuePrefView extends RelativeLayout {
+
+    private static final String STATE_VALUE = "value";
+    private static final String STATE_SUPER = "super";
 
     private final ImageView icon;
     private final TextView title;
@@ -66,38 +74,55 @@ public class ValuePrefView extends RelativeLayout {
         title.setText(text);
     }
 
-    public void setValue(Object rawValue) {
+    public void setValue(Serializable rawValue) {
         valueHolder.set(rawValue);
-        value.setText(valueHolder.getTitle());
+        value.setText(valueHolder.getDescription());
     }
 
     public <T> T getValue() {
         return (T) valueHolder.get();
     }
 
-    public interface ValueHolder<T> {
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle state = new Bundle();
+        state.putParcelable(STATE_SUPER, super.onSaveInstanceState());
+        state.putSerializable(STATE_VALUE, valueHolder.get());
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        Bundle bundle = (Bundle) state;
+        Serializable value = bundle.getSerializable(STATE_VALUE);
+        setValue(value);
+        super.onRestoreInstanceState(bundle.getParcelable(STATE_SUPER));
+    }
+
+    public interface ValueHolder<T extends Serializable> {
         void set(T value);
 
         T get();
 
-        CharSequence getTitle();
+        CharSequence getDescription();
     }
 
-    public static class ObjectValueHolder implements ValueHolder<Object> {
-        private Object value;
+    public static class ObjectValueHolder implements ValueHolder<Serializable> {
+        private Serializable value;
 
         @Override
-        public void set(Object value) {
+        public void set(Serializable value) {
             this.value = value;
         }
 
         @Override
-        public Object get() {
+        public Serializable get() {
             return value;
         }
 
         @Override
-        public CharSequence getTitle() {
+        public CharSequence getDescription() {
             return String.valueOf(value);
         }
     }
@@ -128,7 +153,7 @@ public class ValuePrefView extends RelativeLayout {
         }
 
         @Override
-        public CharSequence getTitle() {
+        public CharSequence getDescription() {
             return String.format(withAlpha ? FORMAT_ARGB : FORMAT_RGB, value);
         }
     }

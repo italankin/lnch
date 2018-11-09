@@ -3,7 +3,10 @@ package com.italankin.lnch.util.widget.pref;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -17,6 +20,9 @@ import com.italankin.lnch.R;
  * @author Igor Talankin
  */
 public class SliderPrefView extends RelativeLayout {
+
+    private static final String STATE_SUPER = "super";
+    private static final String STATE_VALUE = "value";
 
     private final ImageView icon;
     private final TextView title;
@@ -68,5 +74,21 @@ public class SliderPrefView extends RelativeLayout {
 
     public void setOnSeekBarChangeListener(SeekBar.OnSeekBarChangeListener listener) {
         seekbar.setOnSeekBarChangeListener(listener);
+    }
+
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(STATE_SUPER, super.onSaveInstanceState());
+        bundle.putInt(STATE_VALUE, seekbar.getProgress());
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        Bundle bundle = (Bundle) state;
+        setProgress(bundle.getInt(STATE_VALUE));
+        super.onRestoreInstanceState(bundle.getParcelable(STATE_SUPER));
     }
 }

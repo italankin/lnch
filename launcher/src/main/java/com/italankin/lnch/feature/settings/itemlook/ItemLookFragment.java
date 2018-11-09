@@ -96,6 +96,12 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     }
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        updatePreview();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.settings_item_look, menu);
     }
@@ -239,7 +245,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
             }
 
             @Override
-            public CharSequence getTitle() {
+            public CharSequence getDescription() {
                 return fontTitles[value.ordinal()];
             }
         });
