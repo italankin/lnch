@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Filter;
 
-import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.SearchUtils;
 
 import java.util.ArrayList;
@@ -28,14 +28,14 @@ public class AppsFilter extends Filter {
     }
 
     @NonNull
-    private final List<AppWithIconViewModel> unfiltered;
+    private final List<AppViewModel> unfiltered;
     @Nullable
     private final OnFilterResult onFilterResult;
 
     private volatile int flags = DEFAULT_FLAGS;
     private volatile CharSequence constraint;
 
-    public AppsFilter(@NonNull List<AppWithIconViewModel> items, @Nullable OnFilterResult onFilterResult) {
+    public AppsFilter(@NonNull List<AppViewModel> items, @Nullable OnFilterResult onFilterResult) {
         this.unfiltered = items;
         this.onFilterResult = onFilterResult;
     }
@@ -58,8 +58,8 @@ public class AppsFilter extends Filter {
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         this.constraint = constraint;
-        List<AppWithIconViewModel> result = new ArrayList<>(unfiltered.size());
-        for (AppWithIconViewModel item : unfiltered) {
+        List<AppViewModel> result = new ArrayList<>(unfiltered.size());
+        for (AppViewModel item : unfiltered) {
             if (!item.isHidden() && (flags & FLAG_VISIBLE) == 0) {
                 continue;
             }
@@ -72,9 +72,9 @@ public class AppsFilter extends Filter {
             return of(result);
         }
         String query = constraint.toString().trim().toLowerCase(Locale.getDefault());
-        Iterator<AppWithIconViewModel> iterator = result.iterator();
+        Iterator<AppViewModel> iterator = result.iterator();
         while (iterator.hasNext()) {
-            AppWithIconViewModel item = iterator.next();
+            AppViewModel item = iterator.next();
             if (!SearchUtils.contains(item.getDescriptor().label, query) &&
                     !SearchUtils.contains(item.getCustomLabel(), query) &&
                     !SearchUtils.contains(item.packageName, query)) {
@@ -89,7 +89,7 @@ public class AppsFilter extends Filter {
     protected void publishResults(CharSequence constraint, FilterResults filterResults) {
         if (onFilterResult != null) {
             onFilterResult.onFilterResult(constraint == null ? null : constraint.toString(),
-                    (List<AppWithIconViewModel>) filterResults.values);
+                    (List<AppViewModel>) filterResults.values);
         }
     }
 
@@ -104,6 +104,6 @@ public class AppsFilter extends Filter {
     }
 
     public interface OnFilterResult {
-        void onFilterResult(String query, List<AppWithIconViewModel> items);
+        void onFilterResult(String query, List<AppViewModel> items);
     }
 }

@@ -21,7 +21,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
-import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -38,7 +38,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private LceLayout lce;
     private RecyclerView list;
-    private CompositeAdapter<AppWithIconViewModel> adapter;
+    private CompositeAdapter<AppViewModel> adapter;
     private AppsFilter filter;
 
     @ProvidePresenter
@@ -111,11 +111,11 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppWithIconViewModel> apps) {
+    public void onAppsLoaded(List<AppViewModel> apps) {
         Context context = requireContext();
         Picasso picasso = daggerService().main().getPicassoFactory().create(context);
         filter = new AppsFilter(apps, this);
-        adapter = new FilterCompositeAdapter.Builder<AppWithIconViewModel>(context)
+        adapter = new FilterCompositeAdapter.Builder<AppViewModel>(context)
                 .filter(filter)
                 .add(new AppsViewModelAdapter(picasso, this))
                 .recyclerView(list)
@@ -138,12 +138,12 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onVisibilityClick(int position, AppWithIconViewModel item) {
+    public void onVisibilityClick(int position, AppViewModel item) {
         presenter.toggleAppVisibility(position, item);
     }
 
     @Override
-    public void onFilterResult(String query, List<AppWithIconViewModel> items) {
+    public void onFilterResult(String query, List<AppViewModel> items) {
         if (items.isEmpty()) {
             String message = TextUtils.isEmpty(query)
                     ? getString(R.string.search_empty)

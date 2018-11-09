@@ -6,6 +6,7 @@ import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         loadApps();
     }
 
-    void toggleAppVisibility(int position, AppWithIconViewModel item) {
+    void toggleAppVisibility(int position, AppViewModel item) {
         boolean hidden = !item.isHidden();
         item.setHidden(hidden);
         editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !hidden));
@@ -57,14 +58,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .take(1)
                 .concatMapIterable(Functions.identity())
                 .ofType(AppDescriptor.class)
-                .map(AppWithIconViewModel::new)
+                .<AppViewModel>map(AppWithIconViewModel::new)
                 .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
                         .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<AppWithIconViewModel>>() {
+                .subscribe(new SingleState<List<AppViewModel>>() {
                     @Override
-                    protected void onSuccess(AppsView viewState, List<AppWithIconViewModel> apps) {
+                    protected void onSuccess(AppsView viewState, List<AppViewModel> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 

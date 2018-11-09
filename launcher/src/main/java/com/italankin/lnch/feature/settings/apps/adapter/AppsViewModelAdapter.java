@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
+import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 import com.squareup.picasso.Picasso;
 
@@ -49,7 +50,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     public interface Listener {
-        void onVisibilityClick(int position, AppWithIconViewModel item);
+        void onVisibilityClick(int position, AppViewModel item);
     }
 
     class AppViewModelHolder extends RecyclerView.ViewHolder {
