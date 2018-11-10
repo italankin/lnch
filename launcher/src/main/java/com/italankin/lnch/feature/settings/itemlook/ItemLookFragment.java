@@ -28,7 +28,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.SeekBarChangeListener;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
@@ -38,6 +37,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
 
     private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
     private static final String TAG_SHADOW_COLOR_PICKER = "shadow_color_picker";
+    private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final int REQUEST_CODE_PERMISSION = 1;
 
     private Preferences preferences;
@@ -171,6 +171,12 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
                 });
                 break;
             }
+            case TAG_PREVIEW_OVERLAY: {
+                ColorPickerDialogFragment fragment = (ColorPickerDialogFragment) childFragment;
+                fragment.setListener(preview::setTextColor);
+                break;
+            }
+
         }
     }
 
@@ -236,10 +242,12 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         preview.setText(R.string.settings_item_preview);
         preview.setAllCaps(true);
         preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
-        preview.setOnClickListener(v -> ColorPickerDialog.builder(requireContext())
-                .setSelectedColor(preview.getCurrentTextColor())
-                .setOnColorPickedListener(preview::setTextColor)
-                .show());
+        preview.setOnClickListener(v -> {
+            new ColorPickerDialogFragment.Builder()
+                    .setSelectedColor(preview.getCurrentTextColor())
+                    .build()
+                    .show(getChildFragmentManager(), TAG_PREVIEW_OVERLAY);
+        });
     }
 
     private void initTextSize(View view) {
