@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
-import android.support.v7.graphics.Target;
 import android.util.TypedValue;
 
 import java.util.Locale;
@@ -39,18 +38,9 @@ final class LauncherActivityInfoUtils {
 
     static int getDominantIconColor(LauncherActivityInfo info, boolean darkTheme) {
         Bitmap bitmap = getIconBitmap(info.getIcon(0));
-        int color;
-        if (darkTheme) {
-            color = new Palette.Builder(bitmap)
-                    .addTarget(Target.LIGHT_VIBRANT)
-                    .generate()
-                    .getLightVibrantColor(Color.WHITE);
-        } else {
-            color = new Palette.Builder(bitmap)
-                    .addTarget(Target.DARK_VIBRANT)
-                    .generate()
-                    .getDarkVibrantColor(Color.BLACK);
-        }
+        int color = Palette.from(bitmap)
+                .generate()
+                .getDominantColor(darkTheme ? Color.WHITE : Color.BLACK);
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         if (darkTheme) {
