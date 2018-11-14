@@ -115,6 +115,18 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
+    public <T extends Descriptor> List<T> itemsOfType(Class<T> klass) {
+        List<Descriptor> items = items();
+        List<T> result = new ArrayList<>(items.size());
+        for (Descriptor item : items) {
+            if (klass.isAssignableFrom(item.getClass())) {
+                result.add(klass.cast(item));
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Descriptor findDescriptor(String id) {
         List<Descriptor> items = items();
         for (Descriptor item : items) {

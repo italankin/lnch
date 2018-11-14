@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -28,13 +27,10 @@ public class PinnedShortcutSearchDelegate implements SearchDelegate {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(2);
-        for (Descriptor descriptor : appsRepository.items()) {
-            if (descriptor instanceof PinnedShortcutDescriptor) {
-                PinnedShortcutDescriptor shortcut = (PinnedShortcutDescriptor) descriptor;
-                PartialMatch match = testShortcut(shortcut, query);
-                if (match != null) {
-                    matches.add(match);
-                }
+        for (PinnedShortcutDescriptor descriptor : appsRepository.itemsOfType(PinnedShortcutDescriptor.class)) {
+            PartialMatch match = testShortcut(descriptor, query);
+            if (match != null) {
+                matches.add(match);
             }
         }
         return matches;

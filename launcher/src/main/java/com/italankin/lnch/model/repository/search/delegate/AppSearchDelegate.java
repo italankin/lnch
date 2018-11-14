@@ -3,7 +3,6 @@ package com.italankin.lnch.model.repository.search.delegate;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -29,16 +28,13 @@ public class AppSearchDelegate implements SearchDelegate {
     public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         boolean skipHidden = !searchTargets.contains(Preferences.SearchTarget.HIDDEN);
         List<PartialMatch> matches = new ArrayList<>(4);
-        for (Descriptor descriptor : appsRepository.items()) {
-            if (descriptor instanceof AppDescriptor) {
-                AppDescriptor appDescriptor = (AppDescriptor) descriptor;
-                if (appDescriptor.hidden && skipHidden) {
-                    continue;
-                }
-                PartialMatch match = testApp(appDescriptor, query);
-                if (match != null) {
-                    matches.add(match);
-                }
+        for (AppDescriptor descriptor : appsRepository.itemsOfType(AppDescriptor.class)) {
+            if (descriptor.hidden && skipHidden) {
+                continue;
+            }
+            PartialMatch match = testApp(descriptor, query);
+            if (match != null) {
+                matches.add(match);
             }
         }
         return matches;

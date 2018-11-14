@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Build;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -38,22 +37,20 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(1);
-        for (Descriptor descriptor : appsRepository.items()) {
-            if (descriptor instanceof AppDescriptor) {
-                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts((AppDescriptor) descriptor);
-                if (shortcuts == null || shortcuts.isEmpty()) {
-                    continue;
-                }
-                for (Shortcut shortcut : shortcuts) {
-                    if (shortcut.isEnabled() && contains(shortcut.getShortLabel().toString(), query)) {
-                        PartialMatch match = new PartialMatch(PartialMatch.Type.OTHER);
-                        match.icon = PackageIconHandler.uriFrom(shortcut.getPackageName());
-                        match.label = shortcut.getShortLabel();
-                        match.color = Color.WHITE;
-                        match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
-                        match.descriptor = descriptor;
-                        matches.add(match);
-                    }
+        for (AppDescriptor descriptor : appsRepository.itemsOfType(AppDescriptor.class)) {
+            List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(descriptor);
+            if (shortcuts == null || shortcuts.isEmpty()) {
+                continue;
+            }
+            for (Shortcut shortcut : shortcuts) {
+                if (shortcut.isEnabled() && contains(shortcut.getShortLabel().toString(), query)) {
+                    PartialMatch match = new PartialMatch(PartialMatch.Type.OTHER);
+                    match.icon = PackageIconHandler.uriFrom(shortcut.getPackageName());
+                    match.label = shortcut.getShortLabel();
+                    match.color = Color.WHITE;
+                    match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
+                    match.descriptor = descriptor;
+                    matches.add(match);
                 }
             }
         }
