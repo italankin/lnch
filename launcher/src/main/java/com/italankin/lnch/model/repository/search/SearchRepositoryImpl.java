@@ -1,29 +1,11 @@
 package com.italankin.lnch.model.repository.search;
 
-import android.content.ComponentName;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.LabelDescriptor;
-import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
 import com.italankin.lnch.model.repository.search.web.WebSearchProvider;
 import com.italankin.lnch.model.repository.search.web.WebSearchProviderFactory;
-import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,26 +15,17 @@ import java.util.Locale;
 
 import static android.util.Patterns.WEB_URL;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
-import static com.italankin.lnch.model.repository.search.match.PartialMatch.Type;
-import static com.italankin.lnch.util.SearchUtils.contains;
-import static com.italankin.lnch.util.SearchUtils.containsWord;
-import static com.italankin.lnch.util.SearchUtils.startsWith;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
-    public static final int MAX_RESULTS = 4;
+    private static final int MAX_RESULTS = 4;
 
-    private final AppsRepository appsRepository;
-    private final PackageManager packageManager;
-    private final ShortcutsRepository shortcutsRepository;
+    private final List<SearchDelegate> delegates;
     private final Preferences preferences;
 
-    public SearchRepositoryImpl(PackageManager packageManager, AppsRepository appsRepository,
-            ShortcutsRepository shortcutsRepository, Preferences preferences) {
-        this.appsRepository = appsRepository;
-        this.packageManager = packageManager;
-        this.shortcutsRepository = shortcutsRepository;
+    public SearchRepositoryImpl(List<SearchDelegate> delegates, Preferences preferences) {
         this.preferences = preferences;
+        this.delegates = delegates;
     }
 
     @Override
@@ -64,30 +37,12 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (query.isEmpty()) {
             return Collections.emptyList();
         }
+
         EnumSet<SearchTarget> searchTargets = preferences.searchTargets();
         List<PartialMatch> matches = new ArrayList<>(8);
-        for (Descriptor descriptor : appsRepository.items()) {
-            PartialMatch match = null;
-            if (descriptor instanceof AppDescriptor) {
-                AppDescriptor appDescriptor = (AppDescriptor) descriptor;
-                if (appDescriptor.hidden && !searchTargets.contains(SearchTarget.HIDDEN)) {
-                    continue;
-                }
-                match = testApp(appDescriptor, query, packageManager);
-            } else if (descriptor instanceof PinnedShortcutDescriptor
-                    && searchTargets.contains(SearchTarget.SHORTCUT)) {
-                match = testShortcut((PinnedShortcutDescriptor) descriptor, query);
-            }
-            if (match != null) {
-                matches.add(match);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
-                && searchTargets.contains(SearchTarget.SHORTCUT)) {
-            List<PartialMatch> shortcutMatches = searchShortcuts(shortcutsRepository,
-                    appsRepository.items(), query);
-            matches.addAll(shortcutMatches);
+        for (SearchDelegate delegate : delegates) {
+            List<PartialMatch> list = delegate.search(query, searchTargets);
+            matches.addAll(list);
         }
 
         if (matches.size() > 1) {
@@ -107,91 +62,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         return matches;
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private static List<PartialMatch> searchShortcuts(ShortcutsRepository shortcutsRepository,
-            List<Descriptor> descriptors, String query) {
-        List<PartialMatch> result = new ArrayList<>(1);
-        for (Descriptor descriptor : descriptors) {
-            if (descriptor instanceof AppDescriptor) {
-                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts((AppDescriptor) descriptor);
-                if (shortcuts == null || shortcuts.isEmpty()) {
-                    continue;
-                }
-                for (Shortcut shortcut : shortcuts) {
-                    if (!shortcut.isDynamic() && contains(shortcut.getShortLabel().toString(), query)) {
-                        PartialMatch match = new PartialMatch(Type.OTHER);
-                        match.icon = PackageIconHandler.uriFrom(shortcut.getPackageName());
-                        match.label = shortcut.getShortLabel();
-                        match.color = Color.WHITE;
-                        match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
-                        match.descriptor = descriptor;
-                        result.add(match);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static PartialMatch testApp(AppDescriptor item, String query, PackageManager packageManager) {
-        PartialMatch match = test(item, query);
-        if (match != null) {
-            match.color = item.getVisibleColor();
-            match.intent = packageManager.getLaunchIntentForPackage(item.packageName);
-            if (match.intent != null && item.componentName != null) {
-                match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
-            }
-            match.icon = PackageIconHandler.uriFrom(item.packageName);
-            match.descriptor = item;
-        }
-        return match;
-    }
-
-    private static PartialMatch testShortcut(PinnedShortcutDescriptor item, String query) {
-        PartialMatch match = test(item, query);
-        if (match != null) {
-            match.color = item.getVisibleColor();
-            match.intent = IntentUtils.fromUri(item.uri);
-            match.iconRes = R.drawable.ic_shortcut;
-            match.descriptor = item;
-        }
-        return match;
-    }
-
-    private static PartialMatch test(Descriptor descriptor, String query) {
-        PartialMatch match = null;
-        if (descriptor instanceof CustomLabelDescriptor) {
-            CustomLabelDescriptor item = (CustomLabelDescriptor) descriptor;
-            String label = item.getLabel();
-            String customLabel = item.getCustomLabel();
-            if (startsWith(customLabel, query) || startsWith(label, query)) {
-                match = new PartialMatch(Type.STARTS_WITH);
-            } else if (containsWord(customLabel, query) || containsWord(label, query)) {
-                match = new PartialMatch(Type.CONTAINS_WORD);
-            } else if (contains(customLabel, query) || contains(label, query)) {
-                match = new PartialMatch(Type.CONTAINS);
-            }
-            if (match != null) {
-                match.label = item.getVisibleLabel();
-                match.descriptor = descriptor;
-            }
-        } else if (descriptor instanceof LabelDescriptor) {
-            String label = ((LabelDescriptor) descriptor).getLabel();
-            if (startsWith(label, query)) {
-                match = new PartialMatch(Type.STARTS_WITH);
-            } else if (containsWord(label, query)) {
-                match = new PartialMatch(Type.CONTAINS_WORD);
-            } else if (contains(label, query)) {
-                match = new PartialMatch(Type.CONTAINS);
-            }
-            if (match != null) {
-                match.label = label;
-                match.descriptor = descriptor;
-            }
-        }
-        return match;
     }
 }
 

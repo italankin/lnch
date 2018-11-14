@@ -1,0 +1,53 @@
+package com.italankin.lnch.model.repository.search.delegate;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.PartialMatch;
+import com.italankin.lnch.util.IntentUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+
+public class PinnedShortcutSearchDelegate implements SearchDelegate {
+
+    private final AppsRepository appsRepository;
+
+    public PinnedShortcutSearchDelegate(AppsRepository appsRepository) {
+        this.appsRepository = appsRepository;
+    }
+
+    @Override
+    public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+        if (!searchTargets.contains(Preferences.SearchTarget.SHORTCUT)) {
+            return Collections.emptyList();
+        }
+        List<PartialMatch> matches = new ArrayList<>(2);
+        for (Descriptor descriptor : appsRepository.items()) {
+            if (descriptor instanceof PinnedShortcutDescriptor) {
+                PinnedShortcutDescriptor shortcut = (PinnedShortcutDescriptor) descriptor;
+                PartialMatch match = testShortcut(shortcut, query);
+                if (match != null) {
+                    matches.add(match);
+                }
+            }
+        }
+        return matches;
+    }
+
+    private static PartialMatch testShortcut(PinnedShortcutDescriptor item, String query) {
+        PartialMatch match = DescriptorSearchUtils.test(item, query);
+        if (match != null) {
+            match.color = item.getVisibleColor();
+            match.intent = IntentUtils.fromUri(item.uri);
+            match.iconRes = R.drawable.ic_shortcut;
+            match.descriptor = item;
+        }
+        return match;
+    }
+}

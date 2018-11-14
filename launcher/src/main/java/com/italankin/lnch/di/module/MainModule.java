@@ -15,12 +15,19 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
+import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
+import com.italankin.lnch.model.repository.search.delegate.AppSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.DeepShortcutSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.StubShortcutsRepository;
 import com.italankin.lnch.util.picasso.PicassoFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -66,7 +73,12 @@ public class MainModule {
     @Singleton
     public SearchRepository provideSearchRepository(PackageManager packageManager,
             AppsRepository appsRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
-        return new SearchRepositoryImpl(packageManager, appsRepository, shortcutsRepository, preferences);
+        List<SearchDelegate> delegates = Arrays.asList(
+                new AppSearchDelegate(packageManager, appsRepository),
+                new DeepShortcutSearchDelegate(appsRepository, shortcutsRepository),
+                new PinnedShortcutSearchDelegate(appsRepository)
+        );
+        return new SearchRepositoryImpl(delegates, preferences);
     }
 
     @Provides

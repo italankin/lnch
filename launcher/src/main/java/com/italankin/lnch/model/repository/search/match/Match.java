@@ -19,10 +19,10 @@ public interface Match {
     @ColorInt
     int getColor();
 
+    @Override
     String toString();
 
     Intent getIntent();
 
     Descriptor getDescriptor();
 }
-
