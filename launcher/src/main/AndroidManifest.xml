@@ -13,6 +13,7 @@
         android:name=".LauncherApp"
         android:allowBackup="true"
         android:clearTaskOnLaunch="true"
+        android:fullBackupContent="@xml/full_backup_paths"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:launchMode="singleTask"
