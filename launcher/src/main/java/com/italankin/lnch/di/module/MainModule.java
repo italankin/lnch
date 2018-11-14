@@ -8,9 +8,9 @@ import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.apps.AppsRepository;
 import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
-import com.italankin.lnch.model.repository.descriptor.BackupDescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.VersioningDescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.BackupDescriptorStore;
+import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
+import com.italankin.lnch.model.repository.descriptor.VersioningDescriptorStore;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
@@ -53,20 +53,20 @@ public class MainModule {
     @Provides
     @Singleton
     public AppsRepository provideAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+            DescriptorStore descriptorStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
-        return new LauncherAppsRepository(context, packageManager, descriptorRepository,
+        return new LauncherAppsRepository(context, packageManager, descriptorStore,
                 shortcutsRepository, preferences);
     }
 
     @Provides
     @Singleton
-    public DescriptorRepository provideDescriptorRepository() {
+    public DescriptorStore provideDescriptorStore() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
-        return new BackupDescriptorRepository(new VersioningDescriptorRepository(gsonBuilder));
+        return new BackupDescriptorStore(new VersioningDescriptorStore(gsonBuilder));
     }
 
     @Provides

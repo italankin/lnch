@@ -12,7 +12,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -49,7 +49,7 @@ import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils
 public class LauncherAppsRepository implements AppsRepository {
     private final Context context;
     private final PackageManager packageManager;
-    private final DescriptorRepository descriptorRepository;
+    private final DescriptorStore descriptorStore;
     private final ShortcutsRepository shortcutsRepository;
     private final LauncherApps launcherApps;
     private final Preferences preferences;
@@ -59,11 +59,11 @@ public class LauncherAppsRepository implements AppsRepository {
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherAppsRepository(Context context, PackageManager packageManager,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+            DescriptorStore descriptorStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
         this.context = context;
         this.packageManager = packageManager;
-        this.descriptorRepository = descriptorRepository;
+        this.descriptorStore = descriptorStore;
         this.shortcutsRepository = shortcutsRepository;
         launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
@@ -182,7 +182,7 @@ public class LauncherAppsRepository implements AppsRepository {
                         emitter.onComplete();
                         return;
                     }
-                    List<Descriptor> savedItems = descriptorRepository.read(getPackagesFile());
+                    List<Descriptor> savedItems = descriptorStore.read(getPackagesFile());
                     if (savedItems != null) {
                         List<Descriptor> items = new ArrayList<>(savedItems.size());
                         List<Descriptor> deleted = new ArrayList<>(8);
@@ -325,7 +325,7 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     private void writeToDisk(List<Descriptor> items) {
-        descriptorRepository.write(getPackagesFile(), items);
+        descriptorStore.write(getPackagesFile(), items);
     }
 
     private File getPackagesFile() {

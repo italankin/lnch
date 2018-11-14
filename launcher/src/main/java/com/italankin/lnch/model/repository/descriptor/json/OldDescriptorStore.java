@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonToken;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +16,7 @@ import java.util.List;
 import timber.log.Timber;
 
 @Deprecated
-public class OldDescriptorRepository implements DescriptorRepository {
+public class OldDescriptorStore implements DescriptorStore {
     @Override
     public List<Descriptor> read(File packagesFile) {
         try {

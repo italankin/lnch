@@ -11,10 +11,10 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class BackupDescriptorRepository implements DescriptorRepository {
-    private final DescriptorRepository delegate;
+public class BackupDescriptorStore implements DescriptorStore {
+    private final DescriptorStore delegate;
 
-    public BackupDescriptorRepository(DescriptorRepository delegate) {
+    public BackupDescriptorStore(DescriptorStore delegate) {
         this.delegate = delegate;
     }
 

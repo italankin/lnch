@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,10 +14,10 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class GsonDescriptorRepository implements DescriptorRepository {
+public class GsonDescriptorStore implements DescriptorStore {
     private final Gson gson;
 
-    public GsonDescriptorRepository(GsonBuilder gsonBuilder) {
+    public GsonDescriptorStore(GsonBuilder gsonBuilder) {
         gson = gsonBuilder
                 .registerTypeAdapter(Descriptor.class, new DescriptorConverter())
                 .create();

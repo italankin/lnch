@@ -5,7 +5,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import java.io.File;
 import java.util.List;
 
-public interface DescriptorRepository {
+public interface DescriptorStore {
 
     List<Descriptor> read(File packagesFile);
 

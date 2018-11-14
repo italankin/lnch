@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSerializer<Descriptor> {
+class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSerializer<Descriptor> {
     private static final String PROP_TYPE = "type";
 
     private static final String TYPE_APP = "app";
