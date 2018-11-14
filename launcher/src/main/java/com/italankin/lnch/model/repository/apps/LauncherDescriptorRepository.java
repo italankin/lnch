@@ -46,7 +46,7 @@ import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils
 import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getLabel;
 import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getVersionCode;
 
-public class LauncherAppsRepository implements AppsRepository {
+public class LauncherDescriptorRepository implements DescriptorRepository {
     private final Context context;
     private final PackageManager packageManager;
     private final DescriptorStore descriptorStore;
@@ -58,7 +58,7 @@ public class LauncherAppsRepository implements AppsRepository {
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
     private final CompositeDisposable disposeBag = new CompositeDisposable();
 
-    public LauncherAppsRepository(Context context, PackageManager packageManager,
+    public LauncherDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
         this.context = context;
@@ -138,7 +138,7 @@ public class LauncherAppsRepository implements AppsRepository {
     }
 
     @Override
-    public AppsRepository.Editor edit() {
+    public DescriptorRepository.Editor edit() {
         return new Editor(updatesSubject.getValue());
     }
 
@@ -342,8 +342,8 @@ public class LauncherAppsRepository implements AppsRepository {
         }
     }
 
-    final class Editor implements AppsRepository.Editor {
-        private final Queue<AppsRepository.Editor.Action> actions = new ArrayDeque<>();
+    final class Editor implements DescriptorRepository.Editor {
+        private final Queue<DescriptorRepository.Editor.Action> actions = new ArrayDeque<>();
         private final List<Descriptor> items;
         private volatile boolean used;
 
@@ -352,7 +352,7 @@ public class LauncherAppsRepository implements AppsRepository {
         }
 
         @Override
-        public Editor enqueue(AppsRepository.Editor.Action action) {
+        public Editor enqueue(DescriptorRepository.Editor.Action action) {
             if (used) {
                 throw new IllegalStateException();
             }
@@ -366,7 +366,7 @@ public class LauncherAppsRepository implements AppsRepository {
         }
 
         @Override
-        public AppsRepository.Editor clear() {
+        public DescriptorRepository.Editor clear() {
             actions.clear();
             return this;
         }
@@ -386,7 +386,7 @@ public class LauncherAppsRepository implements AppsRepository {
             return Single
                     .fromCallable(() -> {
                         List<Descriptor> result = new ArrayList<>(items);
-                        Iterator<AppsRepository.Editor.Action> iter = actions.iterator();
+                        Iterator<DescriptorRepository.Editor.Action> iter = actions.iterator();
                         while (iter.hasNext()) {
                             iter.next().apply(result);
                             iter.remove();
@@ -394,7 +394,7 @@ public class LauncherAppsRepository implements AppsRepository {
                         return result;
                     })
                     .doOnSubscribe(onSubscribe)
-                    .doOnSuccess(LauncherAppsRepository.this::writeToDisk)
+                    .doOnSuccess(LauncherDescriptorRepository.this::writeToDisk)
                     .flatMapCompletable(descriptors -> updater);
         }
     }

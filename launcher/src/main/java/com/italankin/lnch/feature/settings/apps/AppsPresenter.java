@@ -4,7 +4,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
@@ -20,13 +20,13 @@ import timber.log.Timber;
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
 
-    private final AppsRepository appsRepository;
-    private final AppsRepository.Editor editor;
+    private final DescriptorRepository descriptorRepository;
+    private final DescriptorRepository.Editor editor;
 
     @Inject
-    AppsPresenter(AppsRepository appsRepository) {
-        this.appsRepository = appsRepository;
-        this.editor = appsRepository.edit();
+    AppsPresenter(DescriptorRepository descriptorRepository) {
+        this.descriptorRepository = descriptorRepository;
+        this.editor = descriptorRepository.edit();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void loadApps() {
         getViewState().showLoading();
-        appsRepository.observe()
+        descriptorRepository.observe()
                 .subscribeOn(Schedulers.io())
                 .take(1)
                 .concatMapIterable(Functions.identity())
@@ -78,7 +78,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void resetAppsSettings() {
         getViewState().showLoading();
-        appsRepository.clear()
+        descriptorRepository.clear()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
                     @Override

@@ -6,8 +6,8 @@ import android.os.Build;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
-import com.italankin.lnch.model.repository.apps.LauncherAppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
+import com.italankin.lnch.model.repository.apps.LauncherDescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.BackupDescriptorStore;
 import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
 import com.italankin.lnch.model.repository.descriptor.VersioningDescriptorStore;
@@ -52,10 +52,10 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public AppsRepository provideAppsRepository(Context context, PackageManager packageManager,
+    public DescriptorRepository provideDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
-        return new LauncherAppsRepository(context, packageManager, descriptorStore,
+        return new LauncherDescriptorRepository(context, packageManager, descriptorStore,
                 shortcutsRepository, preferences);
     }
 
@@ -72,11 +72,11 @@ public class MainModule {
     @Provides
     @Singleton
     public SearchRepository provideSearchRepository(PackageManager packageManager,
-            AppsRepository appsRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
         List<SearchDelegate> delegates = Arrays.asList(
-                new AppSearchDelegate(packageManager, appsRepository),
-                new DeepShortcutSearchDelegate(appsRepository, shortcutsRepository),
-                new PinnedShortcutSearchDelegate(appsRepository)
+                new AppSearchDelegate(packageManager, descriptorRepository),
+                new DeepShortcutSearchDelegate(descriptorRepository, shortcutsRepository),
+                new PinnedShortcutSearchDelegate(descriptorRepository)
         );
         return new SearchRepositoryImpl(delegates, preferences);
     }
@@ -89,7 +89,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<AppsRepository> lazy) {
+    public ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<DescriptorRepository> lazy) {
         return () -> lazy.get().items();
     }
 

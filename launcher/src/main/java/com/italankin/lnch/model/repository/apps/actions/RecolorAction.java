@@ -2,11 +2,11 @@ package com.italankin.lnch.model.repository.apps.actions;
 
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 
 import java.util.List;
 
-public class RecolorAction implements AppsRepository.Editor.Action {
+public class RecolorAction implements DescriptorRepository.Editor.Action {
     private final CustomColorDescriptor item;
     private final Integer customColor;
 

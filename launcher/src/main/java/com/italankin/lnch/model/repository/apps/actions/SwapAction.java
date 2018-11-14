@@ -1,12 +1,12 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.List;
 
-public class SwapAction implements AppsRepository.Editor.Action {
+public class SwapAction implements DescriptorRepository.Editor.Action {
     private final int from;
     private final int to;
 

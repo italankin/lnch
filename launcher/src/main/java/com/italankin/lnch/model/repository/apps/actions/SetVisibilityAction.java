@@ -2,11 +2,11 @@ package com.italankin.lnch.model.repository.apps.actions;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 
 import java.util.List;
 
-public class SetVisibilityAction implements AppsRepository.Editor.Action {
+public class SetVisibilityAction implements DescriptorRepository.Editor.Action {
     private final HiddenDescriptor item;
     private final boolean visible;
 

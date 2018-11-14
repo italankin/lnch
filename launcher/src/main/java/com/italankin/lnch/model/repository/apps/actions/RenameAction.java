@@ -2,11 +2,11 @@ package com.italankin.lnch.model.repository.apps.actions;
 
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 
 import java.util.List;
 
-public class RenameAction implements AppsRepository.Editor.Action {
+public class RenameAction implements DescriptorRepository.Editor.Action {
     private final CustomLabelDescriptor item;
     private final String customLabel;
 

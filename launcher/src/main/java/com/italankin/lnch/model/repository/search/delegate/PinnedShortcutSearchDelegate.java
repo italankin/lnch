@@ -2,7 +2,7 @@ package com.italankin.lnch.model.repository.search.delegate;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
@@ -15,10 +15,10 @@ import java.util.List;
 
 public class PinnedShortcutSearchDelegate implements SearchDelegate {
 
-    private final AppsRepository appsRepository;
+    private final DescriptorRepository descriptorRepository;
 
-    public PinnedShortcutSearchDelegate(AppsRepository appsRepository) {
-        this.appsRepository = appsRepository;
+    public PinnedShortcutSearchDelegate(DescriptorRepository descriptorRepository) {
+        this.descriptorRepository = descriptorRepository;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class PinnedShortcutSearchDelegate implements SearchDelegate {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(2);
-        for (PinnedShortcutDescriptor descriptor : appsRepository.itemsOfType(PinnedShortcutDescriptor.class)) {
+        for (PinnedShortcutDescriptor descriptor : descriptorRepository.itemsOfType(PinnedShortcutDescriptor.class)) {
             PartialMatch match = testShortcut(descriptor, query);
             if (match != null) {
                 matches.add(match);

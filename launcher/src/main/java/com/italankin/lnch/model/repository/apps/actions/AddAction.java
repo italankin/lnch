@@ -1,11 +1,11 @@
 package com.italankin.lnch.model.repository.apps.actions;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 
 import java.util.List;
 
-public class AddAction implements AppsRepository.Editor.Action {
+public class AddAction implements DescriptorRepository.Editor.Action {
     public static final int LAST = -1;
 
     private final int position;

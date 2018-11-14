@@ -4,7 +4,7 @@ import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
@@ -17,18 +17,18 @@ import java.util.List;
 public class AppSearchDelegate implements SearchDelegate {
 
     private final PackageManager packageManager;
-    private final AppsRepository appsRepository;
+    private final DescriptorRepository descriptorRepository;
 
-    public AppSearchDelegate(PackageManager packageManager, AppsRepository appsRepository) {
+    public AppSearchDelegate(PackageManager packageManager, DescriptorRepository descriptorRepository) {
         this.packageManager = packageManager;
-        this.appsRepository = appsRepository;
+        this.descriptorRepository = descriptorRepository;
     }
 
     @Override
     public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         boolean skipHidden = !searchTargets.contains(Preferences.SearchTarget.HIDDEN);
         List<PartialMatch> matches = new ArrayList<>(4);
-        for (AppDescriptor descriptor : appsRepository.itemsOfType(AppDescriptor.class)) {
+        for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
             if (descriptor.hidden && skipHidden) {
                 continue;
             }

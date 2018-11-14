@@ -7,7 +7,7 @@ import android.content.Intent;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
 
 import java.util.Locale;
@@ -41,10 +41,10 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                 label.toUpperCase(Locale.getDefault()),
                 context.getColor(R.color.pinned_shortcut_default));
 
-        AppsRepository apps = LauncherApp.getInstance(context)
+        DescriptorRepository apps = LauncherApp.getInstance(context)
                 .daggerService
                 .main()
-                .getAppsRepository();
+                .getDescriptorRepository();
         Throwable error = apps.edit()
                 .enqueue(new AddAction(descriptor))
                 .commit()

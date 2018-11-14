@@ -14,7 +14,7 @@ import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.apps.actions.AddAction;
 import com.italankin.lnch.model.repository.apps.actions.RecolorAction;
 import com.italankin.lnch.model.repository.apps.actions.RemoveAction;
@@ -55,7 +55,7 @@ import static android.support.v7.util.DiffUtil.calculateDiff;
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {
 
-    private final AppsRepository appsRepository;
+    private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final Preferences preferences;
     private final SeparatorState separatorState;
@@ -64,12 +64,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
      * made to this list will be visible to new views.
      */
     private List<DescriptorItem> items = Collections.emptyList();
-    private AppsRepository.Editor editor;
+    private DescriptorRepository.Editor editor;
 
     @Inject
-    HomePresenter(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository,
+    HomePresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
             Preferences preferences, SeparatorState separatorState) {
-        this.appsRepository = appsRepository;
+        this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.preferences = preferences;
         this.separatorState = separatorState;
@@ -94,7 +94,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
         if (editor != null) {
             throw new IllegalStateException("Editor is not null!");
         }
-        editor = appsRepository.edit();
+        editor = descriptorRepository.edit();
         for (int i = 0, size = items.size(); i < size; i++) {
             DescriptorItem item = items.get(i);
             if (item instanceof ExpandableItem) {
@@ -207,7 +207,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void pinShortcut(Shortcut shortcut) {
         shortcutsRepository.pinShortcut(shortcut)
-                .andThen(appsRepository.update())
+                .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
@@ -238,7 +238,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void removeItemImmediate(int position, DescriptorItem item) {
         Descriptor descriptor = item.getDescriptor();
-        AppsRepository.Editor editor = appsRepository.edit();
+        DescriptorRepository.Editor editor = descriptorRepository.edit();
         if (descriptor instanceof DeepShortcutDescriptor) {
             editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
         } else {
@@ -268,7 +268,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     private void update() {
-        appsRepository.update()
+        descriptorRepository.update()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
                     @Override
@@ -319,7 +319,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     private Observable<Update> observeApps() {
-        return appsRepository.observe()
+        return descriptorRepository.observe()
                 .map(ViewModelFactory::createItems)
                 .doOnNext(this::restoreGroupsState)
                 .scan(Update.EMPTY, this::calculateUpdates)

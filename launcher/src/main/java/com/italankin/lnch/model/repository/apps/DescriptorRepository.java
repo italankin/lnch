@@ -7,7 +7,7 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 
-public interface AppsRepository {
+public interface DescriptorRepository {
 
     Observable<List<Descriptor>> observe();
 

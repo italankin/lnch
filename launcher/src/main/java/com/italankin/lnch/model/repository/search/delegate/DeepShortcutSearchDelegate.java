@@ -5,7 +5,7 @@ import android.os.Build;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.AppsRepository;
+import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
@@ -22,11 +22,11 @@ import static com.italankin.lnch.util.SearchUtils.contains;
 
 public class DeepShortcutSearchDelegate implements SearchDelegate {
 
-    private final AppsRepository appsRepository;
+    private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
 
-    public DeepShortcutSearchDelegate(AppsRepository appsRepository, ShortcutsRepository shortcutsRepository) {
-        this.appsRepository = appsRepository;
+    public DeepShortcutSearchDelegate(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
+        this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
     }
 
@@ -37,7 +37,7 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
             return Collections.emptyList();
         }
         List<PartialMatch> matches = new ArrayList<>(1);
-        for (AppDescriptor descriptor : appsRepository.itemsOfType(AppDescriptor.class)) {
+        for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
             List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(descriptor);
             if (shortcuts == null || shortcuts.isEmpty()) {
                 continue;
