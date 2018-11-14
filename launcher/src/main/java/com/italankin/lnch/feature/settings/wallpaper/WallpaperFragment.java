@@ -5,14 +5,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.preference.Preference;
 import android.view.View;
 
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 
 public class WallpaperFragment extends AppPreferenceFragment {
 
     private Callbacks callbacks;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -41,12 +48,31 @@ public class WallpaperFragment extends AppPreferenceFragment {
             startActivity(chooser);
             return true;
         });
-        findPreference(R.string.pref_wallpaper_overlay_color).setOnPreferenceClickListener(preference -> {
+        setupOverlayColor();
+    }
+
+    private void setupOverlayColor() {
+        Preference pref = findPreference(R.string.pref_wallpaper_overlay_color);
+        pref.setOnPreferenceChangeListener((preference, newValue) -> {
+            try {
+                int color = Integer.parseInt(String.valueOf(newValue));
+                preference.setSummary(String.format("#%08x", color));
+            } catch (NumberFormatException ignored) {
+            }
+            return true;
+        });
+        pref.setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showWallpaperOverlayPreferences();
             }
             return true;
         });
+        int color = LauncherApp.getInstance(requireContext())
+                .daggerService
+                .main()
+                .getPreferences()
+                .overlayColor();
+        pref.setSummary(String.format("#%08x", color));
     }
 
     public interface Callbacks {
