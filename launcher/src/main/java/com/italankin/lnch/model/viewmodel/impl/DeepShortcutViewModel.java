@@ -76,6 +76,11 @@ public class DeepShortcutViewModel implements DescriptorItem, CustomLabelItem, C
     }
 
     @Override
+    public String toString() {
+        return descriptor.toString();
+    }
+
+    @Override
     public boolean is(DescriptorItem another) {
         if (this == another) {
             return true;

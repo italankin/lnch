@@ -70,6 +70,11 @@ public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLa
     }
 
     @Override
+    public String toString() {
+        return descriptor.toString();
+    }
+
+    @Override
     public boolean is(DescriptorItem another) {
         if (this == another) {
             return true;
