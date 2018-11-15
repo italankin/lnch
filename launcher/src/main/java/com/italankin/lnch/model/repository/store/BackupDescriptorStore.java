@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor;
+package com.italankin.lnch.model.repository.store;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 

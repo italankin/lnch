@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor.json;
+package com.italankin.lnch.model.repository.store.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,9 +1,9 @@
-package com.italankin.lnch.model.repository.descriptor;
+package com.italankin.lnch.model.repository.store;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.descriptor.json.GsonDescriptorStore;
-import com.italankin.lnch.model.repository.descriptor.json.OldDescriptorStore;
+import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
+import com.italankin.lnch.model.repository.store.json.OldDescriptorStore;
 
 import java.io.File;
 import java.util.ArrayList;

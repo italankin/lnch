@@ -8,9 +8,6 @@ import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.apps.DescriptorRepository;
 import com.italankin.lnch.model.repository.apps.LauncherDescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.BackupDescriptorStore;
-import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
-import com.italankin.lnch.model.repository.descriptor.VersioningDescriptorStore;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
@@ -24,6 +21,9 @@ import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchD
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.StubShortcutsRepository;
+import com.italankin.lnch.model.repository.store.BackupDescriptorStore;
+import com.italankin.lnch.model.repository.store.DescriptorStore;
+import com.italankin.lnch.model.repository.store.VersioningDescriptorStore;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import java.util.Arrays;

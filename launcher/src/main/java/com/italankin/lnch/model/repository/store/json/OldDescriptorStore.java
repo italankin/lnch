@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor.json;
+package com.italankin.lnch.model.repository.store.json;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonToken;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
-import com.italankin.lnch.model.repository.descriptor.DescriptorStore;
+import com.italankin.lnch.model.repository.store.DescriptorStore;
 
 import java.io.File;
 import java.io.FileReader;
