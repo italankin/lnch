@@ -57,6 +57,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".feature.pin.PinItemActivity"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:label="@string/pin_item_title"
+            android:theme="@android:style/Theme.Translucent">
+            <intent-filter>
+                <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT" />
+                <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
@@ -68,7 +80,6 @@
         <receiver
             android:name=".feature.receiver.StartShortcutReceiver"
             android:exported="false">
-
             <intent-filter>
                 <action android:name="com.italankin.lnch.action.START_SHORTCUT" />
             </intent-filter>

@@ -20,7 +20,8 @@ public final class ShortcutUtils {
         ShortcutQuery query = new ShortcutQuery();
         query.setPackage(packageName);
         query.setShortcutIds(Collections.singletonList(shortcutId));
-        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC);
+        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC
+                | ShortcutQuery.FLAG_MATCH_PINNED);
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
         if (shortcuts == null || shortcuts.isEmpty()) {
             return Collections.emptyList();

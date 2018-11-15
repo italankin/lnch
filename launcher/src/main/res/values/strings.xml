@@ -21,6 +21,7 @@
     <string name="color_picker_edit_value_hint">Value from %1$d to %2$d</string>
 
     <string name="deep_shortcut_pinned">\"%1$s\" pinned</string>
+    <string name="pin_item_title">Pin to home screen</string>
 
     <string name="popup_delete_title">Delete</string>
     <string name="popup_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
