@@ -35,8 +35,6 @@ import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class AppShortcutsRepository implements ShortcutsRepository {
-    private static final int ALL = ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC;
-    private static final int PINNED = ShortcutQuery.FLAG_MATCH_PINNED;
 
     private final LauncherApps launcherApps;
     private final DescriptorProvider descriptorProvider;
@@ -113,7 +111,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (!launcherApps.hasShortcutHostPermission()) {
             return Collections.emptyList();
         }
-        ShortcutQuery query = new ShortcutQuery().setQueryFlags(PINNED);
+        ShortcutQuery query = new ShortcutQuery().setQueryFlags(ShortcutQuery.FLAG_MATCH_PINNED);
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
         return makeShortcuts(shortcuts);
     }
@@ -123,7 +121,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             return Collections.emptyList();
         }
         ShortcutQuery query = new ShortcutQuery()
-                .setQueryFlags(PINNED)
+                .setQueryFlags(ShortcutQuery.FLAG_MATCH_PINNED)
                 .setPackage(packageName);
         List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
         List<String> pinned = new ArrayList<>();
@@ -140,7 +138,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             return Collections.emptyList();
         }
         ShortcutQuery query = new ShortcutQuery();
-        query.setQueryFlags(ALL);
+        query.setQueryFlags(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC);
         if (descriptor.componentName != null) {
             query.setActivity(ComponentName.unflattenFromString(descriptor.componentName));
         } else {
@@ -177,6 +175,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         @Override
         public boolean start(Rect bounds, Bundle options) {
+            Timber.d("shortcutInfo: %s", shortcutInfo);
             try {
                 //noinspection ConstantConditions
                 launcherApps.startShortcut(shortcutInfo, bounds, options);
