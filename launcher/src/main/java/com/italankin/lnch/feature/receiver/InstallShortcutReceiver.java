@@ -7,8 +7,8 @@ import android.content.Intent;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
-import com.italankin.lnch.model.repository.apps.actions.AddAction;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 
 import java.util.Locale;
 

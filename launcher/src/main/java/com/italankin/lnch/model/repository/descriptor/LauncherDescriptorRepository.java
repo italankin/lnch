@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.apps;
+package com.italankin.lnch.model.repository.descriptor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,10 +41,10 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getDominantIconColor;
-import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getLabel;
-import static com.italankin.lnch.model.repository.apps.LauncherActivityInfoUtils.getVersionCode;
+import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getDominantIconColor;
+import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getLabel;
+import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getVersionCode;
 
 public class LauncherDescriptorRepository implements DescriptorRepository {
     private final Context context;

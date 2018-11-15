@@ -4,7 +4,7 @@ import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;

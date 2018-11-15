@@ -6,8 +6,8 @@ import android.os.Build;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
-import com.italankin.lnch.model.repository.apps.LauncherDescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.LauncherDescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;

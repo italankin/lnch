@@ -4,8 +4,8 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
-import com.italankin.lnch.model.repository.apps.actions.SetVisibilityAction;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
 import java.util.List;

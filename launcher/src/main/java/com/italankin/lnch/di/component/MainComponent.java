@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.italankin.lnch.di.module.AppModule;
 import com.italankin.lnch.di.module.MainModule;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.search.SearchRepository;

@@ -1,8 +1,8 @@
-package com.italankin.lnch.model.repository.apps.actions;
+package com.italankin.lnch.model.repository.descriptor.actions;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
-import com.italankin.lnch.model.repository.apps.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 
 import java.util.List;
