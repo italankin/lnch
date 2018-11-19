@@ -75,6 +75,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         Uri icon = item.getIcon();
         if (icon != null) {
             picasso.load(icon)
+                    .centerInside()
                     .resizeDimen(R.dimen.search_match_icon_size, R.dimen.search_match_icon_size)
                     .into(holder.image);
         } else {
