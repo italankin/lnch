@@ -4,9 +4,13 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 
 import com.italankin.lnch.R;
+
+import java.io.Serializable;
 
 public class ColorPickerDialogFragment extends DialogFragment {
     private static final String ARG_SELECTED_COLOR = "selected_color";
@@ -14,17 +18,12 @@ public class ColorPickerDialogFragment extends DialogFragment {
     private static final String ARG_PREVIEW_VISIBLE = "preview_visible";
     private static final String ARG_COLOR_MODEL = "color_model";
     private static final String ARG_SHOW_RESET = "show_reset";
-
-    private Listener listener;
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
+    private static final String ARG_PROVIDER = "provider";
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @NonNull
@@ -35,17 +34,21 @@ public class ColorPickerDialogFragment extends DialogFragment {
             throw new NullPointerException();
         }
         ColorPickerDialog.Builder builder = ColorPickerDialog.builder(requireContext());
-        builder.setColorModel((ColorPickerView.ColorModel) arguments.getSerializable(ARG_COLOR_MODEL))
-                .setHexVisible(arguments.getBoolean(ARG_HEX_VISIBLE, false))
+        builder.setHexVisible(arguments.getBoolean(ARG_HEX_VISIBLE, false))
                 .setPreviewVisible(arguments.getBoolean(ARG_PREVIEW_VISIBLE, true))
                 .setSelectedColor(arguments.getInt(ARG_SELECTED_COLOR))
                 .setOnColorPickedListener(color -> {
+                    Listener listener = getListener();
                     if (listener != null) {
                         listener.onColorPicked(color);
                     }
                 });
+        if (arguments.containsKey(ARG_COLOR_MODEL)) {
+            builder.setColorModel((ColorPickerView.ColorModel) arguments.getSerializable(ARG_COLOR_MODEL));
+        }
         if (arguments.getBoolean(ARG_SHOW_RESET, false)) {
             builder.setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
+                Listener listener = getListener();
                 if (listener != null) {
                     listener.onColorReset();
                 }
@@ -57,8 +60,20 @@ public class ColorPickerDialogFragment extends DialogFragment {
         return builder.build();
     }
 
+    private Listener getListener() {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return null;
+        }
+        ListenerProvider provider = (ListenerProvider) arguments.getSerializable(ARG_PROVIDER);
+        if (provider == null) {
+            return null;
+        }
+        return provider.get(getParentFragment());
+    }
+
     public static class Builder {
-        private final Bundle arguments = new Bundle();
+        private final Bundle arguments = new Bundle(6);
 
         public Builder setSelectedColor(@ColorInt int color) {
             arguments.putInt(ARG_SELECTED_COLOR, color);
@@ -85,7 +100,15 @@ public class ColorPickerDialogFragment extends DialogFragment {
             return this;
         }
 
+        public Builder setListenerProvider(ListenerProvider provider) {
+            arguments.putSerializable(ARG_PROVIDER, provider);
+            return this;
+        }
+
         public ColorPickerDialogFragment build() {
+            if (!arguments.containsKey(ARG_PROVIDER)) {
+                throw new IllegalArgumentException(ARG_PROVIDER + " is required");
+            }
             ColorPickerDialogFragment fragment = new ColorPickerDialogFragment();
             fragment.setArguments(arguments);
             return fragment;
@@ -97,5 +120,9 @@ public class ColorPickerDialogFragment extends DialogFragment {
 
         default void onColorReset() {
         }
+    }
+
+    public interface ListenerProvider extends Serializable {
+        Listener get(Fragment parentFragment);
     }
 }

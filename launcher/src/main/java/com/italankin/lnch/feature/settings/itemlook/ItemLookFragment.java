@@ -138,49 +138,6 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     }
 
     @Override
-    public void onAttachFragment(Fragment childFragment) {
-        if (childFragment.getTag() == null) {
-            return;
-        }
-        switch (childFragment.getTag()) {
-            case TAG_OVERLAY_COLOR_PICKER: {
-                ColorPickerDialogFragment fragment = (ColorPickerDialogFragment) childFragment;
-                fragment.setListener(newColor -> {
-                    View view = getView();
-                    if (view != null) {
-                        view.findViewById(R.id.overlay).setBackgroundColor(newColor);
-                    }
-                });
-                break;
-            }
-            case TAG_SHADOW_COLOR_PICKER: {
-                ColorPickerDialogFragment fragment = (ColorPickerDialogFragment) childFragment;
-                fragment.setListener(new ColorPickerDialogFragment.Listener() {
-                    @Override
-                    public void onColorPicked(int newColor) {
-                        itemShadowColor.setValue(newColor);
-                        updatePreview();
-                    }
-
-                    @Override
-                    public void onColorReset() {
-                        int color = ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault);
-                        itemShadowColor.setValue(color);
-                        updatePreview();
-                    }
-                });
-                break;
-            }
-            case TAG_PREVIEW_OVERLAY: {
-                ColorPickerDialogFragment fragment = (ColorPickerDialogFragment) childFragment;
-                fragment.setListener(preview::setTextColor);
-                break;
-            }
-
-        }
-    }
-
-    @Override
     public boolean onBackPressed() {
         if (isChanged()) {
             new AlertDialog.Builder(requireContext())
@@ -230,9 +187,22 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
+                    .setListenerProvider(new OverlayColorPickerListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_OVERLAY_COLOR_PICKER);
         });
+    }
+
+    private static class OverlayColorPickerListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment fragment) {
+            return newColor -> {
+                View view = fragment.getView();
+                if (view != null) {
+                    view.findViewById(R.id.overlay).setBackgroundColor(newColor);
+                }
+            };
+        }
     }
 
     private void initPreview(View view) {
@@ -245,9 +215,18 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setSelectedColor(preview.getCurrentTextColor())
+                    .setListenerProvider(new PreviewColorPickerListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_PREVIEW_OVERLAY);
         });
+    }
+
+    private static class PreviewColorPickerListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
+            ItemLookFragment fragment = (ItemLookFragment) parentFragment;
+            return fragment.preview::setTextColor;
+        }
     }
 
     private void initTextSize(View view) {
@@ -325,9 +304,31 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(preview.getShadowColor())
                     .showResetButton(true)
+                    .setListenerProvider(new ShadowColorListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_SHADOW_COLOR_PICKER);
         });
+    }
+
+    private static class ShadowColorListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
+            ItemLookFragment fragment = (ItemLookFragment) parentFragment;
+            return new ColorPickerDialogFragment.Listener() {
+                @Override
+                public void onColorPicked(int newColor) {
+                    fragment.itemShadowColor.setValue(newColor);
+                    fragment.updatePreview();
+                }
+
+                @Override
+                public void onColorReset() {
+                    int color = ResUtils.resolveColor(fragment.requireContext(), R.attr.colorItemShadowDefault);
+                    fragment.itemShadowColor.setValue(color);
+                    fragment.updatePreview();
+                }
+            };
+        }
     }
 
     private void updatePreview() {
