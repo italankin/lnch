@@ -13,12 +13,18 @@
         android:layout_height="@dimen/color_picker_preview_size"
         tools:background="#f00" />
 
-    <LinearLayout
-        android:id="@+id/row_container"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical" />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/row_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" />
+
+    </ScrollView>
 
     <TextView
         android:id="@+id/hex_value"
