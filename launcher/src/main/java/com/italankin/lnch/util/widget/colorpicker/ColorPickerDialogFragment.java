@@ -27,6 +27,9 @@ public class ColorPickerDialogFragment extends DialogFragment {
             throw new NullPointerException();
         }
         ColorPickerDialog.Builder builder = ColorPickerDialog.builder(requireContext());
+        if (arguments.containsKey(ARG_COLOR_MODEL)) {
+            builder.setColorModel((ColorPickerView.ColorModel) arguments.getSerializable(ARG_COLOR_MODEL));
+        }
         builder.setHexVisible(arguments.getBoolean(ARG_HEX_VISIBLE, false))
                 .setPreviewVisible(arguments.getBoolean(ARG_PREVIEW_VISIBLE, true))
                 .setSelectedColor(arguments.getInt(ARG_SELECTED_COLOR))
@@ -36,9 +39,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
                         listener.onColorPicked(color);
                     }
                 });
-        if (arguments.containsKey(ARG_COLOR_MODEL)) {
-            builder.setColorModel((ColorPickerView.ColorModel) arguments.getSerializable(ARG_COLOR_MODEL));
-        }
         if (arguments.getBoolean(ARG_SHOW_RESET, false)) {
             builder.setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
                 Listener listener = getListener();
