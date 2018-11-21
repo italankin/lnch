@@ -28,6 +28,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
+import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
@@ -38,6 +39,8 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
     private static final String TAG_SHADOW_COLOR_PICKER = "shadow_color_picker";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
+    private static final String TAG_DISCARD_CHANGES = "discard_changes";
+
     private static final int REQUEST_CODE_PERMISSION = 1;
 
     private Preferences preferences;
@@ -55,7 +58,6 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
 
         preferences = daggerService().main().getPreferences();
@@ -140,18 +142,28 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     @Override
     public boolean onBackPressed() {
         if (isChanged()) {
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.settings_item_look_discard_message)
-                    .setPositiveButton(R.string.settings_item_look_discard_button, (dialog, which) -> {
-                        if (callbacks != null) {
-                            callbacks.onItemLookFinish();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+            new SimpleDialogFragment.Builder()
+                    .setMessage(getText(R.string.settings_item_look_discard_message))
+                    .setPositiveButton(getText(R.string.settings_item_look_discard_button))
+                    .setNegativeButton(getText(R.string.cancel))
+                    .setListenerProvider(new DiscardChangesListenerProvider())
+                    .build()
+                    .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
             return false;
         }
         return true;
+    }
+
+    private static class DiscardChangesListenerProvider implements SimpleDialogFragment.ListenerProvider {
+        @Override
+        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+            return () -> {
+                Callbacks callbacks = ((ItemLookFragment) parentFragment).callbacks;
+                if (callbacks != null) {
+                    callbacks.onItemLookFinish();
+                }
+            };
+        }
     }
 
     private void initRoot(View view) {
