@@ -28,6 +28,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
+import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
@@ -143,9 +144,9 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     public boolean onBackPressed() {
         if (isChanged()) {
             new SimpleDialogFragment.Builder()
-                    .setMessage(getText(R.string.settings_item_look_discard_message))
-                    .setPositiveButton(getText(R.string.settings_item_look_discard_button))
-                    .setNegativeButton(getText(R.string.cancel))
+                    .setMessage(R.string.settings_item_look_discard_message)
+                    .setPositiveButton(R.string.settings_item_look_discard_button)
+                    .setNegativeButton(R.string.cancel)
                     .setListenerProvider(new DiscardChangesListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
@@ -154,7 +155,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         return true;
     }
 
-    private static class DiscardChangesListenerProvider implements SimpleDialogFragment.ListenerProvider {
+    private static class DiscardChangesListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
             return () -> {

@@ -51,7 +51,6 @@ public class WallpaperOverlayFragment extends AppFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
         preferences = daggerService().main().getPreferences();
     }

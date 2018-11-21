@@ -25,6 +25,7 @@ import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.squareup.picasso.Picasso;
@@ -220,16 +221,16 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private void showResetDialog() {
         new SimpleDialogFragment.Builder()
-                .setTitle(getText(R.string.settings_apps_reset))
-                .setMessage(getText(R.string.settings_apps_reset_message))
-                .setPositiveButton(getText(R.string.settings_apps_reset_action))
-                .setNegativeButton(getText(R.string.cancel))
+                .setTitle(R.string.settings_apps_reset)
+                .setMessage(R.string.settings_apps_reset_message)
+                .setPositiveButton(R.string.settings_apps_reset_action)
+                .setNegativeButton(R.string.cancel)
                 .setListenerProvider(new ResetDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_RESET_DIALOG);
     }
 
-    private static class ResetDialogListenerProvider implements SimpleDialogFragment.ListenerProvider {
+    private static class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
             AppsFragment fragment = (AppsFragment) parentFragment;
