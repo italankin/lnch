@@ -12,7 +12,7 @@ import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 import com.squareup.picasso.Picasso;
 
-public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.AppViewModelHolder, AppWithIconViewModel> {
+public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.ViewHolder, AppWithIconViewModel> {
     private final Picasso picasso;
     private final Listener listener;
 
@@ -28,8 +28,8 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
 
     @NonNull
     @Override
-    protected AppViewModelHolder createViewHolder(View itemView) {
-        AppViewModelHolder holder = new AppViewModelHolder(itemView);
+    protected ViewHolder createViewHolder(View itemView) {
+        ViewHolder holder = new ViewHolder(itemView);
         holder.visibility.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
@@ -40,7 +40,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     @Override
-    public void onBind(AppViewModelHolder holder, int position, AppWithIconViewModel item) {
+    public void onBind(ViewHolder holder, int position, AppWithIconViewModel item) {
         holder.bind(item);
     }
 
@@ -53,7 +53,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
         void onVisibilityClick(int position, AppViewModel item);
     }
 
-    class AppViewModelHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         private static final float ALPHA_ITEM_VISIBLE = 1f;
         private static final float ALPHA_ITEM_HIDDEN = 0.3f;
 
@@ -62,7 +62,7 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
         final TextView packageName;
         final ImageView visibility;
 
-        AppViewModelHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             label = itemView.findViewById(R.id.label);
             packageName = itemView.findViewById(R.id.package_name);
