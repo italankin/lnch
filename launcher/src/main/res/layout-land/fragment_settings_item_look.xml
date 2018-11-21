@@ -9,18 +9,18 @@
     <ImageView
         android:id="@+id/wallpaper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/prefs_container"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/prefs_container"
         android:scaleType="centerCrop"
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <LinearLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/prefs_container"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/prefs_container"
         android:gravity="center">
 
         <include
@@ -31,9 +31,9 @@
 
     <ScrollView
         android:id="@+id/prefs_container"
-        android:layout_width="match_parent"
-        android:layout_height="208dp"
-        android:layout_alignParentBottom="true"
+        android:layout_width="@dimen/default_right_panel_width"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
         android:background="?colorPrimary"
         android:fillViewport="true">
 
