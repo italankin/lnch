@@ -14,51 +14,45 @@ public class BadgedIconDrawable extends Drawable {
     private static final float BADGE_FACTOR = 2;
 
     private final Drawable icon;
-    private final Drawable badgeIcon;
-    private int badgeOffsetX;
-    private int badgeOffsetY;
+    private final Drawable badge;
 
-    public BadgedIconDrawable(Drawable icon, Drawable badgeIcon) {
+    public BadgedIconDrawable(Drawable icon, Drawable badge) {
         this.icon = icon;
-        this.badgeIcon = badgeIcon;
+        this.badge = badge;
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
         icon.draw(canvas);
-        canvas.save();
-        canvas.translate(badgeOffsetX, badgeOffsetY);
-        badgeIcon.draw(canvas);
-        canvas.restore();
+        badge.draw(canvas);
     }
 
     @Override
     public void setAlpha(int alpha) {
         icon.setAlpha(alpha);
-        badgeIcon.setAlpha(alpha);
+        badge.setAlpha(alpha);
     }
 
     @Override
     public void setColorFilter(@Nullable ColorFilter colorFilter) {
         icon.setColorFilter(colorFilter);
-        badgeIcon.setColorFilter(colorFilter);
+        badge.setColorFilter(colorFilter);
     }
 
     @Override
     protected void onBoundsChange(Rect bounds) {
         int badgeSize = (int) Math.min(bounds.width() / BADGE_FACTOR, bounds.height() / BADGE_FACTOR);
-        badgeIcon.setBounds(0, 0, badgeSize, badgeSize);
+        Rect bb = new Rect(0, 0, badgeSize, badgeSize);
+        bb.offset(bounds.right - badgeSize, bounds.bottom - badgeSize);
+        badge.setBounds(bb);
 
-        badgeOffsetX = bounds.right - badgeSize;
-        badgeOffsetY = bounds.bottom - badgeSize;
-
-        Rect b = new Rect(bounds);
+        Rect ib = new Rect(bounds);
         int width = (int) (bounds.width() * ICON_INSET_FACTOR);
-        b.right = width;
+        ib.right = width;
         float factor = icon.getIntrinsicHeight() / (float) icon.getIntrinsicWidth();
-        b.bottom = (int) (width * factor);
-        b.offset((bounds.width() - b.width()) / 2, (bounds.height() - b.height()) / 2);
-        icon.setBounds(b);
+        ib.bottom = (int) (width * factor);
+        ib.offset((bounds.width() - ib.width()) / 2, (bounds.height() - ib.height()) / 2);
+        icon.setBounds(ib);
     }
 
     @Override
