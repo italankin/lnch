@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 
@@ -19,12 +18,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
     private static final String ARG_COLOR_MODEL = "color_model";
     private static final String ARG_SHOW_RESET = "show_reset";
     private static final String ARG_PROVIDER = "provider";
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @NonNull
     @Override
