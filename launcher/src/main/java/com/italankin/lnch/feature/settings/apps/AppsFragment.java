@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
@@ -21,10 +21,12 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
+import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -32,6 +34,9 @@ import java.util.List;
 public class AppsFragment extends AppFragment implements AppsView,
         AppsViewModelAdapter.Listener,
         AppsFilter.OnFilterResult {
+
+    private static final String TAG_RESET_DIALOG = "reset_dialog";
+    private static final String TAG_FILTER_FLAGS = "filter";
 
     @InjectPresenter
     AppsPresenter presenter;
@@ -159,38 +164,47 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showFilterDialog() {
-        int flags = filter.getFlags();
-        boolean[] itemsState = {
-                (flags & AppsFilter.FLAG_VISIBLE) > 0,
-                (flags & AppsFilter.FLAG_HIDDEN) > 0
-        };
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_apps_filter)
-                .setMultiChoiceItems(R.array.settings_apps_filter_items, itemsState,
-                        (dialog, which, isChecked) -> itemsState[which] = isChecked)
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.settings_apps_filter_reset, (dialog, which) -> {
-                    filter.resetFlags();
-                })
-                .setPositiveButton(R.string.settings_apps_filter_apply, (dialog, which) -> {
-                    int newFlags = 0;
-                    if (itemsState[0]) {
-                        newFlags |= AppsFilter.FLAG_VISIBLE;
-                    }
-                    if (itemsState[1]) {
-                        newFlags |= AppsFilter.FLAG_HIDDEN;
-                    }
-                    filter.setFlags(newFlags);
-                })
-                .show();
+        new FilterFlagsDialogFragment.Builder()
+                .setFlags(filter.getFlags())
+                .setListenerProvider(new FilterFlagsDialogListenerProvider())
+                .build()
+                .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
+    }
+
+    private static class FilterFlagsDialogListenerProvider implements FilterFlagsDialogFragment.ListenerProvider {
+        @Override
+        public FilterFlagsDialogFragment.Listener get(Fragment parentFragment) {
+            AppsFragment fragment = (AppsFragment) parentFragment;
+            return new FilterFlagsDialogFragment.Listener() {
+                @Override
+                public void onFlagsSet(int newFlags) {
+                    fragment.filter.setFlags(newFlags);
+                }
+
+                @Override
+                public void onFlagsReset() {
+                    fragment.filter.resetFlags();
+                }
+            };
+        }
     }
 
     private void showResetDialog() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_apps_reset)
-                .setMessage(R.string.settings_apps_reset_message)
-                .setPositiveButton(R.string.settings_apps_reset_action, (dialog, which) -> presenter.resetAppsSettings())
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        new SimpleDialogFragment.Builder()
+                .setTitle(getText(R.string.settings_apps_reset))
+                .setMessage(getText(R.string.settings_apps_reset_message))
+                .setPositiveButton(getText(R.string.settings_apps_reset_action))
+                .setNegativeButton(getText(R.string.cancel))
+                .setListenerProvider(new ResetDialogListenerProvider())
+                .build()
+                .show(getChildFragmentManager(), TAG_RESET_DIALOG);
+    }
+
+    private static class ResetDialogListenerProvider implements SimpleDialogFragment.ListenerProvider {
+        @Override
+        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+            AppsFragment fragment = (AppsFragment) parentFragment;
+            return fragment.presenter::resetAppsSettings;
+        }
     }
 }
