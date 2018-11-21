@@ -22,6 +22,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
+import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
@@ -29,6 +30,7 @@ import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.squareup.picasso.Picasso;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class AppsFragment extends AppFragment implements AppsView,
@@ -177,7 +179,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             AppsFragment fragment = (AppsFragment) parentFragment;
             return new FilterFlagsDialogFragment.Listener() {
                 @Override
-                public void onFlagsSet(int newFlags) {
+                public void onFlagsSet(EnumSet<FilterFlag> newFlags) {
                     fragment.filter.setFlags(newFlags);
                 }
 

@@ -5,26 +5,29 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Filter;
 
+import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.SearchUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.synchronizedSet;
+import static java.util.Collections.unmodifiableSet;
 
 public class AppsFilter extends Filter {
-    public static final int FLAG_HIDDEN = 1;
-    public static final int FLAG_VISIBLE = 1 << 1;
-
-    private static final int DEFAULT_FLAGS = FLAG_HIDDEN | FLAG_VISIBLE;
+    private static final Set<FilterFlag> DEFAULT_FLAGS = unmodifiableSet(EnumSet.allOf(FilterFlag.class));
     private static final FilterResults EMPTY;
 
     static {
         EMPTY = new FilterResults();
         EMPTY.count = 0;
-        EMPTY.values = Collections.emptyList();
+        EMPTY.values = emptyList();
     }
 
     @NonNull
@@ -32,7 +35,7 @@ public class AppsFilter extends Filter {
     @Nullable
     private final OnFilterResult onFilterResult;
 
-    private volatile int flags = DEFAULT_FLAGS;
+    private final Set<FilterFlag> flags = synchronizedSet(EnumSet.copyOf(DEFAULT_FLAGS));
     private volatile CharSequence constraint;
 
     public AppsFilter(@NonNull List<AppViewModel> items, @Nullable OnFilterResult onFilterResult) {
@@ -40,9 +43,10 @@ public class AppsFilter extends Filter {
         this.onFilterResult = onFilterResult;
     }
 
-    public void setFlags(int newFlags) {
-        if (flags != newFlags) {
-            flags = newFlags;
+    public void setFlags(Set<FilterFlag> newFlags) {
+        if (!flags.equals(newFlags)) {
+            flags.clear();
+            flags.addAll(newFlags);
             filter(constraint);
         }
     }
@@ -51,19 +55,23 @@ public class AppsFilter extends Filter {
         setFlags(DEFAULT_FLAGS);
     }
 
-    public int getFlags() {
-        return flags;
+    public EnumSet<FilterFlag> getFlags() {
+        return flags.isEmpty() ? EnumSet.noneOf(FilterFlag.class) : EnumSet.copyOf(flags);
     }
 
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         this.constraint = constraint;
+
+        boolean includeVisible = flags.contains(FilterFlag.VISIBLE);
+        boolean includeHidden = flags.contains(FilterFlag.HIDDEN);
+
         List<AppViewModel> result = new ArrayList<>(unfiltered.size());
         for (AppViewModel item : unfiltered) {
-            if (!item.isHidden() && (flags & FLAG_VISIBLE) == 0) {
+            if (!item.isHidden() && !includeVisible) {
                 continue;
             }
-            if (item.isHidden() && (flags & FLAG_HIDDEN) == 0) {
+            if (item.isHidden() && !includeHidden) {
                 continue;
             }
             result.add(item);

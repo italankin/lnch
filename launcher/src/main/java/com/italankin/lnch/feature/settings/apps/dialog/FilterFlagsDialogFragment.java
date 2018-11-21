@@ -9,9 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
+import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 
 public class FilterFlagsDialogFragment extends DialogFragment {
     private static final String ARG_FLAGS = "flags";
@@ -30,7 +31,7 @@ public class FilterFlagsDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.settings_apps_filter)
-                .setMultiChoiceItems(R.array.settings_apps_filter_items, checkedItems,
+                .setMultiChoiceItems(getFilterTitles(), checkedItems,
                         (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.settings_apps_filter_reset, (dialog, which) -> {
@@ -40,7 +41,7 @@ public class FilterFlagsDialogFragment extends DialogFragment {
                     }
                 })
                 .setPositiveButton(R.string.settings_apps_filter_apply, (dialog, which) -> {
-                    int newFlags = getFlags();
+                    EnumSet<FilterFlag> newFlags = getFlags();
                     Listener listner = getListener();
                     if (listner != null) {
                         listner.onFlagsSet(newFlags);
@@ -54,25 +55,51 @@ public class FilterFlagsDialogFragment extends DialogFragment {
         super.onSaveInstanceState(outState);
         Bundle arguments = getArguments();
         if (arguments != null) {
-            arguments.putInt(ARG_FLAGS, getFlags());
+            arguments.putSerializable(ARG_FLAGS, getFlags());
         }
     }
 
     private boolean[] getCheckedItems() {
-        Bundle arguments = getArguments();
-        if (arguments == null) {
-            return new boolean[2];
+        FilterFlag[] values = FilterFlag.values();
+        EnumSet<FilterFlag> flags = getFilterFlags();
+        boolean itemsState[] = new boolean[values.length];
+        for (int i = 0; i < values.length; i++) {
+            FilterFlag value = values[i];
+            itemsState[i] = flags.contains(value);
         }
-        int flags = arguments.getInt(ARG_FLAGS, 0);
-        return new boolean[]{
-                (flags & AppsFilter.FLAG_VISIBLE) > 0,
-                (flags & AppsFilter.FLAG_HIDDEN) > 0
-        };
+        return itemsState;
     }
 
-    private int getFlags() {
-        return (checkedItems[0] ? AppsFilter.FLAG_VISIBLE : 0)
-                | (checkedItems[1] ? AppsFilter.FLAG_HIDDEN : 0);
+    @SuppressWarnings("unchecked")
+    private EnumSet<FilterFlag> getFilterFlags() {
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            EnumSet<FilterFlag> flags = (EnumSet<FilterFlag>) arguments.getSerializable(ARG_FLAGS);
+            if (flags != null) {
+                return flags;
+            }
+        }
+        return EnumSet.allOf(FilterFlag.class);
+    }
+
+    private CharSequence[] getFilterTitles() {
+        FilterFlag[] values = FilterFlag.values();
+        CharSequence[] titles = new CharSequence[values.length];
+        for (int i = 0; i < values.length; i++) {
+            titles[i] = getText(values[i].title);
+        }
+        return titles;
+    }
+
+    private EnumSet<FilterFlag> getFlags() {
+        FilterFlag[] values = FilterFlag.values();
+        EnumSet<FilterFlag> flags = EnumSet.noneOf(FilterFlag.class);
+        for (int i = 0; i < checkedItems.length; i++) {
+            if (checkedItems[i]) {
+                flags.add(values[i]);
+            }
+        }
+        return flags;
     }
 
     private Listener getListener() {
@@ -90,8 +117,8 @@ public class FilterFlagsDialogFragment extends DialogFragment {
     public static class Builder {
         private final Bundle arguments = new Bundle();
 
-        public Builder setFlags(int flags) {
-            arguments.putInt(ARG_FLAGS, flags);
+        public Builder setFlags(EnumSet<FilterFlag> flags) {
+            arguments.putSerializable(ARG_FLAGS, flags);
             return this;
         }
 
@@ -111,7 +138,7 @@ public class FilterFlagsDialogFragment extends DialogFragment {
     }
 
     public interface Listener {
-        void onFlagsSet(int newFlags);
+        void onFlagsSet(EnumSet<FilterFlag> newFlags);
 
         void onFlagsReset();
     }
