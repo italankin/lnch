@@ -13,7 +13,7 @@ public final class ViewUtils {
         private final View view;
         private final ViewTreeObserver.OnGlobalLayoutListener delegate;
 
-        public OneTimeListener(View view, ViewTreeObserver.OnGlobalLayoutListener delegate) {
+        private OneTimeListener(View view, ViewTreeObserver.OnGlobalLayoutListener delegate) {
             this.view = view;
             this.delegate = delegate;
         }

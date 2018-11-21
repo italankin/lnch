@@ -27,7 +27,7 @@ import com.italankin.lnch.feature.settings.BackButtonHandler;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.SeekBarChangeListener;
+import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;

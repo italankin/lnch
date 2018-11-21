@@ -14,7 +14,7 @@ import com.squareup.picasso.RequestHandler;
 
 public class PackageIconHandler extends RequestHandler {
 
-    private static final String SCHEME = "pm";
+    private static final String SCHEME = "package";
 
     public static Uri uriFrom(String packageName) {
         return new Uri.Builder().scheme(SCHEME).authority(packageName).build();

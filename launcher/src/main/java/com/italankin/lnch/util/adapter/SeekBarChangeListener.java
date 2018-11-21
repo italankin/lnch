@@ -1,4 +1,4 @@
-package com.italankin.lnch.util;
+package com.italankin.lnch.util.adapter;
 
 import android.widget.SeekBar;
 

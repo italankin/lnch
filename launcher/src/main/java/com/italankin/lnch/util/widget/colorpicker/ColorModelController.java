@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 interface ColorModelController {
+
     void init(ViewGroup root, LayoutInflater inflater);
 
     void destroy();

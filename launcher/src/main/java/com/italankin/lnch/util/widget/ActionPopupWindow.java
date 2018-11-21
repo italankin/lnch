@@ -283,11 +283,12 @@ public class ActionPopupWindow extends PopupWindow {
     }
 
     private static class ArrowDrawable extends Drawable {
-        public static final float HEIGHT_FACTOR = .66f;
+        private static final float HEIGHT_FACTOR = .66f;
+
         private final Paint paint;
         private final Path path;
 
-        public ArrowDrawable(@ColorInt int color, @Px int size, boolean pointDown) {
+        private ArrowDrawable(@ColorInt int color, @Px int size, boolean pointDown) {
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(color);
 

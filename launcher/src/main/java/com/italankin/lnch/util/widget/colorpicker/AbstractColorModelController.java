@@ -12,7 +12,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.util.SeekBarChangeListener;
+import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 abstract class AbstractColorModelController implements ColorModelController {
