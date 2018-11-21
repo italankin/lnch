@@ -25,7 +25,6 @@ import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
-import com.italankin.lnch.util.adapterdelegate.FilterCompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.squareup.picasso.Picasso;
@@ -37,6 +36,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         AppsViewModelAdapter.Listener,
         AppsFilter.OnFilterResult {
 
+    private static final String DATA_FILTER_FLAGS = "filter_flags";
+
     private static final String TAG_RESET_DIALOG = "reset_dialog";
     private static final String TAG_FILTER_FLAGS = "filter";
 
@@ -46,7 +47,8 @@ public class AppsFragment extends AppFragment implements AppsView,
     private LceLayout lce;
     private RecyclerView list;
     private CompositeAdapter<AppViewModel> adapter;
-    private AppsFilter filter;
+
+    private final AppsFilter filter = new AppsFilter(this);
 
     @ProvidePresenter
     AppsPresenter providePresenter() {
@@ -60,17 +62,39 @@ public class AppsFragment extends AppFragment implements AppsView,
         setHasOptionsMenu(true);
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_apps, container, false);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
+        initAdapter();
+        if (savedInstanceState != null) {
+            EnumSet<FilterFlag> flags = (EnumSet<FilterFlag>)
+                    savedInstanceState.getSerializable(DATA_FILTER_FLAGS);
+            if (flags != null) {
+                filter.setFlags(flags);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(DATA_FILTER_FLAGS, filter.getFlags());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        adapter = null;
+        list = null;
+        lce = null;
     }
 
     @Override
@@ -119,15 +143,9 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onAppsLoaded(List<AppViewModel> apps) {
-        Context context = requireContext();
-        Picasso picasso = daggerService().main().getPicassoFactory().create(context);
-        filter = new AppsFilter(apps, this);
-        adapter = new FilterCompositeAdapter.Builder<AppViewModel>(context)
-                .filter(filter)
-                .add(new AppsViewModelAdapter(picasso, this))
-                .recyclerView(list)
-                .dataset(apps)
-                .create();
+        adapter.setDataset(apps);
+        adapter.notifyDataSetChanged();
+        filter.setDataset(apps);
         lce.showContent();
     }
 
@@ -163,6 +181,15 @@ public class AppsFragment extends AppFragment implements AppsView,
             adapter.notifyDataSetChanged();
             lce.showContent();
         }
+    }
+
+    public void initAdapter() {
+        Context context = requireContext();
+        Picasso picasso = daggerService().main().getPicassoFactory().create(context);
+        adapter = new CompositeAdapter.Builder<AppViewModel>(context)
+                .add(new AppsViewModelAdapter(picasso, this))
+                .recyclerView(list)
+                .create();
     }
 
     private void showFilterDialog() {

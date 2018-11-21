@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.synchronizedSet;
@@ -30,17 +31,21 @@ public class AppsFilter extends Filter {
         EMPTY.values = emptyList();
     }
 
-    @NonNull
-    private final List<AppViewModel> unfiltered;
+    private final List<AppViewModel> unfiltered = new CopyOnWriteArrayList<>();
     @Nullable
     private final OnFilterResult onFilterResult;
 
     private final Set<FilterFlag> flags = synchronizedSet(EnumSet.copyOf(DEFAULT_FLAGS));
     private volatile CharSequence constraint;
 
-    public AppsFilter(@NonNull List<AppViewModel> items, @Nullable OnFilterResult onFilterResult) {
-        this.unfiltered = items;
+    public AppsFilter(@Nullable OnFilterResult onFilterResult) {
         this.onFilterResult = onFilterResult;
+    }
+
+    public void setDataset(@NonNull List<AppViewModel> dataset) {
+        unfiltered.clear();
+        unfiltered.addAll(dataset);
+        filter(constraint);
     }
 
     public void setFlags(Set<FilterFlag> newFlags) {
