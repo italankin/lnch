@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="@string/pref_misc_show_scrollbar"
-        android:title="@string/title_settings_home_misc_scrollbar" />
     <ListPreference
         android:defaultValue="popup"
         android:entries="@array/app_long_click_actions_desc"
@@ -11,4 +7,8 @@
         android:key="@string/pref_misc_app_long_click_action"
         android:summary="%s"
         android:title="@string/title_settings_home_misc_app_long_click_action" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_misc_show_scrollbar"
+        android:title="@string/title_settings_home_misc_scrollbar" />
 </PreferenceScreen>
