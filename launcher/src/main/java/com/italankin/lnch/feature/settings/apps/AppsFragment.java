@@ -201,7 +201,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
     }
 
-    private static class FilterFlagsDialogListenerProvider implements FilterFlagsDialogFragment.ListenerProvider {
+    private static class FilterFlagsDialogListenerProvider implements ListenerFragment<FilterFlagsDialogFragment.Listener> {
         @Override
         public FilterFlagsDialogFragment.Listener get(Fragment parentFragment) {
             AppsFragment fragment = (AppsFragment) parentFragment;
