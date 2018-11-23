@@ -45,4 +45,15 @@
         <item>Bing</item>
         <item>Baidu</item>
     </string-array>
+
+    <string-array name="screen_orienation">
+        <item>sensor</item>
+        <item>portrait</item>
+        <item>landscape</item>
+    </string-array>
+    <string-array name="screen_orienation_desc">
+        <item>Sensor</item>
+        <item>Portrait</item>
+        <item>Landscape</item>
+    </string-array>
 </resources>

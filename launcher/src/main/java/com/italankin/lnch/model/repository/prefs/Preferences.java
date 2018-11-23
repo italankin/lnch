@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.repository.prefs;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
@@ -55,6 +56,8 @@ public interface Preferences {
     void resetItemSettings();
 
     LongClickAction appLongClickAction();
+
+    ScreenOrientation screenOrientation();
 
     Observable<String> observe();
 
@@ -201,6 +204,38 @@ public interface Preferences {
         @Override
         public String toString() {
             return action;
+        }
+    }
+
+    enum ScreenOrientation {
+        SENSOR("sensor", ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED),
+        PORTRAIT("portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT),
+        LANDSCAPE("landscape", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        static ScreenOrientation from(String s) {
+            for (ScreenOrientation item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return SENSOR;
+        }
+
+        private final String key;
+        private final int value;
+
+        ScreenOrientation(String key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public int value() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return key;
         }
     }
 }

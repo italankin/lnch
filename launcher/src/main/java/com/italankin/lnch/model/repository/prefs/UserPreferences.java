@@ -179,6 +179,12 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public ScreenOrientation screenOrientation() {
+        String pref = prefs.getString(context.getString(R.string.pref_misc_screen_orientation), null);
+        return ScreenOrientation.from(pref);
+    }
+
+    @Override
     public Observable<String> observe() {
         return updates;
     }

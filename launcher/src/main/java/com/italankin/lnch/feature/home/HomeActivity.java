@@ -38,6 +38,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
@@ -82,6 +83,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+
 public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
@@ -110,6 +114,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private boolean editMode = false;
     private boolean animateOnResume = false;
+    private Disposable screenOrientationDisposable;
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
@@ -131,6 +136,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         packageManager = getPackageManager();
         preferences = daggerService().main().getPreferences();
         picasso = daggerService().main().getPicassoFactory().create(this);
+
+        setScreenOrientation();
 
         setupWindow();
 
@@ -213,6 +220,14 @@ public class HomeActivity extends AppActivity implements HomeView,
                 }
                 break;
             }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (screenOrientationDisposable != null && !screenOrientationDisposable.isDisposed()) {
+            screenOrientationDisposable.dispose();
         }
     }
 
@@ -681,6 +696,18 @@ public class HomeActivity extends AppActivity implements HomeView,
                     searchEditText.getPaddingRight(), searchEditText.getPaddingBottom());
             searchBtnGlobal.setVisibility(View.GONE);
         }
+    }
+
+    private void setScreenOrientation() {
+        Preferences preferences = LauncherApp.getInstance(this).daggerService.main().getPreferences();
+        setRequestedOrientation(preferences.screenOrientation().value());
+        String key = getString(R.string.pref_misc_screen_orientation);
+        screenOrientationDisposable = preferences.observe()
+                .filter(key::equals)
+                .map(s -> preferences.screenOrientation().value())
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setRequestedOrientation);
     }
 
     private void setLayout(Preferences.HomeLayout layout) {

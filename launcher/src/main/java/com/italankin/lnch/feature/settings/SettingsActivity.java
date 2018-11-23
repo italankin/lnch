@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.AppsFragment;
@@ -17,6 +18,10 @@ import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.itemlook.ItemLookFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class SettingsActivity extends AppCompatActivity implements
         SettingsRootFragment.Callbacks,
@@ -30,10 +35,13 @@ public class SettingsActivity extends AppCompatActivity implements
 
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
+    private Disposable screenOrientationDisposable;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setScreenOrientation();
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
@@ -57,6 +65,14 @@ public class SettingsActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
         updateToolbar();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (screenOrientationDisposable != null && !screenOrientationDisposable.isDisposed()) {
+            screenOrientationDisposable.dispose();
+        }
     }
 
     @Override
@@ -137,5 +153,17 @@ public class SettingsActivity extends AppCompatActivity implements
                 .setBreadCrumbTitle(title)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void setScreenOrientation() {
+        Preferences preferences = LauncherApp.getInstance(this).daggerService.main().getPreferences();
+        setRequestedOrientation(preferences.screenOrientation().value());
+        String key = getString(R.string.pref_misc_screen_orientation);
+        screenOrientationDisposable = preferences.observe()
+                .filter(key::equals)
+                .map(s -> preferences.screenOrientation().value())
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setRequestedOrientation);
     }
 }

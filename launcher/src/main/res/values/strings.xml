@@ -48,6 +48,7 @@
     <string name="title_settings_home_misc">Miscellaneous</string>
     <string name="title_settings_home_misc_scrollbar">Show scroll indicator</string>
     <string name="title_settings_home_misc_app_long_click_action">App long click action</string>
+    <string name="title_settings_home_misc_screen_orientation">Screen orienation</string>
     <string name="title_settings_home_item_look">Item look</string>
     <string name="title_settings_apps">Apps</string>
     <string name="title_settings_apps_list">Apps</string>
