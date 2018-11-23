@@ -206,7 +206,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         });
     }
 
-    private static class OverlayColorPickerListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+    private static class OverlayColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment fragment) {
             return newColor -> {
@@ -234,7 +234,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         });
     }
 
-    private static class PreviewColorPickerListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+    private static class PreviewColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
             ItemLookFragment fragment = (ItemLookFragment) parentFragment;
@@ -323,7 +323,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         });
     }
 
-    private static class ShadowColorListenerProvider implements ColorPickerDialogFragment.ListenerProvider {
+    private static class ShadowColorListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
             ItemLookFragment fragment = (ItemLookFragment) parentFragment;
