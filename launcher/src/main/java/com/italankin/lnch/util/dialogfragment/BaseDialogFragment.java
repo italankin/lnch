@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseDialogFragment<T> extends DialogFragment {
+public abstract class BaseDialogFragment<L> extends DialogFragment {
     protected static final String ARG_PROVIDER = "provider";
 
     @NonNull
@@ -27,20 +27,20 @@ public abstract class BaseDialogFragment<T> extends DialogFragment {
         return getText(res);
     }
 
-    protected T getListener() {
+    protected L getListener() {
         Object provider = getArgs().getSerializable(ARG_PROVIDER);
         if (provider == null) {
             return null;
         }
         if (provider instanceof ListenerFragment) {
-            return ((ListenerFragment<T>) provider).get(getParentFragment());
+            return ((ListenerFragment<L>) provider).get(getParentFragment());
         } else if (provider instanceof ListenerActivity) {
-            return ((ListenerActivity<T>) provider).get(requireActivity());
+            return ((ListenerActivity<L>) provider).get(requireActivity());
         }
         return null;
     }
 
-    protected static abstract class BaseBuilder<F extends BaseDialogFragment, T, B extends BaseBuilder> implements ArgumentsHolder {
+    protected static abstract class BaseBuilder<F extends BaseDialogFragment, L, B extends BaseBuilder> implements ArgumentsHolder {
         protected final Bundle arguments = new Bundle(6);
 
         @Override
@@ -48,12 +48,12 @@ public abstract class BaseDialogFragment<T> extends DialogFragment {
             return arguments;
         }
 
-        public B setListenerProvider(ListenerFragment<T> provider) {
+        public B setListenerProvider(ListenerFragment<L> provider) {
             arguments.putSerializable(ARG_PROVIDER, provider);
             return (B) this;
         }
 
-        public B setListenerProvider(ListenerActivity<T> provider) {
+        public B setListenerProvider(ListenerActivity<L> provider) {
             arguments.putSerializable(ARG_PROVIDER, provider);
             return (B) this;
         }
