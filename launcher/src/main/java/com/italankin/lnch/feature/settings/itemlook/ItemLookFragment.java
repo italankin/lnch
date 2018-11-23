@@ -29,7 +29,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
-import com.italankin.lnch.util.widget.SimpleDialogFragment;
+import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;

@@ -1,11 +1,9 @@
-package com.italankin.lnch.util.widget;
+package com.italankin.lnch.util.dialogfragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-
-import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragment.Listener> {
 

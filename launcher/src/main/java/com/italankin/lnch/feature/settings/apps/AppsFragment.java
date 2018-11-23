@@ -26,8 +26,8 @@ import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
+import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.italankin.lnch.util.widget.SimpleDialogFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.EnumSet;
