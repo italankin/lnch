@@ -52,8 +52,6 @@ public class ActionPopupWindow extends PopupWindow {
     private final int darkArrowColor;
     private final int lightArrowColor;
 
-    private final int[] tmp = new int[2];
-
     @SuppressLint("InflateParams")
     public ActionPopupWindow(Context context, Picasso picasso) {
         super(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -165,6 +163,7 @@ public class ActionPopupWindow extends PopupWindow {
         int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
         contentView.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        int[] tmp = new int[2];
         anchorView.getLocationOnScreen(tmp);
 
         int contentWidth = contentView.getMeasuredWidth();
