@@ -4,20 +4,16 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
-import java.io.Serializable;
-
-public class ColorPickerDialogFragment extends DialogFragment {
+public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDialogFragment.Listener> {
     private static final String ARG_SELECTED_COLOR = "selected_color";
     private static final String ARG_HEX_VISIBLE = "hex_visible";
     private static final String ARG_PREVIEW_VISIBLE = "preview_visible";
     private static final String ARG_COLOR_MODEL = "color_model";
     private static final String ARG_SHOW_RESET = "show_reset";
-    private static final String ARG_PROVIDER = "provider";
 
     @NonNull
     @Override
@@ -53,19 +49,7 @@ public class ColorPickerDialogFragment extends DialogFragment {
         return builder.build();
     }
 
-    private Listener getListener() {
-        Bundle arguments = getArguments();
-        if (arguments == null) {
-            return null;
-        }
-        ListenerProvider provider = (ListenerProvider) arguments.getSerializable(ARG_PROVIDER);
-        if (provider == null) {
-            return null;
-        }
-        return provider.get(getParentFragment());
-    }
-
-    public static class Builder {
+    public static class Builder extends BaseBuilder<ColorPickerDialogFragment, Listener, Builder> {
         private final Bundle arguments = new Bundle(6);
 
         public Builder setSelectedColor(@ColorInt int color) {
@@ -93,18 +77,9 @@ public class ColorPickerDialogFragment extends DialogFragment {
             return this;
         }
 
-        public Builder setListenerProvider(ListenerProvider provider) {
-            arguments.putSerializable(ARG_PROVIDER, provider);
-            return this;
-        }
-
-        public ColorPickerDialogFragment build() {
-            if (!arguments.containsKey(ARG_PROVIDER)) {
-                throw new IllegalArgumentException(ARG_PROVIDER + " is required");
-            }
-            ColorPickerDialogFragment fragment = new ColorPickerDialogFragment();
-            fragment.setArguments(arguments);
-            return fragment;
+        @Override
+        protected ColorPickerDialogFragment createInstance() {
+            return new ColorPickerDialogFragment();
         }
     }
 
@@ -113,9 +88,5 @@ public class ColorPickerDialogFragment extends DialogFragment {
 
         default void onColorReset() {
         }
-    }
-
-    public interface ListenerProvider extends Serializable {
-        Listener get(Fragment parentFragment);
     }
 }
