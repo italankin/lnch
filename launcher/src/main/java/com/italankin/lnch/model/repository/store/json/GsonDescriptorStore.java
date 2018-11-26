@@ -6,9 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -24,9 +25,9 @@ public class GsonDescriptorStore implements DescriptorStore {
     }
 
     @Override
-    public List<Descriptor> read(File packagesFile) {
+    public List<Descriptor> read(InputStream in) {
         try {
-            return gson.fromJson(new FileReader(packagesFile), getType());
+            return gson.fromJson(new InputStreamReader(in), getType());
         } catch (Exception e) {
             Timber.e(e, "read:");
             return null;
@@ -34,14 +35,14 @@ public class GsonDescriptorStore implements DescriptorStore {
     }
 
     @Override
-    public void write(File packagesFile, List<Descriptor> items) {
+    public void write(OutputStream out, List<Descriptor> items) {
         try {
             String json = gson.toJson(items, getType());
-            FileWriter fileWriter = new FileWriter(packagesFile);
-            fileWriter.write(json);
-            fileWriter.close();
+            OutputStreamWriter writer = new OutputStreamWriter(out);
+            writer.write(json);
+            writer.close();
         } catch (Exception e) {
-            throw new RuntimeException("Cannot write file=" + packagesFile, e);
+            throw new RuntimeException("Cannot write json", e);
         }
     }
 

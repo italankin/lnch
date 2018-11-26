@@ -23,7 +23,9 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.StubShortcutsRepository;
 import com.italankin.lnch.model.repository.store.BackupDescriptorStore;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
-import com.italankin.lnch.model.repository.store.VersioningDescriptorStore;
+import com.italankin.lnch.model.repository.store.PackagesStore;
+import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
+import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import java.util.Arrays;
@@ -53,20 +55,27 @@ public class MainModule {
     @Provides
     @Singleton
     public DescriptorRepository provideDescriptorRepository(Context context, PackageManager packageManager,
-            DescriptorStore descriptorStore, ShortcutsRepository shortcutsRepository,
+            DescriptorStore descriptorStore, PackagesStore packagesStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
         return new LauncherDescriptorRepository(context, packageManager, descriptorStore,
-                shortcutsRepository, preferences);
+                packagesStore, shortcutsRepository, preferences);
     }
 
     @Provides
     @Singleton
-    public DescriptorStore provideDescriptorStore() {
+    public PackagesStore providerPackagesStore(Context context) {
+        return new JsonPackagesStore(context.getFilesDir());
+    }
+
+    @Provides
+    @Singleton
+    public DescriptorStore provideDescriptorStore(PackagesStore packagesStore, Context context) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
-        return new BackupDescriptorStore(new VersioningDescriptorStore(gsonBuilder));
+        return new BackupDescriptorStore(new GsonDescriptorStore(gsonBuilder),
+                packagesStore, context.getFilesDir());
     }
 
     @Provides
