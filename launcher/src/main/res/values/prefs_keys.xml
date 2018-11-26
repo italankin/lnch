@@ -8,4 +8,7 @@
     <string name="key_home_customize">customize</string>
     <string name="key_home_misc">miscellaneous</string>
     <string name="key_home_item_look">item_look</string>
+    <string name="key_backups">backups</string>
+    <string name="key_backup">backup</string>
+    <string name="key_restore">restore</string>
 </resources>

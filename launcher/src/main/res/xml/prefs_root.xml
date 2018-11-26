@@ -38,4 +38,10 @@
             android:key="@string/key_search_settings"
             android:title="@string/title_settings_search_settings" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_other">
+        <Preference
+            android:icon="@drawable/ic_settings_backup_restore"
+            android:key="@string/key_backups"
+            android:title="@string/title_settings_backups" />
+    </PreferenceCategory>
 </PreferenceScreen>

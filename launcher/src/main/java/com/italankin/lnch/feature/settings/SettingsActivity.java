@@ -14,6 +14,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.AppsFragment;
+import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.itemlook.ItemLookFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
@@ -113,6 +114,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showWallpaperPreferences() {
         showFragment(new WallpaperFragment(), R.string.title_settings_wallpaper);
+    }
+
+    @Override
+    public void showBackupPreferences() {
+        showFragment(new BackupFragment(), R.string.title_settings_backups);
     }
 
     @Override

@@ -12,10 +12,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
 
-public class SettingsRootFragment extends AppPreferenceFragment {
+public class SettingsRootFragment extends BasePreferenceFragment {
 
     private Callbacks callbacks;
 
@@ -81,6 +81,12 @@ public class SettingsRootFragment extends AppPreferenceFragment {
             }
             return true;
         });
+        findPreference(R.string.key_backups).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showBackupPreferences();
+            }
+            return true;
+        });
     }
 
     @Override
@@ -114,5 +120,7 @@ public class SettingsRootFragment extends AppPreferenceFragment {
         void showMiscPreferences();
 
         void showWallpaperPreferences();
+
+        void showBackupPreferences();
     }
 }

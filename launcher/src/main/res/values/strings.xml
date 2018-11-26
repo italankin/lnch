@@ -71,6 +71,14 @@
     <string name="title_settings_search_global">Show global search button</string>
     <string name="title_settings_search_global_summary">May not be available on some devices</string>
     <string name="title_settings_search_engine">Search engine</string>
+    <string name="title_settings_other">Other</string>
+    <string name="title_settings_backups">Backup and restore</string>
+    <string name="title_settings_backups_backup">Backup</string>
+    <string name="title_settings_backups_backup_apps">Backup</string>
+    <string name="title_settings_backups_backup_apps_summary">Save apps settings, such as custom colors, names, visibility, position to a file</string>
+    <string name="title_settings_backups_restore">Restore</string>
+    <string name="title_settings_backups_restore_apps">Restore</string>
+    <string name="title_settings_backups_restore_apps_summary">Restore settings from previous backup</string>
 
     <string name="settings_system">System settings</string>
     <string name="settings_overlay_preview">Preview</string>

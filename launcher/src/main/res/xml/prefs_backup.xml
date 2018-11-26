@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/title_settings_backups_backup">
+        <Preference
+            android:key="@string/key_backup"
+            android:summary="@string/title_settings_backups_backup_apps_summary"
+            android:title="@string/title_settings_backups_backup_apps" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_backups_restore">
+        <Preference
+            android:key="@string/key_restore"
+            android:summary="@string/title_settings_backups_restore_apps_summary"
+            android:title="@string/title_settings_backups_restore_apps" />
+    </PreferenceCategory>
+</PreferenceScreen>

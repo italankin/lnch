@@ -10,9 +10,9 @@ import android.view.View;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 
-public class WallpaperFragment extends AppPreferenceFragment {
+public class WallpaperFragment extends BasePreferenceFragment {
 
     private Callbacks callbacks;
 
