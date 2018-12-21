@@ -7,7 +7,6 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
@@ -22,7 +21,7 @@ interface HomeView extends MvpView {
     void showProgress();
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
-    void onAppsLoaded(Update update, UserPrefs userPrefs);
+    void onAppsLoaded(Update update);
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
     void onAppsLoadError(Throwable e);

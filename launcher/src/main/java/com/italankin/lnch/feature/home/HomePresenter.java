@@ -303,16 +303,16 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, Update update) {
                         Timber.d("Update: %s", update);
                         items = update.items;
-                        viewState.onAppsLoaded(update, update.userPrefs);
+                        viewState.onAppsLoaded(update);
                         updateShortcuts();
                     }
 
                     @Override
                     protected void onError(HomeView viewState, Throwable e) {
-                        if (items != null) {
-                            viewState.showError(e);
-                        } else {
+                        if (items.isEmpty()) {
                             viewState.onAppsLoadError(e);
+                        } else {
+                            viewState.showError(e);
                         }
                     }
                 });

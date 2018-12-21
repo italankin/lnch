@@ -239,7 +239,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(Update update, UserPrefs userPrefs) {
+    public void onAppsLoaded(Update update) {
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(this)
                     .add(new AppViewModelAdapter(this))
@@ -256,8 +256,8 @@ public class HomeActivity extends AppActivity implements HomeView,
         root.showContent();
         dismissPopup();
 
-        applyUserPrefs(userPrefs);
-        boolean needsFullUpdate = adapter.updateUserPrefs(userPrefs);
+        applyUserPrefs(update.userPrefs);
+        boolean needsFullUpdate = adapter.updateUserPrefs(update.userPrefs);
         if (needsFullUpdate) {
             adapter.notifyDataSetChanged();
         } else {
