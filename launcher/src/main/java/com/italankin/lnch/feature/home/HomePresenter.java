@@ -40,7 +40,7 @@ import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
 import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,6 +55,8 @@ import static android.support.v7.util.DiffUtil.calculateDiff;
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {
 
+    private static final List<DescriptorItem> INITIAL = new ArrayList<>();
+
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final Preferences preferences;
@@ -63,7 +65,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
      */
-    private List<DescriptorItem> items = Collections.emptyList();
+    private List<DescriptorItem> items = INITIAL;
     private DescriptorRepository.Editor editor;
 
     @Inject
@@ -303,14 +305,14 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     protected void onNext(HomeView viewState, Update update) {
                         Timber.d("Update: %s", update);
                         items = update.items;
-                        viewState.onAppsLoaded(update);
+                        viewState.onReceiveUpdate(update);
                         updateShortcuts();
                     }
 
                     @Override
                     protected void onError(HomeView viewState, Throwable e) {
-                        if (items.isEmpty()) {
-                            viewState.onAppsLoadError(e);
+                        if (items == INITIAL) {
+                            viewState.onReceiveUpdateError(e);
                         } else {
                             viewState.showError(e);
                         }

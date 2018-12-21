@@ -239,7 +239,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoaded(Update update) {
+    public void onReceiveUpdate(Update update) {
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(this)
                     .add(new AppViewModelAdapter(this))
@@ -349,7 +349,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
-    public void onAppsLoadError(Throwable e) {
+    public void onReceiveUpdateError(Throwable e) {
         root.error()
                 .button(v -> presenter.reloadApps())
                 .message(e.getMessage())

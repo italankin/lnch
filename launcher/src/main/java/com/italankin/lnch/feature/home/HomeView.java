@@ -21,10 +21,10 @@ interface HomeView extends MvpView {
     void showProgress();
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
-    void onAppsLoaded(Update update);
+    void onReceiveUpdate(Update update);
 
     @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
-    void onAppsLoadError(Throwable e);
+    void onReceiveUpdateError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);
