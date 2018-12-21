@@ -50,7 +50,6 @@ public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDia
     }
 
     public static class Builder extends BaseBuilder<ColorPickerDialogFragment, Listener, Builder> {
-        private final Bundle arguments = new Bundle(6);
 
         public Builder setSelectedColor(@ColorInt int color) {
             arguments.putInt(ARG_SELECTED_COLOR, color);
