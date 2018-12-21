@@ -170,7 +170,9 @@ public class HomeActivity extends AppActivity implements HomeView,
         super.onResume();
         if (animateOnResume) {
             animateOnResume = false;
-            animateListAppearance();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                animateListAppearance();
+            }
         }
     }
 
