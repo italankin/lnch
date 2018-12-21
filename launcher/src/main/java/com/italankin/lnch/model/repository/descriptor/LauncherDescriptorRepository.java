@@ -32,11 +32,9 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
@@ -48,7 +46,6 @@ import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInf
 import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getVersionCode;
 
 public class LauncherDescriptorRepository implements DescriptorRepository {
-    private final Context context;
     private final PackageManager packageManager;
     private final DescriptorStore descriptorStore;
     private final PackagesStore packagesStore;
@@ -58,47 +55,18 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
-    private final CompositeDisposable disposeBag = new CompositeDisposable();
 
     public LauncherDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, PackagesStore packagesStore,
             ShortcutsRepository shortcutsRepository, Preferences preferences) {
-        this.context = context;
         this.packageManager = packageManager;
         this.descriptorStore = descriptorStore;
         this.packagesStore = packagesStore;
         this.shortcutsRepository = shortcutsRepository;
-        launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
-        updater = loadAll()
-                .doOnSuccess(appsData -> {
-                    if (appsData.changed) {
-                        Timber.d("data has changed, write to disk");
-                        writeToDisk(appsData.items);
-                    }
-                })
-                .map(appsData -> Collections.unmodifiableList(appsData.items))
-                .doOnSuccess(updatesSubject::onNext)
-                .doOnError(e -> Timber.e(e, "updater:"))
-                .ignoreElement();
-        new LauncherAppsUpdates(launcherApps)
-                .debounce(1, TimeUnit.SECONDS)
-                .flatMapCompletable(change -> updater.onErrorComplete())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposeBag.add(d);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e, "change:");
-                    }
-                });
+        this.updater = createUpdater();
+        subscribeForLauncherAppsUpdates();
     }
 
     @Override
@@ -154,6 +122,31 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
+
+    private void subscribeForLauncherAppsUpdates() {
+        new LauncherAppsUpdates(launcherApps)
+                .debounce(1, TimeUnit.SECONDS)
+                .flatMapCompletable(change -> updater.onErrorComplete())
+                .onErrorComplete(throwable -> {
+                    Timber.e(throwable, "subscribeForLauncherAppsUpdates");
+                    return true;
+                })
+                .subscribe();
+    }
+
+    private Completable createUpdater() {
+        return loadAll()
+                .doOnSuccess(appsData -> {
+                    if (appsData.changed) {
+                        Timber.d("data has changed, write to disk");
+                        writeToDisk(appsData.items);
+                    }
+                })
+                .map(appsData -> Collections.unmodifiableList(appsData.items))
+                .doOnSuccess(updatesSubject::onNext)
+                .doOnError(e -> Timber.e(e, "updater:"))
+                .ignoreElement();
+    }
 
     private Single<AppsData> loadAll() {
         return Single
@@ -279,7 +272,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                     boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty()
                             || !pinnedShortcuts.isEmpty();
                     emitter.onSuccess(new AppsData(items, changed));
-
                 });
     }
 
