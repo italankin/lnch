@@ -23,6 +23,8 @@
     <string name="deep_shortcut_pinned">\"%1$s\" pinned</string>
     <string name="pin_item_title">Pin to home screen</string>
 
+    <string name="apps_list_empty">No apps</string>
+
     <string name="popup_delete_title">Delete</string>
     <string name="popup_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
     <string name="popup_delete_action">Delete</string>

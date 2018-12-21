@@ -253,7 +253,13 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
         adapter.setDataset(update.items);
         list.setVisibility(View.VISIBLE);
-        root.showContent();
+        if (update.items.isEmpty()) {
+            root.empty()
+                    .message(R.string.apps_list_empty)
+                    .show();
+        } else {
+            root.showContent();
+        }
         dismissPopup();
 
         applyUserPrefs(update.userPrefs);
