@@ -17,7 +17,7 @@ public class SeparatorStateImpl implements SeparatorState {
     }
 
     @Override
-    public void setExanded(String id, boolean expanded) {
+    public void setExpanded(String id, boolean expanded) {
         if (expanded) {
             addFlags(id, FLAG_EXPANDED);
         } else {

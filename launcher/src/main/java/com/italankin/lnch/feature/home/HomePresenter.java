@@ -365,7 +365,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
             return;
         }
         item.setExpanded(expanded);
-        separatorState.setExanded(item.getDescriptor().getId(), expanded);
+        separatorState.setExpanded(item.getDescriptor().getId(), expanded);
         for (int i = startIndex; i < endIndex; i++) {
             VisibleItem visibleItem = (VisibleItem) items.get(i);
             visibleItem.setVisible(expanded);
