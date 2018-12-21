@@ -110,4 +110,6 @@
     <string name="settings_item_look_discard_button">Discard</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
+
+    <string name="restore_backup_success">Settings restored successfully</string>
 </resources>
