@@ -107,14 +107,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void swapApps(int from, int to) {
-        requireEditor();
         editor.enqueue(new SwapAction(from, to));
         ListUtils.swap(items, from, to);
         getViewState().onItemsSwap(from, to);
     }
 
     void renameItem(int position, CustomLabelItem item, String customLabel) {
-        requireEditor();
         String s = customLabel.trim().isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction((CustomLabelDescriptor) item.getDescriptor(), s));
         item.setCustomLabel(s);
@@ -122,21 +120,18 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void changeItemCustomColor(int position, CustomColorItem item, Integer color) {
-        requireEditor();
         editor.enqueue(new RecolorAction((CustomColorDescriptor) item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
     void hideItem(int position, HiddenItem item) {
-        requireEditor();
         editor.enqueue(new SetVisibilityAction((HiddenDescriptor) item.getDescriptor(), false));
         item.setHidden(true);
         getViewState().onItemChanged(position);
     }
 
     void addGroup(int position, String label, @ColorInt int color) {
-        requireEditor();
         GroupDescriptor item = new GroupDescriptor(label, color);
         editor.enqueue(new AddAction(position, item));
         items.add(position, new GroupViewModel(item));
@@ -144,7 +139,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void removeItem(int position, DescriptorItem item) {
-        requireEditor();
         Descriptor descriptor = item.getDescriptor();
         if (descriptor instanceof DeepShortcutDescriptor) {
             editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
@@ -157,7 +151,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void confirmDiscardChanges() {
-        requireEditor();
         if (editor.isEmpty()) {
             discardChanges();
         } else {
@@ -166,14 +159,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
     }
 
     void discardChanges() {
-        requireEditor();
         editor = null;
         getViewState().onChangesDiscarded();
         update();
     }
 
     void stopCustomize() {
-        requireEditor();
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -262,12 +253,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
-
-    private void requireEditor() {
-        if (editor == null) {
-            throw new IllegalStateException();
-        }
-    }
 
     private void update() {
         descriptorRepository.update()
