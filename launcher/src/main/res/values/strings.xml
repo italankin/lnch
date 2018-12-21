@@ -75,7 +75,7 @@
     <string name="title_settings_backups">Backup and restore</string>
     <string name="title_settings_backups_backup">Backup</string>
     <string name="title_settings_backups_backup_apps">Backup</string>
-    <string name="title_settings_backups_backup_apps_summary">Save apps settings, such as custom colors, names, visibility, position to a file</string>
+    <string name="title_settings_backups_backup_apps_summary">Save apps settings, such as custom colors, names, visibility, positions to a file</string>
     <string name="title_settings_backups_restore">Restore</string>
     <string name="title_settings_backups_restore_apps">Restore</string>
     <string name="title_settings_backups_restore_apps_summary">Restore settings from previous backup</string>
