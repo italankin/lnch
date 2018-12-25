@@ -79,6 +79,7 @@
     <string name="title_settings_backups_restore">Restore</string>
     <string name="title_settings_backups_restore_apps">Restore</string>
     <string name="title_settings_backups_restore_apps_summary">Restore settings from previous backup</string>
+    <string name="title_settings_backups_reset">Reset</string>
 
     <string name="settings_system">System settings</string>
     <string name="settings_overlay_preview">Preview</string>
@@ -90,9 +91,6 @@
     <string name="settings_apps_filter_reset">Reset</string>
     <string name="settings_apps_filter_visible">Visible</string>
     <string name="settings_apps_filter_hidden">Hidden</string>
-    <string name="settings_apps_reset">Reset</string>
-    <string name="settings_apps_reset_message">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults? This action cannot be undone</string>
-    <string name="settings_apps_reset_action">Reset</string>
 
     <string name="settings_item_look_reset">Reset</string>
     <string name="settings_item_look_text_size">Text size</string>
@@ -114,6 +112,11 @@
 
     <string name="restore_success">Settings restored successfully</string>
     <string name="backup_success">Settings backed up successfully to \"%1$s\"</string>
+    <string name="reset_success">Settings did reset</string>
     <string name="backup_dialog_message">Settings will be saved in \"Download\" folder</string>
     <string name="backup_dialog_message_ok">Save</string>
+    <string name="settings_backups_reset">Reset</string>
+    <string name="settings_backups_reset_message">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults? This action cannot be undone</string>
+    <string name="settings_backups_reset_action">Reset</string>
+
 </resources>

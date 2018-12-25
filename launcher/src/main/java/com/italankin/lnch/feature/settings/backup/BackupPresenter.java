@@ -117,6 +117,23 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                 });
     }
 
+    void resetAppsSettings() {
+        getViewState().showProgress();
+        descriptorRepository.clear()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableState() {
+                    @Override
+                    protected void onComplete(BackupView viewState) {
+                        viewState.onResetSuccess();
+                    }
+
+                    @Override
+                    protected void onError(BackupView viewState, Throwable e) {
+                        viewState.onResetError(e);
+                    }
+                });
+    }
+
     private final class ReplaceAction implements DescriptorRepository.Editor.Action {
         private final List<Descriptor> newItems;
 

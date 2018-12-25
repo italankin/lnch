@@ -23,6 +23,7 @@ import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 public class BackupFragment extends AppPreferenceFragment implements BackupView {
 
     private static final String TAG_BACKUP_DIALOG = "backup";
+    private static final String TAG_RESET_DIALOG = "reset_dialog";
 
     private static final int REQUEST_CODE_OPEN_DOCUMENT = 1;
     private static final int REQUEST_CODE_WRITE_STORAGE = 2;
@@ -63,6 +64,10 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
             return true;
         });
+        findPreference(R.string.key_reset).setOnPreferenceClickListener(preference -> {
+            showResetDialog();
+            return true;
+        });
     }
 
     @Override
@@ -100,7 +105,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onRestoreError(Throwable error) {
-        Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+        showError(error);
     }
 
     @Override
@@ -110,6 +115,20 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onBackupError(Throwable error) {
+        showError(error);
+    }
+
+    @Override
+    public void onResetSuccess() {
+        Toast.makeText(requireContext(), R.string.reset_success, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onResetError(Throwable error) {
+        showError(error);
+    }
+
+    private void showError(Throwable error) {
         Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
     }
 
@@ -117,7 +136,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
         class BackupDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
             @Override
             public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-                return () -> ((BackupFragment) parentFragment).presenter.onBackupSettings();
+                return ((BackupFragment) parentFragment).presenter::onBackupSettings;
             }
         }
         new SimpleDialogFragment.Builder()
@@ -128,5 +147,22 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
                 .setListenerProvider(new BackupDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_BACKUP_DIALOG);
+    }
+
+    private void showResetDialog() {
+        class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
+            @Override
+            public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+                return ((BackupFragment) parentFragment).presenter::resetAppsSettings;
+            }
+        }
+        new SimpleDialogFragment.Builder()
+                .setTitle(R.string.settings_backups_reset)
+                .setMessage(R.string.settings_backups_reset_message)
+                .setPositiveButton(R.string.settings_backups_reset_action)
+                .setNegativeButton(R.string.cancel)
+                .setListenerProvider(new ResetDialogListenerProvider())
+                .build()
+                .show(getChildFragmentManager(), TAG_RESET_DIALOG);
     }
 }

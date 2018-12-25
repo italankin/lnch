@@ -20,4 +20,10 @@ interface BackupView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onBackupError(Throwable error);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onResetSuccess();
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onResetError(Throwable error);
 }
