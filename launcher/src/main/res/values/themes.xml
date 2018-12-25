@@ -26,6 +26,9 @@
     <style name="AppTheme.Dark.Launcher">
         <item name="android:statusBarColor">#8000</item>
         <item name="android:navigationBarColor">#8000</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>
