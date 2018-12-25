@@ -905,6 +905,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
                     presenter.renameItem(position, item, "");
                 })
+                .setCancellable(false)
                 .show();
     }
 
@@ -921,6 +922,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
                     presenter.changeItemCustomColor(position, item, null);
                 })
+                .setCancellable(false)
                 .show();
     }
 
