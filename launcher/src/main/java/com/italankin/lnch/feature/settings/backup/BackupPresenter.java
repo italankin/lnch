@@ -57,7 +57,6 @@ public class BackupPresenter extends AppPresenter<BackupView> {
     }
 
     void onRestoreFromSource(Uri uri) {
-        getViewState().showProgress();
         Single.fromCallable(() -> contentResolver.openInputStream(uri))
                 .map(descriptorStore::read)
                 .flatMapCompletable(descriptors -> {
@@ -81,7 +80,6 @@ public class BackupPresenter extends AppPresenter<BackupView> {
     }
 
     void onBackupSettings() {
-        getViewState().showProgress();
         Single
                 .<String>create(emitter -> {
                     File dirDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -118,7 +116,6 @@ public class BackupPresenter extends AppPresenter<BackupView> {
     }
 
     void resetAppsSettings() {
-        getViewState().showProgress();
         descriptorRepository.clear()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {

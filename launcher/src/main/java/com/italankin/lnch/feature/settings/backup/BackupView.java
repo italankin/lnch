@@ -7,9 +7,6 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 interface BackupView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showProgress();
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onRestoreSuccess();
 
     @StateStrategyType(OneExecutionStateStrategy.class)

@@ -94,11 +94,6 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     }
 
     @Override
-    public void showProgress() {
-        // TODO
-    }
-
-    @Override
     public void onRestoreSuccess() {
         Toast.makeText(requireContext(), R.string.settings_backups_message_restore_success, Toast.LENGTH_LONG).show();
     }
