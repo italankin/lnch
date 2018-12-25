@@ -10,6 +10,7 @@ import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
+import com.italankin.lnch.model.repository.store.PackagesStore;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
@@ -35,4 +36,6 @@ public interface MainComponent {
     SeparatorState getSeparatorState();
 
     DescriptorStore getDescriptorStore();
+
+    PackagesStore getPackagesStore();
 }

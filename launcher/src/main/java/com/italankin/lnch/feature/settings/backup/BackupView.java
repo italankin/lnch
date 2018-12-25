@@ -2,12 +2,11 @@ package com.italankin.lnch.feature.settings.backup;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
-import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 interface BackupView extends MvpView {
 
-    @StateStrategyType(SingleStateStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void showProgress();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -15,4 +14,10 @@ interface BackupView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onRestoreError(Throwable error);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onBackupSuccess(String path);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onBackupError(Throwable error);
 }

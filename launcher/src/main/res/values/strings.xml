@@ -110,6 +110,8 @@
     <string name="settings_item_look_discard_button">Discard</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
+    <string name="error_write_storage_permission">Permission is required to save backup</string>
 
-    <string name="restore_backup_success">Settings restored successfully</string>
+    <string name="restore_success">Settings restored successfully</string>
+    <string name="backup_success">Settings backed up successfully to \"%1$s\"</string>
 </resources>
