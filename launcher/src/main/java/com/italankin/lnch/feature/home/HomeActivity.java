@@ -883,22 +883,18 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
-        String customLabel = item.getCustomLabel();
+        String visibleLabel = item.getVisibleLabel();
         EditTextAlertDialog.builder(this)
                 .setTitle(item.getVisibleLabel())
                 .customizeEditText(editText -> {
-                    editText.setText(customLabel);
+                    editText.setText(visibleLabel);
                     editText.setSingleLine(true);
-                    editText.setInputType(
-                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                    if (customLabel != null) {
-                        editText.setSelection(customLabel.length());
-                    }
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String label = editText.getText().toString().trim();
-                    if (!label.equals(customLabel)) {
-                        presenter.renameItem(position, item, label);
+                    String newLabel = editText.getText().toString().trim();
+                    if (!newLabel.equals(visibleLabel)) {
+                        presenter.renameItem(position, item, newLabel);
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
