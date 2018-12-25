@@ -100,7 +100,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onRestoreSuccess() {
-        Toast.makeText(requireContext(), R.string.restore_success, Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), R.string.settings_backups_message_restore_success, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onBackupSuccess(String path) {
-        Toast.makeText(requireContext(), getString(R.string.backup_success, path), Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), getString(R.string.settings_backups_message_backup_success, path), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onResetSuccess() {
-        Toast.makeText(requireContext(), R.string.reset_success, Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), R.string.settings_backups_message_reset_success, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -141,8 +141,8 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
         }
         new SimpleDialogFragment.Builder()
                 .setTitle(R.string.title_settings_backups_backup_apps)
-                .setMessage(R.string.backup_dialog_message)
-                .setPositiveButton(R.string.backup_dialog_message_ok)
+                .setMessage(R.string.settings_backups_dialog_backup_message)
+                .setPositiveButton(R.string.settings_backups_dialog_backup_message_action)
                 .setNegativeButton(R.string.cancel)
                 .setListenerProvider(new BackupDialogListenerProvider())
                 .build()
@@ -157,9 +157,9 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
         }
         new SimpleDialogFragment.Builder()
-                .setTitle(R.string.settings_backups_reset)
-                .setMessage(R.string.settings_backups_reset_message)
-                .setPositiveButton(R.string.settings_backups_reset_action)
+                .setTitle(R.string.settings_backups_dialog_reset_title)
+                .setMessage(R.string.settings_backups_dialog_reset_message)
+                .setPositiveButton(R.string.settings_backups_dialog_reset_action)
                 .setNegativeButton(R.string.cancel)
                 .setListenerProvider(new ResetDialogListenerProvider())
                 .build()

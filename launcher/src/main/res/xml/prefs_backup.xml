@@ -15,7 +15,7 @@
     <PreferenceCategory android:title="@string/title_settings_backups_reset">
         <Preference
             android:key="@string/key_reset"
-            android:summary="TODO"
-            android:title="@string/title_settings_backups_reset" />
+            android:summary="@string/title_settings_backups_reset_summary"
+            android:title="@string/title_settings_backups_reset_apps" />
     </PreferenceCategory>
 </PreferenceScreen>
