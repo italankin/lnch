@@ -78,7 +78,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE_WRITE_STORAGE) {
+        if (requestCode != REQUEST_CODE_WRITE_STORAGE) {
             return;
         }
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
