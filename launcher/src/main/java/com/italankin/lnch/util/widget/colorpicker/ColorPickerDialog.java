@@ -60,6 +60,11 @@ public final class ColorPickerDialog {
             return this;
         }
 
+        public Builder setCancellable(boolean cancellable) {
+            alertDialogBuilder.setCancelable(cancellable);
+            return this;
+        }
+
         public AlertDialog build() {
             return alertDialogBuilder.create();
         }

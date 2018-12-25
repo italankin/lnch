@@ -63,6 +63,11 @@ public final class EditTextAlertDialog {
             return this;
         }
 
+        public Builder setCancellable(boolean cancellable) {
+            builder.setCancelable(cancellable);
+            return this;
+        }
+
         public Builder customizeEditText(Action action) {
             action.customize(editText);
             return this;
