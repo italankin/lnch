@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,8 +17,12 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.util.dialogfragment.ListenerFragment;
+import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
 public class BackupFragment extends AppPreferenceFragment implements BackupView {
+
+    private static final String TAG_BACKUP_DIALOG = "backup";
 
     private static final int REQUEST_CODE_OPEN_DOCUMENT = 1;
     private static final int REQUEST_CODE_WRITE_STORAGE = 2;
@@ -43,7 +48,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
                     PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE);
             } else {
-                presenter.onBackupSettings();
+                backupSettings();
             }
             return true;
         });
@@ -77,7 +82,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             return;
         }
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            presenter.onBackupSettings();
+            backupSettings();
         } else {
             Toast.makeText(requireContext(), R.string.error_write_storage_permission, Toast.LENGTH_SHORT).show();
         }
@@ -106,5 +111,22 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     @Override
     public void onBackupError(Throwable error) {
         Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    private void backupSettings() {
+        class BackupDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
+            @Override
+            public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+                return () -> ((BackupFragment) parentFragment).presenter.onBackupSettings();
+            }
+        }
+        new SimpleDialogFragment.Builder()
+                .setTitle(R.string.title_settings_backups_backup_apps)
+                .setMessage(R.string.backup_dialog_message)
+                .setPositiveButton(R.string.backup_dialog_message_ok)
+                .setNegativeButton(R.string.cancel)
+                .setListenerProvider(new BackupDialogListenerProvider())
+                .build()
+                .show(getChildFragmentManager(), TAG_BACKUP_DIALOG);
     }
 }

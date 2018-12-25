@@ -114,4 +114,6 @@
 
     <string name="restore_success">Settings restored successfully</string>
     <string name="backup_success">Settings backed up successfully to \"%1$s\"</string>
+    <string name="backup_dialog_message">Settings will be saved in \"Download\" folder</string>
+    <string name="backup_dialog_message_ok">Save</string>
 </resources>
