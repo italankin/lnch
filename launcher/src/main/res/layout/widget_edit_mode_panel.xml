@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/edit_panel_size"
-    android:background="?colorEditPanelBackground"
     android:divider="@drawable/edit_mode_panel_divider"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -41,4 +40,4 @@
         android:padding="16dp"
         android:src="@drawable/ic_customize_save" />
 
-</merge>
+</LinearLayout>

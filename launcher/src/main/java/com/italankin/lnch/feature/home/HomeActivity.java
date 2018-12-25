@@ -24,6 +24,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
@@ -509,7 +510,14 @@ public class HomeActivity extends AppActivity implements HomeView,
     ///////////////////////////////////////////////////////////////////////////
 
     private void setupWindow() {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
+        Window window = getWindow();
+        window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
+            root.setPadding(insets.getStableInsetLeft(), insets.getStableInsetTop(),
+                    insets.getStableInsetRight(), 0);
+            list.setPadding(0, 0, 0, insets.getStableInsetBottom());
+            return insets;
+        });
+        window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
                 WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
     }
 

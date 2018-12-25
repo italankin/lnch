@@ -12,6 +12,8 @@ import com.italankin.lnch.feature.home.widget.EditModePanel;
 @SuppressWarnings("unused")
 @Keep
 public class AppsListBehavior extends CoordinatorLayout.Behavior<RecyclerView> {
+    private Integer stablePaddingBottom;
+
     public AppsListBehavior() {
         super();
     }
@@ -27,9 +29,18 @@ public class AppsListBehavior extends CoordinatorLayout.Behavior<RecyclerView> {
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, RecyclerView child, View dependency) {
+        if (stablePaddingBottom == null) {
+            stablePaddingBottom = child.getPaddingBottom();
+        }
         int height = dependency.getHeight();
         child.setPadding(child.getPaddingLeft(), child.getPaddingTop(), child.getPaddingRight(),
-                (int) (height - dependency.getTranslationY()));
+                Math.max(stablePaddingBottom, (int) (height - dependency.getTranslationY())));
         return false;
+    }
+
+    @Override
+    public void onDependentViewRemoved(CoordinatorLayout parent, RecyclerView child, View dependency) {
+        super.onDependentViewRemoved(parent, child, dependency);
+        stablePaddingBottom = null;
     }
 }

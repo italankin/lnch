@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,10 +36,7 @@ public class EditModePanel extends LinearLayout {
     public EditModePanel(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         inflate(context, R.layout.widget_edit_mode_panel, this);
-        setGravity(Gravity.CENTER_VERTICAL);
-        setOrientation(HORIZONTAL);
-        setDividerDrawable(context.getDrawable(R.drawable.edit_mode_panel_divider));
-        setShowDividers(SHOW_DIVIDER_MIDDLE);
+        setOrientation(VERTICAL);
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -127,5 +125,17 @@ public class EditModePanel extends LinearLayout {
                     }
                 })
                 .start();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        requestApplyInsets();
+    }
+
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        setPadding(0, 0, 0, insets.getStableInsetBottom());
+        return insets;
     }
 }
