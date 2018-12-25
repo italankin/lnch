@@ -5,14 +5,14 @@
             android:icon="@drawable/ic_settings_wallpaper"
             android:key="@string/key_wallpaper"
             android:title="@string/title_settings_wallpaper" />
-        <ListPreference
-            android:defaultValue="compact"
-            android:entries="@array/home_layout_desc"
-            android:entryValues="@array/home_layouts"
-            android:icon="@drawable/ic_settings_layout"
-            android:key="@string/pref_home_layout"
-            android:summary="%s"
-            android:title="@string/title_settings_home_layout" />
+        <!--  <ListPreference
+              android:defaultValue="compact"
+              android:entries="@array/home_layout_desc"
+              android:entryValues="@array/home_layouts"
+              android:icon="@drawable/ic_settings_layout"
+              android:key="@string/pref_home_layout"
+              android:summary="%s"
+              android:title="@string/title_settings_home_layout" /> -->
         <Preference
             android:icon="@drawable/ic_settings_item_look"
             android:key="@string/key_home_item_look"
