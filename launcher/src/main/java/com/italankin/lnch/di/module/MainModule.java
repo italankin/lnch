@@ -17,6 +17,7 @@ import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
 import com.italankin.lnch.model.repository.search.delegate.AppSearchDelegate;
 import com.italankin.lnch.model.repository.search.delegate.DeepShortcutSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.IntentSearchDelegate;
 import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -85,7 +86,8 @@ public class MainModule {
         List<SearchDelegate> delegates = Arrays.asList(
                 new AppSearchDelegate(packageManager, descriptorRepository),
                 new DeepShortcutSearchDelegate(descriptorRepository, shortcutsRepository),
-                new PinnedShortcutSearchDelegate(descriptorRepository)
+                new PinnedShortcutSearchDelegate(descriptorRepository),
+                new IntentSearchDelegate(descriptorRepository)
         );
         return new SearchRepositoryImpl(delegates, preferences);
     }
