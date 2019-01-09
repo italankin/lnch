@@ -68,7 +68,7 @@
 
         </FrameLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <com.italankin.lnch.feature.home.widget.HomeRecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -76,7 +76,7 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:visibility="invisible"
-            app:layout_behavior="com.italankin.lnch.feature.home.behavior.AppsListBehavior"
+            app:layout_behavior="com.italankin.lnch.feature.home.behavior.HomeListBehavior"
             tools:layoutManager="android.support.v7.widget.GridLayoutManager"
             tools:listitem="@layout/item_app"
             tools:spanCount="2"

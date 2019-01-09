@@ -54,6 +54,7 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
+import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -106,7 +107,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     private AutoCompleteTextView searchEditText;
     private ImageView searchBtnGlobal;
     private View searchBtnSettings;
-    private RecyclerView list;
+    private HomeRecyclerView list;
 
     private InputMethodManager inputMethodManager;
     private PackageManager packageManager;
@@ -514,7 +515,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
             root.setPadding(insets.getStableInsetLeft(), insets.getStableInsetTop(),
                     insets.getStableInsetRight(), 0);
-            list.setPadding(0, 0, 0, insets.getStableInsetBottom());
+            list.setBottomInset(insets.getStableInsetBottom());
             return insets;
         });
         window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
