@@ -8,7 +8,7 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 
-public class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+public final class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
         HiddenDescriptor {
 
     @SerializedName("package_name")

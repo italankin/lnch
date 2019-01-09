@@ -10,7 +10,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
-public class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     @SerializedName("id")
     public String id;

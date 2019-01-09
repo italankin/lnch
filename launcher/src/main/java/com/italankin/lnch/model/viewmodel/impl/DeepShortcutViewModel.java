@@ -7,7 +7,7 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
-public class DeepShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
+public final class DeepShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         RemovableItem, VisibleItem {
     public final String packageName;
     public final String id;

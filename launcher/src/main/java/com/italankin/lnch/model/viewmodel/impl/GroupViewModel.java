@@ -7,7 +7,7 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.ExpandableItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 
-public class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLabelItem,
+public final class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLabelItem,
         RemovableItem, ExpandableItem {
     private final GroupDescriptor descriptor;
     private final String label;

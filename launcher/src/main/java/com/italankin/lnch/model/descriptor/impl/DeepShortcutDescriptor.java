@@ -7,7 +7,7 @@ import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
-public class DeepShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class DeepShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     @SerializedName("id")
     public String id;

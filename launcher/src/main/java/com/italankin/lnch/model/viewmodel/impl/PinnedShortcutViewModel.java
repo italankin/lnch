@@ -7,7 +7,7 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
-public class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
+public final class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         RemovableItem, VisibleItem {
     public final String uri;
     private final PinnedShortcutDescriptor descriptor;
