@@ -15,6 +15,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 
 import java.lang.reflect.Type;
@@ -28,6 +29,7 @@ class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSerialize
     private static final String TYPE_GROUP = "group";
     private static final String TYPE_SHORTCUT = "shortcut";
     private static final String TYPE_DEEP_SHORTCUT = "deep_shortcut";
+    private static final String TYPE_INTENT = "intent";
 
     private static final Map<String, Class<? extends Descriptor>> MAPPING = new HashMap<>();
 
@@ -36,6 +38,7 @@ class DescriptorConverter implements JsonDeserializer<Descriptor>, JsonSerialize
         MAPPING.put(TYPE_GROUP, GroupDescriptor.class);
         MAPPING.put(TYPE_SHORTCUT, PinnedShortcutDescriptor.class);
         MAPPING.put(TYPE_DEEP_SHORTCUT, DeepShortcutDescriptor.class);
+        MAPPING.put(TYPE_INTENT, IntentDescriptor.class);
     }
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

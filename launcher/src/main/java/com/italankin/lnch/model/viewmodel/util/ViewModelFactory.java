@@ -4,11 +4,13 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
+import com.italankin.lnch.model.viewmodel.impl.IntentViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ public final class ViewModelFactory {
         }
         if (descriptor instanceof DeepShortcutDescriptor) {
             return new DeepShortcutViewModel((DeepShortcutDescriptor) descriptor);
+        }
+        if (descriptor instanceof IntentDescriptor) {
+            return new IntentViewModel((IntentDescriptor) descriptor);
         }
         throw new IllegalArgumentException("Unknown descriptor: " + descriptor.toString());
     }

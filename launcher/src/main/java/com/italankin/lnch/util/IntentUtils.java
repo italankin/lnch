@@ -58,8 +58,12 @@ public final class IntentUtils {
     }
 
     public static Intent fromUri(String uri) {
+        return fromUri(uri, 0);
+    }
+
+    public static Intent fromUri(String uri, int flags) {
         try {
-            return Intent.parseUri(uri, 0);
+            return Intent.parseUri(uri, flags);
         } catch (URISyntaxException e) {
             return null;
         }
