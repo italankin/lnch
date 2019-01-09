@@ -899,6 +899,9 @@ public class HomeActivity extends AppActivity implements HomeView,
                     editText.setText(visibleLabel);
                     editText.setSingleLine(true);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                    if (visibleLabel != null) {
+                        editText.setSelection(visibleLabel.length());
+                    }
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String newLabel = editText.getText().toString().trim();
