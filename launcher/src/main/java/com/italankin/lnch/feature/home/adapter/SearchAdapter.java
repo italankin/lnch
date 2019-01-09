@@ -61,8 +61,14 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             convertView.setOnClickListener(v -> {
                 listener.onSearchItemClick(holder.adapterPosition, getItem(holder.adapterPosition));
             });
-            holder.info.setOnClickListener(v -> {
-                listener.onSearchItemInfoClick(holder.adapterPosition, getItem(holder.adapterPosition));
+            holder.action.setOnClickListener(v -> {
+                Match item = getItem(holder.adapterPosition);
+                Descriptor descriptor = item.getDescriptor();
+                if (showInfo(descriptor)) {
+                    listener.onSearchItemInfoClick(holder.adapterPosition, item);
+                } else if (showPin(descriptor)) {
+                    listener.onSearchItemPinClick(holder.adapterPosition, item);
+                }
             });
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -87,13 +93,25 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             listener.onSearchItemClick(position, item);
         });
         Descriptor descriptor = item.getDescriptor();
-        if (descriptor instanceof AppDescriptor || descriptor instanceof DeepShortcutDescriptor) {
-            holder.info.setVisibility(View.VISIBLE);
+        if (showInfo(descriptor)) {
+            holder.action.setVisibility(View.VISIBLE);
+            holder.action.setImageResource(R.drawable.ic_app_info);
+        } else if (showPin(descriptor)) {
+            holder.action.setVisibility(View.VISIBLE);
+            holder.action.setImageResource(R.drawable.ic_action_pin);
         } else {
-            holder.info.setVisibility(View.GONE);
+            holder.action.setVisibility(View.GONE);
         }
 
         return convertView;
+    }
+
+    private static boolean showPin(Descriptor descriptor) {
+        return descriptor == null;
+    }
+
+    private static boolean showInfo(Descriptor descriptor) {
+        return descriptor instanceof AppDescriptor || descriptor instanceof DeepShortcutDescriptor;
     }
 
     @Override
@@ -104,18 +122,20 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     static class ViewHolder {
         final TextView text;
         final ImageView image;
-        final ImageView info;
+        final ImageView action;
         int adapterPosition;
 
         ViewHolder(View itemView) {
             this.text = itemView.findViewById(R.id.text);
             this.image = itemView.findViewById(R.id.image);
-            this.info = itemView.findViewById(R.id.info);
+            this.action = itemView.findViewById(R.id.action);
         }
     }
 
     public interface Listener {
         void onSearchItemClick(int position, Match match);
+
+        void onSearchItemPinClick(int position, Match match);
 
         void onSearchItemInfoClick(int position, Match match);
     }

@@ -47,6 +47,7 @@ import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
+import com.italankin.lnch.feature.home.adapter.IntentViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.behavior.TopBarBehavior;
@@ -60,6 +61,7 @@ import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -72,6 +74,7 @@ import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
+import com.italankin.lnch.model.viewmodel.impl.IntentViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
@@ -84,6 +87,7 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -92,7 +96,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
         GroupViewModelAdapter.Listener,
-        PinnedShortcutViewModelAdapter.Listener, DeepShortcutViewModelAdapter.Listener {
+        PinnedShortcutViewModelAdapter.Listener, DeepShortcutViewModelAdapter.Listener, IntentViewModelAdapter.Listener {
 
     public static final String ACTION_EDIT_MODE = "com.android.launcher.action.EDIT_MODE";
 
@@ -248,6 +252,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                     .add(new HiddenAppViewModelAdapter())
                     .add(new GroupViewModelAdapter(this))
                     .add(new PinnedShortcutViewModelAdapter(this))
+                    .add(new IntentViewModelAdapter(this))
                     .add(new DeepShortcutViewModelAdapter(this))
                     .recyclerView(list)
                     .setHasStableIds(true)
@@ -497,6 +502,24 @@ public class HomeActivity extends AppActivity implements HomeView,
         }
     }
 
+    @Override
+    public void onIntentClick(int position, IntentViewModel item) {
+        if (editMode) {
+            showCustomizePopup(position, item);
+        } else {
+            handleSearchIntent(item.intent);
+        }
+    }
+
+    @Override
+    public void onIntentLongClick(int position, IntentViewModel item) {
+        if (editMode) {
+            startDrag(position);
+        } else {
+            showItemPopup(position, item);
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // SwapItemHelper
     ///////////////////////////////////////////////////////////////////////////
@@ -565,6 +588,18 @@ public class HomeActivity extends AppActivity implements HomeView,
             @Override
             public void onSearchItemClick(int position, Match match) {
                 onFireSearch(position);
+            }
+
+            @Override
+            public void onSearchItemPinClick(int position, Match match) {
+                searchBarBehavior.hide();
+                String label = match.getLabel()
+                        .toString()
+                        .trim()
+                        .toUpperCase(Locale.getDefault());
+                IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
+                        label, match.getColor());
+                presenter.pinIntent(intentDescriptor);
             }
 
             @Override

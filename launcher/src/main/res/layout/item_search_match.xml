@@ -33,7 +33,7 @@
         tools:text="@tools:sample/first_names" />
 
     <ImageView
-        android:id="@+id/info"
+        android:id="@+id/action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

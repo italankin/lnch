@@ -14,6 +14,7 @@ import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RecolorAction;
@@ -209,6 +210,20 @@ public class HomePresenter extends AppPresenter<HomeView> {
                         viewState.onShortcutPinned(shortcut);
                     }
 
+                    @Override
+                    protected void onError(HomeView viewState, Throwable e) {
+                        viewState.showError(e);
+                    }
+                });
+    }
+
+    void pinIntent(IntentDescriptor descriptor) {
+        descriptorRepository.edit()
+                .enqueue(new AddAction(descriptor))
+                .commit()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableState() {
                     @Override
                     protected void onError(HomeView viewState, Throwable e) {
                         viewState.showError(e);
