@@ -4,16 +4,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
-
-public class PartialMatch implements Match, Comparable<PartialMatch> {
+public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;
     public Uri icon;
     public int iconRes;
     public int color;
     public CharSequence label;
     public Intent intent;
-    public Descriptor descriptor;
 
     public PartialMatch(PartialMatch.Type type) {
         this.type = type;
@@ -47,11 +44,6 @@ public class PartialMatch implements Match, Comparable<PartialMatch> {
     @Override
     public Intent getIntent() {
         return intent;
-    }
-
-    @Override
-    public Descriptor getDescriptor() {
-        return descriptor;
     }
 
     @Override

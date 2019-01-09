@@ -11,15 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
 
@@ -63,10 +61,10 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             });
             holder.action.setOnClickListener(v -> {
                 Match item = getItem(holder.adapterPosition);
-                Descriptor descriptor = item.getDescriptor();
-                if (showInfo(descriptor)) {
+                Set<Match.Action> actions = item.availableActions();
+                if (actions.contains(Match.Action.INFO)) {
                     listener.onSearchItemInfoClick(holder.adapterPosition, item);
-                } else if (showPin(descriptor)) {
+                } else if (actions.contains(Match.Action.PIN)) {
                     listener.onSearchItemPinClick(holder.adapterPosition, item);
                 }
             });
@@ -92,11 +90,11 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         convertView.setOnClickListener(v -> {
             listener.onSearchItemClick(position, item);
         });
-        Descriptor descriptor = item.getDescriptor();
-        if (showInfo(descriptor)) {
+        Set<Match.Action> actions = item.availableActions();
+        if (actions.contains(Match.Action.INFO)) {
             holder.action.setVisibility(View.VISIBLE);
             holder.action.setImageResource(R.drawable.ic_app_info);
-        } else if (showPin(descriptor)) {
+        } else if (actions.contains(Match.Action.PIN)) {
             holder.action.setVisibility(View.VISIBLE);
             holder.action.setImageResource(R.drawable.ic_action_pin);
         } else {
@@ -104,14 +102,6 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         }
 
         return convertView;
-    }
-
-    private static boolean showPin(Descriptor descriptor) {
-        return descriptor == null;
-    }
-
-    private static boolean showInfo(Descriptor descriptor) {
-        return descriptor instanceof AppDescriptor || descriptor instanceof DeepShortcutDescriptor;
     }
 
     @Override

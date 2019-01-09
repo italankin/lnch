@@ -5,6 +5,7 @@ import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.util.IntentUtils;
 
@@ -37,7 +38,7 @@ public class PinnedShortcutSearchDelegate implements SearchDelegate {
     }
 
     private static PartialMatch testShortcut(PinnedShortcutDescriptor item, String query) {
-        PartialMatch match = DescriptorSearchUtils.test(item, query);
+        PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
             match.intent = IntentUtils.fromUri(item.uri);

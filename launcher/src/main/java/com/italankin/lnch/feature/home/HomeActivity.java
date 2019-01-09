@@ -63,6 +63,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
@@ -604,7 +605,10 @@ public class HomeActivity extends AppActivity implements HomeView,
 
             @Override
             public void onSearchItemInfoClick(int position, Match match) {
-                Descriptor descriptor = match.getDescriptor();
+                if (!(match instanceof DescriptorMatch)) {
+                    return;
+                }
+                Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
                 String packageName = null;
                 if (descriptor instanceof AppDescriptor) {
                     packageName = ((AppDescriptor) descriptor).packageName;

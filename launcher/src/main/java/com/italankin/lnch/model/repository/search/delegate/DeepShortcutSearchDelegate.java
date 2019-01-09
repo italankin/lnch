@@ -11,6 +11,7 @@ import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -78,7 +79,7 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     private static PartialMatch createMatch(Shortcut shortcut, Descriptor descriptor) {
-        PartialMatch match = new PartialMatch(PartialMatch.Type.OTHER);
+        PartialDescriptorMatch match = new PartialDescriptorMatch(PartialMatch.Type.OTHER);
         match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
         match.label = shortcut.getShortLabel();
         match.color = Color.WHITE;

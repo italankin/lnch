@@ -9,9 +9,15 @@ import android.text.style.UnderlineSpan;
 
 import com.italankin.lnch.R;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class UrlMatch extends PartialMatch {
+
+    private static final Set<Action> ACTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Action.PIN, Action.START)));
 
     public UrlMatch(String url) {
         super(Type.OTHER);
@@ -26,6 +32,11 @@ public class UrlMatch extends PartialMatch {
         }
         intent = new Intent(Intent.ACTION_VIEW, uri);
         iconRes = R.drawable.ic_open_url;
+    }
+
+    @Override
+    public Set<Action> availableActions() {
+        return ACTIONS;
     }
 
     private CharSequence buildLabel(String url) {

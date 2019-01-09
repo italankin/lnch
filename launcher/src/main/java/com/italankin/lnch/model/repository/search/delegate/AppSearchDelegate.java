@@ -7,6 +7,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 
@@ -41,7 +42,7 @@ public class AppSearchDelegate implements SearchDelegate {
     }
 
     private PartialMatch testApp(AppDescriptor item, String query) {
-        PartialMatch match = DescriptorSearchUtils.test(item, query);
+        PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
             match.intent = packageManager.getLaunchIntentForPackage(item.packageName);
