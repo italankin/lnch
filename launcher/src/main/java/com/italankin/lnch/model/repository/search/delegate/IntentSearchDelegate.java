@@ -1,45 +1,32 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.util.IntentUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
-public class IntentSearchDelegate implements SearchDelegate {
-
-    private final DescriptorRepository descriptorRepository;
+public class IntentSearchDelegate extends AbstractSearchDelegate<IntentDescriptor> {
 
     public IntentSearchDelegate(DescriptorRepository descriptorRepository) {
-        this.descriptorRepository = descriptorRepository;
+        super(descriptorRepository, IntentDescriptor.class);
     }
 
     @Override
-    public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
-        if (!searchTargets.contains(Preferences.SearchTarget.URL) &&
-                !searchTargets.contains(Preferences.SearchTarget.WEB)) {
-            return Collections.emptyList();
-        }
-        List<PartialMatch> matches = new ArrayList<>(2);
-        for (IntentDescriptor descriptor : descriptorRepository.itemsOfType(IntentDescriptor.class)) {
-            PartialMatch match = testIntent(descriptor, query);
-            if (match != null) {
-                matches.add(match);
-            }
-        }
-        return matches;
+    boolean isTargetEnabled(EnumSet<Preferences.SearchTarget> searchTargets) {
+        return searchTargets.contains(Preferences.SearchTarget.URL) ||
+                searchTargets.contains(Preferences.SearchTarget.WEB);
     }
 
-    private static PartialMatch testIntent(IntentDescriptor item, String query) {
+    @Nullable
+    @Override
+    PartialMatch testTarget(IntentDescriptor item, String query) {
         PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
