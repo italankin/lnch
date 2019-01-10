@@ -90,6 +90,6 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
 
     @Override
     public String toString() {
-        return "Group{" + label + '}';
+        return "Group{" + getVisibleLabel() + '}';
     }
 }

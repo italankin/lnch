@@ -90,7 +90,7 @@ public final class AppDescriptor implements Descriptor, CustomColorDescriptor, C
 
     @Override
     public String toString() {
-        return "App{" + packageName + ", " + hidden + "}";
+        return "App{" + packageName + (hidden ? "*" : "") + "}";
     }
 
     @Override
