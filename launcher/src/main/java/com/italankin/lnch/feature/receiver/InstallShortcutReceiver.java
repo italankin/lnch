@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
+@SuppressWarnings("deprecation")
 public class InstallShortcutReceiver extends BroadcastReceiver {
 
     private static final String ACTION = "com.android.launcher.action.INSTALL_SHORTCUT";
