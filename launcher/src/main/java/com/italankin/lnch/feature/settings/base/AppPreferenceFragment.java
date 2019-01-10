@@ -101,6 +101,6 @@ public abstract class AppPreferenceFragment extends BasePreferenceFragment {
     }
 
     protected DaggerService daggerService() {
-        return LauncherApp.getInstance(requireContext()).daggerService;
+        return LauncherApp.daggerService;
     }
 }

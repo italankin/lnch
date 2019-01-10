@@ -11,7 +11,7 @@ public class LauncherApp extends Application {
         return (LauncherApp) context.getApplicationContext();
     }
 
-    public DaggerService daggerService;
+    public static DaggerService daggerService;
 
     @Override
     public void onCreate() {

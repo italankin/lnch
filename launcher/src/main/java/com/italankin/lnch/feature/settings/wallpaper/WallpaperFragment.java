@@ -67,8 +67,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
             }
             return true;
         });
-        int color = LauncherApp.getInstance(requireContext())
-                .daggerService
+        int color = LauncherApp.daggerService
                 .main()
                 .getPreferences()
                 .overlayColor();

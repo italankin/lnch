@@ -39,7 +39,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
@@ -755,7 +754,7 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setScreenOrientation() {
-        Preferences preferences = LauncherApp.getInstance(this).daggerService.main().getPreferences();
+        Preferences preferences = daggerService().main().getPreferences();
         setRequestedOrientation(preferences.screenOrientation().value());
         String key = getString(R.string.pref_misc_screen_orientation);
         screenOrientationDisposable = preferences.observe()

@@ -1,6 +1,7 @@
 package com.italankin.lnch.di.service;
 
-import com.italankin.lnch.LauncherApp;
+import android.content.Context;
+
 import com.italankin.lnch.di.component.DaggerMainComponent;
 import com.italankin.lnch.di.component.DaggerPresenterComponent;
 import com.italankin.lnch.di.component.MainComponent;
@@ -12,10 +13,10 @@ public class DaggerService {
     private final PresenterComponent presenters;
     private final MainComponent main;
 
-    public DaggerService(LauncherApp launcherApp) {
+    public DaggerService(Context context) {
         main = DaggerMainComponent.builder()
                 .mainModule(new MainModule())
-                .appModule(new AppModule(launcherApp))
+                .appModule(new AppModule(context))
                 .build();
         presenters = DaggerPresenterComponent.builder()
                 .mainComponent(main)

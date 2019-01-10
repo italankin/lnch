@@ -162,7 +162,7 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     private void setScreenOrientation() {
-        Preferences preferences = LauncherApp.getInstance(this).daggerService.main().getPreferences();
+        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
         setRequestedOrientation(preferences.screenOrientation().value());
         String key = getString(R.string.pref_misc_screen_orientation);
         screenOrientationDisposable = preferences.observe()

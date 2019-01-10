@@ -41,8 +41,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                 label.toUpperCase(Locale.getDefault()),
                 context.getColor(R.color.pinned_shortcut_default));
 
-        DescriptorRepository apps = LauncherApp.getInstance(context)
-                .daggerService
+        DescriptorRepository apps = LauncherApp.daggerService
                 .main()
                 .getDescriptorRepository();
         Throwable error = apps.edit()

@@ -43,19 +43,19 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public PackageManager providePackageManager(Context context) {
+    PackageManager providePackageManager(Context context) {
         return context.getPackageManager();
     }
 
     @Provides
     @Singleton
-    public Preferences providePreferences(Context context) {
+    Preferences providePreferences(Context context) {
         return new UserPreferences(context);
     }
 
     @Provides
     @Singleton
-    public DescriptorRepository provideDescriptorRepository(Context context, PackageManager packageManager,
+    DescriptorRepository provideDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, PackagesStore packagesStore, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
         return new LauncherDescriptorRepository(context, packageManager, descriptorStore,
@@ -64,13 +64,13 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public PackagesStore providerPackagesStore(Context context) {
+    PackagesStore providerPackagesStore(Context context) {
         return new JsonPackagesStore(context.getFilesDir());
     }
 
     @Provides
     @Singleton
-    public DescriptorStore provideDescriptorStore(PackagesStore packagesStore, Context context) {
+    DescriptorStore provideDescriptorStore(PackagesStore packagesStore, Context context) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
@@ -81,7 +81,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public SearchRepository provideSearchRepository(Context context, PackageManager packageManager,
+    SearchRepository provideSearchRepository(Context context, PackageManager packageManager,
             DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
             Preferences preferences) {
         List<SearchDelegate> delegates = Arrays.asList(
@@ -95,19 +95,19 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public PicassoFactory providePicassoFactory(Context context) {
+    PicassoFactory providePicassoFactory(Context context) {
         return new PicassoFactory(context);
     }
 
     @Provides
     @Singleton
-    public ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<DescriptorRepository> lazy) {
+    ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<DescriptorRepository> lazy) {
         return () -> lazy.get().items();
     }
 
     @Provides
     @Singleton
-    public ShortcutsRepository provideShortcutsRepository(Context context, ShortcutsRepository.DescriptorProvider descriptorProvider) {
+    ShortcutsRepository provideShortcutsRepository(Context context, ShortcutsRepository.DescriptorProvider descriptorProvider) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             return new AppShortcutsRepository(context, descriptorProvider);
         } else {
@@ -117,7 +117,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public SeparatorState provideSeparatorState(Context context) {
+    SeparatorState provideSeparatorState(Context context) {
         return new SeparatorStateImpl(context);
     }
 }
