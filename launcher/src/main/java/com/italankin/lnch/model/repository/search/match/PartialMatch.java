@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;
     public Uri icon;
@@ -11,6 +14,7 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public int color;
     public CharSequence label;
     public Intent intent;
+    public Set<Action> actions = new HashSet<>(1);
 
     public PartialMatch(PartialMatch.Type type) {
         this.type = type;
@@ -44,6 +48,11 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     @Override
     public Intent getIntent() {
         return intent;
+    }
+
+    @Override
+    public Set<Action> availableActions() {
+        return actions;
     }
 
     @Override

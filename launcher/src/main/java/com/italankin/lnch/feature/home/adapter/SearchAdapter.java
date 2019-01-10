@@ -59,14 +59,11 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             convertView.setOnClickListener(v -> {
                 listener.onSearchItemClick(holder.adapterPosition, getItem(holder.adapterPosition));
             });
-            holder.action.setOnClickListener(v -> {
-                Match item = getItem(holder.adapterPosition);
-                Set<Match.Action> actions = item.availableActions();
-                if (actions.contains(Match.Action.INFO)) {
-                    listener.onSearchItemInfoClick(holder.adapterPosition, item);
-                } else if (actions.contains(Match.Action.PIN)) {
-                    listener.onSearchItemPinClick(holder.adapterPosition, item);
-                }
+            holder.info.setOnClickListener(v -> {
+                listener.onSearchItemInfoClick(holder.adapterPosition, getItem(holder.adapterPosition));
+            });
+            holder.pin.setOnClickListener(v -> {
+                listener.onSearchItemPinClick(holder.adapterPosition, getItem(holder.adapterPosition));
             });
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -90,15 +87,18 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         convertView.setOnClickListener(v -> {
             listener.onSearchItemClick(position, item);
         });
+
         Set<Match.Action> actions = item.availableActions();
         if (actions.contains(Match.Action.INFO)) {
-            holder.action.setVisibility(View.VISIBLE);
-            holder.action.setImageResource(R.drawable.ic_app_info);
-        } else if (actions.contains(Match.Action.PIN)) {
-            holder.action.setVisibility(View.VISIBLE);
-            holder.action.setImageResource(R.drawable.ic_action_pin);
+            holder.info.setVisibility(View.VISIBLE);
         } else {
-            holder.action.setVisibility(View.GONE);
+            holder.info.setVisibility(View.GONE);
+        }
+
+        if (actions.contains(Match.Action.PIN)) {
+            holder.pin.setVisibility(View.VISIBLE);
+        } else {
+            holder.pin.setVisibility(View.GONE);
         }
 
         return convertView;
@@ -112,13 +112,15 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     static class ViewHolder {
         final TextView text;
         final ImageView image;
-        final ImageView action;
+        final ImageView pin;
+        final ImageView info;
         int adapterPosition;
 
         ViewHolder(View itemView) {
             this.text = itemView.findViewById(R.id.text);
             this.image = itemView.findViewById(R.id.image);
-            this.action = itemView.findViewById(R.id.action);
+            this.pin = itemView.findViewById(R.id.pin);
+            this.info = itemView.findViewById(R.id.info);
         }
     }
 

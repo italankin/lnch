@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.repository.search.match;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -9,20 +10,19 @@ import android.text.style.UnderlineSpan;
 
 import com.italankin.lnch.R;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
 public class UrlMatch extends PartialMatch {
 
-    private static final Set<Action> ACTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Action.PIN, Action.START)));
+    private static final Set<Action> ACTIONS = Collections.singleton(Action.PIN);
 
-    public UrlMatch(String url) {
+    public UrlMatch(Context context, String url) {
         super(Type.OTHER);
         color = Color.WHITE;
-        label = buildLabel(url);
+        label = buildLabel(context, url);
+        actions = ACTIONS;
         Uri uri;
         if (url.toLowerCase(Locale.getDefault()).startsWith("http://")
                 || url.toLowerCase(Locale.getDefault()).startsWith("https://")) {
@@ -34,14 +34,10 @@ public class UrlMatch extends PartialMatch {
         iconRes = R.drawable.ic_open_url;
     }
 
-    @Override
-    public Set<Action> availableActions() {
-        return ACTIONS;
-    }
-
-    private CharSequence buildLabel(String url) {
+    private CharSequence buildLabel(Context context, String url) {
         String beautifiedUrl = url.replaceFirst("https?://", "");
-        return new SpannableStringBuilder("Go to ")
+        return new SpannableStringBuilder(context.getText(R.string.hint_search_open_web))
+                .append(' ')
                 .append(beautifiedUrl, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 }

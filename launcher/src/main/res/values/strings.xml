@@ -10,6 +10,7 @@
     <string name="error_shortcut_disabled">Shortcut is disabled</string>
 
     <string name="hint_search">Search</string>
+    <string name="hint_search_open_web">Go to</string>
 
     <string name="new_group_label">New Group</string>
     <string name="pinned_shortcut_label">New Shortcut</string>

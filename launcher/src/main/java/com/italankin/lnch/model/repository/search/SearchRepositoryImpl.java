@@ -1,5 +1,7 @@
 package com.italankin.lnch.model.repository.search;
 
+import android.content.Context;
+
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
@@ -20,10 +22,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private static final int MAX_RESULTS = 4;
 
+    private final Context context;
     private final List<SearchDelegate> delegates;
     private final Preferences preferences;
 
-    public SearchRepositoryImpl(List<SearchDelegate> delegates, Preferences preferences) {
+    public SearchRepositoryImpl(Context context, List<SearchDelegate> delegates, Preferences preferences) {
+        this.context = context;
         this.preferences = preferences;
         this.delegates = delegates;
     }
@@ -57,7 +61,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (searchTargets.contains(SearchTarget.URL)) {
             if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
-                matches.add(new UrlMatch(query));
+                matches.add(new UrlMatch(context, query));
             }
         }
 

@@ -27,7 +27,6 @@ public interface Match {
     Set<Action> availableActions();
 
     enum Action {
-        START,
         PIN,
         INFO
     }

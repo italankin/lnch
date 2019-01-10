@@ -81,15 +81,16 @@ public class MainModule {
 
     @Provides
     @Singleton
-    public SearchRepository provideSearchRepository(PackageManager packageManager,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository, Preferences preferences) {
+    public SearchRepository provideSearchRepository(Context context, PackageManager packageManager,
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+            Preferences preferences) {
         List<SearchDelegate> delegates = Arrays.asList(
                 new AppSearchDelegate(packageManager, descriptorRepository),
                 new DeepShortcutSearchDelegate(descriptorRepository, shortcutsRepository),
                 new PinnedShortcutSearchDelegate(descriptorRepository),
                 new IntentSearchDelegate(descriptorRepository)
         );
-        return new SearchRepositoryImpl(delegates, preferences);
+        return new SearchRepositoryImpl(context, delegates, preferences);
     }
 
     @Provides
