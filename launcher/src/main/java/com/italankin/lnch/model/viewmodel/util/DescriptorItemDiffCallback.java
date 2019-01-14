@@ -1,10 +1,10 @@
 package com.italankin.lnch.model.viewmodel.util;
 
-import android.support.v7.util.DiffUtil;
-
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 public class DescriptorItemDiffCallback extends DiffUtil.Callback {
     private final List<DescriptorItem> oldList;

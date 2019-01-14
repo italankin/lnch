@@ -1,8 +1,5 @@
 package com.italankin.lnch.util.widget.colorpicker;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -14,6 +11,10 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 abstract class AbstractColorModelController implements ColorModelController {
     @Nullable

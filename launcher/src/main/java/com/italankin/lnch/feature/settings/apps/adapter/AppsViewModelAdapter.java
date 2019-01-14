@@ -1,7 +1,5 @@
 package com.italankin.lnch.feature.settings.apps.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +9,9 @@ import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.squareup.picasso.Picasso;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.ViewHolder, AppViewModel> {
     private final Picasso picasso;

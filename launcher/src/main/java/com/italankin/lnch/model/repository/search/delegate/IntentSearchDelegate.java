@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -13,6 +12,8 @@ import com.italankin.lnch.util.IntentUtils;
 
 import java.util.Collections;
 import java.util.EnumSet;
+
+import androidx.annotation.Nullable;
 
 public class IntentSearchDelegate extends AbstractSearchDelegate<IntentDescriptor> {
 

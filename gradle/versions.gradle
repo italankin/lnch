@@ -1,12 +1,13 @@
 ext {
-    targetSdk = 27
-    compileSdk = 27
+    targetSdk = 28
+    compileSdk = 28
     minSdk = 23
 
-    supportVersion = "27.1.1"
+    androidxVersion = "1.0.0"
+    materialVersion = "1.0.0-rc01"
     moxyVersion = "1.5.3"
     daggerVersion = "2.11"
-    flexboxVersion = "1.0.0"
+    flexboxVersion = "1.1.0"
     gsonVersion = "2.8.2"
     rxJavaVersion = "2.1.13"
     rxAndroidVersion = "2.0.2"
@@ -15,7 +16,6 @@ ext {
 
     moxy = "com.arello-mobile:moxy:$moxyVersion"
     moxyCompiler = "com.arello-mobile:moxy-compiler:$moxyVersion"
-    moxyAppCompat = "com.arello-mobile:moxy-app-compat:$moxyVersion"
     dagger = "com.google.dagger:dagger:$daggerVersion"
     daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
     jsr250 = "javax.annotation:jsr250-api:1.0"
@@ -23,12 +23,14 @@ ext {
     rxAndroid = "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
     gson = "com.google.code.gson:gson:$gsonVersion"
     timber = "com.jakewharton.timber:timber:$timberVersion"
-    appCompat = "com.android.support:appcompat-v7:$supportVersion"
-    recyclerView = "com.android.support:recyclerview-v7:$supportVersion"
-    palette = "com.android.support:palette-v7:$supportVersion"
-    design = "com.android.support:design:$supportVersion"
-    preference = "com.android.support:preference-v14:$supportVersion"
-    customTabs = "com.android.support:customtabs:$supportVersion"
+    appCompat = "androidx.appcompat:appcompat:$androidxVersion"
+    fragment = "androidx.fragment:fragment:$androidxVersion"
+    recyclerView = "androidx.recyclerview:recyclerview:$androidxVersion"
+    palette = "androidx.palette:palette:$androidxVersion"
+    preference = "androidx.preference:preference:$androidxVersion"
+    customTabs = "androidx.browser:browser:$androidxVersion"
+    material = "com.google.android.material:material:$materialVersion"
+    annotation = "androidx.annotation:annotation:$androidxVersion"
     flexbox = "com.google.android:flexbox:$flexboxVersion"
     picasso = "com.squareup.picasso:picasso:$picassoVersion"
 }

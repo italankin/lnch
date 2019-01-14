@@ -2,15 +2,16 @@ package com.italankin.lnch.feature.settings.apps.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 import java.util.EnumSet;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDialogFragment.Listener> {
     private static final String ARG_FLAGS = "flags";

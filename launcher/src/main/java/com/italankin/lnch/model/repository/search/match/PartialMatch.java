@@ -2,10 +2,11 @@ package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
 
 public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;

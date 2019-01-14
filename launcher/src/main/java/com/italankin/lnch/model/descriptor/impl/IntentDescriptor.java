@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.Intent;
-import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
@@ -9,6 +8,8 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
+
+import androidx.annotation.Keep;
 
 public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 

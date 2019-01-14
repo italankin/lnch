@@ -1,14 +1,14 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.Keep;
-
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Keep;
 
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 

@@ -2,7 +2,6 @@ package com.italankin.lnch.model.repository.search.delegate;
 
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -23,6 +22,8 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.RequiresApi;
 
 import static com.italankin.lnch.util.SearchUtils.contains;
 

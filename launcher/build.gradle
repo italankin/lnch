@@ -53,7 +53,6 @@ dexcount {
 dependencies {
     implementation moxy
     annotationProcessor moxyCompiler
-    implementation moxyAppCompat
 
     implementation dagger
     annotationProcessor daggerCompiler
@@ -67,14 +66,14 @@ dependencies {
     implementation timber
 
     implementation appCompat
+    implementation fragment
     implementation recyclerView
     implementation palette
-    implementation design
+    implementation material
     implementation preference
     implementation customTabs
+    implementation annotation
 
     implementation flexbox
-    implementation(picasso) {
-        exclude group: 'com.android.support'
-    }
+    implementation picasso
 }

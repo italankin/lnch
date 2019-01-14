@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.descriptor;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 public interface CustomColorDescriptor extends ColorDescriptor {
 

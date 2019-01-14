@@ -1,17 +1,22 @@
-package com.italankin.lnch.feature.settings.base;
+package com.arellomobile.mvp;
 
 import android.os.Bundle;
 
-import com.arellomobile.mvp.MvpDelegate;
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.di.service.DaggerService;
-
 import androidx.fragment.app.Fragment;
 
-public abstract class AppPreferenceFragment extends BasePreferenceFragment {
+/**
+ * Date: 19-Dec-15
+ * Time: 13:25
+ *
+ * @author Alexander Blinov
+ * @author Yuri Shmakov
+ * @author Konstantin Tckhovrebov
+ */
+@SuppressWarnings({"ConstantConditions", "unused"})
+public class MvpAppCompatFragment extends Fragment {
 
     private boolean mIsStateSaved;
-    private MvpDelegate<? extends AppPreferenceFragment> mMvpDelegate;
+    private MvpDelegate<? extends MvpAppCompatFragment> mMvpDelegate;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +70,7 @@ public abstract class AppPreferenceFragment extends BasePreferenceFragment {
         super.onDestroy();
 
         //We leave the screen and respectively all fragments will be destroyed
-        if (requireActivity().isFinishing()) {
+        if (getActivity().isFinishing()) {
             getMvpDelegate().onDestroy();
             return;
         }
@@ -99,9 +104,5 @@ public abstract class AppPreferenceFragment extends BasePreferenceFragment {
         }
 
         return mMvpDelegate;
-    }
-
-    protected DaggerService daggerService() {
-        return LauncherApp.daggerService;
     }
 }

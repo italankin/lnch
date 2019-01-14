@@ -1,8 +1,8 @@
 package com.italankin.lnch.feature.settings.base;
 
-import android.support.annotation.StringRes;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.annotation.StringRes;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
 

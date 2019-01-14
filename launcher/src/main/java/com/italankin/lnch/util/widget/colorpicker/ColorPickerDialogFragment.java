@@ -2,11 +2,12 @@ package com.italankin.lnch.util.widget.colorpicker;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDialogFragment.Listener> {
     private static final String ARG_SELECTED_COLOR = "selected_color";

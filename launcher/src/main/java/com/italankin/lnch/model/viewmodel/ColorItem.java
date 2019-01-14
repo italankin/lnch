@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.viewmodel;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 /**
  * Item which has color

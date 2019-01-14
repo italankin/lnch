@@ -1,9 +1,10 @@
 package com.italankin.lnch.util.dialogfragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v4.app.DialogFragment;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.DialogFragment;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDialogFragment<L> extends DialogFragment {

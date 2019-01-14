@@ -2,11 +2,11 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 
 public interface Preferences {

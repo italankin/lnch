@@ -2,10 +2,11 @@ package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
 
 import java.util.Set;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 
 public interface Match {
 

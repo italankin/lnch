@@ -1,7 +1,5 @@
 package com.italankin.lnch.feature.settings.apps.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Filter;
 
@@ -16,6 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.synchronizedSet;

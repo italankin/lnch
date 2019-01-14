@@ -1,7 +1,5 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
-import android.support.annotation.Nullable;
-
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -12,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 public abstract class AbstractSearchDelegate<D extends Descriptor> implements SearchDelegate {
 

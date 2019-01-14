@@ -1,9 +1,9 @@
 package com.italankin.lnch.feature.home.model;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 public final class UserPrefs {
     public Preferences.HomeLayout homeLayout;

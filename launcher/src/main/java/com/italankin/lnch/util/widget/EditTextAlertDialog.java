@@ -2,14 +2,15 @@ package com.italankin.lnch.util.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatEditText;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.italankin.lnch.util.ResUtils;
+
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
 
 public final class EditTextAlertDialog {
 

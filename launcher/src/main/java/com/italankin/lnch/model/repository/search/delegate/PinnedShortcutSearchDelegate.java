@@ -1,7 +1,5 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
-import android.support.annotation.Nullable;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -11,6 +9,8 @@ import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.util.IntentUtils;
 
 import java.util.EnumSet;
+
+import androidx.annotation.Nullable;
 
 public class PinnedShortcutSearchDelegate extends AbstractSearchDelegate<PinnedShortcutDescriptor> {
 

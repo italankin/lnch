@@ -5,10 +5,11 @@ import android.content.pm.LauncherApps.ShortcutQuery;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.os.Process;
-import android.support.annotation.RequiresApi;
 
 import java.util.Collections;
 import java.util.List;
+
+import androidx.annotation.RequiresApi;
 
 public final class ShortcutUtils {
 

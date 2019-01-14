@@ -9,8 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.util.ShortcutUtils;
@@ -20,6 +18,9 @@ import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
 public class ShortcutIconHandler extends RequestHandler {

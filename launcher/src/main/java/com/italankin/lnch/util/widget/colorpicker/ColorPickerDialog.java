@@ -2,10 +2,11 @@ package com.italankin.lnch.util.widget.colorpicker;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.ColorInt;
-import android.support.v7.app.AlertDialog;
 
 import com.italankin.lnch.R;
+
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AlertDialog;
 
 public final class ColorPickerDialog {
 

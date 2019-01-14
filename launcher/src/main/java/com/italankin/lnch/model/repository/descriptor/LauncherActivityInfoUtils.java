@@ -8,10 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.v7.graphics.Palette;
 import android.util.TypedValue;
 
 import java.util.Locale;
+
+import androidx.palette.graphics.Palette;
 
 final class LauncherActivityInfoUtils {
 

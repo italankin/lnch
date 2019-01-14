@@ -1,8 +1,8 @@
 package com.italankin.lnch.feature.settings.apps.model;
 
-import android.support.annotation.StringRes;
-
 import com.italankin.lnch.R;
+
+import androidx.annotation.StringRes;
 
 public enum FilterFlag {
     VISIBLE(R.string.settings_apps_filter_visible),

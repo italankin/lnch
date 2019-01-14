@@ -1,8 +1,5 @@
 package com.italankin.lnch.feature.home;
 
-import android.support.annotation.ColorInt;
-import android.support.v7.util.DiffUtil;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
@@ -46,12 +43,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.support.v7.util.DiffUtil.calculateDiff;
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {

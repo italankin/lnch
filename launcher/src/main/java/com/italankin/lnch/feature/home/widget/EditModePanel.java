@@ -3,9 +3,6 @@ package com.italankin.lnch.feature.home.widget;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +13,10 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class EditModePanel extends LinearLayout {
 

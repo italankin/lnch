@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.italankin.lnch.BuildConfig;
@@ -16,6 +15,7 @@ import com.italankin.lnch.util.ShortcutUtils;
 
 import java.util.List;
 
+import androidx.annotation.RequiresApi;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)

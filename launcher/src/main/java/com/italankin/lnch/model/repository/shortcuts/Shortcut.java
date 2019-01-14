@@ -3,7 +3,8 @@ package com.italankin.lnch.model.repository.shortcuts;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 public interface Shortcut extends Comparable<Shortcut> {
 
