@@ -16,6 +16,8 @@ import com.italankin.lnch.util.ShortcutUtils;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class StartShortcutReceiver extends BroadcastReceiver {
 
@@ -50,6 +52,14 @@ public class StartShortcutReceiver extends BroadcastReceiver {
         if (shortcuts == null || shortcuts.isEmpty()) {
             return;
         }
-        launcherApps.startShortcut(shortcuts.get(0), null, null);
+        ShortcutInfo shortcut = shortcuts.get(0);
+        if (!shortcut.isEnabled()) {
+            return;
+        }
+        try {
+            launcherApps.startShortcut(shortcut, null, null);
+        } catch (Exception e) {
+            Timber.e(e, "onReceive:");
+        }
     }
 }
