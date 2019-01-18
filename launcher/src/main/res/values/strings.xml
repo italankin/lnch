@@ -8,6 +8,7 @@
     <string name="save">Save</string>
     <string name="error_shortcut_not_found">Not found</string>
     <string name="error_shortcut_disabled">Shortcut is disabled</string>
+    <string name="error_external_storage_unavailable">External storage is not available</string>
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>

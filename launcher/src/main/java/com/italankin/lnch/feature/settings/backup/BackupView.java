@@ -23,4 +23,7 @@ interface BackupView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onResetError(Throwable error);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onExternalStorageNotAvailableError(Throwable error);
 }

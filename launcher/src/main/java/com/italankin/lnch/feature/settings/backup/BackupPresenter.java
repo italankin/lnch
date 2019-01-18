@@ -84,7 +84,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                 .<String>create(emitter -> {
                     File dirDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                     if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState(dirDownloads))) {
-                        emitter.onError(new RuntimeException("External storage is not available"));
+                        emitter.onError(new ExternalStorageNotAvailable());
                         return;
                     }
                     String backupFileName = String.format(Locale.getDefault(),
@@ -110,7 +110,11 @@ public class BackupPresenter extends AppPresenter<BackupView> {
 
                     @Override
                     protected void onError(BackupView viewState, Throwable e) {
-                        viewState.onBackupError(e);
+                        if (e instanceof ExternalStorageNotAvailable) {
+                            viewState.onExternalStorageNotAvailableError(e);
+                        } else {
+                            viewState.onBackupError(e);
+                        }
                     }
                 });
     }
@@ -143,6 +147,12 @@ public class BackupPresenter extends AppPresenter<BackupView> {
         public void apply(List<Descriptor> items) {
             items.clear();
             items.addAll(newItems);
+        }
+    }
+
+    private static class ExternalStorageNotAvailable extends RuntimeException {
+        private ExternalStorageNotAvailable() {
+            super("External storage is not available");
         }
     }
 }

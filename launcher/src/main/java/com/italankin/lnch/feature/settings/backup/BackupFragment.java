@@ -124,6 +124,11 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
         showError(error);
     }
 
+    @Override
+    public void onExternalStorageNotAvailableError(Throwable error) {
+        Toast.makeText(requireContext(), R.string.error_external_storage_unavailable, Toast.LENGTH_LONG).show();
+    }
+
     private void showError(Throwable error) {
         Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
     }
