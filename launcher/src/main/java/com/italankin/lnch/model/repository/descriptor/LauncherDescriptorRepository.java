@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -125,7 +124,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void subscribeForLauncherAppsUpdates() {
         new LauncherAppsUpdates(launcherApps)
-                .debounce(1, TimeUnit.SECONDS)
                 .flatMapCompletable(change -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForLauncherAppsUpdates");
