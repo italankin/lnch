@@ -11,7 +11,7 @@ import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
-    protected final CompositeDisposable subs = new CompositeDisposable();
+    private final CompositeDisposable subs = new CompositeDisposable();
 
     @Override
     public void onDestroy() {
