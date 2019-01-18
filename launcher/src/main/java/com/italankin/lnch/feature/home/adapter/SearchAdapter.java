@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home.adapter;
 
+import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,8 +52,9 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
+        Context context = parent.getContext();
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.item_search_match, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -69,8 +71,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             holder = (ViewHolder) convertView.getTag();
         }
         Match item = getItem(position);
-        holder.text.setText(item.getLabel());
-        holder.text.setTextColor(item.getColor(convertView.getContext()));
+        holder.text.setText(item.getLabel(context));
+        holder.text.setTextColor(item.getColor(context));
         holder.adapterPosition = position;
 
         Uri icon = item.getIcon();

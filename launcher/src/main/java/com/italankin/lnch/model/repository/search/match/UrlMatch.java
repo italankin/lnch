@@ -18,9 +18,11 @@ public class UrlMatch extends PartialMatch {
 
     private static final Set<Action> ACTIONS = Collections.singleton(Action.PIN);
 
-    public UrlMatch(Context context, String url) {
+    private final String url;
+
+    public UrlMatch(String url) {
         super(Type.OTHER);
-        label = buildLabel(context, url);
+        this.url = url.replaceFirst("https?://", "");
         actions = ACTIONS;
         Uri uri;
         if (url.toLowerCase(Locale.getDefault()).startsWith("http://")
@@ -33,11 +35,14 @@ public class UrlMatch extends PartialMatch {
         iconRes = R.drawable.ic_open_url;
     }
 
-    private CharSequence buildLabel(Context context, String url) {
-        String beautifiedUrl = url.replaceFirst("https?://", "");
-        return new SpannableStringBuilder(context.getText(R.string.hint_search_open_web))
-                .append(' ')
-                .append(beautifiedUrl, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    @Override
+    public CharSequence getLabel(Context context) {
+        if (label == null) {
+            label = new SpannableStringBuilder(context.getText(R.string.hint_search_open_web))
+                    .append(' ')
+                    .append(url, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return label;
     }
 
     @Override

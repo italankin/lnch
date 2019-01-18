@@ -16,7 +16,7 @@ public interface Match {
     @DrawableRes
     int getIconResource();
 
-    CharSequence getLabel();
+    CharSequence getLabel(Context context);
 
     @ColorInt
     int getColor(Context context);

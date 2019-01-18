@@ -594,12 +594,12 @@ public class HomeActivity extends AppActivity implements HomeView,
             @Override
             public void onSearchItemPinClick(int position, Match match) {
                 searchBarBehavior.hide();
-                String label = match.getLabel()
+                String label = match.getLabel(HomeActivity.this)
                         .toString()
                         .trim()
                         .toUpperCase(Locale.getDefault());
                 IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
-                        label, match.getColor());
+                        label, match.getColor(HomeActivity.this));
                 presenter.pinIntent(intentDescriptor);
             }
 

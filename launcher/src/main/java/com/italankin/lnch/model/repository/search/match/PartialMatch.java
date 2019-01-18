@@ -36,7 +36,7 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     }
 
     @Override
-    public CharSequence getLabel() {
+    public CharSequence getLabel(Context context) {
         return label;
     }
 
