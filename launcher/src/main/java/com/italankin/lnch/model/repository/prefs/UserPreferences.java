@@ -44,7 +44,7 @@ public class UserPreferences implements Preferences {
 
     @Override
     public ColorTheme colorTheme() {
-        return ColorTheme.DARK;
+        return ColorTheme.LIGHT;
     }
 
     @Override

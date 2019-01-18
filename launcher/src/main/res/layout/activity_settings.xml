@@ -12,7 +12,7 @@
         android:layout_height="?actionBarSize"
         android:background="?colorPrimary"
         android:elevation="4dp"
-        android:theme="@style/AppTheme.Dark.Overlay"
+        android:theme="?toolbarOverlayTheme"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"

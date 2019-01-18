@@ -144,6 +144,7 @@ public class HomeActivity extends AppActivity implements HomeView,
         picasso = daggerService().main().getPicassoFactory().create(this);
 
         setScreenOrientation();
+        setTheme();
 
         setupWindow();
 
@@ -754,7 +755,6 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setScreenOrientation() {
-        Preferences preferences = daggerService().main().getPreferences();
         setRequestedOrientation(preferences.screenOrientation().value());
         String key = getString(R.string.pref_misc_screen_orientation);
         screenOrientationDisposable = preferences.observe()
@@ -763,6 +763,17 @@ public class HomeActivity extends AppActivity implements HomeView,
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setRequestedOrientation);
+    }
+
+    private void setTheme() {
+        switch (preferences.colorTheme()) {
+            case DARK:
+                setTheme(R.style.AppTheme_Dark_Launcher);
+                break;
+            case LIGHT:
+                setTheme(R.style.AppTheme_Light_Launcher);
+                break;
+        }
     }
 
     private void setLayout(Preferences.HomeLayout layout) {

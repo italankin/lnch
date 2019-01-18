@@ -70,7 +70,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         }
         Match item = getItem(position);
         holder.text.setText(item.getLabel());
-        holder.text.setTextColor(item.getColor());
+        holder.text.setTextColor(item.getColor(convertView.getContext()));
         holder.adapterPosition = position;
 
         Uri icon = item.getIcon();

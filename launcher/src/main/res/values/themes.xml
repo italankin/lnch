@@ -16,11 +16,13 @@
         <item name="colorDivider">#17ffffff</item>
         <item name="colorSelector">#6fff</item>
         <item name="colorGroupTitleDefault">?colorText</item>
-        <item name="colorPopupBackground">#212121</item>
+        <item name="colorPopupBackground">?colorPrimary</item>
         <item name="colorPopupActionsBackground">#424242</item>
         <item name="colorItemShadowDefault">#60000000</item>
         <item name="colorSearchBarBackground">#1fff</item>
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
+
+        <item name="toolbarOverlayTheme">@style/AppTheme.Dark.Overlay</item>
     </style>
 
     <style name="AppTheme.Dark.Launcher">
@@ -39,6 +41,49 @@
     </style>
 
     <style name="AppTheme.Dark.Overlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorSecondary">?colorText</item>
+    </style>
+
+    <!-- Light -->
+
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#f0f0f0</item>
+        <item name="colorPrimaryDark">#a0a0a0</item>
+        <item name="colorAccent">#f9a825</item>
+        <item name="android:statusBarColor">?colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="colorText">#222</item>
+        <item name="colorTextSecondary">#888</item>
+        <item name="colorIconTint">#333</item>
+        <item name="colorDivider">#17000000</item>
+        <item name="colorSelector">#6000</item>
+        <item name="colorGroupTitleDefault">?colorText</item>
+        <item name="colorPopupBackground">?colorPrimary</item>
+        <item name="colorPopupActionsBackground">#a0a0a0</item>
+        <item name="colorItemShadowDefault">#60000000</item>
+        <item name="colorSearchBarBackground">#1000</item>
+        <item name="colorEditPanelBackground">?colorPrimaryDark</item>
+
+        <item name="toolbarOverlayTheme">@style/AppTheme.Light.Overlay</item>
+    </style>
+
+    <style name="AppTheme.Light.Launcher">
+        <item name="android:statusBarColor">#8fff</item>
+        <item name="android:navigationBarColor">#8fff</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/window_background</item>
+    </style>
+
+    <style name="AppTheme.Light.Preferences">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:textColorSecondary">?colorTextSecondary</item>
+    </style>
+
+    <style name="AppTheme.Light.Overlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:textColorSecondary">?colorText</item>
     </style>
 </resources>

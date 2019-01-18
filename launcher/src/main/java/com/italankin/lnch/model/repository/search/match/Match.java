@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.repository.search.match;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -18,7 +19,7 @@ public interface Match {
     CharSequence getLabel();
 
     @ColorInt
-    int getColor();
+    int getColor(Context context);
 
     @Override
     String toString();

@@ -1,7 +1,11 @@
 package com.italankin.lnch.model.repository.search.match;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.ResUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +16,7 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;
     public Uri icon;
     public int iconRes;
-    public int color;
+    public Integer color;
     public CharSequence label;
     public Intent intent;
     public Set<Action> actions = new HashSet<>(1);
@@ -37,8 +41,8 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     }
 
     @Override
-    public int getColor() {
-        return color;
+    public int getColor(Context context) {
+        return color != null ? color : ResUtils.resolveColor(context, R.attr.colorText);
     }
 
     @Override

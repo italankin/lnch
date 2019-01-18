@@ -37,12 +37,16 @@ public class SettingsActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
     private Disposable screenOrientationDisposable;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        preferences = LauncherApp.daggerService.main().getPreferences();
+
         setScreenOrientation();
+        setTheme();
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
@@ -162,7 +166,6 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     private void setScreenOrientation() {
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
         setRequestedOrientation(preferences.screenOrientation().value());
         String key = getString(R.string.pref_misc_screen_orientation);
         screenOrientationDisposable = preferences.observe()
@@ -171,5 +174,16 @@ public class SettingsActivity extends AppCompatActivity implements
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setRequestedOrientation);
+    }
+
+    private void setTheme() {
+        switch (preferences.colorTheme()) {
+            case DARK:
+                setTheme(R.style.AppTheme_Dark_Preferences);
+                break;
+            case LIGHT:
+                setTheme(R.style.AppTheme_Light_Preferences);
+                break;
+        }
     }
 }

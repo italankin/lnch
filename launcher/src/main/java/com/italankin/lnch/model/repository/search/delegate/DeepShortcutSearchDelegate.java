@@ -1,6 +1,5 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
-import android.graphics.Color;
 import android.os.Build;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
@@ -83,7 +82,6 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         PartialDescriptorMatch match = new PartialDescriptorMatch(PartialMatch.Type.OTHER);
         match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
         match.label = shortcut.getShortLabel();
-        match.color = Color.WHITE;
         match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
         match.descriptor = descriptor;
         return match;
