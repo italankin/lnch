@@ -225,7 +225,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                         AppDescriptor app = (AppDescriptor) item;
                         LauncherActivityInfo info = findInfo(infosByPackageName, app);
                         if (info != null) {
-                            int versionCode = getVersionCode(packageManager, app.packageName);
+                            long versionCode = getVersionCode(packageManager, app.packageName);
                             if (app.versionCode != versionCode) {
                                 app.versionCode = versionCode;
                                 app.label = getLabel(info);

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 
 import java.util.Locale;
@@ -24,9 +25,13 @@ final class LauncherActivityInfoUtils {
                 .toUpperCase(Locale.getDefault());
     }
 
-    static int getVersionCode(PackageManager packageManager, String packageName) {
+    @SuppressWarnings("deprecation")
+    static long getVersionCode(PackageManager packageManager, String packageName) {
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.getLongVersionCode();
+            }
             return packageInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             return 0;
