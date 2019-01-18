@@ -18,4 +18,9 @@
         android:defaultValue="false"
         android:key="@string/pref_misc_show_scrollbar"
         android:title="@string/title_settings_home_misc_scrollbar" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_misc_scroll_to_top"
+        android:summary="@string/title_settings_home_misc_scroll_to_top_summary"
+        android:title="@string/title_settings_home_misc_scroll_to_top" />
 </PreferenceScreen>

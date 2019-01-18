@@ -216,7 +216,7 @@ public class HomeActivity extends AppActivity implements HomeView,
                 dismissPopup();
                 if (searchBarBehavior.isShown()) {
                     searchBarBehavior.hide();
-                } else {
+                } else if (preferences.scrollToTop()) {
                     list.smoothScrollToPosition(0);
                 }
                 break;

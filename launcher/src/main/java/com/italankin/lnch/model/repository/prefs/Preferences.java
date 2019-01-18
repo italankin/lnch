@@ -17,6 +17,8 @@ public interface Preferences {
 
     boolean searchShowGlobal();
 
+    boolean scrollToTop();
+
     HomeLayout homeLayout();
 
     void setOverlayColor(@ColorInt int color);

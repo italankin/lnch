@@ -58,6 +58,11 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public boolean scrollToTop() {
+        return prefs.getBoolean(context.getString(R.string.pref_misc_scroll_to_top), true);
+    }
+
+    @Override
     public HomeLayout homeLayout() {
         String pref = prefs.getString(context.getString(R.string.pref_home_layout), null);
         return HomeLayout.from(pref);
