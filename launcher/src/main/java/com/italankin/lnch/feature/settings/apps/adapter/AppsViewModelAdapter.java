@@ -7,12 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.squareup.picasso.Picasso;
 
-public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.ViewHolder, AppWithIconViewModel> {
+public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapter.ViewHolder, AppViewModel> {
     private final Picasso picasso;
     private final Listener listener;
 
@@ -40,13 +40,13 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     @Override
-    public void onBind(ViewHolder holder, int position, AppWithIconViewModel item) {
+    public void onBind(ViewHolder holder, int position, AppViewModel item) {
         holder.bind(item);
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof AppWithIconViewModel;
+        return item instanceof AppViewModel;
     }
 
     public interface Listener {
@@ -70,12 +70,12 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
             visibility = itemView.findViewById(R.id.visibility);
         }
 
-        void bind(AppWithIconViewModel item) {
+        void bind(AppViewModel item) {
             visibility.setImageResource(item.isHidden() ? R.drawable.ic_visibility_off :
                     R.drawable.ic_visibility_on);
             label.setText(item.getVisibleLabel());
             packageName.setText(item.packageName);
-            picasso.load(item.icon)
+            picasso.load(PackageIconHandler.uriFrom(item.packageName))
                     .fit()
                     .into(icon);
             float alpha = item.isHidden() ? ALPHA_ITEM_HIDDEN : ALPHA_ITEM_VISIBLE;

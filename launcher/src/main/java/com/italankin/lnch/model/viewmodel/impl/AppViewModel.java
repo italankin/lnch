@@ -7,7 +7,7 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
-public class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
+public final class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
         VisibleItem {
     public final String componentName;
     public final String packageName;

@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.settings.apps.model.AppWithIconViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
@@ -58,7 +57,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .take(1)
                 .concatMapIterable(Functions.identity())
                 .ofType(AppDescriptor.class)
-                .<AppViewModel>map(AppWithIconViewModel::new)
+                .map(AppViewModel::new)
                 .sorted((lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
                         .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()))
                 .toList()
