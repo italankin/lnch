@@ -74,17 +74,4 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     }
                 });
     }
-
-    void resetAppsSettings() {
-        getViewState().showLoading();
-        descriptorRepository.clear()
-                .subscribeOn(Schedulers.io())
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onComplete() {
-                        editor.clear();
-                        loadApps();
-                    }
-                });
-    }
 }
