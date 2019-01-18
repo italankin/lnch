@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.settings.backup;
 
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
@@ -17,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,13 +32,6 @@ public class BackupPresenter extends AppPresenter<BackupView> {
 
     private static final int BUFFER_SIZE = 16384;
     private static final String BACKUP_FILE_FORMAT = "lnch-backup-%s.json";
-    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        @SuppressLint("ConstantLocale")
-        @Override
-        public DateFormat get() {
-            return new SimpleDateFormat("yyyy_MM_dd-hh_mm_ss", Locale.getDefault());
-        }
-    };
 
     private final ContentResolver contentResolver;
     private final DescriptorStore descriptorStore;
@@ -87,9 +78,10 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                         emitter.onError(new ExternalStorageNotAvailable());
                         return;
                     }
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-hh_mm_ss", Locale.getDefault());
                     String backupFileName = String.format(Locale.getDefault(),
                             BACKUP_FILE_FORMAT,
-                            DATE_FORMAT.get().format(new Date()));
+                            dateFormat.format(new Date()));
                     File backupFile = new File(dirDownloads, backupFileName);
                     try (InputStream is = packagesStore.input(); OutputStream os = new FileOutputStream(backupFile)) {
                         int read;
