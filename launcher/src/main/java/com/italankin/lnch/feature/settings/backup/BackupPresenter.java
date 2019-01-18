@@ -118,6 +118,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
     void resetAppsSettings() {
         descriptorRepository.clear()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
                     protected void onComplete(BackupView viewState) {

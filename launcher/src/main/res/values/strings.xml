@@ -117,7 +117,7 @@
 
     <string name="settings_backups_message_restore_success">Settings restored successfully</string>
     <string name="settings_backups_message_backup_success">Settings backed up successfully to \"%1$s\"</string>
-    <string name="settings_backups_message_reset_success">Settings was reset</string>
+    <string name="settings_backups_message_reset_success">Settings were reset</string>
     <string name="settings_backups_dialog_backup_message">Settings will be saved in \"Download\" folder</string>
     <string name="settings_backups_dialog_backup_message_action">Backup</string>
     <string name="settings_backups_dialog_reset_title">Reset</string>
