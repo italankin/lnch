@@ -6,6 +6,10 @@ import android.os.Bundle;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
+import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
+import com.italankin.lnch.feature.common.preferences.ThemeObservable;
+import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.AppsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
@@ -21,10 +25,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class SettingsActivity extends AppCompatActivity implements
+        ThemedActivity, SupportsOrientation,
         SettingsRootFragment.Callbacks,
         ItemLookFragment.Callbacks,
         WallpaperFragment.Callbacks,
@@ -36,17 +41,14 @@ public class SettingsActivity extends AppCompatActivity implements
 
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
-    private Disposable screenOrientationDisposable;
-    private Preferences preferences;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        preferences = LauncherApp.daggerService.main().getPreferences();
-
-        setScreenOrientation();
         setTheme();
+        super.onCreate(savedInstanceState);
+        setScreenOrientation();
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
@@ -75,9 +77,7 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (screenOrientationDisposable != null && !screenOrientationDisposable.isDisposed()) {
-            screenOrientationDisposable.dispose();
-        }
+        compositeDisposable.dispose();
     }
 
     @Override
@@ -87,6 +87,26 @@ public class SettingsActivity extends AppCompatActivity implements
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void onThemeChanged(Preferences.ColorTheme colorTheme, boolean changed) {
+        switch (colorTheme) {
+            case DARK:
+                setTheme(R.style.AppTheme_Dark_Preferences);
+                break;
+            case LIGHT:
+                setTheme(R.style.AppTheme_Light_Preferences);
+                break;
+        }
+        if (changed) {
+            recreate();
+        }
+    }
+
+    @Override
+    public void onOrientationChange(Preferences.ScreenOrientation screenOrientation, boolean changed) {
+        setRequestedOrientation(screenOrientation.value());
     }
 
     @Override
@@ -166,24 +186,15 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     private void setScreenOrientation() {
-        setRequestedOrientation(preferences.screenOrientation().value());
-        String key = getString(R.string.pref_misc_screen_orientation);
-        screenOrientationDisposable = preferences.observe()
-                .filter(key::equals)
-                .map(s -> preferences.screenOrientation().value())
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setRequestedOrientation);
+        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+        Disposable disposable = new ScreenOrientationObservable(this, preferences).subscribe(this);
+        compositeDisposable.add(disposable);
     }
 
     private void setTheme() {
-        switch (preferences.colorTheme()) {
-            case DARK:
-                setTheme(R.style.AppTheme_Dark_Preferences);
-                break;
-            case LIGHT:
-                setTheme(R.style.AppTheme_Light_Preferences);
-                break;
-        }
+        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+        Disposable disposable = new ThemeObservable(this, preferences).subscribe(this);
+        compositeDisposable.add(disposable);
     }
+
 }

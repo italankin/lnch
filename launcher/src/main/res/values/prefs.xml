@@ -12,6 +12,7 @@
     <string name="pref_misc_app_long_click_action">app_long_click_action</string>
     <string name="pref_misc_screen_orientation">screen_orientation</string>
     <string name="pref_misc_scroll_to_top">scroll_to_top</string>
+    <string name="pref_misc_color_theme">color_theme</string>
     <string name="pref_item_text_size">item_text_size</string>
     <string name="pref_item_padding">item_padding</string>
     <string name="pref_item_shadow_radius">item_shadow_radius</string>

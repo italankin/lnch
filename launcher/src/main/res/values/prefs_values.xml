@@ -9,6 +9,15 @@
         <item>List</item>
     </string-array>
 
+    <string-array name="color_themes">
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+    <string-array name="color_themes_desc">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+
     <string-array name="app_long_click_actions">
         <item>popup</item>
         <item>info</item>

@@ -44,7 +44,8 @@ public class UserPreferences implements Preferences {
 
     @Override
     public ColorTheme colorTheme() {
-        return ColorTheme.LIGHT;
+        String pref = prefs.getString(context.getString(R.string.pref_misc_color_theme), null);
+        return ColorTheme.from(pref);
     }
 
     @Override

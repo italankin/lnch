@@ -33,6 +33,10 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
+import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
+import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
+import com.italankin.lnch.feature.common.preferences.ThemeObservable;
+import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
@@ -89,10 +93,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class HomeActivity extends AppActivity implements HomeView,
+public class HomeActivity extends AppActivity implements HomeView, SupportsOrientation, ThemedActivity,
         SwapItemHelper.Callback,
         AppViewModelAdapter.Listener,
         GroupViewModelAdapter.Listener,
@@ -120,7 +124,7 @@ public class HomeActivity extends AppActivity implements HomeView,
 
     private boolean editMode = false;
     private boolean animateOnResume = false;
-    private Disposable screenOrientationDisposable;
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private TopBarBehavior searchBarBehavior;
     private ItemTouchHelper touchHelper;
@@ -233,11 +237,29 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     @Override
+    public void onOrientationChange(Preferences.ScreenOrientation screenOrientation, boolean changed) {
+        setRequestedOrientation(screenOrientation.value());
+    }
+
+    @Override
+    public void onThemeChanged(Preferences.ColorTheme colorTheme, boolean changed) {
+        switch (colorTheme) {
+            case DARK:
+                setTheme(R.style.AppTheme_Dark_Launcher);
+                break;
+            case LIGHT:
+                setTheme(R.style.AppTheme_Light_Launcher);
+                break;
+        }
+        if (changed) {
+            recreate();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (screenOrientationDisposable != null && !screenOrientationDisposable.isDisposed()) {
-            screenOrientationDisposable.dispose();
-        }
+        compositeDisposable.dispose();
     }
 
     @Override
@@ -755,25 +777,13 @@ public class HomeActivity extends AppActivity implements HomeView,
     }
 
     private void setScreenOrientation() {
-        setRequestedOrientation(preferences.screenOrientation().value());
-        String key = getString(R.string.pref_misc_screen_orientation);
-        screenOrientationDisposable = preferences.observe()
-                .filter(key::equals)
-                .map(s -> preferences.screenOrientation().value())
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setRequestedOrientation);
+        Disposable disposable = new ScreenOrientationObservable(this, preferences).subscribe(this);
+        compositeDisposable.add(disposable);
     }
 
     private void setTheme() {
-        switch (preferences.colorTheme()) {
-            case DARK:
-                setTheme(R.style.AppTheme_Dark_Launcher);
-                break;
-            case LIGHT:
-                setTheme(R.style.AppTheme_Light_Launcher);
-                break;
-        }
+        Disposable disposable = new ThemeObservable(this, preferences).subscribe(this);
+        compositeDisposable.add(disposable);
     }
 
     private void setLayout(Preferences.HomeLayout layout) {

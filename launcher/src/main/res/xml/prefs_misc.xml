@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
+        android:defaultValue="dark"
+        android:entries="@array/color_themes_desc"
+        android:entryValues="@array/color_themes"
+        android:key="@string/pref_misc_color_theme"
+        android:summary="%s"
+        android:title="@string/title_settings_home_misc_color_theme" />
+    <ListPreference
         android:defaultValue="sensor"
         android:entries="@array/screen_orienation_desc"
         android:entryValues="@array/screen_orienation"
