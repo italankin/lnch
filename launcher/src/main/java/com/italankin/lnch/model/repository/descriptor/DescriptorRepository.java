@@ -21,8 +21,6 @@ public interface DescriptorRepository {
 
     <T extends Descriptor> List<T> itemsOfType(Class<T> klass);
 
-    Descriptor findDescriptor(String id);
-
     interface Editor {
 
         Editor enqueue(Action action);

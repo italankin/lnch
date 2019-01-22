@@ -97,17 +97,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     }
 
     @Override
-    public Descriptor findDescriptor(String id) {
-        List<Descriptor> items = items();
-        for (Descriptor item : items) {
-            if (item.getId().equals(id)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    @Override
     public DescriptorRepository.Editor edit() {
         return new Editor(updatesSubject.getValue());
     }
