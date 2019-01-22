@@ -347,28 +347,28 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     @Override
     public void onItemsSwap(int from, int to) {
-        list.getAdapter().notifyItemMoved(from, to);
+        adapter.notifyItemMoved(from, to);
     }
 
     @Override
     public void onItemChanged(int position) {
-        list.getAdapter().notifyItemChanged(position);
+        adapter.notifyItemChanged(position);
     }
 
     @Override
     public void onItemInserted(int position) {
-        list.getAdapter().notifyItemInserted(position);
+        adapter.notifyItemInserted(position);
     }
 
     @Override
     public void onItemsInserted(int startIndex, int count) {
-        list.getAdapter().notifyItemRangeInserted(startIndex, count);
+        adapter.notifyItemRangeInserted(startIndex, count);
         list.smoothScrollToPosition(startIndex + Math.min(1, count));
     }
 
     @Override
     public void onItemsRemoved(int startIndex, int count) {
-        list.getAdapter().notifyItemRangeRemoved(startIndex, count);
+        adapter.notifyItemRangeRemoved(startIndex, count);
     }
 
     @Override
@@ -437,8 +437,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 );
             }
         }
-        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        showPopupWindow(popup, itemView);
+        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
+        if (viewHolder != null) {
+            showPopupWindow(popup, viewHolder.itemView);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -759,7 +761,14 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     ///////////////////////////////////////////////////////////////////////////
 
     private void startDrag(int position) {
-        View view = list.getLayoutManager().findViewByPosition(position);
+        RecyclerView.LayoutManager layoutManager = list.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+        View view = layoutManager.findViewByPosition(position);
+        if (view == null) {
+            return;
+        }
         touchHelper.startDrag(list.getChildViewHolder(view));
     }
 
@@ -946,8 +955,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     .setOnClickListener(v -> presenter.removeItem(position, item))
             );
         }
-        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        showPopupWindow(popup, itemView);
+        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
+        if (viewHolder != null) {
+            showPopupWindow(popup, viewHolder.itemView);
+        }
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
@@ -1024,8 +1035,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     })
             );
         }
-        View itemView = list.findViewHolderForAdapterPosition(position).itemView;
-        showPopupWindow(popup, itemView);
+        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
+        if (viewHolder != null) {
+            showPopupWindow(popup, viewHolder.itemView);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
