@@ -1,41 +1,22 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 
-import androidx.annotation.Keep;
-
 public final class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
         HiddenDescriptor {
 
-    @SerializedName("package_name")
     public String packageName;
-
-    @SerializedName("version_code")
     public long versionCode;
-
-    @SerializedName("component_name")
     public String componentName;
-
-    @SerializedName("label")
     public String label;
-
-    @SerializedName("custom_label")
     public String customLabel;
-
-    @SerializedName("color")
     public int color;
-
-    @SerializedName("custom_color")
     public Integer customColor;
-
-    @SerializedName("hidden")
     public boolean hidden;
 
-    @Keep
     public AppDescriptor() {
     }
 

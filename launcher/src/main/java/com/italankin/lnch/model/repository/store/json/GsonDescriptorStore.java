@@ -20,7 +20,7 @@ public class GsonDescriptorStore implements DescriptorStore {
 
     public GsonDescriptorStore(GsonBuilder gsonBuilder) {
         gson = gsonBuilder
-                .registerTypeAdapter(Descriptor.class, new DescriptorConverter())
+                .registerTypeAdapter(Descriptor.class, new DescriptorJsonConverter())
                 .create();
     }
 

@@ -1,32 +1,19 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
-import androidx.annotation.Keep;
-
 public final class GroupDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
-    @SerializedName("id")
     public String id;
-
-    @SerializedName("label")
     public String label;
-
-    @SerializedName("custom_label")
     public String customLabel;
-
-    @SerializedName("color")
     public int color;
-
-    @SerializedName("custom_color")
     public Integer customColor;
 
-    @Keep
     public GroupDescriptor() {
     }
 

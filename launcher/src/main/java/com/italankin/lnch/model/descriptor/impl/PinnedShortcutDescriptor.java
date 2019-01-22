@@ -1,6 +1,5 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -8,29 +7,16 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import java.util.UUID;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Keep;
 
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
-    @SerializedName("id")
     public String id;
-
-    @SerializedName("uri")
     public String uri;
-
-    @SerializedName("label")
     public String label;
-
-    @SerializedName("color")
     public int color;
-
-    @SerializedName("custom_label")
     public String customLabel;
-
-    @SerializedName("custom_color")
     public Integer customColor;
 
-    @Keep
     public PinnedShortcutDescriptor() {
     }
 

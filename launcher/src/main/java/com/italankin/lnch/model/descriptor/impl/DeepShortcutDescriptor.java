@@ -1,36 +1,19 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
-import androidx.annotation.Keep;
-
 public final class DeepShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
-    @SerializedName("id")
     public String id;
-
-    @SerializedName("packageName")
     public String packageName;
-
-    @SerializedName("label")
     public String label;
-
-    @SerializedName("color")
     public int color;
-
-    @SerializedName("custom_label")
     public String customLabel;
-
-    @SerializedName("custom_color")
     public Integer customColor;
-
-    @SerializedName("enabled")
     public boolean enabled = true;
 
-    @Keep
     public DeepShortcutDescriptor() {
     }
 
