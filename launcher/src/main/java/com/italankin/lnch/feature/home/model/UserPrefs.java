@@ -6,12 +6,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 public final class UserPrefs {
-    public Preferences.HomeLayout homeLayout;
+    public final Preferences.HomeLayout homeLayout;
     @ColorInt
-    public int overlayColor;
-    public boolean showScrollbar;
-    public boolean globalSearch;
-    public ItemPrefs itemPrefs;
+    public final int overlayColor;
+    public final boolean showScrollbar;
+    public final boolean globalSearch;
+    public final ItemPrefs itemPrefs;
 
     public UserPrefs(Preferences preferences) {
         homeLayout = preferences.homeLayout();
@@ -67,13 +67,13 @@ public final class UserPrefs {
     }
 
     public static final class ItemPrefs {
-        public float itemTextSize;
-        public int itemPadding;
-        public float itemShadowRadius;
+        public final float itemTextSize;
+        public final int itemPadding;
+        public final float itemShadowRadius;
         @ColorInt
         @Nullable
-        public Integer itemShadowColor;
-        public Preferences.Font itemFont;
+        public final Integer itemShadowColor;
+        public final Preferences.Font itemFont;
 
         private ItemPrefs(Preferences preferences) {
             itemTextSize = preferences.itemTextSize();

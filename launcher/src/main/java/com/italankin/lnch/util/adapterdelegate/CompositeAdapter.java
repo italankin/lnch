@@ -74,18 +74,19 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
         return inflater;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return delegates.get(viewType).onCreate(inflater, parent);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         getDelegate(position).onBind(holder, position, getItem(position));
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
         getDelegate(position).onBind(holder, position, getItem(position), payloads);
     }
 
@@ -111,7 +112,7 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         delegates.get(holder.getItemViewType()).onRecycled(holder);
     }
 

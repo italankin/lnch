@@ -297,9 +297,9 @@ public class ActionPopupWindow extends PopupWindow {
             if (pointDown) {
                 path.moveTo(0, 0);
                 path.lineTo(size, 0);
-                path.lineTo(size / 2, height);
+                path.lineTo(size / 2f, height);
             } else {
-                path.moveTo(size / 2, size - height);
+                path.moveTo(size / 2f, size - height);
                 path.lineTo(size, size);
                 path.lineTo(0, size);
             }

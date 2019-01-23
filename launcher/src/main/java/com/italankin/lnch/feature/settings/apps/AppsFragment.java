@@ -84,7 +84,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(DATA_FILTER_FLAGS, filter.getFlags());
     }
@@ -148,7 +148,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onItemChanged(int position) {
-        list.getAdapter().notifyItemChanged(position);
+        adapter.notifyItemChanged(position);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
-    public void initAdapter() {
+    private void initAdapter() {
         Context context = requireContext();
         Picasso picasso = daggerService().main().getPicassoFactory().create(context);
         adapter = new CompositeAdapter.Builder<AppViewModel>(context)

@@ -31,7 +31,7 @@ class LauncherAppsUpdates extends Observable<Object> {
 
     private final class Callback extends LauncherApps.Callback implements Disposable {
         private final Observer<? super Object> observer;
-        private AtomicBoolean disposed = new AtomicBoolean();
+        private final AtomicBoolean disposed = new AtomicBoolean();
 
         public Callback(Observer<? super Object> observer) {
             this.observer = observer;

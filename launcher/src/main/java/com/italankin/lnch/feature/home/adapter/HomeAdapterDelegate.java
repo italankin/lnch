@@ -52,7 +52,7 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
             int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
             label.setPadding(padding, padding, padding, padding);
             label.setTextSize(itemPrefs.itemTextSize);
-            Integer shadowColor = itemPrefs.itemShadowColor != null
+            int shadowColor = itemPrefs.itemShadowColor != null
                     ? itemPrefs.itemShadowColor
                     : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
             label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),

@@ -28,7 +28,7 @@ public class LceLayout extends FrameLayout {
 
     private static final int DELAY_HIDE_LOADING = 500;
 
-    private HashMap<Layer, View> addedViews = new HashMap<>(1);
+    private final HashMap<Layer, View> addedViews = new HashMap<>(1);
     private Layer visibleLayer = Layer.CONTENT;
     private Runnable delayedRunnable;
 
@@ -300,7 +300,7 @@ public class LceLayout extends FrameLayout {
     }
 
     public class LceLayoutParams extends FrameLayout.LayoutParams {
-        public Layer layer;
+        public final Layer layer;
 
         public LceLayoutParams() {
             this(Layer.CONTENT);

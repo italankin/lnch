@@ -51,6 +51,7 @@
                 android:layout_height="@dimen/searchbar_size"
                 android:layout_gravity="start"
                 android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_search"
                 android:padding="16dp"
                 android:visibility="gone"
                 tools:src="@drawable/ic_action_search"
@@ -62,9 +63,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_settings"
                 android:padding="16dp"
-                android:src="@drawable/ic_settings"
-                tools:ignore="ContentDescription" />
+                android:src="@drawable/ic_settings" />
 
         </FrameLayout>
 

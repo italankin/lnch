@@ -14,7 +14,7 @@
         android:layout_height="24dp"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@string/cd_application_icon"
         tools:src="@tools:sample/avatars" />
 
     <TextView
@@ -52,8 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_application_visibility"
         android:padding="16dp"
-        tools:ignore="ContentDescription"
         tools:src="@drawable/ic_visibility_on" />
 
 </RelativeLayout>

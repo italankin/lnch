@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/color_picker"
         android:layout_alignParentTop="true"
+        android:contentDescription="@string/cd_wallpaper"
         android:scaleType="centerCrop"
         tools:src="@tools:sample/backgrounds/scenic" />
 

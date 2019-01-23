@@ -45,6 +45,7 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
         return color != null ? color : ResUtils.resolveColor(context, R.attr.colorText);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return label.toString();

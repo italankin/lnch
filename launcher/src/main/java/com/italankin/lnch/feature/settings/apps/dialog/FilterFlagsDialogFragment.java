@@ -49,7 +49,7 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle arguments = getArguments();
         if (arguments != null) {

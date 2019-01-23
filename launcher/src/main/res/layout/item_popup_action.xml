@@ -5,4 +5,5 @@
     android:layout_height="@dimen/popup_action_icon_size"
     android:background="?selectableItemBackgroundBorderless"
     android:padding="8dp"
+    tools:ignore="ContentDescription,Overdraw"
     tools:src="@drawable/ic_action_delete" />

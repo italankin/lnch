@@ -6,7 +6,7 @@
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    tools:ignore="UseCompoundDrawables">
+    tools:ignore="Overdraw">
 
     <ImageView
         android:id="@+id/image"
@@ -15,6 +15,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:scaleType="centerInside"
+        tools:ignore="ContentDescription"
         tools:src="@drawable/ic_search" />
 
     <TextView
@@ -38,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:background="@drawable/selector_circle"
+        android:contentDescription="@string/cd_pin"
         android:padding="8dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_action_pin"
@@ -50,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:background="@drawable/selector_circle"
+        android:contentDescription="@string/cd_app_info"
         android:padding="8dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_app_info"

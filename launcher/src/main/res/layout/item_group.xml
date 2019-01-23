@@ -15,5 +15,6 @@
     android:singleLine="true"
     android:textSize="22sp"
     android:textStyle="bold"
+    tools:ignore="Overdraw"
     tools:text="@tools:sample/first_names"
     tools:textColor="#fff" />

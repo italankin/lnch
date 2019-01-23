@@ -2,6 +2,7 @@ package com.arellomobile.mvp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -13,7 +14,7 @@ import androidx.fragment.app.Fragment;
  * @author Konstantin Tckhovrebov
  */
 @SuppressWarnings({"ConstantConditions", "unused"})
-public class MvpAppCompatFragment extends Fragment {
+public abstract class MvpAppCompatFragment extends Fragment {
 
     private boolean mIsStateSaved;
     private MvpDelegate<? extends MvpAppCompatFragment> mMvpDelegate;
@@ -41,7 +42,7 @@ public class MvpAppCompatFragment extends Fragment {
         getMvpDelegate().onAttach();
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         mIsStateSaved = true;

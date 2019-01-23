@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * @author Konstantin Tckhovrebov
  */
 @SuppressWarnings("unused")
-public class MvpAppCompatActivity extends AppCompatActivity {
+public abstract class MvpAppCompatActivity extends AppCompatActivity {
     private MvpDelegate<? extends MvpAppCompatActivity> mMvpDelegate;
 
     @Override

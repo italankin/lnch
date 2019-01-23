@@ -6,7 +6,7 @@ import java.util.Map;
 public class WebSearchProviderFactory {
 
     private static final WebSearchProvider DEFAULT = new StaticProvider("https://www.google.com/search?q=");
-    private static Map<String, WebSearchProvider> PROVIDERS = new HashMap<>(8);
+    private static final Map<String, WebSearchProvider> PROVIDERS = new HashMap<>(8);
 
     static {
         PROVIDERS.put("google", DEFAULT);

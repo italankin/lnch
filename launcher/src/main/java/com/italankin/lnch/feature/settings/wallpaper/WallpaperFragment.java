@@ -18,11 +18,6 @@ public class WallpaperFragment extends BasePreferenceFragment {
     private Callbacks callbacks;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         callbacks = (Callbacks) context;

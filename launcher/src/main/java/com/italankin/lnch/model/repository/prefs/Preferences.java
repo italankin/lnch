@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import java.util.EnumSet;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 
@@ -121,6 +122,7 @@ public interface Preferences {
             this.name = name;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return name;
@@ -154,6 +156,7 @@ public interface Preferences {
             return typeface;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return name;
@@ -203,6 +206,7 @@ public interface Preferences {
             this.action = action;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return action;
@@ -235,6 +239,7 @@ public interface Preferences {
             return value;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return key;
