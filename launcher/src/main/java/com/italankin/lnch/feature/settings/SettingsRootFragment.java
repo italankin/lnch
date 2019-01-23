@@ -9,12 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
 public class SettingsRootFragment extends BasePreferenceFragment {
 
@@ -88,6 +90,8 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
+        Preference version = findPreference(R.string.key_version);
+        version.setTitle(getString(R.string.title_settings_version, BuildConfig.VERSION_NAME));
     }
 
     @Override

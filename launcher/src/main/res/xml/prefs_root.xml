@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory android:title="@string/title_settings_home">
         <Preference
             android:icon="@drawable/ic_settings_wallpaper"
@@ -43,5 +44,8 @@
             android:icon="@drawable/ic_settings_backup_restore"
             android:key="@string/key_backups"
             android:title="@string/title_settings_backups" />
+        <Preference
+            android:key="@string/key_version"
+            tools:title="@string/title_settings_version" />
     </PreferenceCategory>
 </PreferenceScreen>

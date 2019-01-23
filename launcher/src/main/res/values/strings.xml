@@ -87,6 +87,7 @@
     <string name="title_settings_backups_reset">Reset</string>
     <string name="title_settings_backups_reset_apps">Reset</string>
     <string name="title_settings_backups_reset_summary">Reset apps settings to their defaults</string>
+    <string name="title_settings_version">Version %1$s</string>
 
     <string name="settings_system">System settings</string>
     <string name="settings_overlay_preview">Preview</string>

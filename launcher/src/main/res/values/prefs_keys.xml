@@ -12,4 +12,5 @@
     <string name="key_backup">backup</string>
     <string name="key_restore">restore</string>
     <string name="key_reset">reset</string>
+    <string name="key_version">version</string>
 </resources>
