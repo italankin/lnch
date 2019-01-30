@@ -90,6 +90,9 @@ class LauncherAppsUpdates extends Observable<Object> {
         }
 
         private void sendNotification(UserHandle user) {
+            if (isDisposed()) {
+                return;
+            }
             if (Process.myUserHandle().equals(user)) {
                 observer.onNext(NOTIFICATION);
             }
