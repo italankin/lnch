@@ -33,7 +33,7 @@ class LauncherAppsUpdates extends Observable<Object> {
         private final Observer<? super Object> observer;
         private final AtomicBoolean disposed = new AtomicBoolean();
 
-        public Callback(Observer<? super Object> observer) {
+        private Callback(Observer<? super Object> observer) {
             this.observer = observer;
         }
 
@@ -59,6 +59,16 @@ class LauncherAppsUpdates extends Observable<Object> {
 
         @Override
         public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            sendNotification(user);
+        }
+
+        @Override
+        public void onPackagesSuspended(String[] packageNames, UserHandle user) {
+            sendNotification(user);
+        }
+
+        @Override
+        public void onPackagesUnsuspended(String[] packageNames, UserHandle user) {
             sendNotification(user);
         }
 
