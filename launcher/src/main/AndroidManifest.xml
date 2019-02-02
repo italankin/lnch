@@ -21,6 +21,7 @@
         android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
+        android:theme="@style/AppTheme.Dark"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
