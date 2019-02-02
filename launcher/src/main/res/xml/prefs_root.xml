@@ -45,6 +45,7 @@
             android:key="@string/key_backups"
             android:title="@string/title_settings_backups" />
         <Preference
+            android:icon="@drawable/ic_app_info"
             android:key="@string/key_version"
             tools:title="@string/title_settings_version" />
     </PreferenceCategory>
