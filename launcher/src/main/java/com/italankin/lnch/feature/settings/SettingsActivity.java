@@ -14,7 +14,8 @@ import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.AppsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
-import com.italankin.lnch.feature.settings.itemlook.ItemLookFragment;
+import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
+import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -31,9 +32,10 @@ import io.reactivex.disposables.Disposable;
 public class SettingsActivity extends AppCompatActivity implements
         ThemedActivity, SupportsOrientation,
         SettingsRootFragment.Callbacks,
-        ItemLookFragment.Callbacks,
+        ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
-        WallpaperOverlayFragment.Callbacks {
+        WallpaperOverlayFragment.Callbacks,
+        LookAndFeelFragment.Callbacks {
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -127,7 +129,12 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showItemLookPreferences() {
-        showFragment(new ItemLookFragment(), R.string.title_settings_home_item_look);
+        showFragment(new ItemAppearanceFragment(), R.string.title_settings_item_appearance);
+    }
+
+    @Override
+    public void showLookAndFeelPreferences() {
+        showFragment(new LookAndFeelFragment(), R.string.title_settings_home_look_and_feel);
     }
 
     @Override
@@ -146,7 +153,7 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onItemLookFinish() {
+    public void onItemAppearanceFinish() {
         fragmentManager.popBackStack();
     }
 

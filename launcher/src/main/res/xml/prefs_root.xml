@@ -16,8 +16,8 @@
               android:title="@string/title_settings_home_layout" /> -->
         <Preference
             android:icon="@drawable/ic_settings_item_look"
-            android:key="@string/key_home_item_look"
-            android:title="@string/title_settings_home_item_look" />
+            android:key="@string/key_look_and_feel"
+            android:title="@string/title_settings_home_look_and_feel" />
         <Preference
             android:icon="@drawable/ic_settings_home_misc"
             android:key="@string/key_home_misc"

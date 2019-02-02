@@ -7,10 +7,11 @@
     <string name="key_apps_list">apps_list</string>
     <string name="key_home_customize">customize</string>
     <string name="key_home_misc">miscellaneous</string>
-    <string name="key_home_item_look">item_look</string>
+    <string name="key_item_appearance">item_appearance</string>
     <string name="key_backups">backups</string>
     <string name="key_backup">backup</string>
     <string name="key_restore">restore</string>
     <string name="key_reset">reset</string>
     <string name="key_version">version</string>
+    <string name="key_look_and_feel">look_and_feel</string>
 </resources>

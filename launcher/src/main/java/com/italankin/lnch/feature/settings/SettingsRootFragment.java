@@ -72,9 +72,9 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
-        findPreference(R.string.key_home_item_look).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.key_look_and_feel).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
-                callbacks.showItemLookPreferences();
+                callbacks.showLookAndFeelPreferences();
             }
             return true;
         });
@@ -120,7 +120,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
 
         void showAppsPreferences();
 
-        void showItemLookPreferences();
+        void showLookAndFeelPreferences();
 
         void showMiscPreferences();
 

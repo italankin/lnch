@@ -53,10 +53,12 @@
     <string name="title_settings_home_misc_scrollbar">Show scroll indicator</string>
     <string name="title_settings_home_misc_scroll_to_top">Scroll to top</string>
     <string name="title_settings_home_misc_scroll_to_top_summary">Scroll apps list to top when then launcher becomes visible</string>
-    <string name="title_settings_home_misc_color_theme">Color theme</string>
     <string name="title_settings_home_misc_app_long_click_action">App long click action</string>
     <string name="title_settings_home_misc_screen_orientation">Screen orienation</string>
-    <string name="title_settings_home_item_look">Item look</string>
+    <string name="title_settings_home_look_and_feel">Look and feel</string>
+    <string name="title_settings_color_theme">Color theme</string>
+    <string name="title_settings_item_appearance">Item appearance</string>
+    <string name="title_settings_item_appearance_summary">Customize text size, font, shadow</string>
     <string name="title_settings_apps">Apps</string>
     <string name="title_settings_apps_list">Apps</string>
     <string name="title_settings_wallpaper">Wallpaper</string>
@@ -100,20 +102,20 @@
     <string name="settings_apps_filter_visible">Visible</string>
     <string name="settings_apps_filter_hidden">Hidden</string>
 
-    <string name="settings_item_look_reset">Reset</string>
-    <string name="settings_item_look_text_size">Text size</string>
-    <string name="settings_item_look_text_font">Font</string>
-    <string name="settings_item_look_shadow_radius">Shadow radius</string>
-    <string name="settings_item_look_shadow_color">Shadow color</string>
-    <string name="settings_item_look_padding">Padding</string>
-    <string-array name="settings_item_look_text_font_titles">
+    <string name="settings_item_appearance_reset">Reset</string>
+    <string name="settings_item_appearance_text_size">Text size</string>
+    <string name="settings_item_appearance_text_font">Font</string>
+    <string name="settings_item_appearance_shadow_radius">Shadow radius</string>
+    <string name="settings_item_appearance_shadow_color">Shadow color</string>
+    <string name="settings_item_appearance_padding">Padding</string>
+    <string-array name="settings_item_appearance_text_font_titles">
         <item>Default</item>
         <item>Sans Serif</item>
         <item>Serif</item>
         <item>Monospace</item>
     </string-array>
-    <string name="settings_item_look_discard_message">Discard changes?</string>
-    <string name="settings_item_look_discard_button">Discard</string>
+    <string name="settings_item_appearance_discard_message">Discard changes?</string>
+    <string name="settings_item_appearance_discard_button">Discard</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
     <string name="error_write_storage_permission">Permission is required to save backup</string>

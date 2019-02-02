@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.itemlook;
+package com.italankin.lnch.feature.settings.lookfeel;
 
 import android.Manifest;
 import android.app.WallpaperManager;
@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-public class ItemLookFragment extends AppFragment implements BackButtonHandler {
+public class ItemAppearanceFragment extends AppFragment implements BackButtonHandler {
 
     private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
     private static final String TAG_SHADOW_COLOR_PICKER = "shadow_color_picker";
@@ -81,7 +81,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_item_look, container, false);
+        return inflater.inflate(R.layout.fragment_settings_item_appearance, container, false);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_item_look, menu);
+        inflater.inflate(R.menu.settings_item_appearance, menu);
     }
 
     @Override
@@ -117,13 +117,13 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
             case R.id.action_save:
                 save();
                 if (callbacks != null) {
-                    callbacks.onItemLookFinish();
+                    callbacks.onItemAppearanceFinish();
                 }
                 return true;
             case R.id.action_reset:
                 preferences.resetItemSettings();
                 if (callbacks != null) {
-                    callbacks.onItemLookFinish();
+                    callbacks.onItemAppearanceFinish();
                 }
                 return true;
         }
@@ -145,8 +145,8 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     public boolean onBackPressed() {
         if (isChanged()) {
             new SimpleDialogFragment.Builder()
-                    .setMessage(R.string.settings_item_look_discard_message)
-                    .setPositiveButton(R.string.settings_item_look_discard_button)
+                    .setMessage(R.string.settings_item_appearance_discard_message)
+                    .setPositiveButton(R.string.settings_item_appearance_discard_button)
                     .setNegativeButton(R.string.cancel)
                     .setListenerProvider(new DiscardChangesListenerProvider())
                     .build()
@@ -160,9 +160,9 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
             return () -> {
-                Callbacks callbacks = ((ItemLookFragment) parentFragment).callbacks;
+                Callbacks callbacks = ((ItemAppearanceFragment) parentFragment).callbacks;
                 if (callbacks != null) {
-                    callbacks.onItemLookFinish();
+                    callbacks.onItemAppearanceFinish();
                 }
             };
         }
@@ -238,7 +238,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     private static class PreviewColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            ItemLookFragment fragment = (ItemLookFragment) parentFragment;
+            ItemAppearanceFragment fragment = (ItemAppearanceFragment) parentFragment;
             return fragment.preview::setTextColor;
         }
     }
@@ -253,7 +253,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     }
 
     private void initFont(View view) {
-        String[] fontTitles = getResources().getStringArray(R.array.settings_item_look_text_font_titles);
+        String[] fontTitles = getResources().getStringArray(R.array.settings_item_appearance_text_font_titles);
 
         itemFont = view.findViewById(R.id.item_font);
         Preferences.Font font = preferences.itemFont();
@@ -278,7 +278,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
         itemFont.setValue(font);
         itemFont.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle(R.string.settings_item_look_text_font);
+            builder.setTitle(R.string.settings_item_appearance_text_font);
             builder.setItems(fontTitles, (dialog, which) -> {
                 Preferences.Font newFont = Preferences.Font.values()[which];
                 itemFont.setValue(newFont);
@@ -327,7 +327,7 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     private static class ShadowColorListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            ItemLookFragment fragment = (ItemLookFragment) parentFragment;
+            ItemAppearanceFragment fragment = (ItemAppearanceFragment) parentFragment;
             return new ColorPickerDialogFragment.Listener() {
                 @Override
                 public void onColorPicked(int newColor) {
@@ -401,6 +401,6 @@ public class ItemLookFragment extends AppFragment implements BackButtonHandler {
     }
 
     public interface Callbacks {
-        void onItemLookFinish();
+        void onItemAppearanceFinish();
     }
 }
