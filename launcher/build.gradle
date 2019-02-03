@@ -23,12 +23,15 @@ android {
             keyPassword "android"
         }
         release {
-            Properties props = new Properties()
-            props.load(new FileInputStream(file('release.properties')))
-            storeFile file(props['keystore'])
-            storePassword props['keystore_password']
-            keyAlias props['alias']
-            keyPassword props['alias_password']
+            def release = file('release.properties')
+            if (release.exists()) {
+                Properties props = new Properties()
+                props.load(new FileInputStream(release))
+                storeFile file(props['keystore'])
+                storePassword props['keystore_password']
+                keyAlias props['alias']
+                keyPassword props['alias_password']
+            }
         }
     }
     buildTypes {
