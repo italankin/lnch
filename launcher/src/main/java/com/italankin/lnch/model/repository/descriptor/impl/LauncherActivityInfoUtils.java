@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor;
+package com.italankin.lnch.model.repository.descriptor.impl;
 
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageInfo;
