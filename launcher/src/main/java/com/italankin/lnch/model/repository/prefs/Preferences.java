@@ -62,6 +62,10 @@ public interface Preferences {
 
     ScreenOrientation screenOrientation();
 
+    boolean firstLaunch();
+
+    void setFirstLaunch(boolean value);
+
     Observable<String> observe();
 
     interface Constraints {

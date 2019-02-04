@@ -19,4 +19,5 @@
     <string name="pref_item_shadow_color">item_shadow_color</string>
     <string name="pref_item_font">item_font</string>
     <string name="pref_search_targets">search_targets</string>
+    <string name="pref_first_launch">first_launch</string>
 </resources>

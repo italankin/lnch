@@ -191,6 +191,16 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public boolean firstLaunch() {
+        return prefs.getBoolean(context.getString(R.string.pref_first_launch), true);
+    }
+
+    @Override
+    public void setFirstLaunch(boolean value) {
+        prefs.edit().putBoolean(context.getString(R.string.pref_first_launch), value).apply();
+    }
+
+    @Override
     public Observable<String> observe() {
         return updates;
     }
