@@ -91,7 +91,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -800,9 +799,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             this.layout = layout;
             RecyclerView.LayoutManager layoutManager;
             switch (layout) {
-                case LINEAR:
-                    layoutManager = new LinearLayoutManager(this);
-                    break;
                 case COMPACT:
                 default:
                     FlexboxLayoutManager lm = new FlexboxLayoutManager(this);

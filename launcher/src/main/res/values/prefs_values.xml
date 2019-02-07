@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="home_layouts">
-        <item>compact</item>
-        <item>linear</item>
-    </string-array>
-    <string-array name="home_layout_desc">
-        <item>Compact</item>
-        <item>List</item>
-    </string-array>
-
     <string-array name="color_themes">
         <item>dark</item>
         <item>light</item>
@@ -55,12 +46,12 @@
         <item>Baidu</item>
     </string-array>
 
-    <string-array name="screen_orienation">
+    <string-array name="screen_orientation">
         <item>sensor</item>
         <item>portrait</item>
         <item>landscape</item>
     </string-array>
-    <string-array name="screen_orienation_desc">
+    <string-array name="screen_orientation_desc">
         <item>Sensor</item>
         <item>Portrait</item>
         <item>Landscape</item>

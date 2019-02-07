@@ -108,8 +108,7 @@ public interface Preferences {
     }
 
     enum HomeLayout {
-        COMPACT("compact"),
-        LINEAR("linear");
+        COMPACT("compact");
 
         static HomeLayout from(String s) {
             for (HomeLayout value : values()) {
