@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.settings.apps;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsFragment extends AppFragment implements AppsView,
@@ -74,6 +76,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
         initAdapter();
+        addListDivider();
         if (savedInstanceState != null) {
             EnumSet<FilterFlag> flags = (EnumSet<FilterFlag>)
                     savedInstanceState.getSerializable(DATA_FILTER_FLAGS);
@@ -187,6 +190,14 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .add(new AppsViewModelAdapter(picasso, this))
                 .recyclerView(list)
                 .create();
+    }
+
+    private void addListDivider() {
+        Drawable drawable = requireContext().getDrawable(R.drawable.settings_apps_divider);
+        assert drawable != null;
+        DividerItemDecoration decoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        decoration.setDrawable(drawable);
+        list.addItemDecoration(decoration);
     }
 
     private void showFilterDialog() {
