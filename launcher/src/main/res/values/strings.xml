@@ -54,7 +54,7 @@
     <string name="title_settings_home_misc_scroll_to_top">Scroll to top</string>
     <string name="title_settings_home_misc_scroll_to_top_summary">Scroll apps list to top when then launcher becomes visible</string>
     <string name="title_settings_home_misc_app_long_click_action">App long click action</string>
-    <string name="title_settings_home_misc_screen_orientation">Screen orienation</string>
+    <string name="title_settings_home_misc_screen_orientation">Screen orientation</string>
     <string name="title_settings_home_look_and_feel">Look and feel</string>
     <string name="title_settings_color_theme">Color theme</string>
     <string name="title_settings_item_appearance">Item appearance</string>
