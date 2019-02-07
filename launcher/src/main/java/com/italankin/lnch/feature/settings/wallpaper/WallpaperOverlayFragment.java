@@ -109,6 +109,13 @@ public class WallpaperOverlayFragment extends AppFragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        colorPicker = null;
+        wallpaper = null;
+    }
+
     private void initWallpaper() {
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {

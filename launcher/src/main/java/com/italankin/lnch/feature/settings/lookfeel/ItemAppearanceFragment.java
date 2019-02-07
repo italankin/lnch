@@ -156,6 +156,17 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         return true;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        preview = null;
+        itemTextSize = null;
+        itemFont = null;
+        itemPadding = null;
+        itemShadowRadius = null;
+        itemShadowColor = null;
+    }
+
     private static class DiscardChangesListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
