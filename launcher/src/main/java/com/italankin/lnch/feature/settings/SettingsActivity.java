@@ -16,6 +16,7 @@ import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
+import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -119,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showSearchPreferences() {
-        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_search), R.string.title_settings_search);
+        showFragment(new SearchFragment(), R.string.title_settings_search);
     }
 
     @Override

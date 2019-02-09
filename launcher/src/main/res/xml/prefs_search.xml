@@ -11,11 +11,6 @@
         android:title="@string/title_settings_search_targets" />
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="@string/pref_search_show_global_search"
-        android:summary="@string/title_settings_search_global_summary"
-        android:title="@string/title_settings_search_global" />
-    <CheckBoxPreference
-        android:defaultValue="true"
         android:key="@string/pref_search_show_soft_keyboard"
         android:summaryOff="@string/title_settings_search_auto_show_summary_off"
         android:summaryOn="@string/title_settings_search_auto_show_summary_on"
@@ -32,4 +27,8 @@
         android:key="@string/pref_search_engine"
         android:summary="%s"
         android:title="@string/title_settings_search_engine" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_search_show_global_search"
+        android:title="@string/title_settings_search_global" />
 </PreferenceScreen>

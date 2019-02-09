@@ -75,7 +75,6 @@
     <string name="title_settings_search_targets_summary">What to include in search results</string>
     <string name="title_settings_search_use_custom_tabs_summary">Web search and links will open inside the launcher</string>
     <string name="title_settings_search_global">Show global search button</string>
-    <string name="title_settings_search_global_summary">May not be available on some devices</string>
     <string name="title_settings_search_engine">Search engine</string>
     <string name="title_settings_other">Other</string>
     <string name="title_settings_backups">Backup and restore</string>
