@@ -27,6 +27,9 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -38,6 +41,7 @@ import androidx.annotation.StringRes;
 public class ActionPopupWindow extends PopupWindow {
 
     private static final float MAX_WIDTH_FACTOR = 0.66f;
+    private static final float MAX_HEIGHT_FACTOR = 0.8f;
     private static final float DISABLED_ALPHA = 0.33f;
 
     private final Context context;
@@ -47,6 +51,9 @@ public class ActionPopupWindow extends PopupWindow {
     private final ViewGroup popupContainer;
     private final ViewGroup actionContainer;
     private final ViewGroup shortcutContainer;
+
+    private final List<ItemBuilder> actions = new ArrayList<>(1);
+    private final List<ItemBuilder> shortcuts = new ArrayList<>(4);
 
     private final int arrowSize;
 
@@ -92,6 +99,85 @@ public class ActionPopupWindow extends PopupWindow {
     }
 
     public ActionPopupWindow addAction(ItemBuilder item) {
+        actions.add(item);
+        return this;
+    }
+
+    public ActionPopupWindow addShortcut(ItemBuilder item) {
+        shortcuts.add(item);
+        return this;
+    }
+
+    @SuppressLint("RtlHardcoded")
+    public void showAtAnchor(View anchorView, Rect bounds) {
+        populateItems();
+
+        int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
+        int maxHeight = (int) (bounds.height() * MAX_HEIGHT_FACTOR);
+        contentView.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.AT_MOST));
+
+        int[] tmp = new int[2];
+        anchorView.getLocationOnScreen(tmp);
+
+        int contentWidth = contentView.getMeasuredWidth();
+        int anchorWidth = anchorView.getMeasuredWidth();
+        int xOffset = (anchorWidth - contentWidth) / 2;
+        boolean beyondLeft = false, beyondRight = false;
+        if (tmp[0] + xOffset < 0) {
+            xOffset = 0;
+            beyondLeft = true;
+        } else {
+            int contentRight = tmp[0] + xOffset + contentWidth;
+            if (contentRight > bounds.right) {
+                xOffset -= (contentRight - bounds.right);
+                beyondRight = true;
+            }
+        }
+
+        int anchorHeight = anchorView.getMeasuredHeight();
+        int additionalVerticalOffset = (anchorView.getPaddingTop() + anchorView.getPaddingTop()) / 2;
+        int yOffset = -additionalVerticalOffset;
+
+        int arrowCenter;
+        if (beyondLeft) {
+            arrowCenter = anchorWidth / 2 - contentView.getPaddingLeft();
+        } else if (beyondRight) {
+            arrowCenter = Math.abs(xOffset) + anchorWidth / 2 - contentView.getPaddingRight();
+        } else {
+            arrowCenter = contentWidth / 2 - contentView.getPaddingLeft();
+        }
+        View arrowView = new View(context);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(arrowSize, arrowSize);
+        lp.setMarginStart(arrowCenter - arrowSize / 2);
+        int anchorViewBottom = tmp[1] + anchorHeight;
+        int contentHeight = contentView.getMeasuredHeight() + arrowSize;
+        if (bounds.bottom - anchorViewBottom < contentHeight + additionalVerticalOffset) {
+            yOffset = -contentHeight - anchorHeight + additionalVerticalOffset;
+            arrowView.setBackground(new ArrowDrawable(lightArrowColor, arrowSize, true));
+            contentView.addView(arrowView, lp);
+        } else {
+            int color = actionContainer.getChildCount() > 0 ? darkArrowColor : lightArrowColor;
+            arrowView.setBackground(new ArrowDrawable(color, arrowSize, false));
+            contentView.addView(arrowView, 0, lp);
+        }
+
+        setWidth(contentWidth);
+        showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
+    }
+
+    private void populateItems() {
+        for (ItemBuilder action : actions) {
+            addActionInternal(action);
+        }
+        for (ItemBuilder shortcut : shortcuts) {
+            addShortcutInternal(shortcut);
+        }
+        actions.clear();
+        shortcuts.clear();
+    }
+
+    private void addActionInternal(ItemBuilder item) {
         ImageView imageView = (ImageView) inflater.inflate(R.layout.item_popup_action, actionContainer, false);
         if (item.iconDrawable != null) {
             Drawable drawable = item.iconDrawable.mutate();
@@ -116,10 +202,9 @@ public class ActionPopupWindow extends PopupWindow {
         }
         imageView.setOnLongClickListener(item.onLongClickListener);
         actionContainer.addView(imageView);
-        return this;
     }
 
-    public ActionPopupWindow addShortcut(ItemBuilder item) {
+    private void addShortcutInternal(ItemBuilder item) {
         View view = inflater.inflate(R.layout.item_popup_shortcut, shortcutContainer, false);
         ImageView iconView = view.findViewById(R.id.icon);
         ImageView pinIconView = view.findViewById(R.id.icon_pin);
@@ -156,61 +241,6 @@ public class ActionPopupWindow extends PopupWindow {
             });
         }
         shortcutContainer.addView(view);
-        return this;
-    }
-
-    @SuppressLint("RtlHardcoded")
-    public void showAtAnchor(View anchorView, Rect bounds) {
-        int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
-        contentView.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        int[] tmp = new int[2];
-        anchorView.getLocationOnScreen(tmp);
-
-        int contentWidth = contentView.getMeasuredWidth();
-        int anchorWidth = anchorView.getMeasuredWidth();
-        int xOffset = (anchorWidth - contentWidth) / 2;
-        boolean beyondLeft = false, beyondRight = false;
-        if (tmp[0] + xOffset < 0) {
-            xOffset = 0;
-            beyondLeft = true;
-        } else {
-            int contentRight = tmp[0] + xOffset + contentWidth;
-            if (contentRight > bounds.right) {
-                xOffset -= (contentRight - bounds.right);
-                beyondRight = true;
-            }
-        }
-
-        int anchorHeight = anchorView.getMeasuredHeight();
-        int contentHeight = contentView.getMeasuredHeight() + arrowSize;
-        int additionalVerticalOffset = (anchorView.getPaddingTop() + anchorView.getPaddingTop()) / 2;
-        int yOffset = -additionalVerticalOffset;
-
-        int arrowCenter;
-        if (beyondLeft) {
-            arrowCenter = anchorWidth / 2 - contentView.getPaddingLeft();
-        } else if (beyondRight) {
-            arrowCenter = Math.abs(xOffset) + anchorWidth / 2 - contentView.getPaddingRight();
-        } else {
-            arrowCenter = contentWidth / 2 - contentView.getPaddingLeft();
-        }
-        View arrowView = new View(context);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(arrowSize, arrowSize);
-        lp.setMarginStart(arrowCenter - arrowSize / 2);
-        int anchorViewBottom = tmp[1] + anchorHeight;
-        if (bounds.bottom - anchorViewBottom < contentHeight + additionalVerticalOffset) {
-            yOffset = -contentHeight - anchorHeight + additionalVerticalOffset;
-            arrowView.setBackground(new ArrowDrawable(lightArrowColor, arrowSize, true));
-            contentView.addView(arrowView, lp);
-        } else {
-            int color = actionContainer.getChildCount() > 0 ? darkArrowColor : lightArrowColor;
-            arrowView.setBackground(new ArrowDrawable(color, arrowSize, false));
-            contentView.addView(arrowView, 0, lp);
-        }
-
-        setWidth(contentWidth);
-        showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
     }
 
     public static class ItemBuilder {
