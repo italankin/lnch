@@ -12,6 +12,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.ViewUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -38,8 +39,7 @@ public class SliderPrefView extends RelativeLayout {
 
         inflate(context, R.layout.item_pref_slider, this);
 
-        int p = context.getResources().getDimensionPixelSize(R.dimen.pref_view_padding);
-        setPadding(p, p, p, p);
+        ViewUtils.setPaddingDimen(this, R.dimen.pref_view_padding);
 
         icon = findViewById(R.id.icon);
         title = findViewById(R.id.title);

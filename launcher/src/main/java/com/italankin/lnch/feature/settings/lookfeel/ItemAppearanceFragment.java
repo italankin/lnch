@@ -23,6 +23,7 @@ import com.italankin.lnch.feature.settings.BackButtonHandler;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
@@ -364,7 +365,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         int shadowColor = itemShadowColor.getValue();
         preview.setTypeface(font.typeface());
         int p = ResUtils.px2dp(requireContext(), padding);
-        preview.setPadding(p, p, p, p);
+        ViewUtils.setPadding(preview, p);
         preview.setTextSize(textSize);
         preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);
     }

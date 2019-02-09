@@ -9,6 +9,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 import androidx.annotation.NonNull;
@@ -50,7 +51,7 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
                 return;
             }
             int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
-            label.setPadding(padding, padding, padding, padding);
+            ViewUtils.setPadding(label, padding);
             label.setTextSize(itemPrefs.itemTextSize);
             int shadowColor = itemPrefs.itemShadowColor != null
                     ? itemPrefs.itemShadowColor

@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -77,7 +78,7 @@ public final class EditTextAlertDialog {
         public AlertDialog build() {
             LinearLayout layout = new LinearLayout(builder.getContext());
             int p = ResUtils.px2dp(builder.getContext(), 16);
-            layout.setPadding(p, p, p, p);
+            ViewUtils.setPadding(layout, p);
             layout.addView(editText, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             builder.setView(layout);

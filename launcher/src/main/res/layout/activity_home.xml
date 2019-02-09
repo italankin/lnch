@@ -39,11 +39,12 @@
                 android:hint="@string/hint_search"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textAutoComplete"
-                android:paddingLeft="@dimen/searchbar_size"
+                android:paddingLeft="@dimen/search_padding_left_normal"
                 android:paddingTop="16dp"
                 android:paddingRight="56dp"
                 android:paddingBottom="16dp"
-                android:selectAllOnFocus="true" />
+                android:selectAllOnFocus="true"
+                tools:paddingLeft="@dimen/searchbar_size" />
 
             <ImageView
                 android:id="@+id/search_global"

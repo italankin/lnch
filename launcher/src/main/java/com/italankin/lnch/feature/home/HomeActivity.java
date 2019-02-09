@@ -4,10 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
@@ -75,6 +73,7 @@ import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
@@ -641,7 +640,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 if (packageName == null) {
                     return;
                 }
-                Intent intent = IntentUtils.getPackageSystemSettings(packageName);
+                Intent intent = PackageUtils.getPackageSystemSettings(packageName);
                 if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
                     showError(R.string.error);
                     return;
@@ -668,40 +667,27 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void setupGlobalSearchButton() {
-        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        if (searchManager != null) {
-            ComponentName searchActivity = searchManager.getGlobalSearchActivity();
-            if (searchActivity == null) {
-                return;
-            }
-            try {
-                ActivityInfo activityInfo = packageManager.getActivityInfo(searchActivity, 0);
-                if (activityInfo == null || !activityInfo.exported) {
-                    return;
-                }
-            } catch (PackageManager.NameNotFoundException ignored) {
-                return;
-            }
-            searchBtnGlobal.setVisibility(View.VISIBLE);
-            searchBtnGlobal.setOnClickListener(v -> {
-                Intent intent = new Intent().setComponent(searchActivity);
-                if (IntentUtils.safeStartActivity(this, intent)) {
-                    searchBarBehavior.hide();
-                } else {
-                    showError(R.string.error);
-                }
-            });
-            searchBtnGlobal.setOnLongClickListener(v -> {
-                startAppSettings(searchActivity.getPackageName());
-                return true;
-            });
-            searchEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.searchbar_size),
-                    searchEditText.getPaddingTop(), searchEditText.getPaddingRight(),
-                    searchEditText.getPaddingBottom());
-            picasso.load(PackageIconHandler.uriFrom(searchActivity.getPackageName()))
-                    .error(R.drawable.ic_action_search)
-                    .into(searchBtnGlobal);
+        ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(this);
+        if (searchActivity == null) {
+            return;
         }
+        searchBtnGlobal.setVisibility(View.VISIBLE);
+        searchBtnGlobal.setOnClickListener(v -> {
+            Intent intent = new Intent().setComponent(searchActivity);
+            if (IntentUtils.safeStartActivity(this, intent)) {
+                searchBarBehavior.hide();
+            } else {
+                showError(R.string.error);
+            }
+        });
+        searchBtnGlobal.setOnLongClickListener(v -> {
+            startAppSettings(searchActivity.getPackageName());
+            return true;
+        });
+        ViewUtils.setPaddingLeftDimen(searchEditText, R.dimen.searchbar_size);
+        picasso.load(PackageIconHandler.uriFrom(searchActivity.getPackageName()))
+                .error(R.drawable.ic_action_search)
+                .into(searchBtnGlobal);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -723,14 +709,14 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void startAppSettings(String packageName) {
-        Intent intent = IntentUtils.getPackageSystemSettings(packageName);
+        Intent intent = PackageUtils.getPackageSystemSettings(packageName);
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
     }
 
     private void startAppUninstall(AppViewModel item) {
-        Intent intent = IntentUtils.getUninstallIntent(item.packageName);
+        Intent intent = PackageUtils.getUninstallIntent(item.packageName);
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
@@ -778,8 +764,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (userPrefs.globalSearch && searchBtnGlobal.getVisibility() != View.VISIBLE) {
             setupGlobalSearchButton();
         } else if (!userPrefs.globalSearch && searchBtnGlobal.getVisibility() == View.VISIBLE) {
-            searchEditText.setPadding(ResUtils.px2dp(this, 16), searchEditText.getPaddingTop(),
-                    searchEditText.getPaddingRight(), searchEditText.getPaddingBottom());
+            ViewUtils.setPaddingLeftDimen(searchEditText, R.dimen.search_padding_left_normal);
             searchBtnGlobal.setVisibility(View.GONE);
         }
     }

@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 
 import com.italankin.lnch.BuildConfig;
 
@@ -16,18 +14,6 @@ import java.net.URISyntaxException;
 import timber.log.Timber;
 
 public final class IntentUtils {
-
-    public static Intent getPackageSystemSettings(String packageName) {
-        Uri uri = PackageUtils.asUri(packageName);
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
-    }
-
-    public static Intent getUninstallIntent(String packageName) {
-        Uri uri = Uri.fromParts("package", packageName, null);
-        return new Intent(Intent.ACTION_UNINSTALL_PACKAGE, uri);
-    }
 
     public static boolean safeStartActivity(Context context, Intent intent) {
         return safeStartActivity(context, intent, null);

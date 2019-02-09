@@ -21,6 +21,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
@@ -140,7 +141,7 @@ public class WallpaperOverlayFragment extends AppFragment {
 
         Context context = requireContext();
         int padding = ResUtils.px2dp(context, preferences.itemPadding());
-        itemPreview.setPadding(padding, padding, padding, padding);
+        ViewUtils.setPadding(itemPreview, padding);
         itemPreview.setTextSize(preferences.itemTextSize());
         Integer shadowColor = preferences.itemShadowColor();
         if (shadowColor == null) {

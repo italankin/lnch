@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
+import com.italankin.lnch.util.ViewUtils;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -29,7 +30,7 @@ public class HomeListBehavior extends CoordinatorLayout.Behavior<HomeRecyclerVie
     @Override
     public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, @NonNull HomeRecyclerView child, @NonNull View dependency) {
         int offset = dependency.getHeight() - dependency.getPaddingBottom() - (int) dependency.getTranslationY();
-        child.setPadding(child.getPaddingLeft(), child.getPaddingTop(), child.getPaddingRight(), Math.max(0, offset));
+        ViewUtils.setPaddingBottom(child, Math.max(0, offset));
         return false;
     }
 }

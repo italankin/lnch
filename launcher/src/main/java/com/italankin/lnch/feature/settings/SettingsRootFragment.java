@@ -13,6 +13,7 @@ import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.PackageUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,7 +104,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_system_settings) {
             Context context = requireContext();
-            Intent intent = IntentUtils.getPackageSystemSettings(context.getPackageName());
+            Intent intent = PackageUtils.getPackageSystemSettings(context.getPackageName());
             if (!IntentUtils.safeStartActivity(context, intent)) {
                 Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
             }
