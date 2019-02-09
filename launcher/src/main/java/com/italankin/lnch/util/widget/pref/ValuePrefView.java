@@ -44,7 +44,7 @@ public class ValuePrefView extends RelativeLayout {
 
         inflate(context, R.layout.item_pref_text, this);
 
-        ViewUtils.setPadding(this, R.dimen.pref_view_padding);
+        ViewUtils.setPaddingDimen(this, R.dimen.pref_view_padding);
 
         icon = findViewById(R.id.icon);
         title = findViewById(R.id.title);
