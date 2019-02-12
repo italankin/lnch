@@ -58,87 +58,75 @@ class LoadFromFileInteractor {
                         emitter.onComplete();
                         return;
                     }
-                    List<Descriptor> items = new ArrayList<>(savedItems.size());
-                    List<Descriptor> deleted = new ArrayList<>(8);
-                    Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
-                    List<Shortcut> pinnedShortcuts = shortcutsRepository.getPinnedShortcuts();
-                    Map<String, AppDescriptor> installedApps = new HashMap<>(savedItems.size());
+                    ProcessingEnv env = new ProcessingEnv(savedItems.size(), infoList,
+                            shortcutsRepository.getPinnedShortcuts());
                     for (Descriptor item : savedItems) {
                         if (item instanceof PinnedShortcutDescriptor) {
-                            String uri = ((PinnedShortcutDescriptor) item).uri;
-                            Intent intent = IntentUtils.fromUri(uri);
-                            if (IntentUtils.canHandleIntent(packageManager, intent)) {
-                                items.add(item);
-                            } else {
-                                deleted.add(item);
-                            }
-                            continue;
-                        }
-                        if (item instanceof DeepShortcutDescriptor) {
-                            items.add(item);
-                            DeepShortcutDescriptor descriptor = (DeepShortcutDescriptor) item;
-                            if (pinnedShortcuts.isEmpty()) {
-                                descriptor.enabled = false;
-                                continue;
-                            }
-                            boolean enabled = false;
-                            for (Iterator<Shortcut> iter = pinnedShortcuts.iterator(); iter.hasNext(); ) {
-                                Shortcut pinned = iter.next();
-                                if (pinned.getPackageName().equals(descriptor.packageName)
-                                        && pinned.getId().equals(descriptor.id)) {
-                                    iter.remove();
-                                    enabled = pinned.isEnabled();
-                                    break;
-                                }
-                            }
-                            descriptor.enabled = enabled;
-                            continue;
-                        }
-                        if (!(item instanceof AppDescriptor)) {
-                            items.add(item);
-                            continue;
-                        }
-                        AppDescriptor app = (AppDescriptor) item;
-                        LauncherActivityInfo info = findInfo(infosByPackageName, app);
-                        if (info != null) {
-                            appDescriptors.update(app, info);
-                            items.add(app);
-                            installedApps.put(app.packageName, app);
+                            visitPinnedShortcut(env, (PinnedShortcutDescriptor) item);
+                        } else if (item instanceof DeepShortcutDescriptor) {
+                            visitDeepShortcut(env, (DeepShortcutDescriptor) item);
+                        } else if (item instanceof AppDescriptor) {
+                            visitAppDescriptor(env, (AppDescriptor) item);
                         } else {
-                            deleted.add(app);
+                            env.add(item);
                         }
                     }
-                    for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
-                        if (infos.size() == 1) {
-                            AppDescriptor item = appDescriptors.create(infos.get(0));
-                            items.add(item);
-                            installedApps.put(item.packageName, item);
-                        } else {
-                            for (LauncherActivityInfo info : infos) {
-                                AppDescriptor item = appDescriptors.create(info, true);
-                                items.add(item);
-                                installedApps.put(item.packageName, item);
-                            }
-                        }
+                    for (List<LauncherActivityInfo> infos : env.infosByPackageName.values()) {
+                        processNewApps(env, infos);
                     }
-                    List<DeepShortcutDescriptor> shortcuts = processShortcuts(pinnedShortcuts, installedApps);
-                    if (!shortcuts.isEmpty()) {
-                        items.addAll(shortcuts);
-                    }
-                    boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty()
-                            || !pinnedShortcuts.isEmpty();
-                    emitter.onSuccess(new AppsData(items, changed));
+                    List<DeepShortcutDescriptor> shortcuts = processNewShortcuts(env);
+                    env.add(shortcuts);
+                    emitter.onSuccess(new AppsData(env.items, env.isChanged()));
                 });
     }
 
-    private List<DeepShortcutDescriptor> processShortcuts(List<Shortcut> pinnedShortcuts,
-            Map<String, AppDescriptor> installedApps) {
-        if (pinnedShortcuts.isEmpty()) {
+    private void visitAppDescriptor(ProcessingEnv env, AppDescriptor item) {
+        LauncherActivityInfo info = env.findInfo(item);
+        if (info != null) {
+            appDescriptors.update(item, info);
+            env.add(item);
+        } else {
+            env.delete(item);
+        }
+    }
+
+    private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor descriptor) {
+        env.add(descriptor);
+        descriptor.enabled = false;
+        Shortcut shortcut = env.findShortcut(descriptor.packageName, descriptor.id);
+        if (shortcut != null) {
+            descriptor.enabled = shortcut.isEnabled();
+        }
+    }
+
+    private void visitPinnedShortcut(ProcessingEnv processingEnv, PinnedShortcutDescriptor item) {
+        Intent intent = IntentUtils.fromUri(item.uri);
+        if (IntentUtils.canHandleIntent(packageManager, intent)) {
+            processingEnv.add(item);
+        } else {
+            processingEnv.delete(item);
+        }
+    }
+
+    private void processNewApps(ProcessingEnv env, List<LauncherActivityInfo> infos) {
+        if (infos.size() == 1) {
+            AppDescriptor item = appDescriptors.create(infos.get(0));
+            env.add(item);
+        } else {
+            for (LauncherActivityInfo info : infos) {
+                AppDescriptor item = appDescriptors.create(info, true);
+                env.add(item);
+            }
+        }
+    }
+
+    private List<DeepShortcutDescriptor> processNewShortcuts(ProcessingEnv env) {
+        if (env.pinnedShortcuts.isEmpty()) {
             return Collections.emptyList();
         }
-        List<DeepShortcutDescriptor> result = new ArrayList<>(pinnedShortcuts.size());
-        for (Shortcut shortcut : pinnedShortcuts) {
-            AppDescriptor app = installedApps.get(shortcut.getPackageName());
+        List<DeepShortcutDescriptor> result = new ArrayList<>(env.pinnedShortcuts.size());
+        for (Shortcut shortcut : env.pinnedShortcuts) {
+            AppDescriptor app = env.findApp(shortcut.getPackageName());
             if (app == null) {
                 continue;
             }
@@ -155,40 +143,96 @@ class LoadFromFileInteractor {
         return result;
     }
 
-    private Map<String, List<LauncherActivityInfo>> infosByPackageName(List<LauncherActivityInfo> infoList) {
-        Map<String, List<LauncherActivityInfo>> infosByPackageName = new HashMap<>(infoList.size());
-        for (LauncherActivityInfo info : infoList) {
-            String packageName = info.getApplicationInfo().packageName;
-            List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
-            if (list == null) {
-                list = new ArrayList<>(1);
-                infosByPackageName.put(packageName, list);
-            }
-            list.add(info);
-        }
-        return infosByPackageName;
-    }
+    private static class ProcessingEnv {
+        private final List<Descriptor> items;
+        private final Map<String, List<LauncherActivityInfo>> infosByPackageName;
+        private final Map<String, AppDescriptor> installedApps;
+        private final List<Shortcut> pinnedShortcuts;
+        private boolean hasDeletions = false;
 
-    private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppDescriptor item) {
-        List<LauncherActivityInfo> infos = map.get(item.packageName);
-        if (infos == null || infos.isEmpty()) {
-            return null;
+        ProcessingEnv(int expectedSize, List<LauncherActivityInfo> infoList, List<Shortcut> pinnedShortcuts) {
+            this.items = new ArrayList<>(expectedSize);
+            this.infosByPackageName = mapInfosByPackageName(infoList);
+            this.installedApps = new HashMap<>(expectedSize);
+            this.pinnedShortcuts = pinnedShortcuts;
         }
-        if (infos.size() == 1) {
-            LauncherActivityInfo result = infos.remove(0);
-            map.remove(item.packageName);
-            return result;
-        } else if (item.componentName != null) {
-            Iterator<LauncherActivityInfo> iter = infos.iterator();
-            while (iter.hasNext()) {
-                LauncherActivityInfo info = iter.next();
-                String componentName = getComponentName(info);
-                if (componentName.equals(item.componentName)) {
-                    iter.remove();
-                    return info;
+
+        void add(Descriptor item) {
+            items.add(item);
+        }
+
+        void add(List<? extends Descriptor> items) {
+            this.items.addAll(items);
+        }
+
+        void add(AppDescriptor item) {
+            items.add(item);
+            installedApps.put(item.packageName, item);
+        }
+
+        void delete(Descriptor item) {
+            hasDeletions = true;
+        }
+
+        AppsData getResult() {
+            return new AppsData(items, isChanged());
+        }
+
+        AppDescriptor findApp(String packageName) {
+            return installedApps.get(packageName);
+        }
+
+        LauncherActivityInfo findInfo(AppDescriptor item) {
+            List<LauncherActivityInfo> infos = infosByPackageName.get(item.packageName);
+            if (infos == null || infos.isEmpty()) {
+                return null;
+            }
+            if (infos.size() == 1) {
+                LauncherActivityInfo result = infos.remove(0);
+                infosByPackageName.remove(item.packageName);
+                return result;
+            } else if (item.componentName != null) {
+                Iterator<LauncherActivityInfo> iter = infos.iterator();
+                while (iter.hasNext()) {
+                    LauncherActivityInfo info = iter.next();
+                    String componentName = getComponentName(info);
+                    if (componentName.equals(item.componentName)) {
+                        iter.remove();
+                        return info;
+                    }
                 }
             }
+            return null;
         }
-        return null;
+
+        Shortcut findShortcut(String packageName, String id) {
+            for (Iterator<Shortcut> iter = pinnedShortcuts.iterator(); iter.hasNext(); ) {
+                Shortcut shotcut = iter.next();
+                if (shotcut.getPackageName().equals(packageName)
+                        && shotcut.getId().equals(id)) {
+                    iter.remove();
+                    return shotcut;
+                }
+            }
+            return null;
+        }
+
+        boolean isChanged() {
+            return hasDeletions || !infosByPackageName.isEmpty() || !pinnedShortcuts.isEmpty();
+        }
+
+        private Map<String, List<LauncherActivityInfo>> mapInfosByPackageName(List<LauncherActivityInfo> infoList) {
+            Map<String, List<LauncherActivityInfo>> infosByPackageName = new HashMap<>(infoList.size());
+            for (LauncherActivityInfo info : infoList) {
+                String packageName = info.getApplicationInfo().packageName;
+                List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
+                if (list == null) {
+                    list = new ArrayList<>(1);
+                    infosByPackageName.put(packageName, list);
+                }
+                list.add(info);
+            }
+            return infosByPackageName;
+        }
     }
 }
