@@ -232,7 +232,9 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                     }
                     for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
                         if (infos.size() == 1) {
-                            items.add(createItem(infos.get(0)));
+                            AppDescriptor item = createItem(infos.get(0));
+                            items.add(item);
+                            installedApps.put(item.packageName, item);
                         } else {
                             for (LauncherActivityInfo info : infos) {
                                 AppDescriptor item = createItem(info);
