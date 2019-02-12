@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -72,7 +73,8 @@ public class ShortcutIconHandler extends RequestHandler {
         if (shortcuts.isEmpty()) {
             return null;
         }
-        Drawable icon = launcherApps.getShortcutIconDrawable(shortcuts.get(0), 0);
+        Drawable icon = launcherApps.getShortcutIconDrawable(shortcuts.get(0),
+                Resources.getSystem().getDisplayMetrics().densityDpi);
         if (icon == null) {
             return null;
         }
@@ -88,7 +90,6 @@ public class ShortcutIconHandler extends RequestHandler {
             } catch (PackageManager.NameNotFoundException ignored) {
             }
         }
-
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas();
         canvas.setBitmap(bitmap);
