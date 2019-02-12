@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <PreferenceCategory>
+        <Preference
+            android:icon="@drawable/ic_action_rename"
+            android:key="@string/key_home_customize"
+            android:title="@string/title_settings_home_customize" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_settings_home">
         <Preference
             android:icon="@drawable/ic_settings_wallpaper"
@@ -14,10 +20,6 @@
             android:icon="@drawable/ic_settings_home_misc"
             android:key="@string/key_home_misc"
             android:title="@string/title_settings_home_misc" />
-        <Preference
-            android:icon="@drawable/ic_action_rename"
-            android:key="@string/key_home_customize"
-            android:title="@string/title_settings_home_customize" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_settings_apps">
         <Preference
