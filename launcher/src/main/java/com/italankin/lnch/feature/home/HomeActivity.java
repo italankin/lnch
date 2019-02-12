@@ -302,6 +302,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             // clear edit mode intent
             setIntent(new Intent());
             presenter.startCustomize();
+        } else if (preferences.firstLaunch()) {
+            preferences.setFirstLaunch(false);
+            searchBarBehavior.show();
         }
     }
 
