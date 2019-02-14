@@ -46,6 +46,7 @@ import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.behavior.TopBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
@@ -562,9 +563,11 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     private void setupWindow() {
         Window window = getWindow();
         window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
-            root.setPadding(insets.getStableInsetLeft(), insets.getStableInsetTop(),
+            int stableInsetTop = insets.getStableInsetTop();
+            root.setPadding(insets.getStableInsetLeft(), stableInsetTop,
                     insets.getStableInsetRight(), 0);
             list.setBottomInset(insets.getStableInsetBottom());
+            root.setForeground(new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop));
             return insets;
         });
         window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
