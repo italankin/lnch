@@ -7,7 +7,7 @@
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#1a1a1a</item>
-        <item name="colorAccent">#f9a825</item>
+        <item name="colorAccent">@color/accent</item>
         <item name="android:statusBarColor">?colorPrimaryDark</item>
 
         <item name="colorText">#fff</item>
@@ -48,7 +48,7 @@
     <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#f0f0f0</item>
         <item name="colorPrimaryDark">#a0a0a0</item>
-        <item name="colorAccent">#f9a825</item>
+        <item name="colorAccent">@color/accent</item>
         <item name="android:statusBarColor">?colorPrimaryDark</item>
         <item name="android:windowLightStatusBar">true</item>
 
