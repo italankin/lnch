@@ -79,4 +79,6 @@ dependencies {
 
     implementation flexbox
     implementation picasso
+
+    lintChecks project(':lintchecks')
 }
