@@ -2,6 +2,7 @@ package com.italankin.lintchecks.detectors
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.intellij.lang.jvm.JvmModifier
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.util.PsiTypesUtil
 import org.jetbrains.uast.UClass
@@ -60,20 +61,19 @@ class JsonModelDetector : Detector(), SourceCodeScanner {
                 }
 
                 // find SerializedName value node
-                val value = serializedName.parameterList.attributes.find {
+                val serializedNameValue = serializedName.parameterList.attributes.find {
                     it.name == "value" || it.name == null
                 }
                 // check if value is PROPERTY_TYPE
-                if (value?.value?.text != FIELD_PROPERTY_TYPE) {
+                if (serializedNameValue?.value?.text != FIELD_PROPERTY_TYPE) {
                     val fix = fix()
                             .replace()
-                            .text(value?.value?.text)
+                            .text(serializedNameValue?.value?.text)
                             .with(FIELD_PROPERTY_TYPE)
                             .build()
                     context.report(ISSUE, node, context.getLocation(serializedName),
                             "`@SerializedName` must have a value of `$FIELD_PROPERTY_TYPE`",
                             fix)
-                    return
                 }
 
                 // check field type
@@ -86,11 +86,30 @@ class JsonModelDetector : Detector(), SourceCodeScanner {
                             .build()
                     context.report(ISSUE, node, context.getLocation(typeField.typeElement!!),
                             "`$FIELD_TYPE` must be a `String`", fix)
-                    return
                 }
-                if (typeField.annotations.none { it.qualifiedName == KEEP }) {
+                if (!typeField.hasAnnotation(KEEP)) {
                     context.report(ISSUE, node, context.getLocation(typeField),
                             "Must be annotated with `@Keep`")
+                }
+
+                // find constructor with no arguments
+                val constructor = node.constructors.find { !it.hasParameters() }
+                if (constructor == null) {
+                    context.report(ISSUE, node, context.getNameLocation(node),
+                            "${node.name} must have an empty constructor")
+                    return
+                }
+
+                // check @Keep presence
+                if (!constructor.hasAnnotation(KEEP)) {
+                    context.report(ISSUE, node, context.getNameLocation(constructor),
+                            "Must be annotated with `@Keep`")
+                }
+
+                // constructor must be public
+                if (!constructor.hasModifier(JvmModifier.PUBLIC)) {
+                    context.report(ISSUE, node, context.getNameLocation(constructor),
+                            "Must be public")
                 }
             }
         }
