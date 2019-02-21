@@ -1,1 +1,1 @@
-include ':launcher'
+include ':launcher', ':lintchecks'

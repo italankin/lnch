@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+apply from: '../gradle/versions.gradle'
+
+dependencies {
+    compileOnly kotlin
+    compileOnly lint
+}
+
+jar {
+    manifest {
+        attributes("Lint-Registry-v2": "com.italankin.lintchecks.LnchIssueRegistry")
+    }
+}
