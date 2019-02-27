@@ -59,6 +59,11 @@ public abstract class BaseAdapterDelegate<VH extends RecyclerView.ViewHolder, T>
     }
 
     @Override
+    public boolean onFailedToRecycle(RecyclerView.ViewHolder holder) {
+        return false;
+    }
+
+    @Override
     public long getItemId(int position, T item) {
         return 0;
     }

@@ -116,6 +116,11 @@ public class CompositeAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewH
         delegates.get(holder.getItemViewType()).onRecycled(holder);
     }
 
+    @Override
+    public boolean onFailedToRecycleView(@NonNull RecyclerView.ViewHolder holder) {
+        return delegates.get(holder.getItemViewType()).onFailedToRecycle(holder);
+    }
+
     /**
      * Get delegate for item at {@code position}.
      *

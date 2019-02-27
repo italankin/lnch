@@ -60,6 +60,15 @@ public interface AdapterDelegate<VH extends RecyclerView.ViewHolder, T> {
     void onRecycled(VH holder);
 
     /**
+     * Called when {@code holder} {@link RecyclerView.Adapter#onFailedToRecycleView(RecyclerView.ViewHolder) failed to recycle}.
+     *
+     * @param holder view holder
+     * @return true if the View should be recycled, false otherwise
+     * @see RecyclerView.Adapter#onFailedToRecycleView(RecyclerView.ViewHolder)
+     */
+    boolean onFailedToRecycle(RecyclerView.ViewHolder holder);
+
+    /**
      * Check if {@code item} at {@code position} can be managed by this delegate.
      *
      * @param position position of {@code item}
