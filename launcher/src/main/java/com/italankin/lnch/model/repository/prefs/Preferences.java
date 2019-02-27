@@ -70,6 +70,10 @@ public interface Preferences {
 
     Observable<String> observe();
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Constants
+    ///////////////////////////////////////////////////////////////////////////
+
     interface Constraints {
         int ITEM_TEXT_SIZE_MIN = 12;
         int ITEM_TEXT_SIZE_MAX = 40;
@@ -89,6 +93,9 @@ public interface Preferences {
     // Enums
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Color theme of the Launcher's UI
+     */
     enum ColorTheme {
         DARK("dark"),
         LIGHT("light");
@@ -109,6 +116,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Layout for home screen
+     */
     enum HomeLayout {
         COMPACT("compact");
 
@@ -134,6 +144,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Font for item labels
+     */
     enum Font {
         DEFAULT("default", Typeface.DEFAULT_BOLD),
         SANS_SERIF("sans_serif", Typeface.SANS_SERIF),
@@ -168,6 +181,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Search items of these properties
+     */
     enum SearchTarget {
         HIDDEN("hidden"),
         SHORTCUT("shortcut"),
@@ -192,6 +208,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Action on item long click
+     */
     enum LongClickAction {
         POPUP("popup"),
         INFO("info");
@@ -218,6 +237,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Launcher screen orientation
+     */
     enum ScreenOrientation {
         SENSOR("sensor", ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED),
         PORTRAIT("portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT),
@@ -251,6 +273,9 @@ public interface Preferences {
         }
     }
 
+    /**
+     * Sorting mode for items on home screen
+     */
     enum AppsSortMode {
         MANUAL("manual"),
         AZ("az"),
