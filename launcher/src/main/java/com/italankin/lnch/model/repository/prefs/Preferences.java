@@ -66,6 +66,8 @@ public interface Preferences {
 
     void setFirstLaunch(boolean value);
 
+    AppsSortMode appsSortMode();
+
     Observable<String> observe();
 
     interface Constraints {
@@ -246,6 +248,33 @@ public interface Preferences {
         @Override
         public String toString() {
             return key;
+        }
+    }
+
+    enum AppsSortMode {
+        MANUAL("manual"),
+        AZ("az"),
+        ZA("za");
+
+        static AppsSortMode from(String s) {
+            for (AppsSortMode item : values()) {
+                if (item.mode.equals(s)) {
+                    return item;
+                }
+            }
+            return MANUAL;
+        }
+
+        private final String mode;
+
+        AppsSortMode(String mode) {
+            this.mode = mode;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return mode;
         }
     }
 }

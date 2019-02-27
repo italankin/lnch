@@ -758,6 +758,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     ///////////////////////////////////////////////////////////////////////////
 
     private void startDrag(int position) {
+        if (preferences.appsSortMode() != Preferences.AppsSortMode.MANUAL) {
+            Toast.makeText(this, R.string.error_manual_sorting_required, Toast.LENGTH_SHORT).show();
+            return;
+        }
         RecyclerView.LayoutManager layoutManager = list.getLayoutManager();
         if (layoutManager == null) {
             return;

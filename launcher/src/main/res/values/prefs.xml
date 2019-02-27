@@ -20,4 +20,5 @@
     <string name="pref_item_font">item_font</string>
     <string name="pref_search_targets">search_targets</string>
     <string name="pref_first_launch">first_launch</string>
+    <string name="pref_sort_mode">apps_sort_mode</string>
 </resources>

@@ -201,6 +201,12 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
+    public AppsSortMode appsSortMode() {
+        String pref = prefs.getString(context.getString(R.string.pref_sort_mode), null);
+        return AppsSortMode.from(pref);
+    }
+
+    @Override
     public Observable<String> observe() {
         return updates;
     }

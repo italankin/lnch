@@ -56,4 +56,15 @@
         <item>Portrait</item>
         <item>Landscape</item>
     </string-array>
+
+    <string-array name="apps_sort_mode">
+        <item>manual</item>
+        <item>az</item>
+        <item>za</item>
+    </string-array>
+    <string-array name="apps_sort_mode_desc">
+        <item>Manual</item>
+        <item>A-Z</item>
+        <item>Z-A</item>
+    </string-array>
 </resources>

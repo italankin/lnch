@@ -59,6 +59,7 @@
     <string name="title_settings_item_appearance_summary">Customize text size, font, shadow</string>
     <string name="title_settings_apps">Apps</string>
     <string name="title_settings_apps_list">Apps</string>
+    <string name="title_settings_apps_sort">Sorting</string>
     <string name="title_settings_wallpaper">Wallpaper</string>
     <string name="title_settings_wallpaper_change">Change wallpaper</string>
     <string name="title_settings_wallpaper_overlay">Overlay</string>
@@ -116,6 +117,7 @@
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
     <string name="error_write_storage_permission">Permission is required to save backup</string>
+    <string name="error_manual_sorting_required">Reordering is only available for manual sorting</string>
 
     <string name="settings_backups_message_restore_success">Settings restored successfully</string>
     <string name="settings_backups_message_backup_success">Settings backed up successfully to \"%1$s\"</string>

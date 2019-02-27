@@ -8,10 +8,14 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.text.TextUtils;
 
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.sort.AscLabelSorter;
+import com.italankin.lnch.model.repository.descriptor.sort.DescLabelSorter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -65,7 +69,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
         this.updater = createUpdater();
-        subscribeForLauncherAppsUpdates();
+        subscribeForUpdates();
     }
 
     @Override
@@ -111,18 +115,41 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     // Private
     ///////////////////////////////////////////////////////////////////////////
 
-    private void subscribeForLauncherAppsUpdates() {
+    private void subscribeForUpdates() {
         new LauncherAppsUpdates(launcherApps)
                 .flatMapCompletable(change -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
-                    Timber.e(throwable, "subscribeForLauncherAppsUpdates");
+                    Timber.e(throwable, "subscribeForUpdates");
                     return true;
                 })
+                .subscribe();
+
+        String keySortMode = LauncherApp.daggerService.main().getContext()
+                .getString(R.string.pref_sort_mode);
+        preferences.observe()
+                .filter(s -> s.equals(keySortMode)
+                        && preferences.appsSortMode() != Preferences.AppsSortMode.MANUAL)
+                .flatMapCompletable(s -> update())
                 .subscribe();
     }
 
     private Completable createUpdater() {
         return loadAll()
+                .map(appsData -> {
+                    switch (preferences.appsSortMode()) {
+                        case AZ: {
+                            boolean changed = new AscLabelSorter().sort(appsData.items);
+                            return new AppsData(appsData.items, changed || appsData.changed);
+                        }
+                        case ZA: {
+                            boolean changed = new DescLabelSorter().sort(appsData.items);
+                            return new AppsData(appsData.items, changed || appsData.changed);
+                        }
+                        case MANUAL:
+                        default:
+                            return appsData;
+                    }
+                })
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");

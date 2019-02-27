@@ -26,6 +26,14 @@
             android:icon="@drawable/ic_settings_apps"
             android:key="@string/key_apps_list"
             android:title="@string/title_settings_apps_list" />
+        <ListPreference
+            android:defaultValue="manual"
+            android:entries="@array/apps_sort_mode_desc"
+            android:entryValues="@array/apps_sort_mode"
+            android:icon="@drawable/ic_settings_sort"
+            android:key="@string/pref_sort_mode"
+            android:summary="%s"
+            android:title="@string/title_settings_apps_sort" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_settings_search">
         <Preference
