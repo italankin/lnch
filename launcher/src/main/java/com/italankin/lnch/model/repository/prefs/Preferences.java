@@ -71,6 +71,33 @@ public interface Preferences {
     Observable<String> observe();
 
     ///////////////////////////////////////////////////////////////////////////
+    // Keys
+    ///////////////////////////////////////////////////////////////////////////
+
+    interface Keys {
+        String SEARCH_SHOW_SOFT_KEYBOARD = "search_show_soft_keyboard";
+        String SEARCH_SHOW_GLOBAL_SEARCH = "search_show_global_search";
+        String SEARCH_USE_CUSTOM_TABS = "search_use_custom_tabs";
+        String SEARCH_ENGINE = "search_engine";
+        String SEARCH_TARGETS = "search_targets";
+        String WALLPAPER_OVERLAY_SHOW = "wallpaper_overlay_show";
+        String WALLPAPER_OVERLAY_COLOR = "wallpaper_overlay_color";
+        String HOME_LAYOUT = "home_layout";
+        String SHOW_SCROLLBAR = "show_scrollbar";
+        String APP_LONG_CLICK_ACTION = "app_long_click_action";
+        String SCREEN_ORIENTATION = "screen_orientation";
+        String SCROLL_TO_TOP = "scroll_to_top";
+        String COLOR_THEME = "color_theme";
+        String ITEM_TEXT_SIZE = "item_text_size";
+        String ITEM_PADDING = "item_padding";
+        String ITEM_SHADOW_RADIUS = "item_shadow_radius";
+        String ITEM_SHADOW_COLOR = "item_shadow_color";
+        String ITEM_FONT = "item_font";
+        String FIRST_LAUNCH = "first_launch";
+        String APPS_SORT_MODE = "apps_sort_mode";
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     // Constants
     ///////////////////////////////////////////////////////////////////////////
 

@@ -31,7 +31,7 @@
             android:entries="@array/apps_sort_mode_desc"
             android:entryValues="@array/apps_sort_mode"
             android:icon="@drawable/ic_settings_sort"
-            android:key="@string/pref_sort_mode"
+            android:key="apps_sort_mode"
             android:summary="%s"
             android:title="@string/title_settings_apps_sort" />
     </PreferenceCategory>

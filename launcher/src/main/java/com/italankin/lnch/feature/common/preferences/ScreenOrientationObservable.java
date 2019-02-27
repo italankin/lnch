@@ -1,15 +1,12 @@
 package com.italankin.lnch.feature.common.preferences;
 
-import android.content.Context;
-
-import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.ScreenOrientation;
 
 public class ScreenOrientationObservable extends PreferenceObservable<ScreenOrientation, SupportsOrientation> {
 
-    public ScreenOrientationObservable(Context context, Preferences preferences) {
-        super(preferences, context.getString(R.string.pref_misc_screen_orientation), preferences.screenOrientation());
+    public ScreenOrientationObservable(Preferences preferences) {
+        super(preferences, Preferences.Keys.SCREEN_ORIENTATION, preferences.screenOrientation());
     }
 
     @Override

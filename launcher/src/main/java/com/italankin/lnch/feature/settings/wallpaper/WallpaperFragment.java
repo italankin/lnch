@@ -8,6 +8,7 @@ import android.view.View;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +49,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
     }
 
     private void setupOverlayColor() {
-        Preference pref = findPreference(R.string.pref_wallpaper_overlay_color);
+        Preference pref = findPreference(Preferences.Keys.WALLPAPER_OVERLAY_COLOR);
         pref.setOnPreferenceChangeListener((preference, newValue) -> {
             try {
                 int color = Integer.parseInt(String.valueOf(newValue));

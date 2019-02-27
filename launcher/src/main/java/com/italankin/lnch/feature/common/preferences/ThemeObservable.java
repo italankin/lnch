@@ -1,14 +1,11 @@
 package com.italankin.lnch.feature.common.preferences;
 
-import android.content.Context;
-
-import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class ThemeObservable extends PreferenceObservable<Preferences.ColorTheme, ThemedActivity> {
 
-    public ThemeObservable(Context context, Preferences preferences) {
-        super(preferences, context.getString(R.string.pref_misc_color_theme), preferences.colorTheme());
+    public ThemeObservable(Preferences preferences) {
+        super(preferences, Preferences.Keys.COLOR_THEME, preferences.colorTheme());
     }
 
     @Override

@@ -786,12 +786,12 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void setScreenOrientation() {
-        Disposable disposable = new ScreenOrientationObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ScreenOrientationObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 
     private void setTheme() {
-        Disposable disposable = new ThemeObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ThemeObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 

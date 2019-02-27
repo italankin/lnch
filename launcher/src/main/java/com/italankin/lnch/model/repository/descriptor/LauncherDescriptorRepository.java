@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.text.TextUtils;
 
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -124,10 +122,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        String keySortMode = LauncherApp.daggerService.main().getContext()
-                .getString(R.string.pref_sort_mode);
         preferences.observe()
-                .filter(s -> s.equals(keySortMode)
+                .filter(key -> Preferences.Keys.APPS_SORT_MODE.equals(key)
                         && preferences.appsSortMode() != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> update())
                 .subscribe();

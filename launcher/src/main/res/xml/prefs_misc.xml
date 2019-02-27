@@ -4,23 +4,23 @@
         android:defaultValue="sensor"
         android:entries="@array/screen_orientation_desc"
         android:entryValues="@array/screen_orientation"
-        android:key="@string/pref_misc_screen_orientation"
+        android:key="screen_orientation"
         android:summary="%s"
         android:title="@string/title_settings_home_misc_screen_orientation" />
     <ListPreference
         android:defaultValue="popup"
         android:entries="@array/app_long_click_actions_desc"
         android:entryValues="@array/app_long_click_actions"
-        android:key="@string/pref_misc_app_long_click_action"
+        android:key="app_long_click_action"
         android:summary="%s"
         android:title="@string/title_settings_home_misc_app_long_click_action" />
     <CheckBoxPreference
         android:defaultValue="false"
-        android:key="@string/pref_misc_show_scrollbar"
+        android:key="show_scrollbar"
         android:title="@string/title_settings_home_misc_scrollbar" />
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="@string/pref_misc_scroll_to_top"
+        android:key="scroll_to_top"
         android:summary="@string/title_settings_home_misc_scroll_to_top_summary"
         android:title="@string/title_settings_home_misc_scroll_to_top" />
 </PreferenceScreen>
