@@ -707,6 +707,12 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             if (item.componentName != null) {
                 intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
+            ComponentName cn = intent.getComponent();
+            if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
+                Intent settingsIntent = SettingsActivity.getStartIntent(this);
+                startActivity(settingsIntent);
+                return;
+            }
             if (IntentUtils.safeStartActivity(this, intent)) {
                 return;
             }
@@ -837,6 +843,12 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
                 StartShortcutReceiver.ACTION.equals(intent.getAction())) {
             sendBroadcast(intent);
+            return;
+        }
+        ComponentName cn = intent.getComponent();
+        if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
+            Intent settingsIntent = SettingsActivity.getStartIntent(this);
+            startActivity(settingsIntent);
             return;
         }
         if (!IntentUtils.safeStartActivity(this, intent)) {
