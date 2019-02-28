@@ -26,7 +26,7 @@ public class SearchFragment extends BasePreferenceFragment {
 
         ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(requireContext());
         if (searchActivity == null) {
-            Preference preference = findPreference(Preferences.Keys.SEARCH_SHOW_GLOBAL_SEARCH);
+            Preference preference = findPreference(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
             getPreferenceScreen().removePreference(preference);
         }
     }

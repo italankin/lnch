@@ -11,12 +11,12 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.util.ViewUtils;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.ViewUtils;
 
 /**
  * @author Igor Talankin

@@ -1,9 +1,9 @@
 package com.italankin.lnch.feature.home.model;
 
-import com.italankin.lnch.model.repository.prefs.Preferences;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public final class UserPrefs {
     public final Preferences.HomeLayout homeLayout;
@@ -14,10 +14,10 @@ public final class UserPrefs {
     public final ItemPrefs itemPrefs;
 
     public UserPrefs(Preferences preferences) {
-        homeLayout = preferences.homeLayout();
-        overlayColor = preferences.overlayColor();
-        showScrollbar = preferences.showScrollbar();
-        globalSearch = preferences.searchShowGlobal();
+        homeLayout = preferences.get(Preferences.HOME_LAYOUT);
+        overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
+        showScrollbar = preferences.get(Preferences.SHOW_SCROLLBAR);
+        globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         itemPrefs = new UserPrefs.ItemPrefs(preferences);
     }
 
@@ -76,11 +76,11 @@ public final class UserPrefs {
         public final Preferences.Font itemFont;
 
         private ItemPrefs(Preferences preferences) {
-            itemTextSize = preferences.itemTextSize();
-            itemPadding = preferences.itemPadding();
-            itemShadowRadius = preferences.itemShadowRadius();
-            itemShadowColor = preferences.itemShadowColor();
-            itemFont = preferences.itemFont();
+            itemTextSize = preferences.get(Preferences.ITEM_TEXT_SIZE);
+            itemPadding = preferences.get(Preferences.ITEM_PADDING);
+            itemShadowRadius = preferences.get(Preferences.ITEM_SHADOW_RADIUS);
+            itemShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
+            itemFont = preferences.get(Preferences.ITEM_FONT);
         }
 
         @Override

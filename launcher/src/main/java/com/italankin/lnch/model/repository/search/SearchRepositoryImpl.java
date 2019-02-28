@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.util.Patterns.WEB_URL;
+import static com.italankin.lnch.model.repository.prefs.Preferences.SEARCH_ENGINE;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
 
 public class SearchRepositoryImpl implements SearchRepository {
@@ -38,7 +39,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             return Collections.emptyList();
         }
 
-        EnumSet<SearchTarget> searchTargets = preferences.searchTargets();
+        EnumSet<SearchTarget> searchTargets = preferences.get(Preferences.SEARCH_TARGETS);
         List<PartialMatch> matches = new ArrayList<>(8);
         for (SearchDelegate delegate : delegates) {
             List<PartialMatch> list = delegate.search(query, searchTargets);
@@ -51,7 +52,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         if (searchTargets.contains(SearchTarget.WEB)) {
-            WebSearchProvider webSearchProvider = WebSearchProviderFactory.get(preferences.searchEngine());
+            String name = preferences.get(SEARCH_ENGINE);
+            WebSearchProvider webSearchProvider = WebSearchProviderFactory.get(name);
             matches.add(webSearchProvider.make(constraint.toString(), query));
         }
 

@@ -7,7 +7,9 @@ import android.graphics.Color;
 import android.preference.PreferenceManager;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +18,95 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 
+@SuppressWarnings("unchecked")
 public class UserPreferences implements Preferences {
+
+    private final Map<Pref<?>, Fetcher> FETCHERS = new HashMap<>(32);
+    private final Map<Pref<?>, Updater> UPDATERS = new HashMap<>(32);
+
+    {
+        FETCHERS.put(SEARCH_SHOW_SOFT_KEYBOARD, this::searchShowSoftKeyboard);
+        FETCHERS.put(SEARCH_SHOW_GLOBAL_SEARCH, this::searchShowGlobal);
+        FETCHERS.put(SEARCH_USE_CUSTOM_TABS, this::useCustomTabs);
+        FETCHERS.put(SEARCH_ENGINE, this::searchEngine);
+        FETCHERS.put(SEARCH_TARGETS, this::searchTargets);
+        FETCHERS.put(WALLPAPER_OVERLAY_SHOW, this::showWallpaperOverlayColor);
+        FETCHERS.put(WALLPAPER_OVERLAY_COLOR, this::wallpaperOverlayColor);
+        FETCHERS.put(HOME_LAYOUT, this::homeLayout);
+        FETCHERS.put(SHOW_SCROLLBAR, this::showScrollbar);
+        FETCHERS.put(APP_LONG_CLICK_ACTION, this::appLongClickAction);
+        FETCHERS.put(SCREEN_ORIENTATION, this::screenOrientation);
+        FETCHERS.put(SCROLL_TO_TOP, this::scrollToTop);
+        FETCHERS.put(COLOR_THEME, this::colorTheme);
+        FETCHERS.put(ITEM_TEXT_SIZE, this::itemTextSize);
+        FETCHERS.put(ITEM_PADDING, this::itemPadding);
+        FETCHERS.put(ITEM_SHADOW_RADIUS, this::itemShadowRadius);
+        FETCHERS.put(ITEM_SHADOW_COLOR, this::itemShadowColor);
+        FETCHERS.put(ITEM_FONT, this::itemFont);
+        FETCHERS.put(FIRST_LAUNCH, this::firstLaunch);
+        FETCHERS.put(APPS_SORT_MODE, this::appsSortMode);
+
+        UPDATERS.put(SEARCH_SHOW_SOFT_KEYBOARD, newValue -> {
+            setSearchShowSoftKeyboard((Boolean) newValue);
+        });
+        UPDATERS.put(SEARCH_SHOW_GLOBAL_SEARCH, newValue -> {
+            setSearchShowGlobalSearch((Boolean) newValue);
+        });
+        UPDATERS.put(SEARCH_USE_CUSTOM_TABS, newValue -> {
+            setSearchUseCustomTabs((Boolean) newValue);
+        });
+        UPDATERS.put(SEARCH_ENGINE, newValue -> {
+            setSearchEngine((String) newValue);
+        });
+        UPDATERS.put(SEARCH_TARGETS, newValue -> {
+            setSearchTargets((EnumSet<SearchTarget>) newValue);
+        });
+        UPDATERS.put(WALLPAPER_OVERLAY_SHOW, newValue -> {
+            setWallpaperOverlayShow((Boolean) newValue);
+        });
+        UPDATERS.put(WALLPAPER_OVERLAY_COLOR, newValue -> {
+            setOverlayColor((Integer) newValue);
+        });
+        UPDATERS.put(HOME_LAYOUT, newValue -> {
+            setHomeLayout((HomeLayout) newValue);
+        });
+        UPDATERS.put(SHOW_SCROLLBAR, newValue -> {
+            setShowScrollbar((Boolean) newValue);
+        });
+        UPDATERS.put(APP_LONG_CLICK_ACTION, newValue -> {
+            setAppLongClickAction((LongClickAction) newValue);
+        });
+        UPDATERS.put(SCREEN_ORIENTATION, newValue -> {
+            setScreenOrientation((ScreenOrientation) newValue);
+        });
+        UPDATERS.put(SCROLL_TO_TOP, newValue -> {
+            setScrollToTop((Boolean) newValue);
+        });
+        UPDATERS.put(COLOR_THEME, newValue -> {
+            setColorTheme((ColorTheme) newValue);
+        });
+        UPDATERS.put(ITEM_TEXT_SIZE, newValue -> {
+            setItemTextSize((Float) newValue);
+        });
+        UPDATERS.put(ITEM_PADDING, newValue -> {
+            setItemPadding((Integer) newValue);
+        });
+        UPDATERS.put(ITEM_SHADOW_RADIUS, newValue -> {
+            setItemShadowRadius((Float) newValue);
+        });
+        UPDATERS.put(ITEM_SHADOW_COLOR, newValue -> {
+            setItemShadowColor((Integer) newValue);
+        });
+        UPDATERS.put(ITEM_FONT, newValue -> {
+            setItemFont((Font) newValue);
+        });
+        UPDATERS.put(FIRST_LAUNCH, newValue -> {
+            setFirstLaunch((Boolean) newValue);
+        });
+        UPDATERS.put(APPS_SORT_MODE, newValue -> {
+            setAppsSortMode((AppsSortMode) newValue);
+        });
+    }
 
     private final SharedPreferences prefs;
     private final Observable<String> updates;
@@ -39,61 +129,125 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public ColorTheme colorTheme() {
-        String pref = prefs.getString(Keys.COLOR_THEME, null);
-        return ColorTheme.from(pref);
+    public Observable<String> observe() {
+        return updates;
     }
 
     @Override
-    public boolean searchShowSoftKeyboard() {
-        return prefs.getBoolean(Keys.SEARCH_SHOW_SOFT_KEYBOARD, true);
+    public <T> Observable<T> observe(Pref<T> pref) {
+        return updates
+                .filter(pref.key()::equals)
+                .map(key -> get(pref));
     }
 
     @Override
-    public boolean searchShowGlobal() {
-        return prefs.getBoolean(Keys.SEARCH_SHOW_GLOBAL_SEARCH, true);
+    public <T> T get(Pref<T> pref) {
+        Fetcher fetcher = FETCHERS.get(pref);
+        if (fetcher == null) {
+            throw new IllegalArgumentException("Unknown pref:" + pref);
+        }
+        return (T) fetcher.getValue();
     }
 
     @Override
-    public boolean scrollToTop() {
-        return prefs.getBoolean(Keys.SCROLL_TO_TOP, true);
+    public <T> void set(Pref<T> pref, T newValue) {
+        Updater updater = UPDATERS.get(pref);
+        if (updater == null) {
+            throw new IllegalArgumentException("Unknown pref:" + pref);
+        }
+        updater.setValue(newValue);
     }
 
-    @Override
-    public HomeLayout homeLayout() {
-        String pref = prefs.getString(Keys.HOME_LAYOUT, null);
-        return HomeLayout.from(pref);
+    private void setColorTheme(ColorTheme colorTheme) {
+        prefs.edit().putString(COLOR_THEME.key(), colorTheme.toString()).apply();
     }
 
-    @Override
-    public void setOverlayColor(int color) {
-        prefs.edit().putInt(Keys.WALLPAPER_OVERLAY_COLOR, color).apply();
+    private ColorTheme colorTheme() {
+        String pref = prefs.getString(COLOR_THEME.key(), null);
+        return ColorTheme.from(pref, COLOR_THEME.defaultValue());
     }
 
-    @Override
-    public int overlayColor() {
-        boolean show = prefs.getBoolean(Keys.WALLPAPER_OVERLAY_SHOW, false);
+    private void setSearchShowSoftKeyboard(Boolean newValue) {
+        prefs.edit().putBoolean(SEARCH_SHOW_SOFT_KEYBOARD.key(), newValue).apply();
+    }
+
+    private void setSearchShowGlobalSearch(Boolean newValue) {
+        prefs.edit().putBoolean(SEARCH_SHOW_GLOBAL_SEARCH.key(), newValue).apply();
+    }
+
+    private boolean searchShowSoftKeyboard() {
+        return prefs.getBoolean(SEARCH_SHOW_SOFT_KEYBOARD.key(), SEARCH_SHOW_SOFT_KEYBOARD.defaultValue());
+    }
+
+    private boolean searchShowGlobal() {
+        return prefs.getBoolean(SEARCH_SHOW_GLOBAL_SEARCH.key(), SEARCH_SHOW_GLOBAL_SEARCH.defaultValue());
+    }
+
+    private void setScrollToTop(Boolean newValue) {
+        prefs.edit().putBoolean(SCROLL_TO_TOP.key(), newValue).apply();
+    }
+
+    private boolean scrollToTop() {
+        return prefs.getBoolean(SCROLL_TO_TOP.key(), SCROLL_TO_TOP.defaultValue());
+    }
+
+    private void setHomeLayout(HomeLayout newValue) {
+        prefs.edit().putString(HOME_LAYOUT.key(), newValue.toString()).apply();
+    }
+
+    private HomeLayout homeLayout() {
+        String pref = prefs.getString(HOME_LAYOUT.key(), null);
+        return HomeLayout.from(pref, HOME_LAYOUT.defaultValue());
+    }
+
+    private void setOverlayColor(int color) {
+        prefs.edit().putInt(WALLPAPER_OVERLAY_COLOR.key(), color).apply();
+    }
+
+    private void setWallpaperOverlayShow(Boolean newValue) {
+        prefs.edit().putBoolean(WALLPAPER_OVERLAY_SHOW.key(), newValue).apply();
+    }
+
+    private boolean showWallpaperOverlayColor() {
+        return prefs.getBoolean(WALLPAPER_OVERLAY_SHOW.key(), WALLPAPER_OVERLAY_SHOW.defaultValue());
+    }
+
+    private int wallpaperOverlayColor() {
+        boolean show = prefs.getBoolean(WALLPAPER_OVERLAY_SHOW.key(), WALLPAPER_OVERLAY_SHOW.defaultValue());
         int defValue = Color.TRANSPARENT;
         return show
-                ? prefs.getInt(Keys.WALLPAPER_OVERLAY_COLOR, defValue)
+                ? prefs.getInt(WALLPAPER_OVERLAY_COLOR.key(), defValue)
                 : defValue;
     }
 
-    @Override
-    public boolean useCustomTabs() {
-        return prefs.getBoolean(Keys.SEARCH_USE_CUSTOM_TABS, true);
+    private void setSearchUseCustomTabs(Boolean newValue) {
+        prefs.edit().putBoolean(SEARCH_USE_CUSTOM_TABS.key(), newValue).apply();
     }
 
-    @Override
-    public boolean showScrollbar() {
-        return prefs.getBoolean(Keys.SHOW_SCROLLBAR, false);
+    private boolean useCustomTabs() {
+        return prefs.getBoolean(SEARCH_USE_CUSTOM_TABS.key(), SEARCH_USE_CUSTOM_TABS.defaultValue());
     }
 
-    @Override
-    public EnumSet<SearchTarget> searchTargets() {
-        Set<String> set = prefs.getStringSet(Keys.SEARCH_TARGETS, null);
+    private void setShowScrollbar(Boolean newValue) {
+        prefs.edit().putBoolean(SHOW_SCROLLBAR.key(), newValue).apply();
+    }
+
+    private boolean showScrollbar() {
+        return prefs.getBoolean(SHOW_SCROLLBAR.key(), SHOW_SCROLLBAR.defaultValue());
+    }
+
+    private void setSearchTargets(EnumSet<SearchTarget> newValue) {
+        Set<String> value = new HashSet<>(newValue.size());
+        for (SearchTarget searchTarget : newValue) {
+            value.add(searchTarget.toString());
+        }
+        prefs.edit().putStringSet(SEARCH_TARGETS.key(), value).apply();
+    }
+
+    private EnumSet<SearchTarget> searchTargets() {
+        Set<String> set = prefs.getStringSet(SEARCH_TARGETS.key(), null);
         if (set == null) {
-            return SearchTarget.ALL;
+            return SEARCH_TARGETS.defaultValue();
         }
         Set<SearchTarget> result = new HashSet<>();
         for (String s : set) {
@@ -105,104 +259,108 @@ public class UserPreferences implements Preferences {
         return EnumSet.copyOf(result);
     }
 
-    @Override
-    public void setItemTextSize(float size) {
-        prefs.edit().putFloat(Keys.ITEM_TEXT_SIZE, size).apply();
+    private void setItemTextSize(float size) {
+        prefs.edit().putFloat(ITEM_TEXT_SIZE.key(), size).apply();
     }
 
-    @Override
-    public float itemTextSize() {
-        return prefs.getFloat(Keys.ITEM_TEXT_SIZE, Defaults.ITEM_TEXT_SIZE);
+    private float itemTextSize() {
+        return prefs.getFloat(ITEM_TEXT_SIZE.key(), ITEM_TEXT_SIZE.defaultValue());
     }
 
-    @Override
-    public void setItemPadding(int padding) {
-        prefs.edit().putInt(Keys.ITEM_PADDING, padding).apply();
+    private void setItemPadding(int padding) {
+        prefs.edit().putInt(ITEM_PADDING.key(), padding).apply();
     }
 
-    @Override
-    public int itemPadding() {
-        return prefs.getInt(Keys.ITEM_PADDING, Defaults.ITEM_PADDING);
+    private int itemPadding() {
+        return prefs.getInt(ITEM_PADDING.key(), ITEM_PADDING.defaultValue());
     }
 
-    @Override
-    public void setItemShadowRadius(float radius) {
-        prefs.edit().putFloat(Keys.ITEM_SHADOW_RADIUS, radius).apply();
+    private void setItemShadowRadius(float radius) {
+        prefs.edit().putFloat(ITEM_SHADOW_RADIUS.key(), radius).apply();
     }
 
-    @Override
-    public float itemShadowRadius() {
-        return prefs.getFloat(Keys.ITEM_SHADOW_RADIUS, Defaults.ITEM_SHADOW_RADIUS);
+    private float itemShadowRadius() {
+        return prefs.getFloat(ITEM_SHADOW_RADIUS.key(), ITEM_SHADOW_RADIUS.defaultValue());
     }
 
-    @Override
-    public void setItemShadowColor(int color) {
-        prefs.edit().putInt(Keys.ITEM_SHADOW_COLOR, color).apply();
+    private void setItemShadowColor(int color) {
+        prefs.edit().putInt(ITEM_SHADOW_COLOR.key(), color).apply();
     }
 
     @Nullable
-    @Override
-    public Integer itemShadowColor() {
-        String key = Keys.ITEM_SHADOW_COLOR;
-        return prefs.contains(key) ? prefs.getInt(key, 0) : null;
+    private Integer itemShadowColor() {
+        String key = ITEM_SHADOW_COLOR.key();
+        return prefs.contains(key) ? prefs.getInt(key, 0) : ITEM_SHADOW_COLOR.defaultValue();
     }
 
-    @Override
-    public void setItemFont(Font font) {
-        prefs.edit().putString(Keys.ITEM_FONT, font.toString()).apply();
+    private void setItemFont(Font font) {
+        prefs.edit().putString(ITEM_FONT.key(), font.toString()).apply();
     }
 
-    @Override
-    public Font itemFont() {
-        String pref = prefs.getString(Keys.ITEM_FONT, null);
-        return Font.from(pref);
+    private Font itemFont() {
+        String pref = prefs.getString(ITEM_FONT.key(), null);
+        return Font.from(pref, ITEM_FONT.defaultValue());
     }
 
     @Override
     public void resetItemSettings() {
         prefs.edit()
-                .remove(Keys.ITEM_TEXT_SIZE)
-                .remove(Keys.ITEM_PADDING)
-                .remove(Keys.ITEM_SHADOW_RADIUS)
-                .remove(Keys.ITEM_FONT)
+                .remove(ITEM_TEXT_SIZE.key())
+                .remove(ITEM_PADDING.key())
+                .remove(ITEM_SHADOW_RADIUS.key())
+                .remove(ITEM_FONT.key())
+                .remove(ITEM_SHADOW_COLOR.key())
                 .apply();
     }
 
-    @Override
-    public String searchEngine() {
-        return prefs.getString(Keys.SEARCH_ENGINE, null);
+    private void setSearchEngine(String newValue) {
+        prefs.edit().putString(SEARCH_ENGINE.key(), newValue).apply();
     }
 
-    @Override
-    public LongClickAction appLongClickAction() {
-        String pref = prefs.getString(Keys.APP_LONG_CLICK_ACTION, null);
-        return LongClickAction.from(pref);
+    private String searchEngine() {
+        return prefs.getString(SEARCH_ENGINE.key(), SEARCH_ENGINE.defaultValue());
     }
 
-    @Override
-    public ScreenOrientation screenOrientation() {
-        String pref = prefs.getString(Keys.SCREEN_ORIENTATION, null);
-        return ScreenOrientation.from(pref);
+    private void setAppLongClickAction(LongClickAction newValue) {
+        prefs.edit().putString(APP_LONG_CLICK_ACTION.key(), newValue.toString()).apply();
     }
 
-    @Override
-    public boolean firstLaunch() {
-        return prefs.getBoolean(Keys.FIRST_LAUNCH, true);
+    private LongClickAction appLongClickAction() {
+        String pref = prefs.getString(APP_LONG_CLICK_ACTION.key(), null);
+        return LongClickAction.from(pref, APP_LONG_CLICK_ACTION.defaultValue());
     }
 
-    @Override
-    public void setFirstLaunch(boolean value) {
-        prefs.edit().putBoolean(Keys.FIRST_LAUNCH, value).apply();
+    private void setScreenOrientation(ScreenOrientation newValue) {
+        prefs.edit().putString(SCREEN_ORIENTATION.key(), newValue.toString()).apply();
     }
 
-    @Override
-    public AppsSortMode appsSortMode() {
-        String pref = prefs.getString(Keys.APPS_SORT_MODE, null);
-        return AppsSortMode.from(pref);
+    private ScreenOrientation screenOrientation() {
+        String pref = prefs.getString(SCREEN_ORIENTATION.key(), null);
+        return ScreenOrientation.from(pref, SCREEN_ORIENTATION.defaultValue());
     }
 
-    @Override
-    public Observable<String> observe() {
-        return updates;
+    private boolean firstLaunch() {
+        return prefs.getBoolean(FIRST_LAUNCH.key(), FIRST_LAUNCH.defaultValue());
+    }
+
+    private void setFirstLaunch(boolean value) {
+        prefs.edit().putBoolean(FIRST_LAUNCH.key(), value).apply();
+    }
+
+    private void setAppsSortMode(AppsSortMode newValue) {
+        prefs.edit().putString(APPS_SORT_MODE.key(), newValue.toString()).apply();
+    }
+
+    private AppsSortMode appsSortMode() {
+        String pref = prefs.getString(APPS_SORT_MODE.key(), null);
+        return AppsSortMode.from(pref, APPS_SORT_MODE.defaultValue());
+    }
+
+    private interface Fetcher {
+        Object getValue();
+    }
+
+    private interface Updater {
+        void setValue(Object newValue);
     }
 }

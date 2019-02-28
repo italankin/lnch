@@ -1,120 +1,128 @@
 package com.italankin.lnch.model.repository.prefs;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.Typeface;
+
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 
 public interface Preferences {
 
-    ColorTheme colorTheme();
+    Observable<String> observe();
 
-    boolean searchShowSoftKeyboard();
+    <T> Observable<T> observe(Pref<T> pref);
 
-    boolean searchShowGlobal();
+    <T> T get(Pref<T> pref);
 
-    boolean scrollToTop();
-
-    HomeLayout homeLayout();
-
-    void setOverlayColor(@ColorInt int color);
-
-    int overlayColor();
-
-    boolean useCustomTabs();
-
-    boolean showScrollbar();
-
-    String searchEngine();
-
-    EnumSet<SearchTarget> searchTargets();
-
-    void setItemTextSize(float size);
-
-    float itemTextSize();
-
-    void setItemPadding(int padding);
-
-    int itemPadding();
-
-    void setItemShadowRadius(float radius);
-
-    float itemShadowRadius();
-
-    void setItemShadowColor(@ColorInt int color);
-
-    @Nullable
-    @ColorInt
-    Integer itemShadowColor();
-
-    void setItemFont(Font font);
-
-    Font itemFont();
+    <T> void set(Pref<T> pref, T newValue);
 
     void resetItemSettings();
 
-    LongClickAction appLongClickAction();
-
-    ScreenOrientation screenOrientation();
-
-    boolean firstLaunch();
-
-    void setFirstLaunch(boolean value);
-
-    AppsSortMode appsSortMode();
-
-    Observable<String> observe();
-
     ///////////////////////////////////////////////////////////////////////////
-    // Keys
+    // Preferences interfaces
     ///////////////////////////////////////////////////////////////////////////
 
-    interface Keys {
-        String SEARCH_SHOW_SOFT_KEYBOARD = "search_show_soft_keyboard";
-        String SEARCH_SHOW_GLOBAL_SEARCH = "search_show_global_search";
-        String SEARCH_USE_CUSTOM_TABS = "search_use_custom_tabs";
-        String SEARCH_ENGINE = "search_engine";
-        String SEARCH_TARGETS = "search_targets";
-        String WALLPAPER_OVERLAY_SHOW = "wallpaper_overlay_show";
-        String WALLPAPER_OVERLAY_COLOR = "wallpaper_overlay_color";
-        String HOME_LAYOUT = "home_layout";
-        String SHOW_SCROLLBAR = "show_scrollbar";
-        String APP_LONG_CLICK_ACTION = "app_long_click_action";
-        String SCREEN_ORIENTATION = "screen_orientation";
-        String SCROLL_TO_TOP = "scroll_to_top";
-        String COLOR_THEME = "color_theme";
-        String ITEM_TEXT_SIZE = "item_text_size";
-        String ITEM_PADDING = "item_padding";
-        String ITEM_SHADOW_RADIUS = "item_shadow_radius";
-        String ITEM_SHADOW_COLOR = "item_shadow_color";
-        String ITEM_FONT = "item_font";
-        String FIRST_LAUNCH = "first_launch";
-        String APPS_SORT_MODE = "apps_sort_mode";
+    interface Pref<T> {
+        String key();
+
+        T defaultValue();
+    }
+
+    interface RangePref<T> extends Pref<T> {
+        T min();
+
+        T max();
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Constants
+    // Preferences
     ///////////////////////////////////////////////////////////////////////////
 
-    interface Constraints {
-        int ITEM_TEXT_SIZE_MIN = 12;
-        int ITEM_TEXT_SIZE_MAX = 40;
-        int ITEM_PADDING_MIN = 4;
-        int ITEM_PADDING_MAX = 28;
-        int ITEM_SHADOW_RADIUS_MIN = 0;
-        int ITEM_SHADOW_RADIUS_MAX = 16;
-    }
+    Pref<Boolean> SEARCH_SHOW_SOFT_KEYBOARD = Prefs.create(
+            "search_show_soft_keyboard",
+            true);
 
-    interface Defaults {
-        int ITEM_PADDING = 16;
-        float ITEM_TEXT_SIZE = 22;
-        float ITEM_SHADOW_RADIUS = 4;
-    }
+    Pref<Boolean> SEARCH_SHOW_GLOBAL_SEARCH = Prefs.create(
+            "search_show_global_search",
+            true);
+
+    Pref<Boolean> SEARCH_USE_CUSTOM_TABS = Prefs.create(
+            "search_use_custom_tabs",
+            true);
+
+    Pref<String> SEARCH_ENGINE = Prefs.create(
+            "search_engine",
+            null);
+
+    Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
+            "search_targets",
+            SearchTarget.ALL);
+
+    Pref<Boolean> WALLPAPER_OVERLAY_SHOW = Prefs.create(
+            "wallpaper_overlay_show",
+            false);
+
+    Pref<Integer> WALLPAPER_OVERLAY_COLOR = Prefs.create(
+            "wallpaper_overlay_color",
+            Color.TRANSPARENT);
+
+    Pref<HomeLayout> HOME_LAYOUT = Prefs.create(
+            "home_layout",
+            HomeLayout.COMPACT);
+
+    Pref<Boolean> SHOW_SCROLLBAR = Prefs.create(
+            "show_scrollbar",
+            false);
+
+    Pref<LongClickAction> APP_LONG_CLICK_ACTION = Prefs.create(
+            "app_long_click_action",
+            LongClickAction.POPUP);
+
+    Pref<ScreenOrientation> SCREEN_ORIENTATION = Prefs.create(
+            "screen_orientation",
+            ScreenOrientation.SENSOR);
+
+    Pref<Boolean> SCROLL_TO_TOP = Prefs.create(
+            "scroll_to_top",
+            true);
+
+    Pref<ColorTheme> COLOR_THEME = Prefs.create(
+            "color_theme",
+            ColorTheme.DARK);
+
+    RangePref<Float> ITEM_TEXT_SIZE = Prefs.create(
+            "item_text_size",
+            22f, 12f, 40f);
+
+    RangePref<Integer> ITEM_PADDING = Prefs.create(
+            "item_padding",
+            16, 4, 28);
+
+    RangePref<Float> ITEM_SHADOW_RADIUS = Prefs.create(
+            "item_shadow_radius",
+            4f, 0f, 16f);
+
+    Pref<Integer> ITEM_SHADOW_COLOR = Prefs.create(
+            "item_shadow_color",
+            null);
+
+    Pref<Font> ITEM_FONT = Prefs.create(
+            "item_font",
+            Font.DEFAULT);
+
+    Pref<Boolean> FIRST_LAUNCH = Prefs.create(
+            "first_launch",
+            true);
+
+    Pref<AppsSortMode> APPS_SORT_MODE = Prefs.create(
+            "apps_sort_mode",
+            AppsSortMode.MANUAL);
 
     ///////////////////////////////////////////////////////////////////////////
     // Enums
@@ -127,19 +135,25 @@ public interface Preferences {
         DARK("dark"),
         LIGHT("light");
 
-        static ColorTheme from(String s) {
+        static ColorTheme from(String s, ColorTheme defaultValue) {
             for (ColorTheme value : values()) {
                 if (value.key.equals(s)) {
                     return value;
                 }
             }
-            return DARK;
+            return defaultValue;
         }
 
         private final String key;
 
         ColorTheme(String key) {
             this.key = key;
+        }
+
+        @NotNull
+        @Override
+        public String toString() {
+            return key;
         }
     }
 
@@ -149,13 +163,13 @@ public interface Preferences {
     enum HomeLayout {
         COMPACT("compact");
 
-        static HomeLayout from(String s) {
+        static HomeLayout from(String s, HomeLayout defaultValue) {
             for (HomeLayout value : values()) {
                 if (value.name.equals(s)) {
                     return value;
                 }
             }
-            return COMPACT;
+            return defaultValue;
         }
 
         private final String name;
@@ -180,13 +194,13 @@ public interface Preferences {
         SERIF("serif", Typeface.SERIF),
         MONOSPACE("monospace", Typeface.MONOSPACE);
 
-        static Font from(String s) {
+        static Font from(String s, Font defaultValue) {
             for (Font value : values()) {
                 if (value.name.equals(s)) {
                     return value;
                 }
             }
-            return DEFAULT;
+            return defaultValue;
         }
 
         private final String name;
@@ -233,6 +247,12 @@ public interface Preferences {
         SearchTarget(String key) {
             this.key = key;
         }
+
+        @NotNull
+        @Override
+        public String toString() {
+            return key;
+        }
     }
 
     /**
@@ -242,13 +262,13 @@ public interface Preferences {
         POPUP("popup"),
         INFO("info");
 
-        static LongClickAction from(String s) {
+        static LongClickAction from(String s, LongClickAction defaultValue) {
             for (LongClickAction item : values()) {
                 if (item.action.equals(s)) {
                     return item;
                 }
             }
-            return POPUP;
+            return defaultValue;
         }
 
         private final String action;
@@ -272,13 +292,13 @@ public interface Preferences {
         PORTRAIT("portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT),
         LANDSCAPE("landscape", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        static ScreenOrientation from(String s) {
+        static ScreenOrientation from(String s, ScreenOrientation defaultValue) {
             for (ScreenOrientation item : values()) {
                 if (item.key.equals(s)) {
                     return item;
                 }
             }
-            return SENSOR;
+            return defaultValue;
         }
 
         private final String key;
@@ -308,13 +328,13 @@ public interface Preferences {
         AZ("az"),
         ZA("za");
 
-        static AppsSortMode from(String s) {
+        static AppsSortMode from(String s, AppsSortMode defaultValue) {
             for (AppsSortMode item : values()) {
                 if (item.mode.equals(s)) {
                     return item;
                 }
             }
-            return MANUAL;
+            return defaultValue;
         }
 
         private final String mode;

@@ -17,11 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.BackButtonHandler;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.prefs.Preferences.Constraints;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
@@ -31,11 +35,6 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 
 public class ItemAppearanceFragment extends AppFragment implements BackButtonHandler {
 
@@ -204,14 +203,14 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initOverlay(View view) {
         View overlay = view.findViewById(R.id.overlay);
-        overlay.setBackgroundColor(preferences.overlayColor());
+        overlay.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         overlay.setOnClickListener(v -> {
             Drawable background = v.getBackground();
             int selectedColor;
             if (background instanceof ColorDrawable) {
                 selectedColor = ((ColorDrawable) background).getColor();
             } else {
-                selectedColor = preferences.overlayColor();
+                selectedColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
             }
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
@@ -260,8 +259,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initTextSize(View view) {
         itemTextSize = view.findViewById(R.id.item_text_size);
-        itemTextSize.setProgress((int) (preferences.itemTextSize() - Constraints.ITEM_TEXT_SIZE_MIN));
-        itemTextSize.setMax(Constraints.ITEM_TEXT_SIZE_MAX - Constraints.ITEM_TEXT_SIZE_MIN);
+        setParams(itemTextSize, Preferences.ITEM_TEXT_SIZE);
         itemTextSize.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
         }));
@@ -271,7 +269,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         String[] fontTitles = getResources().getStringArray(R.array.settings_item_appearance_text_font_titles);
 
         itemFont = view.findViewById(R.id.item_font);
-        Preferences.Font font = preferences.itemFont();
+        Preferences.Font font = preferences.get(Preferences.ITEM_FONT);
         itemFont.setValueHolder(new ValuePrefView.ValueHolder<Preferences.Font>() {
             private Preferences.Font value;
 
@@ -305,8 +303,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initPadding(View view) {
         itemPadding = view.findViewById(R.id.item_padding);
-        itemPadding.setProgress(preferences.itemPadding() - Constraints.ITEM_PADDING_MIN);
-        itemPadding.setMax(Constraints.ITEM_PADDING_MAX - Constraints.ITEM_PADDING_MIN);
+        setParams(itemPadding, Preferences.ITEM_PADDING);
         itemPadding.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
         }));
@@ -314,8 +311,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initShadowRadius(View view) {
         itemShadowRadius = view.findViewById(R.id.item_shadow_radius);
-        itemShadowRadius.setProgress((int) preferences.itemShadowRadius() - Constraints.ITEM_SHADOW_RADIUS_MIN);
-        itemShadowRadius.setMax(Constraints.ITEM_SHADOW_RADIUS_MAX - Constraints.ITEM_SHADOW_RADIUS_MIN);
+        setParams(itemShadowRadius, Preferences.ITEM_SHADOW_RADIUS);
         itemShadowRadius.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
         }));
@@ -323,7 +319,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initShadowColor(View view) {
         itemShadowColor = view.findViewById(R.id.item_shadow_color);
-        Integer shadowColor = preferences.itemShadowColor();
+        Integer shadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
         itemShadowColor.setValueHolder(new ValuePrefView.ColorValueHolder());
         itemShadowColor.setValue(shadowColor != null
                 ? shadowColor
@@ -362,8 +358,8 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void updatePreview() {
         Preferences.Font font = itemFont.getValue();
-        int textSize = Constraints.ITEM_TEXT_SIZE_MIN + itemTextSize.getProgress();
-        int padding = Constraints.ITEM_PADDING_MIN + itemPadding.getProgress();
+        int textSize = (int) (Preferences.ITEM_TEXT_SIZE.min() + itemTextSize.getProgress());
+        int padding = Preferences.ITEM_PADDING.min() + itemPadding.getProgress();
         int shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
         preview.setTypeface(font.typeface());
@@ -374,36 +370,36 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     }
 
     private void save() {
-        float textSize = itemTextSize.getProgress() + Constraints.ITEM_TEXT_SIZE_MIN;
-        int padding = itemPadding.getProgress() + Constraints.ITEM_PADDING_MIN;
+        float textSize = itemTextSize.getProgress() + Preferences.ITEM_TEXT_SIZE.min();
+        int padding = itemPadding.getProgress() + Preferences.ITEM_PADDING.min();
         float shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
         Preferences.Font font = itemFont.getValue();
-        preferences.setItemTextSize(textSize);
-        preferences.setItemPadding(padding);
-        preferences.setItemShadowRadius(shadowRadius);
-        preferences.setItemShadowColor(shadowColor);
-        preferences.setItemFont(font);
+        preferences.set(Preferences.ITEM_TEXT_SIZE, textSize);
+        preferences.set(Preferences.ITEM_PADDING, padding);
+        preferences.set(Preferences.ITEM_SHADOW_RADIUS, shadowRadius);
+        preferences.set(Preferences.ITEM_SHADOW_COLOR, shadowColor);
+        preferences.set(Preferences.ITEM_FONT, font);
     }
 
     private boolean isChanged() {
-        float textSize = itemTextSize.getProgress() + Constraints.ITEM_TEXT_SIZE_MIN;
-        if (Float.compare(textSize, preferences.itemTextSize()) != 0) {
+        float textSize = itemTextSize.getProgress() + Preferences.ITEM_TEXT_SIZE.min();
+        if (Float.compare(textSize, preferences.get(Preferences.ITEM_TEXT_SIZE)) != 0) {
             return true;
         }
 
-        int padding = itemPadding.getProgress() + Constraints.ITEM_PADDING_MIN;
-        if (padding != preferences.itemPadding()) {
+        int padding = itemPadding.getProgress() + Preferences.ITEM_PADDING.min();
+        if (padding != preferences.get(Preferences.ITEM_PADDING)) {
             return true;
         }
 
         float shadowRadius = itemShadowRadius.getProgress();
-        if (Float.compare(shadowRadius, preferences.itemShadowRadius()) != 0) {
+        if (Float.compare(shadowRadius, preferences.get(Preferences.ITEM_SHADOW_RADIUS)) != 0) {
             return true;
         }
 
         int shadowColor = itemShadowColor.getValue();
-        Integer currentShadowColor = preferences.itemShadowColor();
+        Integer currentShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
         if (currentShadowColor == null) {
             if (shadowColor != ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault)) {
                 return true;
@@ -412,7 +408,13 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
             return true;
         }
 
-        return itemFont.getValue() != preferences.itemFont();
+        return itemFont.getValue() != preferences.get(Preferences.ITEM_FONT);
+    }
+
+    private void setParams(SliderPrefView prefView, Preferences.RangePref<? extends Number> pref) {
+        int min = pref.min().intValue();
+        prefView.setProgress(preferences.get(pref).intValue() - min);
+        prefView.setMax(pref.max().intValue() - min);
     }
 
     public interface Callbacks {
