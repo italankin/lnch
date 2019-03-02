@@ -57,7 +57,7 @@ public interface Preferences {
 
     Pref<String> SEARCH_ENGINE = Prefs.create(
             "search_engine",
-            null);
+            "google");
 
     Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
             "search_targets",
