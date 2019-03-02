@@ -4,12 +4,11 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import androidx.annotation.NonNull;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 public interface Preferences {
@@ -165,23 +164,23 @@ public interface Preferences {
 
         static HomeLayout from(String s, HomeLayout defaultValue) {
             for (HomeLayout value : values()) {
-                if (value.name.equals(s)) {
+                if (value.key.equals(s)) {
                     return value;
                 }
             }
             return defaultValue;
         }
 
-        private final String name;
+        private final String key;
 
-        HomeLayout(String name) {
-            this.name = name;
+        HomeLayout(String key) {
+            this.key = key;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return name;
+            return key;
         }
     }
 
@@ -196,18 +195,18 @@ public interface Preferences {
 
         static Font from(String s, Font defaultValue) {
             for (Font value : values()) {
-                if (value.name.equals(s)) {
+                if (value.key.equals(s)) {
                     return value;
                 }
             }
             return defaultValue;
         }
 
-        private final String name;
+        private final String key;
         private final Typeface typeface;
 
-        Font(String name, Typeface typeface) {
-            this.name = name;
+        Font(String key, Typeface typeface) {
+            this.key = key;
             this.typeface = typeface;
         }
 
@@ -218,7 +217,7 @@ public interface Preferences {
         @NonNull
         @Override
         public String toString() {
-            return name;
+            return key;
         }
     }
 
@@ -264,23 +263,23 @@ public interface Preferences {
 
         static LongClickAction from(String s, LongClickAction defaultValue) {
             for (LongClickAction item : values()) {
-                if (item.action.equals(s)) {
+                if (item.key.equals(s)) {
                     return item;
                 }
             }
             return defaultValue;
         }
 
-        private final String action;
+        private final String key;
 
-        LongClickAction(String action) {
-            this.action = action;
+        LongClickAction(String key) {
+            this.key = key;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return action;
+            return key;
         }
     }
 
@@ -330,23 +329,23 @@ public interface Preferences {
 
         static AppsSortMode from(String s, AppsSortMode defaultValue) {
             for (AppsSortMode item : values()) {
-                if (item.mode.equals(s)) {
+                if (item.key.equals(s)) {
                     return item;
                 }
             }
             return defaultValue;
         }
 
-        private final String mode;
+        private final String key;
 
-        AppsSortMode(String mode) {
-            this.mode = mode;
+        AppsSortMode(String key) {
+            this.key = key;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return mode;
+            return key;
         }
     }
 }
