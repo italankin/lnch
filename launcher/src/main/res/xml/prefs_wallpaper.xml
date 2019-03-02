@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory android:title="@string/title_settings_wallpaper">
         <Preference
             android:key="@string/key_wallpaper_change"
@@ -13,6 +14,7 @@
         <Preference
             android:dependency="wallpaper_overlay_show"
             android:key="wallpaper_overlay_color"
-            android:title="@string/title_settings_wallpaper_overlay_color" />
+            android:title="@string/title_settings_wallpaper_overlay_color"
+            tools:ignore="PrefsDetector" />
     </PreferenceCategory>
 </PreferenceScreen>
