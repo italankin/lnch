@@ -19,8 +19,8 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
     companion object {
         val ISSUE = Issue.create(
                 "PrefsDetector",
-                "",
-                "",
+                "Preferences defined in XML must have known key and correct defaultValue",
+                "Preferences defined in XML must have known key and correct defaultValue, as defined in Preferences.java",
                 Category.LINT,
                 10,
                 Severity.FATAL,
