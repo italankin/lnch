@@ -5,12 +5,10 @@ import com.android.resources.ResourceFolderType
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.intellij.psi.PsiClassType
-import com.intellij.psi.PsiType
-import com.intellij.psi.util.PsiTypesUtil
-import org.jetbrains.uast.UCallExpression
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.findContainingUClass
-import org.jetbrains.uast.getOutermostQualified
+import com.italankin.lintchecks.util.getAndroidAttrNode
+import com.italankin.lintchecks.util.isBoxedPrimitive
+import com.italankin.lintchecks.util.isEnum
+import org.jetbrains.uast.*
 import org.w3c.dom.Attr
 import org.w3c.dom.Element
 import java.util.*
@@ -36,18 +34,9 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
         private const val METHOD_CREATE = "create"
         private const val ATTR_DEFAULT_VALUE = "defaultValue"
         private const val ATTR_KEY = "key"
-        private val BOXED_PRIMITIVE_TYPES = setOf(
-                String::class.java.name,
-                Byte::class.java.name,
-                Double::class.java.name,
-                Integer::class.java.name,
-                Float::class.java.name,
-                Boolean::class.java.name,
-                Character::class.java.name,
-                Short::class.java.name,
-                Long::class.java.name
-        )
     }
+
+    private val prefs: MutableMap<String, Pref> = ConcurrentHashMap()
 
     override fun beforeCheckEachProject(context: Context) {
         if (context.phase == FIRST_PHASE) {
@@ -59,16 +48,6 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
         if (context.phase == FIRST_PHASE) {
             context.driver.requestRepeat(this, Scope.RESOURCE_FILE_SCOPE)
         }
-    }
-
-    private val prefs: MutableMap<String, Pref> = ConcurrentHashMap()
-
-    override fun appliesTo(folderType: ResourceFolderType): Boolean {
-        return folderType == ResourceFolderType.XML
-    }
-
-    override fun getApplicableElements(): Collection<String> {
-        return listOf("Preference", "ListPreference", "CheckBoxPreference", "MultiSelectListPreference")
     }
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> {
@@ -88,20 +67,34 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
                 if (containingClass.qualifiedName != PREFS) {
                     return
                 }
-                val argName = node.valueArguments.getOrNull(0) ?: return
-                val argDefaultValue = node.valueArguments.getOrNull(1) ?: return
-                val name = ConstantEvaluator.evaluateString(context, argName, false) ?: return
-                val defaultValue = ConstantEvaluator.evaluate(context, argDefaultValue)
-                val prefType = (node.returnType as PsiClassType).parameters.getOrNull(0) ?: return
+                val defaultValue = node.valueArguments.getOrNull(1) ?: return
+                val name = node.valueArguments.getOrNull(0)?.evaluateString() ?: return
                 val location = getFieldNameLocation(context, node)
-                if (prefType.isBoxedPrimitive()) {
-                    prefs[name] = Pref(defaultValue ?: Pref.Value.NULL, location)
-                } else {
-                    // TODO analyze enums
-                    prefs[name] = Pref(Pref.Value.UNKNOWN, location)
+                val prefType = (node.returnType as PsiClassType).parameters.getOrNull(0) ?: return
+                if (prefType.isBoxedPrimitive() || isString(prefType)) {
+                    prefs[name] = Pref(defaultValue.evaluate(), location)
+                    return
+                }
+                prefs[name] = Pref(Pref.Value.UNKNOWN, location)
+                when {
+                    prefType.isEnum() -> {
+                        val literalValue = defaultValue.tryResolve()
+                                .toUElement(UEnumConstant::class.java)
+                                ?.resolveEnumKey()
+                                ?: return
+                        prefs[name] = Pref(literalValue, location)
+                    }
                 }
             }
         }
+    }
+
+    private fun UEnumConstant?.resolveEnumKey(): String? {
+        if (this == null) {
+            return null
+        }
+        val firstArgument = valueArguments.getOrNull(0)!!
+        return firstArgument.evaluateString()
     }
 
     private fun getFieldNameLocation(context: JavaContext, node: UCallExpression): Location? {
@@ -109,55 +102,84 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
         return context.getNameLocation(parent)
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // XML
+    ///////////////////////////////////////////////////////////////////////////
+
+    override fun getApplicableElements(): Collection<String> {
+        return listOf(
+                "Preference",
+                "ListPreference",
+                "CheckBoxPreference",
+                "MultiSelectListPreference",
+                "SwitchPreference"
+        )
+    }
+
+    override fun appliesTo(folderType: ResourceFolderType): Boolean {
+        return folderType == ResourceFolderType.XML
+    }
+
     override fun visitElement(context: XmlContext, element: Element) {
         if (context.phase != SECOND_PHASE) {
             return
         }
-        val nodeKey = element.getAttributeNodeNS(SdkConstants.ANDROID_URI, ATTR_KEY) ?: return
+        val nodeKey = element.getAndroidAttrNode(ATTR_KEY) ?: return
         val key = nodeKey.value
         if (key.startsWith(SdkConstants.STRING_PREFIX)) {
             return
         }
         if (!prefs.containsKey(key)) {
-            context.report(ISSUE, context.getValueLocation(element.getAttributeNode(ATTR_KEY)),
-                    "Unknown key")
+            context.report(ISSUE, context.getValueLocation(nodeKey), "Unknown preference key")
             return
         }
-        val pref = prefs[key] as Pref
+        val pref = prefs[key]!!
         if (pref.defaultValue == Pref.Value.UNKNOWN) {
             return
         }
-        val nodeDefaultValue: Attr? = element.getAttributeNodeNS(SdkConstants.ANDROID_URI, ATTR_DEFAULT_VALUE)
+        val nodeDefaultValue: Attr? = element.getAndroidAttrNode(ATTR_DEFAULT_VALUE)
         if (nodeDefaultValue == null) {
-            val location = context.getNameLocation(nodeKey)
-            if (pref.location != null) {
-                location.withSecondary(pref.location, "Defined here", true)
-            }
-            context.report(ISSUE, location, "Must have value `${pref.defaultValue}`")
+            val location = context.getNameLocation(nodeKey).addDefinition(pref)
+            context.report(ISSUE, location, "Must have defaultValue `${pref.defaultValue}`")
             return
         }
-        if (nodeDefaultValue.value != pref.defaultValue) {
-            val location = context.getValueLocation(nodeDefaultValue)
-            if (pref.location != null) {
-                location.withSecondary(pref.location, "Defined here", true)
-            }
-            val fix = fix()
-                    .set(SdkConstants.ANDROID_URI, ATTR_DEFAULT_VALUE, "${pref.defaultValue}")
-                    .build()
-            context.report(ISSUE, location, "defaultValue should be `${pref.defaultValue}`", fix)
-        }
-        if(pref is EnumPref) {
-            // TODO
+        if (!checkValueEquals(nodeDefaultValue.value, pref.defaultValue)) {
+            val location = context.getValueLocation(nodeDefaultValue).addDefinition(pref)
+            context.report(ISSUE, location, "Must be `${pref.defaultValue}`")
         }
     }
 
-    private fun PsiType.isBoxedPrimitive(): Boolean {
-        return PsiTypesUtil.getPsiClass(this)?.qualifiedName in BOXED_PRIMITIVE_TYPES
+    private fun checkValueEquals(value: String, expected: Any?): Boolean {
+        val any: Any = when (expected) {
+            is String -> value
+            is Boolean -> value.toBoolean()
+            is Float -> value.toFloat()
+            is Long -> value.toLong()
+            is Byte -> value.toByte()
+            is Double -> value.toDouble()
+            is Int -> value.toInt()
+            is Char -> value.toInt()
+            is Short -> value.toShort()
+            null -> return value == SdkConstants.NULL_RESOURCE
+            else -> return false
+        }
+        return expected == any
     }
 
-    private open class Pref(
+    private fun Location.addDefinition(pref: Pref): Location {
+        if (pref.declaration != null) {
+            withSecondary(pref.declaration, "defined here", false)
+        }
+        return this
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Data
+    ///////////////////////////////////////////////////////////////////////////
+
+    private data class Pref(
             val defaultValue: Any?,
-            val location: Location? = null
+            val declaration: Location? = null
     ) {
         enum class Value {
             NULL() {
@@ -166,10 +188,4 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
             UNKNOWN
         }
     }
-
-    private class EnumPref(
-            defaultValue: Any?,
-            location: Location?,
-            val values: Set<Any>
-    ) : Pref(defaultValue, location)
 }
