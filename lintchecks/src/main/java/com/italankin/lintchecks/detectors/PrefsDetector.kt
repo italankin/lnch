@@ -25,8 +25,7 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
                 10,
                 Severity.FATAL,
                 Implementation(PrefsDetector::class.java,
-                        EnumSet.of(Scope.JAVA_FILE, Scope.RESOURCE_FILE),
-                        Scope.RESOURCE_FILE_SCOPE))
+                        EnumSet.of(Scope.JAVA_FILE, Scope.RESOURCE_FILE)))
 
         private const val FIRST_PHASE = 1
         private const val SECOND_PHASE = 2
@@ -149,8 +148,8 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
         }
     }
 
-    private fun checkValueEquals(value: String, expected: Any?): Boolean {
-        val any: Any = when (expected) {
+    private fun checkValueEquals(value: String, another: Any?): Boolean {
+        val any: Any = when (another) {
             is String -> value
             is Boolean -> value.toBoolean()
             is Float -> value.toFloat()
@@ -163,7 +162,7 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
             null -> return value == SdkConstants.NULL_RESOURCE
             else -> return false
         }
-        return expected == any
+        return another == any
     }
 
     private fun Location.addDefinition(pref: Pref): Location {
