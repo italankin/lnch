@@ -17,11 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.BackButtonHandler;
@@ -35,6 +30,11 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 public class ItemAppearanceFragment extends AppFragment implements BackButtonHandler {
 
@@ -121,7 +121,13 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
                 }
                 return true;
             case R.id.action_reset:
-                preferences.resetItemSettings();
+                preferences.reset(
+                        Preferences.ITEM_TEXT_SIZE,
+                        Preferences.ITEM_PADDING,
+                        Preferences.ITEM_SHADOW_RADIUS,
+                        Preferences.ITEM_FONT,
+                        Preferences.ITEM_SHADOW_COLOR
+                );
                 if (callbacks != null) {
                     callbacks.onItemAppearanceFinish();
                 }

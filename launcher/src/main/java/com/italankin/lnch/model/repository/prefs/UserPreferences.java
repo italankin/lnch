@@ -23,6 +23,7 @@ public class UserPreferences implements Preferences {
 
     private final Map<Pref<?>, Fetcher> FETCHERS = new HashMap<>(32);
     private final Map<Pref<?>, Updater> UPDATERS = new HashMap<>(32);
+    private final Map<String, Pref<?>> PREFS = new HashMap<>(32);
 
     {
         FETCHERS.put(SEARCH_SHOW_SOFT_KEYBOARD, this::searchShowSoftKeyboard);
@@ -106,6 +107,10 @@ public class UserPreferences implements Preferences {
         UPDATERS.put(APPS_SORT_MODE, newValue -> {
             setAppsSortMode((AppsSortMode) newValue);
         });
+
+        for (Pref<?> pref : FETCHERS.keySet()) {
+            PREFS.put(pref.key(), pref);
+        }
     }
 
     private final SharedPreferences prefs;
@@ -129,18 +134,6 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public Observable<String> observe() {
-        return updates;
-    }
-
-    @Override
-    public <T> Observable<T> observe(Pref<T> pref) {
-        return updates
-                .filter(pref.key()::equals)
-                .map(key -> get(pref));
-    }
-
-    @Override
     public <T> T get(Pref<T> pref) {
         Fetcher fetcher = FETCHERS.get(pref);
         if (fetcher == null) {
@@ -156,6 +149,27 @@ public class UserPreferences implements Preferences {
             throw new IllegalArgumentException("Unknown pref:" + pref);
         }
         updater.setValue(newValue);
+    }
+
+    @Override
+    public void reset(Pref<?>... prefs) {
+        SharedPreferences.Editor editor = this.prefs.edit();
+        for (Pref<?> pref : prefs) {
+            editor.remove(pref.key());
+        }
+        editor.apply();
+    }
+
+    @Override
+    public Observable<Pref<?>> observe() {
+        return updates.map(PREFS::get);
+    }
+
+    @Override
+    public <T> Observable<T> observe(Pref<T> pref) {
+        return updates
+                .filter(pref.key()::equals)
+                .map(key -> get(pref));
     }
 
     private void setColorTheme(ColorTheme colorTheme) {
@@ -300,17 +314,6 @@ public class UserPreferences implements Preferences {
     private Font itemFont() {
         String pref = prefs.getString(ITEM_FONT.key(), null);
         return Font.from(pref, ITEM_FONT.defaultValue());
-    }
-
-    @Override
-    public void resetItemSettings() {
-        prefs.edit()
-                .remove(ITEM_TEXT_SIZE.key())
-                .remove(ITEM_PADDING.key())
-                .remove(ITEM_SHADOW_RADIUS.key())
-                .remove(ITEM_FONT.key())
-                .remove(ITEM_SHADOW_COLOR.key())
-                .apply();
     }
 
     private void setSearchEngine(String newValue) {

@@ -13,15 +13,15 @@ import io.reactivex.Observable;
 
 public interface Preferences {
 
-    Observable<String> observe();
-
-    <T> Observable<T> observe(Pref<T> pref);
-
     <T> T get(Pref<T> pref);
 
     <T> void set(Pref<T> pref, T newValue);
 
-    void resetItemSettings();
+    Observable<Pref<?>> observe();
+
+    <T> Observable<T> observe(Pref<T> pref);
+
+    void reset(Pref<?>... prefs);
 
     ///////////////////////////////////////////////////////////////////////////
     // Preferences interfaces

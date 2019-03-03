@@ -19,9 +19,7 @@ abstract class PreferenceObservable<V, L> {
 
     public final Disposable subscribe(L listener) {
         onSubscribe(listener, currentValue);
-        return preferences.observe()
-                .filter(pref.key()::equals)
-                .map(s -> preferences.get(pref))
+        return preferences.observe(pref)
                 .filter(value -> {
                     return currentValue == null
                             ? value == null
