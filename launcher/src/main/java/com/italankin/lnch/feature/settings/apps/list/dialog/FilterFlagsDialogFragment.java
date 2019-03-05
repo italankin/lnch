@@ -1,10 +1,10 @@
-package com.italankin.lnch.feature.settings.apps.dialog;
+package com.italankin.lnch.feature.settings.apps.list.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
+import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 import java.util.EnumSet;

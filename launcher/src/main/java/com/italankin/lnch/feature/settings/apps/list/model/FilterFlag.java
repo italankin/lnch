@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.model;
+package com.italankin.lnch.feature.settings.apps.list.model;
 
 import com.italankin.lnch.R;
 
