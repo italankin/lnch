@@ -195,13 +195,13 @@ public class SettingsActivity extends AppCompatActivity implements
 
     private void setScreenOrientation() {
         Preferences preferences = LauncherApp.daggerService.main().getPreferences();
-        Disposable disposable = new ScreenOrientationObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ScreenOrientationObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 
     private void setTheme() {
         Preferences preferences = LauncherApp.daggerService.main().getPreferences();
-        Disposable disposable = new ThemeObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ThemeObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 

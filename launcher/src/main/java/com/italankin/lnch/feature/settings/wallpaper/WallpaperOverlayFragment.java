@@ -17,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -24,9 +27,6 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class WallpaperOverlayFragment extends AppFragment {
 
@@ -78,7 +78,7 @@ public class WallpaperOverlayFragment extends AppFragment {
                 background.setTint(color);
             }
         });
-        colorPicker.setSelectedColor(preferences.overlayColor());
+        colorPicker.setSelectedColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
     }
 
     @Override
@@ -88,13 +88,12 @@ public class WallpaperOverlayFragment extends AppFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                preferences.setOverlayColor(colorPicker.getSelectedColor());
-                if (callbacks != null) {
-                    callbacks.onWallpaperOverlayFinish();
-                }
-                return true;
+        if (item.getItemId() == R.id.action_save) {
+            preferences.set(Preferences.WALLPAPER_OVERLAY_COLOR, colorPicker.getSelectedColor());
+            if (callbacks != null) {
+                callbacks.onWallpaperOverlayFinish();
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -143,16 +142,16 @@ public class WallpaperOverlayFragment extends AppFragment {
         });
 
         Context context = requireContext();
-        int padding = ResUtils.px2dp(context, preferences.itemPadding());
+        int padding = ResUtils.px2dp(context, preferences.get(Preferences.ITEM_PADDING));
         ViewUtils.setPadding(itemPreview, padding);
-        itemPreview.setTextSize(preferences.itemTextSize());
-        Integer shadowColor = preferences.itemShadowColor();
+        itemPreview.setTextSize(preferences.get(Preferences.ITEM_TEXT_SIZE));
+        Integer shadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
         if (shadowColor == null) {
             shadowColor = ResUtils.resolveColor(context, R.attr.colorItemShadowDefault);
         }
-        itemPreview.setShadowLayer(preferences.itemShadowRadius(), itemPreview.getShadowDx(),
-                itemPreview.getShadowDy(), shadowColor);
-        itemPreview.setTypeface(preferences.itemFont().typeface());
+        itemPreview.setShadowLayer(preferences.get(Preferences.ITEM_SHADOW_RADIUS),
+                itemPreview.getShadowDx(), itemPreview.getShadowDy(), shadowColor);
+        itemPreview.setTypeface(preferences.get(Preferences.ITEM_FONT).typeface());
     }
 
     private void showWallpaper() {
@@ -167,7 +166,7 @@ public class WallpaperOverlayFragment extends AppFragment {
             return;
         }
         drawable.setTintMode(PorterDuff.Mode.SRC_ATOP);
-        drawable.setTint(preferences.overlayColor());
+        drawable.setTint(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         wallpaper.setImageDrawable(drawable);
     }
 

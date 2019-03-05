@@ -4,7 +4,7 @@
         android:defaultValue="dark"
         android:entries="@array/color_themes_desc"
         android:entryValues="@array/color_themes"
-        android:key="@string/pref_misc_color_theme"
+        android:key="color_theme"
         android:summary="%s"
         android:title="@string/title_settings_color_theme" />
     <Preference

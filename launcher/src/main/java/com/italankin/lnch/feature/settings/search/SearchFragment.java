@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.PackageUtils;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,7 @@ public class SearchFragment extends BasePreferenceFragment {
 
         ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(requireContext());
         if (searchActivity == null) {
-            Preference preference = findPreference(R.string.pref_search_show_global_search);
+            Preference preference = findPreference(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
             getPreferenceScreen().removePreference(preference);
         }
     }

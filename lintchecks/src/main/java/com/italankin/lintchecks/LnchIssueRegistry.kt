@@ -4,6 +4,7 @@ import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
 import com.italankin.lintchecks.detectors.JsonModelDetector
+import com.italankin.lintchecks.detectors.PrefsDetector
 
 @Suppress("unused")
 class LnchIssueRegistry : IssueRegistry() {
@@ -11,6 +12,7 @@ class LnchIssueRegistry : IssueRegistry() {
     override val api = CURRENT_API
 
     override val issues: List<Issue> = listOf(
-        JsonModelDetector.ISSUE
+            JsonModelDetector.ISSUE,
+            PrefsDetector.ISSUE
     )
 }

@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class WallpaperFragment extends BasePreferenceFragment {
 
@@ -48,7 +49,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
     }
 
     private void setupOverlayColor() {
-        Preference pref = findPreference(R.string.pref_wallpaper_overlay_color);
+        Preference pref = findPreference(Preferences.WALLPAPER_OVERLAY_COLOR);
         pref.setOnPreferenceChangeListener((preference, newValue) -> {
             try {
                 int color = Integer.parseInt(String.valueOf(newValue));
@@ -66,7 +67,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
         int color = LauncherApp.daggerService
                 .main()
                 .getPreferences()
-                .overlayColor();
+                .get(Preferences.WALLPAPER_OVERLAY_COLOR);
         pref.setSummary(String.format("#%08x", color));
     }
 

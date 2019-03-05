@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.text.TextUtils;
 
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -124,11 +122,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        String keySortMode = LauncherApp.daggerService.main().getContext()
-                .getString(R.string.pref_sort_mode);
-        preferences.observe()
-                .filter(s -> s.equals(keySortMode)
-                        && preferences.appsSortMode() != Preferences.AppsSortMode.MANUAL)
+        preferences.observe(Preferences.APPS_SORT_MODE)
+                .filter(mode -> mode != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> update())
                 .subscribe();
     }
@@ -136,7 +131,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private Completable createUpdater() {
         return loadAll()
                 .map(appsData -> {
-                    switch (preferences.appsSortMode()) {
+                    switch (preferences.get(Preferences.APPS_SORT_MODE)) {
                         case AZ: {
                             boolean changed = new AscLabelSorter().sort(appsData.items);
                             return new AppsData(appsData.items, changed || appsData.changed);
@@ -246,7 +241,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                                 app.versionCode = versionCode;
                                 app.label = getLabel(info);
                                 app.color = getDominantIconColor(info,
-                                        preferences.colorTheme() == Preferences.ColorTheme.DARK);
+                                        preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
                             }
                             if (app.componentName != null) {
                                 app.componentName = getComponentName(info);
@@ -334,7 +329,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         item.versionCode = getVersionCode(packageManager, packageName);
         item.label = getLabel(info);
         item.color = getDominantIconColor(info,
-                preferences.colorTheme() == Preferences.ColorTheme.DARK);
+                preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
         return item;
     }
 

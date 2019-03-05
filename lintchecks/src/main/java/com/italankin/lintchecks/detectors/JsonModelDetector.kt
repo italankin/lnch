@@ -4,7 +4,7 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.intellij.lang.jvm.JvmModifier
 import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.util.PsiTypesUtil
+import com.italankin.lintchecks.util.psiClass
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
 
@@ -78,7 +78,7 @@ class JsonModelDetector : Detector(), SourceCodeScanner {
 
                 // check field type
                 val stringClass = psiFacade.findClass("java.lang.String", resolveScope) ?: return
-                if (PsiTypesUtil.getPsiClass(typeField.type) != stringClass) {
+                if (typeField.type.psiClass() != stringClass) {
                     val fix = fix()
                             .replace()
                             .text(typeField.type.presentableText)

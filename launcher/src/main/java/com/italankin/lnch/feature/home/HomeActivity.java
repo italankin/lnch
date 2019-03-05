@@ -24,6 +24,14 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
@@ -85,13 +93,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -220,7 +221,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 dismissPopup();
                 if (searchBarBehavior.isShown()) {
                     searchBarBehavior.hide();
-                } else if (preferences.scrollToTop()) {
+                } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
                     list.smoothScrollToPosition(0);
                 }
                 break;
@@ -303,8 +304,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             // clear edit mode intent
             setIntent(new Intent());
             presenter.startCustomize();
-        } else if (preferences.firstLaunch()) {
-            preferences.setFirstLaunch(false);
+        } else if (preferences.get(Preferences.FIRST_LAUNCH)) {
+            preferences.set(Preferences.FIRST_LAUNCH, false);
             searchBarBehavior.show();
         }
     }
@@ -463,7 +464,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (editMode) {
             startDrag(position);
         } else {
-            switch (preferences.appLongClickAction()) {
+            switch (preferences.get(Preferences.APP_LONG_CLICK_ACTION)) {
                 case INFO:
                     startAppSettings(item.packageName);
                     break;
@@ -580,7 +581,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void setupRoot() {
-        root.setBackgroundColor(preferences.overlayColor());
+        root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
@@ -589,7 +590,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         searchBarBehavior = new TopBarBehavior(searchContainer, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
-                if (preferences.searchShowSoftKeyboard()) {
+                if (preferences.get(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)) {
                     searchEditText.requestFocus();
                 }
                 inputMethodManager.showSoftInput(searchEditText, 0);
@@ -667,7 +668,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             return true;
         });
 
-        if (preferences.searchShowGlobal()) {
+        if (preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH)) {
             setupGlobalSearchButton();
         }
     }
@@ -758,7 +759,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     ///////////////////////////////////////////////////////////////////////////
 
     private void startDrag(int position) {
-        if (preferences.appsSortMode() != Preferences.AppsSortMode.MANUAL) {
+        if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {
             Toast.makeText(this, R.string.error_manual_sorting_required, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -786,12 +787,12 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void setScreenOrientation() {
-        Disposable disposable = new ScreenOrientationObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ScreenOrientationObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 
     private void setTheme() {
-        Disposable disposable = new ThemeObservable(this, preferences).subscribe(this);
+        Disposable disposable = new ThemeObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
 
@@ -831,8 +832,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (intent == null) {
             return;
         }
-        if (preferences.useCustomTabs() && Intent.ACTION_VIEW.equals(intent.getAction()) &&
-                intent.getData() != null) {
+        if (preferences.get(Preferences.SEARCH_USE_CUSTOM_TABS)
+                && Intent.ACTION_VIEW.equals(intent.getAction())
+                && intent.getData() != null) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                     .setToolbarColor(ResUtils.resolveColor(this, R.attr.colorPrimary))
                     .addDefaultShareMenuItem()
