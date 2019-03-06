@@ -17,9 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -27,6 +24,9 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class WallpaperOverlayFragment extends AppFragment {
 
@@ -131,7 +131,7 @@ public class WallpaperOverlayFragment extends AppFragment {
 
     private void initItemPreview(View view) {
         TextView itemPreview = view.findViewById(R.id.item_preview);
-        itemPreview.setText(R.string.settings_overlay_preview);
+        itemPreview.setText(R.string.preview);
         itemPreview.setAllCaps(true);
         itemPreview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
         itemPreview.setOnClickListener(v -> {

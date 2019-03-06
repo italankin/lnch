@@ -5,8 +5,8 @@ import com.italankin.lnch.R;
 import androidx.annotation.StringRes;
 
 public enum FilterFlag {
-    VISIBLE(R.string.settings_apps_filter_visible),
-    HIDDEN(R.string.settings_apps_filter_hidden);
+    VISIBLE(R.string.settings_apps_list_filter_visible),
+    HIDDEN(R.string.settings_apps_list_filter_hidden);
 
     @StringRes
     public final int title;

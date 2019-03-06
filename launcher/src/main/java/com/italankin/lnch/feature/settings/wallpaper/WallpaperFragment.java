@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
 public class WallpaperFragment extends BasePreferenceFragment {
 
@@ -38,10 +38,10 @@ public class WallpaperFragment extends BasePreferenceFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.key_wallpaper_change).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_wallpaper_change).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
             Intent chooser = Intent.createChooser(intent,
-                    getString(R.string.title_settings_wallpaper_change));
+                    getString(R.string.settings_home_wallpaper_change));
             startActivity(chooser);
             return true;
         });

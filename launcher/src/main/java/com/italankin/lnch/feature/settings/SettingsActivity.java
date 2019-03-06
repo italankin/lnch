@@ -59,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_settings);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.title_settings);
+        toolbar.setTitle(R.string.settings_title);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
@@ -120,37 +120,37 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showSearchPreferences() {
-        showFragment(new SearchFragment(), R.string.title_settings_search);
+        showFragment(new SearchFragment(), R.string.settings_category_search);
     }
 
     @Override
     public void showAppsPreferences() {
-        showFragment(new AppsListFragment(), R.string.title_settings_apps_list);
+        showFragment(new AppsListFragment(), R.string.settings_apps_list);
     }
 
     @Override
     public void showItemLookPreferences() {
-        showFragment(new ItemAppearanceFragment(), R.string.title_settings_item_appearance);
+        showFragment(new ItemAppearanceFragment(), R.string.settings_home_laf_appearance);
     }
 
     @Override
     public void showLookAndFeelPreferences() {
-        showFragment(new LookAndFeelFragment(), R.string.title_settings_home_look_and_feel);
+        showFragment(new LookAndFeelFragment(), R.string.settings_home_laf);
     }
 
     @Override
     public void showMiscPreferences() {
-        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_misc), R.string.title_settings_home_misc);
+        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_misc), R.string.settings_home_misc);
     }
 
     @Override
     public void showWallpaperPreferences() {
-        showFragment(new WallpaperFragment(), R.string.title_settings_wallpaper);
+        showFragment(new WallpaperFragment(), R.string.settings_home_wallpaper);
     }
 
     @Override
     public void showBackupPreferences() {
-        showFragment(new BackupFragment(), R.string.title_settings_backups);
+        showFragment(new BackupFragment(), R.string.settings_other_bar);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showWallpaperOverlayPreferences() {
-        showFragment(new WallpaperOverlayFragment(), R.string.title_settings_wallpaper_overlay_color);
+        showFragment(new WallpaperOverlayFragment(), R.string.settings_home_wallpaper_overlay_color);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class SettingsActivity extends AppCompatActivity implements
     private CharSequence getFragmentTitle() {
         int index = fragmentManager.getBackStackEntryCount() - 1;
         return index < 0
-                ? getString(R.string.title_settings)
+                ? getString(R.string.settings_title)
                 : fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
     }
 

@@ -45,7 +45,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.key_backup).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_backup).setOnPreferenceClickListener(preference -> {
             if (requireContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                     PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE);
@@ -54,7 +54,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
             return true;
         });
-        findPreference(R.string.key_restore).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_restore).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                     .addCategory(Intent.CATEGORY_OPENABLE)
                     .setType("*/*");
@@ -65,7 +65,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
             return true;
         });
-        findPreference(R.string.key_reset).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_reset).setOnPreferenceClickListener(preference -> {
             showResetDialog();
             return true;
         });
@@ -99,7 +99,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onRestoreSuccess() {
-        Toast.makeText(requireContext(), R.string.settings_backups_message_restore_success, Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), R.string.settings_other_bar_restore_success, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -109,7 +109,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onBackupSuccess(String path) {
-        Toast.makeText(requireContext(), getString(R.string.settings_backups_message_backup_success, path), Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), getString(R.string.settings_other_bar_backup_success, path), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -119,7 +119,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onResetSuccess() {
-        Toast.makeText(requireContext(), R.string.settings_backups_message_reset_success, Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), R.string.settings_other_bar_reset_success, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -144,9 +144,9 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
         }
         new SimpleDialogFragment.Builder()
-                .setTitle(R.string.title_settings_backups_backup_apps)
-                .setMessage(R.string.settings_backups_dialog_backup_message)
-                .setPositiveButton(R.string.settings_backups_dialog_backup_message_action)
+                .setTitle(R.string.settings_other_bar_backup)
+                .setMessage(R.string.settings_other_bar_backup_message)
+                .setPositiveButton(R.string.settings_other_bar_backup_message_action)
                 .setNegativeButton(R.string.cancel)
                 .setListenerProvider(new BackupDialogListenerProvider())
                 .build()
@@ -161,9 +161,9 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
             }
         }
         new SimpleDialogFragment.Builder()
-                .setTitle(R.string.settings_backups_dialog_reset_title)
-                .setMessage(R.string.settings_backups_dialog_reset_message)
-                .setPositiveButton(R.string.settings_backups_dialog_reset_action)
+                .setTitle(R.string.settings_other_bar_reset_dialog_title)
+                .setMessage(R.string.settings_other_bar_reset_dialog_message)
+                .setPositiveButton(R.string.settings_other_bar_reset_dialog_action)
                 .setNegativeButton(R.string.cancel)
                 .setListenerProvider(new ResetDialogListenerProvider())
                 .build()

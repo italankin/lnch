@@ -7,5 +7,5 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_reset"
-        android:title="@string/settings_item_appearance_reset" />
+        android:title="@string/settings_home_laf_appearance_reset" />
 </menu>

@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <MultiSelectListPreference
-        android:defaultValue="@array/search_targets"
-        android:entries="@array/search_targets_desc"
-        android:entryValues="@array/search_targets"
+        android:defaultValue="@array/pref_values_search_targets"
+        android:entries="@array/pref_desc_search_targets"
+        android:entryValues="@array/pref_values_search_targets"
         android:key="search_targets"
         android:negativeButtonText="@string/cancel"
         android:positiveButtonText="@string/save"
-        android:summary="@string/title_settings_search_targets_summary"
-        android:title="@string/title_settings_search_targets" />
+        android:summary="@string/settings_search_targets_summary"
+        android:title="@string/settings_search_targets" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_show_soft_keyboard"
-        android:summaryOff="@string/title_settings_search_auto_show_summary_off"
-        android:summaryOn="@string/title_settings_search_auto_show_summary_on"
-        android:title="@string/title_settings_search_auto_show" />
+        android:summaryOff="@string/settings_search_auto_show_summary_off"
+        android:summaryOn="@string/settings_search_auto_show_summary_on"
+        android:title="@string/settings_search_auto_show" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_use_custom_tabs"
-        android:summary="@string/title_settings_search_use_custom_tabs_summary"
-        android:title="@string/title_settings_search_use_custom_tabs" />
+        android:summary="@string/settings_search_custom_tabs_summary"
+        android:title="@string/settings_search_custom_tabs" />
     <ListPreference
         android:defaultValue="google"
-        android:entries="@array/search_engines_desc"
-        android:entryValues="@array/search_engines"
+        android:entries="@array/pref_desc_search_engines"
+        android:entryValues="@array/pref_values_search_engines"
         android:key="search_engine"
         android:summary="%s"
-        android:title="@string/title_settings_search_engine" />
+        android:title="@string/settings_search_engine" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_show_global_search"
-        android:title="@string/title_settings_search_global" />
+        android:title="@string/settings_search_global" />
 </PreferenceScreen>

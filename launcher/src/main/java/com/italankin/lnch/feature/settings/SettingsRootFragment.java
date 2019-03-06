@@ -49,50 +49,50 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.key_home_customize).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_home_customize).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.launchEditMode();
             }
             return true;
         });
-        findPreference(R.string.key_search_settings).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_search_settings).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showSearchPreferences();
             }
             return true;
         });
-        findPreference(R.string.key_wallpaper).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_wallpaper).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showWallpaperPreferences();
             }
             return true;
         });
-        findPreference(R.string.key_apps_list).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_apps_list).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showAppsPreferences();
             }
             return true;
         });
-        findPreference(R.string.key_look_and_feel).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_look_and_feel).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showLookAndFeelPreferences();
             }
             return true;
         });
-        findPreference(R.string.key_home_misc).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_home_misc).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showMiscPreferences();
             }
             return true;
         });
-        findPreference(R.string.key_backups).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showBackupPreferences();
             }
             return true;
         });
-        Preference version = findPreference(R.string.key_version);
-        version.setTitle(getString(R.string.title_settings_version, BuildConfig.VERSION_NAME));
+        Preference version = findPreference(R.string.pref_key_version);
+        version.setTitle(getString(R.string.settings_version, BuildConfig.VERSION_NAME));
     }
 
     @Override

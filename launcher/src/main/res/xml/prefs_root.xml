@@ -4,51 +4,51 @@
     <PreferenceCategory>
         <Preference
             android:icon="@drawable/ic_action_rename"
-            android:key="@string/key_home_customize"
-            android:title="@string/title_settings_home_customize" />
+            android:key="@string/pref_key_home_customize"
+            android:title="@string/settings_customize" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_settings_home">
+    <PreferenceCategory android:title="@string/settings_category_home">
         <Preference
             android:icon="@drawable/ic_settings_wallpaper"
-            android:key="@string/key_wallpaper"
-            android:title="@string/title_settings_wallpaper" />
+            android:key="@string/pref_key_wallpaper"
+            android:title="@string/settings_home_wallpaper" />
         <Preference
             android:icon="@drawable/ic_action_color"
-            android:key="@string/key_look_and_feel"
-            android:title="@string/title_settings_home_look_and_feel" />
+            android:key="@string/pref_key_look_and_feel"
+            android:title="@string/settings_home_laf" />
         <Preference
             android:icon="@drawable/ic_settings_home_misc"
-            android:key="@string/key_home_misc"
-            android:title="@string/title_settings_home_misc" />
+            android:key="@string/pref_key_home_misc"
+            android:title="@string/settings_home_misc" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_settings_apps">
+    <PreferenceCategory android:title="@string/settings_category_apps">
         <Preference
             android:icon="@drawable/ic_settings_apps"
-            android:key="@string/key_apps_list"
-            android:title="@string/title_settings_apps_list" />
+            android:key="@string/pref_key_apps_list"
+            android:title="@string/settings_apps_list" />
         <ListPreference
             android:defaultValue="manual"
-            android:entries="@array/apps_sort_mode_desc"
-            android:entryValues="@array/apps_sort_mode"
+            android:entries="@array/pref_desc_apps_sort_mode"
+            android:entryValues="@array/pref_values_apps_sort_mode"
             android:icon="@drawable/ic_settings_sort"
             android:key="apps_sort_mode"
             android:summary="%s"
-            android:title="@string/title_settings_apps_sort" />
+            android:title="@string/settings_apps_sorting" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_settings_search">
+    <PreferenceCategory android:title="@string/settings_category_search">
         <Preference
             android:icon="@drawable/ic_settings_search"
-            android:key="@string/key_search_settings"
-            android:title="@string/title_settings_search_settings" />
+            android:key="@string/pref_key_search_settings"
+            android:title="@string/settings_search" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_settings_other">
+    <PreferenceCategory android:title="@string/settings_category_other">
         <Preference
             android:icon="@drawable/ic_settings_backup_restore"
-            android:key="@string/key_backups"
-            android:title="@string/title_settings_backups" />
+            android:key="@string/pref_key_backups"
+            android:title="@string/settings_other_bar" />
         <Preference
             android:icon="@drawable/ic_app_info"
-            android:key="@string/key_version"
-            tools:title="@string/title_settings_version" />
+            android:key="@string/pref_key_version"
+            tools:title="@string/settings_version" />
     </PreferenceCategory>
 </PreferenceScreen>

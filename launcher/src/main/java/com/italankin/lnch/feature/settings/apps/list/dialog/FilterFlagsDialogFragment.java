@@ -28,17 +28,17 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_apps_filter)
+                .setTitle(R.string.settings_apps_list_filter)
                 .setMultiChoiceItems(getFilterTitles(), checkedItems,
                         (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.settings_apps_filter_reset, (dialog, which) -> {
+                .setNeutralButton(R.string.settings_apps_list_filter_reset, (dialog, which) -> {
                     Listener listener = getListener();
                     if (listener != null) {
                         listener.onFlagsReset();
                     }
                 })
-                .setPositiveButton(R.string.settings_apps_filter_apply, (dialog, which) -> {
+                .setPositiveButton(R.string.settings_apps_list_filter_apply, (dialog, which) -> {
                     EnumSet<FilterFlag> newFlags = getFlags();
                     Listener listener = getListener();
                     if (listener != null) {

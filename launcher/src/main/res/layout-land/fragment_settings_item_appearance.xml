@@ -48,35 +48,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:spv_icon="@drawable/ic_settings_size"
-                app:spv_title="@string/settings_item_appearance_text_size" />
+                app:spv_title="@string/settings_home_laf_appearance__text_size" />
 
             <com.italankin.lnch.util.widget.pref.ValuePrefView
                 android:id="@+id/item_font"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tpv_icon="@drawable/ic_settings_font"
-                app:tpv_title="@string/settings_item_appearance_text_font" />
+                app:tpv_title="@string/settings_home_laf_appearance_text_font" />
 
             <com.italankin.lnch.util.widget.pref.SliderPrefView
                 android:id="@+id/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:spv_icon="@drawable/ic_settings_padding"
-                app:spv_title="@string/settings_item_appearance_padding" />
+                app:spv_title="@string/settings_home_laf_appearance_padding" />
 
             <com.italankin.lnch.util.widget.pref.SliderPrefView
                 android:id="@+id/item_shadow_radius"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:spv_icon="@drawable/ic_settings_shadow_radius"
-                app:spv_title="@string/settings_item_appearance_shadow_radius" />
+                app:spv_title="@string/settings_home_laf_appearance_shadow_radius" />
 
             <com.italankin.lnch.util.widget.pref.ValuePrefView
                 android:id="@+id/item_shadow_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tpv_icon="@drawable/ic_settings_shadow_color"
-                app:tpv_title="@string/settings_item_appearance_shadow_color" />
+                app:tpv_title="@string/settings_home_laf_appearance_shadow_color" />
 
         </LinearLayout>
 

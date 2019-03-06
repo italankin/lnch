@@ -154,8 +154,8 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     public boolean onBackPressed() {
         if (isChanged()) {
             new SimpleDialogFragment.Builder()
-                    .setMessage(R.string.settings_item_appearance_discard_message)
-                    .setPositiveButton(R.string.settings_item_appearance_discard_button)
+                    .setMessage(R.string.settings_home_laf_appearance_discard_message)
+                    .setPositiveButton(R.string.settings_home_laf_appearance_discard_button)
                     .setNegativeButton(R.string.cancel)
                     .setListenerProvider(new DiscardChangesListenerProvider())
                     .build()
@@ -243,7 +243,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         preview = view.findViewById(R.id.item_preview);
         int backgroundColor = ResUtils.resolveColor(requireContext(), R.attr.colorSelector);
         preview.setBackgroundColor(backgroundColor & 0x20ffffff);
-        preview.setText(R.string.settings_item_preview);
+        preview.setText(R.string.preview);
         preview.setAllCaps(true);
         preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
         preview.setOnClickListener(v -> {
@@ -272,7 +272,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     }
 
     private void initFont(View view) {
-        String[] fontTitles = getResources().getStringArray(R.array.settings_item_appearance_text_font_titles);
+        String[] fontTitles = getResources().getStringArray(R.array.settings_home_laf_appearance_text_font_titles);
 
         itemFont = view.findViewById(R.id.item_font);
         Preferences.Font font = preferences.get(Preferences.ITEM_FONT);
@@ -297,7 +297,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         itemFont.setValue(font);
         itemFont.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle(R.string.settings_item_appearance_text_font);
+            builder.setTitle(R.string.settings_home_laf_appearance_text_font);
             builder.setItems(fontTitles, (dialog, which) -> {
                 Preferences.Font newFont = Preferences.Font.values()[which];
                 itemFont.setValue(newFont);

@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="color_themes">
+    <string-array name="pref_values_color_themes">
         <item>dark</item>
         <item>light</item>
     </string-array>
-    <string-array name="color_themes_desc">
+    <string-array name="pref_desc_color_themes">
         <item>Dark</item>
         <item>Light</item>
     </string-array>
 
-    <string-array name="app_long_click_actions">
+    <string-array name="pref_values_app_long_click_actions">
         <item>popup</item>
         <item>info</item>
     </string-array>
-    <string-array name="app_long_click_actions_desc">
+    <string-array name="pref_desc_app_long_click_actions">
         <item>Show popup</item>
         <item>Open app info</item>
     </string-array>
 
-    <string-array name="search_targets">
+    <string-array name="pref_values_search_targets">
         <item>hidden</item>
         <item>shortcut</item>
         <item>web</item>
         <item>url</item>
     </string-array>
-    <string-array name="search_targets_desc">
+    <string-array name="pref_desc_search_targets">
         <item>Hidden apps</item>
         <item>Shortcuts</item>
         <item>Web search</item>
         <item>Detect URLs</item>
     </string-array>
 
-    <string-array name="search_engines">
+    <string-array name="pref_values_search_engines">
         <item>google</item>
         <item>yandex</item>
         <item>ddg</item>
         <item>bing</item>
         <item>baidu</item>
     </string-array>
-    <string-array name="search_engines_desc">
+    <string-array name="pref_desc_search_engines">
         <item>Google</item>
         <item>Yandex</item>
         <item>DuckDuckGo</item>
@@ -46,23 +46,23 @@
         <item>Baidu</item>
     </string-array>
 
-    <string-array name="screen_orientation">
+    <string-array name="pref_values_screen_orientation">
         <item>sensor</item>
         <item>portrait</item>
         <item>landscape</item>
     </string-array>
-    <string-array name="screen_orientation_desc">
+    <string-array name="pref_desc_screen_orientation">
         <item>Sensor</item>
         <item>Portrait</item>
         <item>Landscape</item>
     </string-array>
 
-    <string-array name="apps_sort_mode">
+    <string-array name="pref_values_apps_sort_mode">
         <item>manual</item>
         <item>az</item>
         <item>za</item>
     </string-array>
-    <string-array name="apps_sort_mode_desc">
+    <string-array name="pref_desc_apps_sort_mode">
         <item>Manual</item>
         <item>A-Z</item>
         <item>Z-A</item>

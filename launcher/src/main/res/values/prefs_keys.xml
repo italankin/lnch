@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- references to preference views -->
-    <string name="key_search_settings">search_settings</string>
-    <string name="key_wallpaper">wallpaper</string>
-    <string name="key_wallpaper_change">wallpaper_change</string>
-    <string name="key_apps_list">apps_list</string>
-    <string name="key_home_customize">customize</string>
-    <string name="key_home_misc">miscellaneous</string>
-    <string name="key_item_appearance">item_appearance</string>
-    <string name="key_backups">backups</string>
-    <string name="key_backup">backup</string>
-    <string name="key_restore">restore</string>
-    <string name="key_reset">reset</string>
-    <string name="key_version">version</string>
-    <string name="key_look_and_feel">look_and_feel</string>
+    <string name="pref_key_search_settings">search_settings</string>
+    <string name="pref_key_wallpaper">wallpaper</string>
+    <string name="pref_key_wallpaper_change">wallpaper_change</string>
+    <string name="pref_key_apps_list">apps_list</string>
+    <string name="pref_key_home_customize">customize</string>
+    <string name="pref_key_home_misc">miscellaneous</string>
+    <string name="pref_key_item_appearance">item_appearance</string>
+    <string name="pref_key_backups">backups</string>
+    <string name="pref_key_backup">backup</string>
+    <string name="pref_key_restore">restore</string>
+    <string name="pref_key_reset">reset</string>
+    <string name="pref_key_version">version</string>
+    <string name="pref_key_look_and_feel">look_and_feel</string>
 </resources>

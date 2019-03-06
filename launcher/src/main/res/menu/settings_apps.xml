@@ -10,5 +10,5 @@
         app:tooltipText="@string/hint_search" />
     <item
         android:id="@+id/action_filter"
-        android:title="@string/settings_apps_filter" />
+        android:title="@string/settings_apps_list_filter" />
 </menu>
