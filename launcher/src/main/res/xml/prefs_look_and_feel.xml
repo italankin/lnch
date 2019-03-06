@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <ListPreference
-        android:defaultValue="dark"
-        android:entries="@array/color_themes_desc"
-        android:entryValues="@array/color_themes"
-        android:key="color_theme"
-        android:summary="%s"
-        android:title="@string/title_settings_color_theme" />
-    <Preference
-        android:key="@string/key_item_appearance"
-        android:summary="@string/title_settings_item_appearance_summary"
-        android:title="@string/title_settings_item_appearance" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="apps_color_overlay_show"
-        android:title="@string/title_settings_apps_color_show" />
-    <Preference
-        android:dependency="apps_color_overlay_show"
-        android:key="apps_color_overlay"
-        android:title="@string/title_settings_apps_color"
-        tools:ignore="PrefsDetector" />
+    <PreferenceCategory android:title="@string/title_settings_color_theme">
+        <ListPreference
+            android:defaultValue="dark"
+            android:entries="@array/color_themes_desc"
+            android:entryValues="@array/color_themes"
+            android:key="color_theme"
+            android:summary="%s"
+            android:title="@string/title_settings_color_theme" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_item_appearance">
+        <Preference
+            android:key="@string/key_item_appearance"
+            android:summary="@string/title_settings_item_appearance_summary"
+            android:title="@string/title_settings_item_appearance" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings_laf_apps_other">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="apps_color_overlay_show"
+            android:title="@string/title_settings_apps_color_show" />
+        <Preference
+            android:dependency="apps_color_overlay_show"
+            android:key="apps_color_overlay"
+            android:title="@string/title_settings_apps_color"
+            tools:ignore="PrefsDetector" />
+    </PreferenceCategory>
 </PreferenceScreen>
