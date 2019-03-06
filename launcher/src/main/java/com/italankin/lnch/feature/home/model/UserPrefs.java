@@ -1,11 +1,29 @@
 package com.italankin.lnch.feature.home.model;
 
+import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import com.italankin.lnch.model.repository.prefs.Preferences;
-
 public final class UserPrefs {
+
+    public static final Set<Preferences.Pref<?>> PREFERENCES = new HashSet<>();
+
+    static {
+        PREFERENCES.add(Preferences.HOME_LAYOUT);
+        PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_COLOR);
+        PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
+        PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
+        PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
+        PREFERENCES.add(Preferences.ITEM_PADDING);
+        PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
+        PREFERENCES.add(Preferences.ITEM_SHADOW_COLOR);
+        PREFERENCES.add(Preferences.ITEM_FONT);
+    }
+
     public final Preferences.HomeLayout homeLayout;
     @ColorInt
     public final int overlayColor;

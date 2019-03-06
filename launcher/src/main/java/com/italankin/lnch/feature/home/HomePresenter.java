@@ -329,6 +329,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     private Observable<UserPrefs> observeUserPrefs() {
         return preferences.observe()
+                .filter(UserPrefs.PREFERENCES::contains)
                 .map(s -> new UserPrefs(preferences))
                 .startWith(new UserPrefs(preferences))
                 .distinctUntilChanged();
