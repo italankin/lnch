@@ -14,6 +14,7 @@ public final class UserPrefs {
 
     static {
         PREFERENCES.add(Preferences.HOME_LAYOUT);
+        PREFERENCES.add(Preferences.HOME_ALIGNMENT);
         PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_COLOR);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
@@ -25,6 +26,7 @@ public final class UserPrefs {
     }
 
     public final Preferences.HomeLayout homeLayout;
+    public final Preferences.HomeAlignment homeAlignment;
     @ColorInt
     public final int overlayColor;
     public final boolean showScrollbar;
@@ -33,6 +35,7 @@ public final class UserPrefs {
 
     public UserPrefs(Preferences preferences) {
         homeLayout = preferences.get(Preferences.HOME_LAYOUT);
+        homeAlignment = preferences.get(Preferences.HOME_ALIGNMENT);
         overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
         showScrollbar = preferences.get(Preferences.SHOW_SCROLLBAR);
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);

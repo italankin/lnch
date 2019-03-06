@@ -67,4 +67,15 @@
         <item>A-Z</item>
         <item>Z-A</item>
     </string-array>
+
+    <string-array name="pref_values_home_layout_alignment">
+        <item>start</item>
+        <item>center</item>
+        <item>end</item>
+    </string-array>
+    <string-array name="pref_desc_home_layout_alignment">
+        <item>Start</item>
+        <item>Center</item>
+        <item>End</item>
+    </string-array>
 </resources>

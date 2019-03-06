@@ -26,9 +26,9 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
@@ -774,7 +774,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void applyUserPrefs(UserPrefs userPrefs) {
-        setLayout(userPrefs.homeLayout);
+        setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);
         root.setBackgroundColor(userPrefs.overlayColor);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
         if (userPrefs.globalSearch && searchBtnGlobal.getVisibility() != View.VISIBLE) {
@@ -795,19 +795,30 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         compositeDisposable.add(disposable);
     }
 
-    private void setLayout(Preferences.HomeLayout layout) {
+    private void setLayout(Preferences.HomeLayout layout, Preferences.HomeAlignment homeAlignment) {
         if (layout != this.layout) {
             this.layout = layout;
             RecyclerView.LayoutManager layoutManager;
             switch (layout) {
                 case COMPACT:
                 default:
-                    FlexboxLayoutManager lm = new FlexboxLayoutManager(this);
-                    lm.setFlexDirection(FlexDirection.ROW);
-                    lm.setAlignItems(AlignItems.FLEX_START);
-                    layoutManager = lm;
+                    layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW);
             }
             list.setLayoutManager(layoutManager);
+        }
+        if (list.getLayoutManager() instanceof FlexboxLayoutManager) {
+            FlexboxLayoutManager lm = (FlexboxLayoutManager) list.getLayoutManager();
+            switch (homeAlignment) {
+                case START:
+                    lm.setJustifyContent(JustifyContent.FLEX_START);
+                    break;
+                case CENTER:
+                    lm.setJustifyContent(JustifyContent.CENTER);
+                    break;
+                case END:
+                    lm.setJustifyContent(JustifyContent.FLEX_END);
+                    break;
+            }
         }
     }
 

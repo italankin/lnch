@@ -34,6 +34,7 @@ public class UserPreferences implements Preferences {
         FETCHERS.put(WALLPAPER_OVERLAY_SHOW, this::showWallpaperOverlayColor);
         FETCHERS.put(WALLPAPER_OVERLAY_COLOR, this::wallpaperOverlayColor);
         FETCHERS.put(HOME_LAYOUT, this::homeLayout);
+        FETCHERS.put(HOME_ALIGNMENT, this::homeAlignment);
         FETCHERS.put(SHOW_SCROLLBAR, this::showScrollbar);
         FETCHERS.put(APP_LONG_CLICK_ACTION, this::appLongClickAction);
         FETCHERS.put(SCREEN_ORIENTATION, this::screenOrientation);
@@ -72,6 +73,9 @@ public class UserPreferences implements Preferences {
         });
         UPDATERS.put(HOME_LAYOUT, newValue -> {
             setHomeLayout((HomeLayout) newValue);
+        });
+        UPDATERS.put(HOME_ALIGNMENT, newValue -> {
+            setHomeAlignment((HomeAlignment) newValue);
         });
         UPDATERS.put(SHOW_SCROLLBAR, newValue -> {
             setShowScrollbar((Boolean) newValue);
@@ -220,6 +224,15 @@ public class UserPreferences implements Preferences {
     private HomeLayout homeLayout() {
         String pref = prefs.getString(HOME_LAYOUT.key(), null);
         return HomeLayout.from(pref, HOME_LAYOUT.defaultValue());
+    }
+
+    private void setHomeAlignment(HomeAlignment newValue) {
+        prefs.edit().putString(HOME_ALIGNMENT.key(), newValue.toString()).apply();
+    }
+
+    private HomeAlignment homeAlignment() {
+        String pref = prefs.getString(HOME_ALIGNMENT.key(), null);
+        return HomeAlignment.from(pref, HOME_ALIGNMENT.defaultValue());
     }
 
     private void setOverlayColor(int color) {

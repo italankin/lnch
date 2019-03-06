@@ -75,6 +75,10 @@ public interface Preferences {
             "home_layout",
             HomeLayout.COMPACT);
 
+    Pref<HomeAlignment> HOME_ALIGNMENT = Prefs.create(
+            "home_alignment",
+            HomeAlignment.START);
+
     Pref<Boolean> SHOW_SCROLLBAR = Prefs.create(
             "show_scrollbar",
             false);
@@ -182,6 +186,36 @@ public interface Preferences {
         private final String key;
 
         HomeLayout(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Layout alignment for home screen
+     */
+    enum HomeAlignment {
+        START("start"),
+        CENTER("center"),
+        END("end");
+
+        static HomeAlignment from(String s, HomeAlignment defaultValue) {
+            for (HomeAlignment value : values()) {
+                if (value.key.equals(s)) {
+                    return value;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        HomeAlignment(String key) {
             this.key = key;
         }
 
