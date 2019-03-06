@@ -60,6 +60,8 @@
     <string name="title_settings_apps">Apps</string>
     <string name="title_settings_apps_list">Apps</string>
     <string name="title_settings_apps_sort">Sorting</string>
+    <string name="title_settings_apps_color_show">Use one color for all apps</string>
+    <string name="title_settings_apps_color">Choose color</string>
     <string name="title_settings_wallpaper">Wallpaper</string>
     <string name="title_settings_wallpaper_change">Change wallpaper</string>
     <string name="title_settings_wallpaper_overlay">Overlay</string>

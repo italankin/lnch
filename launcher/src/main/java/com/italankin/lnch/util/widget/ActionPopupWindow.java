@@ -199,6 +199,7 @@ public class ActionPopupWindow extends PopupWindow {
         }
         if (!item.enabled) {
             imageView.setAlpha(DISABLED_ALPHA);
+            imageView.setEnabled(false);
         }
         imageView.setOnLongClickListener(item.onLongClickListener);
         actionContainer.addView(imageView);
@@ -232,6 +233,7 @@ public class ActionPopupWindow extends PopupWindow {
         if (!item.enabled) {
             labelView.setAlpha(DISABLED_ALPHA);
             iconView.setAlpha(DISABLED_ALPHA);
+            view.setEnabled(false);
         }
         if (item.onPinClickListener != null && item.enabled) {
             pinIconView.setVisibility(View.VISIBLE);

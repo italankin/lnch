@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <ListPreference
         android:defaultValue="dark"
         android:entries="@array/color_themes_desc"
@@ -11,4 +12,13 @@
         android:key="@string/key_item_appearance"
         android:summary="@string/title_settings_item_appearance_summary"
         android:title="@string/title_settings_item_appearance" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="apps_color_overlay_show"
+        android:title="@string/title_settings_apps_color_show" />
+    <Preference
+        android:dependency="apps_color_overlay_show"
+        android:key="apps_color_overlay"
+        android:title="@string/title_settings_apps_color"
+        tools:ignore="PrefsDetector" />
 </PreferenceScreen>

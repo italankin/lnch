@@ -8,9 +8,11 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.text.TextUtils;
 
+import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.sort.AscLabelSorter;
 import com.italankin.lnch.model.repository.descriptor.sort.DescLabelSorter;
@@ -130,21 +132,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private Completable createUpdater() {
         return loadAll()
-                .map(appsData -> {
-                    switch (preferences.get(Preferences.APPS_SORT_MODE)) {
-                        case AZ: {
-                            boolean changed = new AscLabelSorter().sort(appsData.items);
-                            return new AppsData(appsData.items, changed || appsData.changed);
-                        }
-                        case ZA: {
-                            boolean changed = new DescLabelSorter().sort(appsData.items);
-                            return new AppsData(appsData.items, changed || appsData.changed);
-                        }
-                        case MANUAL:
-                        default:
-                            return appsData;
-                    }
-                })
+                .map(this::applySorting)
+                .map(this::applyOverlayColor)
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");
@@ -155,6 +144,37 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 .doOnSuccess(updatesSubject::onNext)
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
+    }
+
+    private AppsData applySorting(AppsData appsData) {
+        switch (preferences.get(Preferences.APPS_SORT_MODE)) {
+            case AZ: {
+                boolean changed = new AscLabelSorter().sort(appsData.items);
+                return new AppsData(appsData.items, changed || appsData.changed);
+            }
+            case ZA: {
+                boolean changed = new DescLabelSorter().sort(appsData.items);
+                return new AppsData(appsData.items, changed || appsData.changed);
+            }
+            case MANUAL:
+            default:
+                return appsData;
+        }
+    }
+
+    private AppsData applyOverlayColor(AppsData appsData) {
+        if (preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW)) {
+            Integer colorOverlay = preferences.get(Preferences.APPS_COLOR_OVERLAY);
+            for (Descriptor item : appsData.items) {
+                if (item instanceof GroupDescriptor) {
+                    continue;
+                }
+                if (item instanceof CustomColorDescriptor) {
+                    ((CustomColorDescriptor) item).setCustomColor(colorOverlay);
+                }
+            }
+        }
+        return appsData;
     }
 
     private Single<AppsData> loadAll() {
