@@ -123,6 +123,14 @@ public interface Preferences {
             "apps_sort_mode",
             AppsSortMode.MANUAL);
 
+    Pref<Boolean> APPS_COLOR_OVERLAY_SHOW = Prefs.create(
+            "apps_color_overlay_show",
+            false);
+
+    Pref<Integer> APPS_COLOR_OVERLAY = Prefs.create(
+            "apps_color_overlay",
+            Color.WHITE);
+
     ///////////////////////////////////////////////////////////////////////////
     // Enums
     ///////////////////////////////////////////////////////////////////////////

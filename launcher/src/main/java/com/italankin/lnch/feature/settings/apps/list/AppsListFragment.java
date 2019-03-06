@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps;
+package com.italankin.lnch.feature.settings.apps.list;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -15,10 +15,10 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.settings.apps.adapter.AppsFilter;
-import com.italankin.lnch.feature.settings.apps.adapter.AppsViewModelAdapter;
-import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
-import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
+import com.italankin.lnch.feature.settings.apps.list.adapter.AppsListFilter;
+import com.italankin.lnch.feature.settings.apps.list.adapter.AppsViewModelAdapter;
+import com.italankin.lnch.feature.settings.apps.list.dialog.FilterFlagsDialogFragment;
+import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
@@ -35,25 +35,25 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppsFragment extends AppFragment implements AppsView,
+public class AppsListFragment extends AppFragment implements AppsListView,
         AppsViewModelAdapter.Listener,
-        AppsFilter.OnFilterResult {
+        AppsListFilter.OnFilterResult {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
     private static final String TAG_FILTER_FLAGS = "filter";
 
     @InjectPresenter
-    AppsPresenter presenter;
+    AppsListPresenter presenter;
 
     private LceLayout lce;
     private RecyclerView list;
     private CompositeAdapter<AppViewModel> adapter;
 
-    private final AppsFilter filter = new AppsFilter(this);
+    private final AppsListFilter filter = new AppsListFilter(this);
 
     @ProvidePresenter
-    AppsPresenter providePresenter() {
+    AppsListPresenter providePresenter() {
         return daggerService().presenters().apps();
     }
 
@@ -67,7 +67,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_apps, container, false);
+        return inflater.inflate(R.layout.fragment_settings_apps_list, container, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -211,7 +211,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     private static class FilterFlagsDialogListenerProvider implements ListenerFragment<FilterFlagsDialogFragment.Listener> {
         @Override
         public FilterFlagsDialogFragment.Listener get(Fragment parentFragment) {
-            AppsFragment fragment = (AppsFragment) parentFragment;
+            AppsListFragment fragment = (AppsListFragment) parentFragment;
             return new FilterFlagsDialogFragment.Listener() {
                 @Override
                 public void onFlagsSet(EnumSet<FilterFlag> newFlags) {

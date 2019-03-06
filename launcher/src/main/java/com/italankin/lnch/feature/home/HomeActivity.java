@@ -24,14 +24,6 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.AlignItems;
@@ -93,6 +85,13 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -938,6 +937,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (item instanceof CustomColorItem) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(this)
                     .setLabel(R.string.customize_item_color)
+                    .setEnabled(!preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW))
                     .setIcon(R.drawable.ic_action_color)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> setItemColor(position, (CustomColorItem) item))

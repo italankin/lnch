@@ -1,9 +1,9 @@
-package com.italankin.lnch.feature.settings.apps.adapter;
+package com.italankin.lnch.feature.settings.apps.list.adapter;
 
 import android.text.TextUtils;
 import android.widget.Filter;
 
-import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
+import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.SearchUtils;
 
@@ -22,7 +22,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.synchronizedSet;
 import static java.util.Collections.unmodifiableSet;
 
-public class AppsFilter extends Filter {
+public class AppsListFilter extends Filter {
     private static final Set<FilterFlag> DEFAULT_FLAGS = unmodifiableSet(EnumSet.allOf(FilterFlag.class));
     private static final FilterResults EMPTY;
 
@@ -39,7 +39,7 @@ public class AppsFilter extends Filter {
     private final Set<FilterFlag> flags = synchronizedSet(EnumSet.copyOf(DEFAULT_FLAGS));
     private volatile CharSequence constraint;
 
-    public AppsFilter(@Nullable OnFilterResult onFilterResult) {
+    public AppsListFilter(@Nullable OnFilterResult onFilterResult) {
         this.onFilterResult = onFilterResult;
     }
 

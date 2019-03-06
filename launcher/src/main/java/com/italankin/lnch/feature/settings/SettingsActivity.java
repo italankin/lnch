@@ -11,7 +11,7 @@ import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
 import com.italankin.lnch.feature.common.preferences.ThemeObservable;
 import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.HomeActivity;
-import com.italankin.lnch.feature.settings.apps.AppsFragment;
+import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
@@ -125,7 +125,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showAppsPreferences() {
-        showFragment(new AppsFragment(), R.string.title_settings_apps_list);
+        showFragment(new AppsListFragment(), R.string.title_settings_apps_list);
     }
 
     @Override

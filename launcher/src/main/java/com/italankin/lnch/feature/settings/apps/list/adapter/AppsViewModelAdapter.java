@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.adapter;
+package com.italankin.lnch.feature.settings.apps.list.adapter;
 
 import android.view.View;
 import android.widget.ImageView;

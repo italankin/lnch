@@ -46,6 +46,8 @@ public class UserPreferences implements Preferences {
         FETCHERS.put(ITEM_FONT, this::itemFont);
         FETCHERS.put(FIRST_LAUNCH, this::firstLaunch);
         FETCHERS.put(APPS_SORT_MODE, this::appsSortMode);
+        FETCHERS.put(APPS_COLOR_OVERLAY_SHOW, this::appsColorOverlayShow);
+        FETCHERS.put(APPS_COLOR_OVERLAY, this::appsColorOverlay);
 
         UPDATERS.put(SEARCH_SHOW_SOFT_KEYBOARD, newValue -> {
             setSearchShowSoftKeyboard((Boolean) newValue);
@@ -106,6 +108,12 @@ public class UserPreferences implements Preferences {
         });
         UPDATERS.put(APPS_SORT_MODE, newValue -> {
             setAppsSortMode((AppsSortMode) newValue);
+        });
+        UPDATERS.put(APPS_COLOR_OVERLAY_SHOW, newValue -> {
+            setAppsColorOverlayShow((Boolean) newValue);
+        });
+        UPDATERS.put(APPS_COLOR_OVERLAY, newValue -> {
+            setAppsColorOverlay((Integer) newValue);
         });
 
         for (Pref<?> pref : FETCHERS.keySet()) {
@@ -357,6 +365,22 @@ public class UserPreferences implements Preferences {
     private AppsSortMode appsSortMode() {
         String pref = prefs.getString(APPS_SORT_MODE.key(), null);
         return AppsSortMode.from(pref, APPS_SORT_MODE.defaultValue());
+    }
+
+    private boolean appsColorOverlayShow() {
+        return prefs.getBoolean(APPS_COLOR_OVERLAY_SHOW.key(), APPS_COLOR_OVERLAY_SHOW.defaultValue());
+    }
+
+    private void setAppsColorOverlayShow(Boolean newValue) {
+        prefs.edit().putBoolean(APPS_COLOR_OVERLAY_SHOW.key(), newValue).apply();
+    }
+
+    private Integer appsColorOverlay() {
+        return prefs.getInt(APPS_COLOR_OVERLAY.key(), APPS_COLOR_OVERLAY.defaultValue());
+    }
+
+    private void setAppsColorOverlay(int newValue) {
+        prefs.edit().putInt(APPS_COLOR_OVERLAY.key(), newValue).apply();
     }
 
     private interface Fetcher {
