@@ -19,9 +19,9 @@ class JsonModelDetector : Detector(), SourceCodeScanner {
 
     companion object {
         val ISSUE = Issue.create(
-                "JsonModelTypeProperty",
-                "JsonModel.type is missing",
-                "JsonModel implementors must have a 'type' field",
+                "JsonModelDetector",
+                "Ensures JsonModel implemented correctly",
+                "Ensures JsonModel implemented correctly",
                 CATEGORY_LNCH,
                 10,
                 Severity.FATAL,
