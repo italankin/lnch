@@ -4,6 +4,8 @@ import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.intellij.lang.jvm.JvmModifier
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.util.PsiTypesUtil
+import com.italankin.lintchecks.CATEGORY_LNCH
 import com.italankin.lintchecks.util.psiClass
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
@@ -15,7 +17,7 @@ class JsonModelDetector : Detector(), SourceCodeScanner {
                 "JsonModelTypeProperty",
                 "JsonModel.type is missing",
                 "JsonModel implementors must have a 'type' field",
-                Category.LINT,
+                CATEGORY_LNCH,
                 10,
                 Severity.FATAL,
                 Implementation(JsonModelDetector::class.java, Scope.JAVA_FILE_SCOPE))
