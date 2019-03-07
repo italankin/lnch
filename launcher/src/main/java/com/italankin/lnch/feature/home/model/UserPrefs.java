@@ -16,6 +16,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.HOME_LAYOUT);
         PREFERENCES.add(Preferences.HOME_ALIGNMENT);
         PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_COLOR);
+        PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_SHOW);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
