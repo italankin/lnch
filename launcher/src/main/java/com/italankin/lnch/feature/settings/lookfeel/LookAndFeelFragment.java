@@ -55,7 +55,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter.save();
+        presenter.saveData();
     }
 
     @Override
