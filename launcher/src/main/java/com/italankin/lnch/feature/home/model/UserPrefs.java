@@ -64,12 +64,16 @@ public final class UserPrefs {
         if (homeLayout != userPrefs.homeLayout) {
             return false;
         }
+        if (homeAlignment != userPrefs.homeAlignment) {
+            return false;
+        }
         return itemPrefs.equals(userPrefs.itemPrefs);
     }
 
     @Override
     public int hashCode() {
         int result = homeLayout.hashCode();
+        result = 31 * result + homeAlignment.hashCode();
         result = 31 * result + overlayColor;
         result = 31 * result + (showScrollbar ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
@@ -81,6 +85,7 @@ public final class UserPrefs {
     public String toString() {
         return "{" +
                 "homeLayout=" + homeLayout +
+                ", homeAlignment=" + homeAlignment +
                 ", overlayColor=" + String.format("#%08x", overlayColor) +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
