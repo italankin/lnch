@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">lnch</string>
 
     <string name="ok">OK</string>
@@ -121,7 +121,7 @@
     <string name="settings_other_bar_backup_message">Settings will be saved in \"Download\" folder</string>
     <string name="settings_other_bar_backup_message_action">Backup</string>
     <string name="settings_other_bar_reset_dialog_title">Reset</string>
-    <string name="settings_other_bar_reset_dialog_message">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
+    <string name="settings_other_bar_reset_dialog_message" tools:ignore="UnusedResources">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
     <string name="settings_other_bar_reset_dialog_action">Reset</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
