@@ -102,7 +102,6 @@
         <item>Sans Serif</item>
         <item>Serif</item>
         <item>Monospace</item>
-        <item>Varela Round</item>
     </string-array>
     <string name="settings_home_laf_appearance_discard_message">Discard changes?</string>
     <string name="settings_home_laf_appearance_discard_button">Discard</string>

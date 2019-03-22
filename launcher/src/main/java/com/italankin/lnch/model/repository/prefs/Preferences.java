@@ -4,8 +4,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import com.italankin.lnch.util.Typefaces;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -235,8 +233,7 @@ public interface Preferences {
         DEFAULT("default", Typeface.DEFAULT_BOLD),
         SANS_SERIF("sans_serif", Typeface.SANS_SERIF),
         SERIF("serif", Typeface.SERIF),
-        MONOSPACE("monospace", Typeface.MONOSPACE),
-        VARELA_ROUND("varela_round", Typefaces.VARELA_ROUND);
+        MONOSPACE("monospace", Typeface.MONOSPACE);
 
         static Font from(String s, Font defaultValue) {
             for (Font value : values()) {
