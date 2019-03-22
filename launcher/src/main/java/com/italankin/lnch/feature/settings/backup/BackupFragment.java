@@ -137,12 +137,6 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     }
 
     private void backupSettings() {
-        class BackupDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
-            @Override
-            public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-                return ((BackupFragment) parentFragment).presenter::onBackupSettings;
-            }
-        }
         new SimpleDialogFragment.Builder()
                 .setTitle(R.string.settings_other_bar_backup)
                 .setMessage(R.string.settings_other_bar_backup_message)
@@ -153,13 +147,14 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
                 .show(getChildFragmentManager(), TAG_BACKUP_DIALOG);
     }
 
-    private void showResetDialog() {
-        class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
-            @Override
-            public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-                return ((BackupFragment) parentFragment).presenter::resetAppsSettings;
-            }
+    private static class BackupDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
+        @Override
+        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+            return ((BackupFragment) parentFragment).presenter::onBackupSettings;
         }
+    }
+
+    private void showResetDialog() {
         new SimpleDialogFragment.Builder()
                 .setTitle(R.string.settings_other_bar_reset_dialog_title)
                 .setMessage(R.string.settings_other_bar_reset_dialog_message)
@@ -168,5 +163,12 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
                 .setListenerProvider(new ResetDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_RESET_DIALOG);
+    }
+
+    private static class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
+        @Override
+        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
+            return ((BackupFragment) parentFragment).presenter::resetAppsSettings;
+        }
     }
 }

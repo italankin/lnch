@@ -94,25 +94,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     }
 
     private void onColorOverlayClick() {
-        class SetAppsColorOverlay implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-            @Override
-            public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-                LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
-                return new ColorPickerDialogFragment.Listener() {
-                    @Override
-                    public void onColorPicked(int newColor) {
-                        preferences.set(Preferences.APPS_COLOR_OVERLAY, newColor);
-                        fragment.updateColorOverlay(true);
-                    }
-
-                    @Override
-                    public void onColorReset() {
-                        preferences.reset(Preferences.APPS_COLOR_OVERLAY);
-                        fragment.updateColorOverlay(true);
-                    }
-                };
-            }
-        }
         new ColorPickerDialogFragment.Builder()
                 .setColorModel(ColorPickerView.ColorModel.RGB)
                 .setHexVisible(false)
@@ -122,6 +103,26 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setListenerProvider(new SetAppsColorOverlay())
                 .build()
                 .show(getChildFragmentManager(), TAG_COLOR_OVERLAY);
+    }
+
+    private static class SetAppsColorOverlay implements ListenerFragment<ColorPickerDialogFragment.Listener> {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
+            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
+            return new ColorPickerDialogFragment.Listener() {
+                @Override
+                public void onColorPicked(int newColor) {
+                    fragment.preferences.set(Preferences.APPS_COLOR_OVERLAY, newColor);
+                    fragment.updateColorOverlay(true);
+                }
+
+                @Override
+                public void onColorReset() {
+                    fragment.preferences.reset(Preferences.APPS_COLOR_OVERLAY);
+                    fragment.updateColorOverlay(true);
+                }
+            };
+        }
     }
 
     public interface Callbacks {
