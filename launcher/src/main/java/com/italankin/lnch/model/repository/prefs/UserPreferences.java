@@ -30,6 +30,7 @@ public class UserPreferences implements Preferences {
         FETCHERS.put(SEARCH_SHOW_GLOBAL_SEARCH, this::searchShowGlobal);
         FETCHERS.put(SEARCH_USE_CUSTOM_TABS, this::useCustomTabs);
         FETCHERS.put(SEARCH_ENGINE, this::searchEngine);
+        FETCHERS.put(CUSTOM_SEARCH_ENGINE_FORMAT, this::customSearchEngineFormat);
         FETCHERS.put(SEARCH_TARGETS, this::searchTargets);
         FETCHERS.put(WALLPAPER_OVERLAY_SHOW, this::showWallpaperOverlayColor);
         FETCHERS.put(WALLPAPER_OVERLAY_COLOR, this::wallpaperOverlayColor);
@@ -60,7 +61,10 @@ public class UserPreferences implements Preferences {
             setSearchUseCustomTabs((Boolean) newValue);
         });
         UPDATERS.put(SEARCH_ENGINE, newValue -> {
-            setSearchEngine((String) newValue);
+            setSearchEngine((SearchEngine) newValue);
+        });
+        UPDATERS.put(CUSTOM_SEARCH_ENGINE_FORMAT, newValue -> {
+            setCustomSearchEngineFormat((String) newValue);
         });
         UPDATERS.put(SEARCH_TARGETS, newValue -> {
             setSearchTargets((EnumSet<SearchTarget>) newValue);
@@ -337,12 +341,21 @@ public class UserPreferences implements Preferences {
         return Font.from(pref, ITEM_FONT.defaultValue());
     }
 
-    private void setSearchEngine(String newValue) {
-        prefs.edit().putString(SEARCH_ENGINE.key(), newValue).apply();
+    private void setSearchEngine(SearchEngine newValue) {
+        prefs.edit().putString(SEARCH_ENGINE.key(), newValue.toString()).apply();
     }
 
-    private String searchEngine() {
-        return prefs.getString(SEARCH_ENGINE.key(), SEARCH_ENGINE.defaultValue());
+    private SearchEngine searchEngine() {
+        String pref = prefs.getString(SEARCH_ENGINE.key(), null);
+        return SearchEngine.from(pref, SEARCH_ENGINE.defaultValue());
+    }
+
+    private void setCustomSearchEngineFormat(String newValue) {
+        prefs.edit().putString(CUSTOM_SEARCH_ENGINE_FORMAT.key(), newValue).apply();
+    }
+
+    private String customSearchEngineFormat() {
+        return prefs.getString(CUSTOM_SEARCH_ENGINE_FORMAT.key(), null);
     }
 
     private void setAppLongClickAction(LongClickAction newValue) {

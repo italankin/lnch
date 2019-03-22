@@ -4,6 +4,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.search.match.UrlMatch;
+import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
 import com.italankin.lnch.model.repository.search.web.WebSearchProvider;
 import com.italankin.lnch.model.repository.search.web.WebSearchProviderFactory;
 
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.util.Patterns.WEB_URL;
-import static com.italankin.lnch.model.repository.prefs.Preferences.SEARCH_ENGINE;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
 
 public class SearchRepositoryImpl implements SearchRepository {
@@ -52,9 +52,11 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         if (searchTargets.contains(SearchTarget.WEB)) {
-            String name = preferences.get(SEARCH_ENGINE);
-            WebSearchProvider webSearchProvider = WebSearchProviderFactory.get(name);
-            matches.add(webSearchProvider.make(constraint.toString(), query));
+            WebSearchProvider provider = WebSearchProviderFactory.get(preferences);
+            WebSearchMatch match = provider.make(constraint.toString(), query);
+            if (match != null) {
+                matches.add(match);
+            }
         }
 
         if (searchTargets.contains(SearchTarget.URL)) {
