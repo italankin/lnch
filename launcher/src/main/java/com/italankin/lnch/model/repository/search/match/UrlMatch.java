@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+
 public class UrlMatch extends PartialMatch {
 
     private static final Set<Action> ACTIONS = Collections.singleton(Action.PIN);
@@ -43,6 +45,12 @@ public class UrlMatch extends PartialMatch {
                     .append(url, new UnderlineSpan(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return label;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return url;
     }
 
     @Override
