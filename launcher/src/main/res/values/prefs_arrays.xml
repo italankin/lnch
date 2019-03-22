@@ -37,6 +37,7 @@
         <item>ddg</item>
         <item>bing</item>
         <item>baidu</item>
+        <item>custom</item>
     </string-array>
     <string-array name="pref_desc_search_engines">
         <item>Google</item>
@@ -44,6 +45,7 @@
         <item>DuckDuckGo</item>
         <item>Bing</item>
         <item>Baidu</item>
+        <item>Custom</item>
     </string-array>
 
     <string-array name="pref_values_screen_orientation">

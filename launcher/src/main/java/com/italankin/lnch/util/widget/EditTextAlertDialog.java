@@ -2,12 +2,16 @@ package com.italankin.lnch.util.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -22,6 +26,7 @@ public final class EditTextAlertDialog {
     public static class Builder {
         private final AlertDialog.Builder builder;
         private final EditText editText;
+        private List<Action<LinearLayout>> customizeRootActions;
 
         private Builder(Context context) {
             builder = new AlertDialog.Builder(context);
@@ -70,17 +75,31 @@ public final class EditTextAlertDialog {
             return this;
         }
 
-        public Builder customizeEditText(Action action) {
+        public Builder customizeEditText(Action<EditText> action) {
             action.customize(editText);
+            return this;
+        }
+
+        public Builder customizeRoot(Action<LinearLayout> action) {
+            if (customizeRootActions == null) {
+                customizeRootActions = new ArrayList<>(1);
+            }
+            customizeRootActions.add(action);
             return this;
         }
 
         public AlertDialog build() {
             LinearLayout layout = new LinearLayout(builder.getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
             int p = ResUtils.px2dp(builder.getContext(), 16);
             ViewUtils.setPadding(layout, p);
             layout.addView(editText, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            if (customizeRootActions != null) {
+                for (Action<LinearLayout> action : customizeRootActions) {
+                    action.customize(layout);
+                }
+            }
             builder.setView(layout);
             return builder.create();
         }
@@ -95,8 +114,8 @@ public final class EditTextAlertDialog {
         }
     }
 
-    public interface Action {
-        void customize(EditText editText);
+    public interface Action<T extends View> {
+        void customize(T t);
     }
 
     public interface OnClickListener {

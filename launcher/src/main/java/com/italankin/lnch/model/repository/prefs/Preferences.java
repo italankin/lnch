@@ -57,7 +57,7 @@ public interface Preferences {
 
     Pref<SearchEngine> SEARCH_ENGINE = Prefs.create(
             "search_engine",
-            null);
+            SearchEngine.DDG);
 
     Pref<String> CUSTOM_SEARCH_ENGINE_FORMAT = Prefs.create(
             "custom_search_engine_format",

@@ -20,15 +20,22 @@
         android:key="search_use_custom_tabs"
         android:summary="@string/settings_search_custom_tabs_summary"
         android:title="@string/settings_search_custom_tabs" />
-    <ListPreference
-        android:defaultValue="@null"
-        android:entries="@array/pref_desc_search_engines"
-        android:entryValues="@array/pref_values_search_engines"
-        android:key="search_engine"
-        android:summary="%s"
-        android:title="@string/settings_search_engine" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_show_global_search"
         android:title="@string/settings_search_global" />
+    <PreferenceCategory android:title="@string/settings_search_engine">
+        <ListPreference
+            android:defaultValue="ddg"
+            android:entries="@array/pref_desc_search_engines"
+            android:entryValues="@array/pref_values_search_engines"
+            android:key="search_engine"
+            android:summary="%s"
+            android:title="@string/settings_search_engine" />
+        <Preference
+            android:defaultValue="@null"
+            android:enabled="false"
+            android:key="custom_search_engine_format"
+            android:title="@string/settings_search_engine_custom_format" />
+    </PreferenceCategory>
 </PreferenceScreen>
