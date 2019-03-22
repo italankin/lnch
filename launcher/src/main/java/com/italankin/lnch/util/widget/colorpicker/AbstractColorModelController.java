@@ -5,6 +5,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ abstract class AbstractColorModelController implements ColorModelController {
                     .setTitle(R.string.color_picker_edit_value_title)
                     .customizeEditText(editText -> {
                         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
                         String text = String.valueOf(seekBarView.getProgress());
                         editText.setText(text);

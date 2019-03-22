@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
                 .setNegativeButton(R.string.cancel, null)
                 .customizeEditText(editText -> {
                     editText.setText(getCustomFormat());
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
                     editText.setHint(R.string.settings_search_engine_custom_format_edit_hint);
                     editText.addTextChangedListener(new TextWatcher() {

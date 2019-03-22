@@ -984,6 +984,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 .customizeEditText(editText -> {
                     editText.setText(visibleLabel);
                     editText.setSingleLine(true);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                     if (visibleLabel != null) {
                         editText.setSelection(visibleLabel.length());
