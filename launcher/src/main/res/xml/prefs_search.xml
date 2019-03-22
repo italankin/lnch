@@ -21,7 +21,7 @@
         android:summary="@string/settings_search_custom_tabs_summary"
         android:title="@string/settings_search_custom_tabs" />
     <ListPreference
-        android:defaultValue="google"
+        android:defaultValue="@null"
         android:entries="@array/pref_desc_search_engines"
         android:entryValues="@array/pref_values_search_engines"
         android:key="search_engine"

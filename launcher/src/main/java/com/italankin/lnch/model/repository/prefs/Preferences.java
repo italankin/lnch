@@ -55,9 +55,13 @@ public interface Preferences {
             "search_use_custom_tabs",
             true);
 
-    Pref<String> SEARCH_ENGINE = Prefs.create(
+    Pref<SearchEngine> SEARCH_ENGINE = Prefs.create(
             "search_engine",
-            "google");
+            null);
+
+    Pref<String> CUSTOM_SEARCH_ENGINE_FORMAT = Prefs.create(
+            "custom_search_engine_format",
+            null);
 
     Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
             "search_targets",
@@ -381,6 +385,39 @@ public interface Preferences {
         private final String key;
 
         AppsSortMode(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Sorting mode for items on home screen
+     */
+    enum SearchEngine {
+        GOOGLE("google"),
+        BING("bing"),
+        YANDEX("yandex"),
+        DDG("ddg"),
+        BAIDU("baidu"),
+        CUSTOM("custom");
+
+        static SearchEngine from(String s, SearchEngine defaultValue) {
+            for (SearchEngine item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        SearchEngine(String key) {
             this.key = key;
         }
 
