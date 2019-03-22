@@ -4,8 +4,6 @@ import android.net.Uri;
 
 import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
@@ -29,17 +27,9 @@ class FormattedProvider implements WebSearchProvider {
 
     private String format(String query) {
         try {
-            return String.format(Locale.ROOT, format, sanitizeQuery(query));
+            return String.format(Locale.ROOT, format, Uri.encode(query));
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    private static String sanitizeQuery(String query) {
-        try {
-            return URLEncoder.encode(query, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            return query;
         }
     }
 }
