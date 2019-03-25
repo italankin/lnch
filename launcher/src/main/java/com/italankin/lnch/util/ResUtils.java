@@ -37,18 +37,7 @@ public final class ResUtils {
         if (out == null) {
             return Color.BLACK;
         }
-        switch (out.type) {
-            case TypedValue.TYPE_REFERENCE:
-            case TypedValue.TYPE_ATTRIBUTE:
-                return resolveColor(context, out.resourceId);
-            case TypedValue.TYPE_INT_COLOR_ARGB4:
-            case TypedValue.TYPE_INT_COLOR_ARGB8:
-            case TypedValue.TYPE_INT_COLOR_RGB4:
-            case TypedValue.TYPE_INT_COLOR_RGB8:
-                return out.data;
-            default:
-                return context.getColor(out.resourceId);
-        }
+        return out.data;
     }
 
     private ResUtils() {
