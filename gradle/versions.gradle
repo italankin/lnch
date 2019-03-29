@@ -36,5 +36,6 @@ ext {
     flexbox = "com.google.android:flexbox:$flexboxVersion"
     picasso = "com.squareup.picasso:picasso:$picassoVersion"
     kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    lint = "com.android.tools.lint:lint:$lintVersion"
+    lintApi = "com.android.tools.lint:lint-api:$lintVersion"
+    lintTests = "com.android.tools.lint:lint-tests:$lintVersion"
 }
