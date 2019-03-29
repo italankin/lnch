@@ -35,29 +35,29 @@ class ActivityResultDetector : Detector(), SourceCodeScanner {
         if (referenced !is PsiField) {
             return
         }
-        if (!context.evaluator.isMemberInSubClassOf(referenced, SdkConstants.CLASS_ACTIVITY, false)) {
+        if (!context.evaluator.isMemberInClass(referenced, SdkConstants.CLASS_ACTIVITY)) {
+            return
+        }
+        // check if 'referenced' is used in onActivityResult method
+        val method: UMethod = reference.getParentOfType(UMethod::class.java) ?: return
+        if (!isTarget(context, method)) {
             return
         }
         // find expression, e.g. (requestCode == Activity.RESULT_OK)
         val comparison: UBinaryExpression = reference.getParentOfType(UBinaryExpression::class.java)
                 ?: return
-        // check if 'referenced' is used in onActivityResult method
-        val method: UMethod = comparison.getParentOfType(UMethod::class.java) ?: return
-        if (!isTarget(context, method)) {
-            return
-        }
         // get another argument of comparison expression
-        val expr = if (comparison.leftOperand.getQualifiedParentOrThis() == reference.getQualifiedParentOrThis()) {
+        val anotherOperand = if (comparison.leftOperand.getQualifiedParentOrThis() == reference.getQualifiedParentOrThis()) {
             comparison.rightOperand
         } else {
             comparison.leftOperand
         }
         // operand should be reference to a parameter
-        if (expr !is UReferenceExpression) {
+        if (anotherOperand !is UReferenceExpression) {
             return
         }
         val paramRequestCode = method.uastParameters[0]
-        if (expr.resolveToUElement() == paramRequestCode) {
+        if (anotherOperand.resolveToUElement() == paramRequestCode) {
             val paramResultCode = method.uastParameters[1]
             val fix = fix().replace()
                     .text(paramRequestCode.name)
