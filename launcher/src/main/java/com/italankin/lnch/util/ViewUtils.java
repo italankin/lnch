@@ -9,7 +9,7 @@ import androidx.annotation.Px;
 public final class ViewUtils {
 
     public static void setPadding(View view, @Px int value) {
-        view.setPadding(value, value, value, value);
+        view.setPaddingRelative(value, value, value, value);
     }
 
     public static void setPaddingDimen(View view, @DimenRes int res) {
@@ -17,25 +17,25 @@ public final class ViewUtils {
         setPadding(view, value);
     }
 
-    public static void setPaddingLeft(View view, @Px int value) {
-        view.setPadding(value, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
+    public static void setPaddingStart(View view, @Px int value) {
+        view.setPaddingRelative(value, view.getPaddingTop(), view.getPaddingEnd(), view.getPaddingBottom());
     }
 
-    public static void setPaddingLeftDimen(View view, @DimenRes int res) {
+    public static void setPaddingStartDimen(View view, @DimenRes int res) {
         int value = view.getResources().getDimensionPixelSize(res);
-        setPaddingLeft(view, value);
+        setPaddingStart(view, value);
     }
 
-    public static void setPaddingRight(View view, @Px int value) {
-        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), value, view.getPaddingBottom());
+    public static void setPaddingEnd(View view, @Px int value) {
+        view.setPaddingRelative(view.getPaddingStart(), view.getPaddingTop(), value, view.getPaddingBottom());
     }
 
     public static void setPaddingTop(View view, @Px int value) {
-        view.setPadding(view.getPaddingLeft(), value, view.getPaddingRight(), view.getPaddingBottom());
+        view.setPaddingRelative(view.getPaddingStart(), value, view.getPaddingEnd(), view.getPaddingBottom());
     }
 
     public static void setPaddingBottom(View view, @Px int value) {
-        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), value);
+        view.setPaddingRelative(view.getPaddingStart(), view.getPaddingTop(), view.getPaddingEnd(), value);
     }
 
     public static void onGlobalLayout(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {

@@ -20,55 +20,10 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <FrameLayout
-            android:id="@+id/search_container"
+        <com.italankin.lnch.feature.home.widget.SearchBar
+            android:id="@+id/search_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/searchbar_size"
-            android:background="?colorSearchBarBackground"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <AutoCompleteTextView
-                android:id="@+id/search_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#0000"
-                android:completionThreshold="1"
-                android:hint="@string/hint_search"
-                android:imeOptions="actionGo|flagNoExtractUi"
-                android:inputType="textAutoComplete"
-                android:paddingLeft="@dimen/search_padding_left_normal"
-                android:paddingTop="16dp"
-                android:paddingRight="56dp"
-                android:paddingBottom="16dp"
-                android:selectAllOnFocus="true"
-                tools:paddingLeft="@dimen/searchbar_size" />
-
-            <ImageView
-                android:id="@+id/search_global"
-                android:layout_width="@dimen/searchbar_size"
-                android:layout_height="@dimen/searchbar_size"
-                android:layout_gravity="start"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_search"
-                android:padding="16dp"
-                android:visibility="gone"
-                tools:src="@drawable/ic_action_search"
-                tools:visibility="visible" />
-
-            <ImageView
-                android:id="@+id/search_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_settings"
-                android:padding="16dp"
-                android:src="@drawable/ic_settings" />
-
-        </FrameLayout>
+            android:layout_height="wrap_content" />
 
         <com.italankin.lnch.feature.home.widget.HomeRecyclerView
             android:id="@+id/list"
@@ -82,7 +37,6 @@
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/item_app"
             tools:spanCount="2"
-            tools:translationY="56dp"
             tools:visibility="visible" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

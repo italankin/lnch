@@ -8,19 +8,16 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -42,7 +39,6 @@ import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.SearchAdapter;
 import com.italankin.lnch.feature.home.behavior.TopBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -50,6 +46,7 @@ import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
+import com.italankin.lnch.feature.home.widget.SearchBar;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -74,7 +71,6 @@ import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
@@ -110,13 +106,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     HomePresenter presenter;
 
     private LceLayout root;
-    private ViewGroup searchContainer;
-    private AutoCompleteTextView searchEditText;
-    private ImageView searchBtnGlobal;
-    private View searchBtnSettings;
+    private SearchBar searchBar;
     private HomeRecyclerView list;
 
-    private InputMethodManager inputMethodManager;
     private PackageManager packageManager;
     private Preferences preferences;
     private Picasso picasso;
@@ -141,7 +133,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     protected void onCreate(@Nullable Bundle state) {
         super.onCreate(state);
 
-        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         packageManager = getPackageManager();
         preferences = daggerService().main().getPreferences();
         picasso = daggerService().main().getPicassoFactory().create(this);
@@ -154,10 +145,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
         list = findViewById(R.id.list);
-        searchContainer = findViewById(R.id.search_container);
-        searchEditText = findViewById(R.id.search_edit_text);
-        searchBtnSettings = findViewById(R.id.search_settings);
-        searchBtnGlobal = findViewById(R.id.search_global);
+        searchBar = findViewById(R.id.search_bar);
 
         setupRoot();
         setupList();
@@ -219,6 +207,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             case Intent.ACTION_MAIN: {
                 dismissPopup();
                 if (searchBarBehavior.isShown()) {
+                    searchBar.reset();
                     searchBarBehavior.hide();
                 } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
                     list.smoothScrollToPosition(0);
@@ -587,41 +576,37 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void setupSearchBar() {
-        searchBarBehavior = new TopBarBehavior(searchContainer, list, new TopBarBehavior.Listener() {
+        searchBarBehavior = new TopBarBehavior(searchBar, list, new TopBarBehavior.Listener() {
             @Override
             public void onShow() {
                 if (preferences.get(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)) {
-                    searchEditText.requestFocus();
+                    searchBar.focusEditText();
                 }
-                inputMethodManager.showSoftInput(searchEditText, 0);
             }
 
             @Override
             public void onHide() {
-                searchEditText.setText("");
-                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-                searchEditText.clearFocus();
+                searchBar.reset();
             }
         });
         searchBarBehavior.setEnabled(!editMode);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchContainer.getLayoutParams();
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchBar.getLayoutParams();
         lp.setBehavior(searchBarBehavior);
-        searchContainer.setLayoutParams(lp);
+        searchBar.setLayoutParams(lp);
 
-        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO) {
-                onFireSearch(0);
-            }
-            return true;
-        });
-        SearchAdapter.Listener listener = new SearchAdapter.Listener() {
+        SearchBar.Listener listener = new SearchBar.Listener() {
             @Override
-            public void onSearchItemClick(int position, Match match) {
-                onFireSearch(position);
+            public void handleIntent(Intent intent) {
+                handleSearchIntent(intent);
             }
 
             @Override
-            public void onSearchItemPinClick(int position, Match match) {
+            public void onSearchFired() {
+                searchBarBehavior.hide();
+            }
+
+            @Override
+            public void onSearchItemPinClick(Match match) {
                 searchBarBehavior.hide();
                 String label = match.getLabel(HomeActivity.this)
                         .toString()
@@ -633,7 +618,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             }
 
             @Override
-            public void onSearchItemInfoClick(int position, Match match) {
+            public void onSearchItemInfoClick(Match match) {
                 if (!(match instanceof DescriptorMatch)) {
                     return;
                 }
@@ -647,22 +632,16 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 if (packageName == null) {
                     return;
                 }
-                Intent intent = PackageUtils.getPackageSystemSettings(packageName);
-                if (!IntentUtils.safeStartActivity(HomeActivity.this, intent)) {
-                    showError(R.string.error);
-                    return;
+                if (startAppSettings(packageName)) {
+                    searchBarBehavior.hide();
                 }
-                searchBarBehavior.hide();
             }
         };
-        searchEditText.setAdapter(new SearchAdapter(picasso,
-                daggerService().main().getSearchRepository(), listener));
-
-        searchBtnSettings.setOnClickListener(v -> {
+        searchBar.setListener(listener);
+        searchBar.setSettings(v -> {
             searchBarBehavior.hide();
             startLnchSettings();
-        });
-        searchBtnSettings.setOnLongClickListener(v -> {
+        }, v -> {
             presenter.startCustomize();
             return true;
         });
@@ -675,25 +654,20 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     private void setupGlobalSearchButton() {
         ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(this);
         if (searchActivity == null) {
-            return;
+            searchBar.hideGlobalSearch();
+        } else {
+            Uri icon = PackageIconHandler.uriFrom(searchActivity.getPackageName());
+            searchBar.setGlobalSearch(icon, v -> {
+                Intent intent = new Intent().setComponent(searchActivity);
+                if (IntentUtils.safeStartActivity(this, intent)) {
+                    searchBarBehavior.hide();
+                } else {
+                    showError(R.string.error);
+                }
+            }, v -> {
+                return startAppSettings(searchActivity.getPackageName());
+            });
         }
-        searchBtnGlobal.setVisibility(View.VISIBLE);
-        searchBtnGlobal.setOnClickListener(v -> {
-            Intent intent = new Intent().setComponent(searchActivity);
-            if (IntentUtils.safeStartActivity(this, intent)) {
-                searchBarBehavior.hide();
-            } else {
-                showError(R.string.error);
-            }
-        });
-        searchBtnGlobal.setOnLongClickListener(v -> {
-            startAppSettings(searchActivity.getPackageName());
-            return true;
-        });
-        ViewUtils.setPaddingLeftDimen(searchEditText, R.dimen.searchbar_size);
-        picasso.load(PackageIconHandler.uriFrom(searchActivity.getPackageName()))
-                .error(R.drawable.ic_action_search)
-                .into(searchBtnGlobal);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -719,11 +693,13 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         showError(R.string.error);
     }
 
-    private void startAppSettings(String packageName) {
+    private boolean startAppSettings(String packageName) {
         Intent intent = PackageUtils.getPackageSystemSettings(packageName);
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
+            return false;
         }
+        return true;
     }
 
     private void startAppUninstall(AppViewModel item) {
@@ -776,11 +752,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);
         root.setBackgroundColor(userPrefs.overlayColor);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
-        if (userPrefs.globalSearch && searchBtnGlobal.getVisibility() != View.VISIBLE) {
+        if (userPrefs.globalSearch && !searchBar.isGlobalSearchVisible()) {
             setupGlobalSearchButton();
-        } else if (!userPrefs.globalSearch && searchBtnGlobal.getVisibility() == View.VISIBLE) {
-            ViewUtils.setPaddingLeftDimen(searchEditText, R.dimen.search_padding_left_normal);
-            searchBtnGlobal.setVisibility(View.GONE);
+        } else if (!userPrefs.globalSearch && searchBar.isGlobalSearchVisible()) {
+            searchBar.hideGlobalSearch();
         }
     }
 
@@ -819,22 +794,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     break;
             }
         }
-    }
-
-    private void onFireSearch(int pos) {
-        if (searchEditText.getText().length() > 0) {
-            if (!searchEditText.isPopupShowing()) {
-                searchEditText.showDropDown();
-                return;
-            }
-            SearchAdapter adapter = (SearchAdapter) searchEditText.getAdapter();
-            if (adapter.getCount() > 0) {
-                Match item = adapter.getItem(pos);
-                handleSearchIntent(item.getIntent());
-            }
-            searchEditText.setText("");
-        }
-        searchBarBehavior.hide();
     }
 
     private void handleSearchIntent(Intent intent) {
@@ -917,7 +876,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!value);
         if (value) {
-            inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+            searchBar.hideSoftKeyboard();
             editModePanel = new EditModePanel(this)
                     .setMessage(R.string.customize_hint)
                     .setOnSaveActionClickListener(v -> {

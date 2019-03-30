@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?colorSearchBarBackground"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <AutoCompleteTextView
+        android:id="@+id/search_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0000"
+        android:completionThreshold="1"
+        android:hint="@string/hint_search"
+        android:imeOptions="actionGo|flagNoExtractUi"
+        android:inputType="textAutoComplete"
+        android:paddingStart="@dimen/search_padding_start"
+        android:paddingTop="16dp"
+        android:paddingEnd="@dimen/searchbar_size"
+        android:paddingBottom="16dp"
+        android:selectAllOnFocus="true"
+        tools:paddingStart="@dimen/searchbar_size" />
+
+    <ImageView
+        android:id="@+id/search_global"
+        android:layout_width="@dimen/searchbar_size"
+        android:layout_height="@dimen/searchbar_size"
+        android:layout_gravity="start"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_search"
+        android:padding="16dp"
+        android:visibility="gone"
+        tools:src="@drawable/ic_action_search"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/search_settings"
+        android:layout_width="@dimen/searchbar_size"
+        android:layout_height="@dimen/searchbar_size"
+        android:layout_gravity="end"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_settings"
+        android:padding="16dp"
+        android:src="@drawable/ic_settings" />
+
+</merge>

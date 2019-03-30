@@ -13,6 +13,6 @@
     <dimen name="list_appearance_translation_offset">96dp</dimen>
     <dimen name="pref_view_padding">16dp</dimen>
     <dimen name="default_right_panel_width">320dp</dimen>
-    <dimen name="search_padding_left_normal">16dp</dimen>
+    <dimen name="search_padding_start">16dp</dimen>
     <dimen name="item_appearance_prefs_container_height">208dp</dimen>
 </resources>
