@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 
-import com.italankin.lnch.R;
-
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
@@ -19,7 +17,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private final View topView;
     private final View bottomView;
-    private final int maxOffset;
+    private int maxOffset;
 
     private boolean dragInProgress = false;
     private boolean shown = false;
@@ -30,10 +28,10 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     public TopBarBehavior(View topView, View bottomView, Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
-        this.maxOffset = topView.getResources().getDimensionPixelSize(R.dimen.searchbar_size);
         this.listener = listener;
 
-        setupInitialState();
+        topView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(this::setupInitialState);
     }
 
     @Override
@@ -181,6 +179,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     private void setupInitialState() {
+        maxOffset = topView.getHeight();
         if (shown) {
             topView.setTranslationY(0);
             topView.setAlpha(1);
