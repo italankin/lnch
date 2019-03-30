@@ -3,7 +3,8 @@ apply from: '../gradle/versions.gradle'
 
 dependencies {
     compileOnly kotlin
-    compileOnly lint
+    compileOnly lintApi
+    testCompile lintTests
 }
 
 jar {
