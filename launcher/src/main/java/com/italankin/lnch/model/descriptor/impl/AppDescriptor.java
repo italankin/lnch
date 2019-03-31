@@ -4,8 +4,9 @@ import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
+import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
-public final class AppDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor, CustomLabelDescriptor,
         HiddenDescriptor {
 
     public String packageName;
@@ -22,6 +23,11 @@ public final class AppDescriptor implements Descriptor, CustomColorDescriptor, C
 
     public AppDescriptor(String packageName) {
         this.packageName = packageName;
+    }
+
+    @Override
+    public String getPackageName() {
+        return packageName;
     }
 
     @Override

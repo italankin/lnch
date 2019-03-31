@@ -50,8 +50,6 @@ import com.italankin.lnch.feature.home.widget.SearchBar;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
@@ -68,6 +66,7 @@ import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
 import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.impl.IntentViewModel;
 import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
+import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
@@ -623,16 +622,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     return;
                 }
                 Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
-                String packageName = null;
-                if (descriptor instanceof AppDescriptor) {
-                    packageName = ((AppDescriptor) descriptor).packageName;
-                } else if (descriptor instanceof DeepShortcutDescriptor) {
-                    packageName = ((DeepShortcutDescriptor) descriptor).packageName;
-                }
-                if (packageName == null) {
-                    return;
-                }
-                if (startAppSettings(packageName)) {
+                String packageName = DescriptorUtils.getPackageName(descriptor);
+                if (packageName != null && startAppSettings(packageName)) {
                     searchBarBehavior.hide();
                 }
             }

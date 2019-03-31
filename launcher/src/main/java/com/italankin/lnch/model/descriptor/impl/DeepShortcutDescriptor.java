@@ -3,8 +3,10 @@ package com.italankin.lnch.model.descriptor.impl;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
-public final class DeepShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class DeepShortcutDescriptor implements Descriptor, PackageDescriptor,
+        CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;
     public String packageName;
@@ -20,6 +22,11 @@ public final class DeepShortcutDescriptor implements Descriptor, CustomColorDesc
     public DeepShortcutDescriptor(String packageName, String shortcutId) {
         this.packageName = packageName;
         this.id = shortcutId;
+    }
+
+    @Override
+    public String getPackageName() {
+        return packageName;
     }
 
     @Override
