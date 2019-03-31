@@ -667,17 +667,10 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     private void startApp(AppViewModel item) {
         searchBarBehavior.hide();
-        Intent intent = packageManager.getLaunchIntentForPackage(item.packageName);
+        Intent intent = DescriptorUtils.getLaunchIntent(packageManager, item.getDescriptor());
         if (intent != null) {
-            if (item.componentName != null) {
-                intent.setComponent(ComponentName.unflattenFromString(item.componentName));
-            }
-            ComponentName cn = intent.getComponent();
-            if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
-                startLnchSettings();
-                return;
-            }
-            if (IntentUtils.safeStartActivity(this, intent)) {
+            Intent resolved = IntentUtils.resolveSelfIntent(this, intent);
+            if (IntentUtils.safeStartActivity(this, resolved)) {
                 return;
             }
         }

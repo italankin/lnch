@@ -1,6 +1,7 @@
 package com.italankin.lnch.util;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -8,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.italankin.lnch.BuildConfig;
+import com.italankin.lnch.feature.home.HomeActivity;
+import com.italankin.lnch.feature.settings.SettingsActivity;
 
 import java.net.URISyntaxException;
 
@@ -41,6 +44,17 @@ public final class IntentUtils {
             return BuildConfig.APPLICATION_ID.equals(activityInfo.packageName) || activityInfo.exported;
         }
         return false;
+    }
+
+    /**
+     * If we try to start {@link HomeActivity} from itself, start {@link SettingsActivity} instead.
+     */
+    public static Intent resolveSelfIntent(Context context, Intent intent) {
+        ComponentName cn = intent.getComponent();
+        if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
+            return SettingsActivity.getStartIntent(context);
+        }
+        return intent;
     }
 
     public static Intent fromUri(String uri) {
