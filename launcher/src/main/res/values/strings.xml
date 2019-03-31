@@ -7,6 +7,7 @@
     <string name="retry">Retry</string>
     <string name="save">Save</string>
     <string name="preview">Preview</string>
+    <string name="open_settings">Open Settings</string>
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>

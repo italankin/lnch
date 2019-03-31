@@ -285,6 +285,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (update.items.isEmpty()) {
             root.empty()
                     .message(R.string.apps_list_empty)
+                    .button(R.string.open_settings, v -> startLnchSettings())
                     .show();
         } else {
             root.showContent();
@@ -659,8 +660,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
         searchBtnSettings.setOnClickListener(v -> {
             searchBarBehavior.hide();
-            Intent intent = SettingsActivity.getStartIntent(this);
-            startActivity(intent);
+            startLnchSettings();
         });
         searchBtnSettings.setOnLongClickListener(v -> {
             presenter.startCustomize();
@@ -709,8 +709,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             }
             ComponentName cn = intent.getComponent();
             if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
-                Intent settingsIntent = SettingsActivity.getStartIntent(this);
-                startActivity(settingsIntent);
+                startLnchSettings();
                 return;
             }
             if (IntentUtils.safeStartActivity(this, intent)) {
@@ -863,13 +862,17 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         }
         ComponentName cn = intent.getComponent();
         if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
-            Intent settingsIntent = SettingsActivity.getStartIntent(this);
-            startActivity(settingsIntent);
+            startLnchSettings();
             return;
         }
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
+    }
+
+    private void startLnchSettings() {
+        Intent settingsIntent = SettingsActivity.getStartIntent(this);
+        startActivity(settingsIntent);
     }
 
     private void animateListAppearance() {
