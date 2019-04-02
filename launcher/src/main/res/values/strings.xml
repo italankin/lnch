@@ -91,6 +91,8 @@
 
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>
+    <string name="settings_home_laf_other_large_search_Bar">Large search bar</string>
+    <string name="settings_home_laf_other_large_search_Bar_summary">Increase height of the search bar</string>
     <string name="settings_home_laf_other_color_show">Use one color for all apps</string>
     <string name="settings_home_laf_other_color">Choose color</string>
 

@@ -19,6 +19,11 @@
     <PreferenceCategory android:title="@string/settings_home_laf_other">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="large_search_bar"
+            android:summary="@string/settings_home_laf_other_large_search_Bar_summary"
+            android:title="@string/settings_home_laf_other_large_search_Bar" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="apps_color_overlay_show"
             android:title="@string/settings_home_laf_other_color_show" />
         <Preference
