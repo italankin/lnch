@@ -94,7 +94,7 @@ public class SearchBar extends FrameLayout {
     }
 
     public void reset() {
-        searchEditText.dismissDropDown();
+        hidePopup();
         searchEditText.setText("");
         inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
         searchEditText.clearFocus();
