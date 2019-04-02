@@ -186,7 +186,7 @@ public class SettingsActivity extends AppCompatActivity implements
         fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fragment_in, R.animator.fragment_out,
-                        R.animator.fragment_in, R.animator.fragment_out)
+                        R.animator.fragment_bs_in, R.animator.fragment_bs_out)
                 .replace(R.id.container, fragment)
                 .setBreadCrumbTitle(title)
                 .addToBackStack(null)

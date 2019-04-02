@@ -12,6 +12,6 @@
         android:interpolator="@anim/decelerate"
         android:propertyName="x"
         android:valueFrom="0dp"
-        android:valueTo="@dimen/fragment_anim_offset_neg"
+        android:valueTo="@dimen/fragment_anim_offset"
         android:valueType="floatType" />
 </set>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fragment_anim_offset">80dp</dimen>
+    <dimen name="fragment_anim_offset_neg">-80dp</dimen>
+    <integer name="fragment_anim_duration">300</integer>
+</resources>
