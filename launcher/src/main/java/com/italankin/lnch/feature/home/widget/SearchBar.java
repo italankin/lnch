@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -20,10 +21,13 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.squareup.picasso.Picasso;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class SearchBar extends FrameLayout {
+
+    private static final float TEXT_SIZE_FACTOR = 3.11f;
 
     private final InputMethodManager inputMethodManager;
     private final Picasso picasso;
@@ -47,6 +51,7 @@ public class SearchBar extends FrameLayout {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorSearchBarBackground));
+        setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.search_bar_size));
 
         inflate(context, R.layout.widget_search_bar, this);
 
@@ -105,14 +110,29 @@ public class SearchBar extends FrameLayout {
         buttonGlobalSearch.setOnClickListener(onClickListener);
         buttonGlobalSearch.setOnLongClickListener(onLongClickListener);
         picasso.load(icon)
+                .resizeDimen(R.dimen.search_icon_size, R.dimen.search_icon_size)
+                .centerInside()
                 .error(R.drawable.ic_action_search)
                 .into(buttonGlobalSearch);
-        ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.searchbar_size);
+        ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.search_bar_size);
     }
 
     public void setSettings(OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
         buttonSettings.setOnClickListener(onClickListener);
         buttonSettings.setOnLongClickListener(onLongClickListener);
+    }
+
+    public void setSearchBarSizeDimen(@DimenRes int size) {
+        setSearchBarSize(getResources().getDimensionPixelSize(size));
+    }
+
+    public void setSearchBarSize(int size) {
+        if (getMinimumHeight() != size) {
+            setMinimumHeight(size);
+            float density = getResources().getDisplayMetrics().density;
+            float textSize = (size / density) / TEXT_SIZE_FACTOR;
+            searchEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        }
     }
 
     public void hidePopup() {

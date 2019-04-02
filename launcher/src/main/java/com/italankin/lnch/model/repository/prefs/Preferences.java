@@ -67,6 +67,10 @@ public interface Preferences {
             "search_targets",
             SearchTarget.ALL);
 
+    Pref<Boolean> LARGE_SEARCH_BAR = Prefs.create(
+            "large_search_bar",
+            false);
+
     Pref<Boolean> WALLPAPER_OVERLAY_SHOW = Prefs.create(
             "wallpaper_overlay_show",
             false);

@@ -19,6 +19,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_SHOW);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
+        PREFERENCES.add(Preferences.LARGE_SEARCH_BAR);
         PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
         PREFERENCES.add(Preferences.ITEM_PADDING);
         PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
@@ -32,6 +33,7 @@ public final class UserPrefs {
     public final int overlayColor;
     public final boolean showScrollbar;
     public final boolean globalSearch;
+    public final boolean largeSearchBar;
     public final ItemPrefs itemPrefs;
 
     public UserPrefs(Preferences preferences) {
@@ -40,6 +42,7 @@ public final class UserPrefs {
         overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
         showScrollbar = preferences.get(Preferences.SHOW_SCROLLBAR);
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
+        largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         itemPrefs = new UserPrefs.ItemPrefs(preferences);
     }
 
@@ -61,6 +64,9 @@ public final class UserPrefs {
         if (globalSearch != userPrefs.globalSearch) {
             return false;
         }
+        if (largeSearchBar != userPrefs.largeSearchBar) {
+            return false;
+        }
         if (homeLayout != userPrefs.homeLayout) {
             return false;
         }
@@ -78,6 +84,7 @@ public final class UserPrefs {
         result = 31 * result + (showScrollbar ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
         result = 31 * result + (globalSearch ? 1 : 0);
+        result = 31 * result + (largeSearchBar ? 1 : 0);
         return result;
     }
 
@@ -89,6 +96,7 @@ public final class UserPrefs {
                 ", overlayColor=" + String.format("#%08x", overlayColor) +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
+                ", largeSearchBar=" + largeSearchBar +
                 ", itemPrefs=" + itemPrefs +
                 '}';
     }

@@ -2,17 +2,19 @@
 <resources>
     <dimen name="progress_indicator_size">48dp</dimen>
     <dimen name="color_picker_preview_size">128dp</dimen>
-    <dimen name="searchbar_size">56dp</dimen>
     <dimen name="edit_panel_size">56dp</dimen>
     <dimen name="backdrop_grid_size">12dp</dimen>
     <dimen name="popup_window_arrow_size">8dp</dimen>
     <dimen name="popup_window_elevation">4dp</dimen>
     <dimen name="popup_shortcut_icon_size">32dp</dimen>
     <dimen name="popup_action_icon_size">40dp</dimen>
-    <dimen name="search_match_icon_size">24dp</dimen>
     <dimen name="list_appearance_translation_offset">96dp</dimen>
     <dimen name="pref_view_padding">16dp</dimen>
     <dimen name="default_right_panel_width">320dp</dimen>
+    <dimen name="search_bar_size">56dp</dimen>
+    <dimen name="search_bar_size_large">80dp</dimen>
+    <dimen name="search_icon_size">24dp</dimen>
+    <dimen name="search_match_icon_size">24dp</dimen>
     <dimen name="search_padding_start">16dp</dimen>
     <dimen name="item_appearance_prefs_container_height">208dp</dimen>
 </resources>

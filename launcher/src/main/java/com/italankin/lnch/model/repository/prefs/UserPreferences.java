@@ -32,6 +32,7 @@ public class UserPreferences implements Preferences {
         FETCHERS.put(SEARCH_ENGINE, this::searchEngine);
         FETCHERS.put(CUSTOM_SEARCH_ENGINE_FORMAT, this::customSearchEngineFormat);
         FETCHERS.put(SEARCH_TARGETS, this::searchTargets);
+        FETCHERS.put(LARGE_SEARCH_BAR, this::isLargeSearchBar);
         FETCHERS.put(WALLPAPER_OVERLAY_SHOW, this::showWallpaperOverlayColor);
         FETCHERS.put(WALLPAPER_OVERLAY_COLOR, this::wallpaperOverlayColor);
         FETCHERS.put(HOME_LAYOUT, this::homeLayout);
@@ -68,6 +69,9 @@ public class UserPreferences implements Preferences {
         });
         UPDATERS.put(SEARCH_TARGETS, newValue -> {
             setSearchTargets((EnumSet<SearchTarget>) newValue);
+        });
+        UPDATERS.put(LARGE_SEARCH_BAR, newValue -> {
+            setLargeSearchBar((Boolean) newValue);
         });
         UPDATERS.put(WALLPAPER_OVERLAY_SHOW, newValue -> {
             setWallpaperOverlayShow((Boolean) newValue);
@@ -296,6 +300,14 @@ public class UserPreferences implements Preferences {
             }
         }
         return EnumSet.copyOf(result);
+    }
+
+    private void setLargeSearchBar(boolean value) {
+        prefs.edit().putBoolean(LARGE_SEARCH_BAR.key(), value).apply();
+    }
+
+    private boolean isLargeSearchBar() {
+        return prefs.getBoolean(LARGE_SEARCH_BAR.key(), LARGE_SEARCH_BAR.defaultValue());
     }
 
     private void setItemTextSize(float size) {

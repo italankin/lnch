@@ -741,6 +741,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         } else if (!userPrefs.globalSearch && searchBar.isGlobalSearchVisible()) {
             searchBar.hideGlobalSearch();
         }
+        searchBar.setSearchBarSizeDimen(userPrefs.largeSearchBar
+                ? R.dimen.search_bar_size_large
+                : R.dimen.search_bar_size);
     }
 
     private void setScreenOrientation() {
