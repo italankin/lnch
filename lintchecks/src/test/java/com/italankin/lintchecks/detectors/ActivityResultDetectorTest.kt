@@ -55,12 +55,6 @@ class ActivityResultDetectorTest {
                     }
                 }
             """.trimIndent()
-        val expectedText = """
-                |src/MyActivity.java:7: Error: requestCode should not be compared with RESULT_OK [ActivityResultDetector]
-                |        if (requestCode == Activity.RESULT_OK) {
-                |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                |1 errors, 0 warnings
-            """.trimMargin()
         val expectedFixDiffs = """
                 |Fix for src/MyActivity.java line 7: Replace with resultCode:
                 |@@ -7 +7
@@ -71,7 +65,7 @@ class ActivityResultDetectorTest {
                 .files(java(testData))
                 .issues(ActivityResultDetector.ISSUE)
                 .run()
-                .expect(expectedText)
+                .expectErrorCount(1)
                 .expectFixDiffs(expectedFixDiffs)
     }
 
@@ -94,11 +88,11 @@ class ActivityResultDetectorTest {
             """.trimIndent()
         val expectedText = """
                 |src/MyActivity.java:7: Error: var1 should not be compared with RESULT_OK [ActivityResultDetector]
-                |        if (requestCode == Activity.RESULT_OK) {
-                |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                |        if (var1 == Activity.RESULT_OK) {
+                |            ~~~~~~~~~~~~~~~~~~~~~~~~~~
                 |src/MyActivity.java:9: Error: var1 should not be compared with RESULT_CANCELED [ActivityResultDetector]
-                |        if (requestCode == Activity.RESULT_CANCELED) {
-                |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                |        if (var1 == Activity.RESULT_CANCELED) {
+                |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 |2 errors, 0 warnings
             """.trimMargin()
         TestLintTask.lint()
