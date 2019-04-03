@@ -7,6 +7,8 @@ dependencies {
     testCompile lintTests
 }
 
+tasks.getByName("jar").dependsOn("test")
+
 jar {
     manifest {
         attributes("Lint-Registry-v2": "com.italankin.lintchecks.LnchIssueRegistry")
