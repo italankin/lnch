@@ -385,7 +385,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     @Override
     public void showError(Throwable e) {
-        showErrorToast(e.getMessage());
+        showErrorToast(getString(R.string.error));
     }
 
     @Override
