@@ -13,7 +13,7 @@ interface BackupView extends MvpView {
     void onRestoreError(Throwable error);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onBackupSuccess(String path);
+    void onBackupSuccess();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onBackupError(Throwable error);
@@ -23,7 +23,4 @@ interface BackupView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onResetError(Throwable error);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onExternalStorageNotAvailableError(Throwable error);
 }

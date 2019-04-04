@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.settings.backup;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Environment;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -12,17 +11,13 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -31,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
 public class BackupPresenter extends AppPresenter<BackupView> {
 
     private static final int BUFFER_SIZE = 16384;
-    private static final String BACKUP_FILE_FORMAT = "lnch-backup-%s.json";
 
     private final ContentResolver contentResolver;
     private final DescriptorStore descriptorStore;
@@ -47,9 +41,20 @@ public class BackupPresenter extends AppPresenter<BackupView> {
         this.packagesStore = packagesStore;
     }
 
-    void onRestoreFromSource(Uri uri) {
-        Single.fromCallable(() -> contentResolver.openInputStream(uri))
-                .map(descriptorStore::read)
+    void onRestoreSettings(Uri uri) {
+        Single
+                .<List<Descriptor>>create(emitter -> {
+                    try (InputStream is = contentResolver.openInputStream(uri)) {
+                        List<Descriptor> descriptors = descriptorStore.read(is);
+                        if (descriptors == null) {
+                            emitter.tryOnError(new IllegalArgumentException());
+                            return;
+                        }
+                        emitter.onSuccess(descriptors);
+                    } catch (Exception e) {
+                        emitter.tryOnError(e);
+                    }
+                })
                 .flatMapCompletable(descriptors -> {
                     return descriptorRepository.edit()
                             .enqueue(new ReplaceAction(descriptors))
@@ -70,43 +75,37 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                 });
     }
 
-    void onBackupSettings() {
-        Single
-                .<String>create(emitter -> {
-                    File dirDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState(dirDownloads))) {
-                        emitter.onError(new ExternalStorageNotAvailable());
-                        return;
-                    }
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-hh_mm_ss", Locale.getDefault());
-                    String backupFileName = String.format(Locale.getDefault(),
-                            BACKUP_FILE_FORMAT,
-                            dateFormat.format(new Date()));
-                    File backupFile = new File(dirDownloads, backupFileName);
-                    try (InputStream is = packagesStore.input(); OutputStream os = new FileOutputStream(backupFile)) {
+    void onBackupSettings(Uri uri) {
+        Completable
+                .create(emitter -> {
+                    try (InputStream is = packagesStore.input(); OutputStream os = contentResolver.openOutputStream(uri)) {
+                        if (os == null) {
+                            emitter.tryOnError(new IllegalArgumentException());
+                            return;
+                        }
                         int read;
                         byte[] buffer = new byte[BUFFER_SIZE];
                         while ((read = is.read(buffer)) != -1) {
                             os.write(buffer, 0, read);
                         }
+                        if (!emitter.isDisposed()) {
+                            emitter.onComplete();
+                        }
+                    } catch (Exception e) {
+                        emitter.tryOnError(e);
                     }
-                    emitter.onSuccess(backupFile.getAbsolutePath());
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<String>() {
+                .subscribe(new CompletableState() {
                     @Override
-                    protected void onSuccess(BackupView viewState, String path) {
-                        viewState.onBackupSuccess(path);
+                    protected void onComplete(BackupView viewState) {
+                        viewState.onBackupSuccess();
                     }
 
                     @Override
                     protected void onError(BackupView viewState, Throwable e) {
-                        if (e instanceof ExternalStorageNotAvailable) {
-                            viewState.onExternalStorageNotAvailableError(e);
-                        } else {
-                            viewState.onBackupError(e);
-                        }
+                        viewState.onBackupError(e);
                     }
                 });
     }
@@ -139,12 +138,6 @@ public class BackupPresenter extends AppPresenter<BackupView> {
         public void apply(List<Descriptor> items) {
             items.clear();
             items.addAll(newItems);
-        }
-    }
-
-    private static class ExternalStorageNotAvailable extends RuntimeException {
-        private ExternalStorageNotAvailable() {
-            super("External storage is not available");
         }
     }
 }

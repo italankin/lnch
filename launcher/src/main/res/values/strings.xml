@@ -122,18 +122,14 @@
     <string name="settings_other_bar_reset">Reset</string>
     <string name="settings_other_bar_reset_summary">Reset apps settings to their defaults</string>
     <string name="settings_other_bar_restore_success">Settings restored successfully</string>
-    <string name="settings_other_bar_backup_success">Settings backed up successfully to \"%1$s\"</string>
+    <string name="settings_other_bar_backup_success">Settings backed up successfully</string>
     <string name="settings_other_bar_reset_success">Settings were reset</string>
-    <string name="settings_other_bar_backup_message">Settings will be saved in \"Download\" folder</string>
-    <string name="settings_other_bar_backup_message_action">Backup</string>
     <string name="settings_other_bar_reset_dialog_title">Reset</string>
     <string name="settings_other_bar_reset_dialog_message" tools:ignore="UnusedResources">Do you want to reset all apps settings (custom names, colors, separators, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
     <string name="settings_other_bar_reset_dialog_action">Reset</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
-    <string name="error_write_storage_permission">Permission is required to save backup</string>
     <string name="error_manual_sorting_required">Reordering is only available for manual sorting</string>
     <string name="error_shortcut_not_found">Not found</string>
     <string name="error_shortcut_disabled">Shortcut is disabled</string>
-    <string name="error_external_storage_unavailable">External storage is not available</string>
 </resources>

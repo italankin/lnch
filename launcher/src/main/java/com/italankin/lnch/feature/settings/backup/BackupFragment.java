@@ -1,10 +1,8 @@
 package com.italankin.lnch.feature.settings.backup;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -23,11 +21,12 @@ import androidx.fragment.app.Fragment;
 
 public class BackupFragment extends AppPreferenceFragment implements BackupView {
 
-    private static final String TAG_BACKUP_DIALOG = "backup";
+    private static final String MIME_TYPE_ANY = "*/*";
+
     private static final String TAG_RESET_DIALOG = "reset_dialog";
 
     private static final int REQUEST_CODE_OPEN_DOCUMENT = 1;
-    private static final int REQUEST_CODE_WRITE_STORAGE = 2;
+    private static final int REQUEST_CODE_CREATE_DOCUMENT = 2;
 
     @InjectPresenter
     BackupPresenter presenter;
@@ -46,23 +45,11 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_backup).setOnPreferenceClickListener(preference -> {
-            if (requireContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE);
-            } else {
-                backupSettings();
-            }
+            backupSettings();
             return true;
         });
         findPreference(R.string.pref_key_restore).setOnPreferenceClickListener(preference -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType("*/*");
-            try {
-                startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
-            }
+            restoreSettings();
             return true;
         });
         findPreference(R.string.pref_key_reset).setOnPreferenceClickListener(preference -> {
@@ -73,27 +60,23 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_OPEN_DOCUMENT && resultCode == Activity.RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            if (uri == null) {
-                return;
+        Uri uri = data != null ? data.getData() : null;
+        if (uri == null) {
+            return;
+        }
+        switch (requestCode) {
+            case REQUEST_CODE_CREATE_DOCUMENT: {
+                if (resultCode == Activity.RESULT_OK) {
+                    presenter.onBackupSettings(uri);
+                }
+                break;
             }
-            presenter.onRestoreFromSource(uri);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length == 0) {
-            return;
-        }
-        if (requestCode != REQUEST_CODE_WRITE_STORAGE) {
-            return;
-        }
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            backupSettings();
-        } else {
-            Toast.makeText(requireContext(), R.string.error_write_storage_permission, Toast.LENGTH_SHORT).show();
+            case REQUEST_CODE_OPEN_DOCUMENT: {
+                if (resultCode == Activity.RESULT_OK) {
+                    presenter.onRestoreSettings(uri);
+                }
+                break;
+            }
         }
     }
 
@@ -104,17 +87,17 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onRestoreError(Throwable error) {
-        showError(error);
+        showError();
     }
 
     @Override
-    public void onBackupSuccess(String path) {
-        Toast.makeText(requireContext(), getString(R.string.settings_other_bar_backup_success, path), Toast.LENGTH_LONG).show();
+    public void onBackupSuccess() {
+        Toast.makeText(requireContext(), R.string.settings_other_bar_backup_success, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onBackupError(Throwable error) {
-        showError(error);
+        showError();
     }
 
     @Override
@@ -124,34 +107,30 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @Override
     public void onResetError(Throwable error) {
-        showError(error);
+        showError();
     }
 
-    @Override
-    public void onExternalStorageNotAvailableError(Throwable error) {
-        Toast.makeText(requireContext(), R.string.error_external_storage_unavailable, Toast.LENGTH_LONG).show();
+    private void showError() {
+        Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
     }
 
-    private void showError(Throwable error) {
-        Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+    private void restoreSettings() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType(MIME_TYPE_ANY);
+        try {
+            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void backupSettings() {
-        new SimpleDialogFragment.Builder()
-                .setTitle(R.string.settings_other_bar_backup)
-                .setMessage(R.string.settings_other_bar_backup_message)
-                .setPositiveButton(R.string.settings_other_bar_backup_message_action)
-                .setNegativeButton(R.string.cancel)
-                .setListenerProvider(new BackupDialogListenerProvider())
-                .build()
-                .show(getChildFragmentManager(), TAG_BACKUP_DIALOG);
-    }
-
-    private static class BackupDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
-        @Override
-        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-            return ((BackupFragment) parentFragment).presenter::onBackupSettings;
-        }
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(MIME_TYPE_ANY);
+        intent.putExtra(Intent.EXTRA_TITLE, BackupFileNameProvider.generateFileName());
+        startActivityForResult(intent, REQUEST_CODE_CREATE_DOCUMENT);
     }
 
     private void showResetDialog() {
