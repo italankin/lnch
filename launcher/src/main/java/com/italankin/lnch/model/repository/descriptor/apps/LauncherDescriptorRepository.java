@@ -169,7 +169,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     final class Editor implements DescriptorRepository.Editor {
         private final Queue<DescriptorRepository.Editor.Action> actions = new ArrayDeque<>();
         private final List<Descriptor> items;
-        private volatile boolean used;
+        private volatile boolean disposed;
+        private final Consumer<Disposable> onSubscribe = d -> disposed = true;
 
         Editor(List<Descriptor> items) {
             this.items = items;
@@ -177,8 +178,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
         @Override
         public Editor enqueue(DescriptorRepository.Editor.Action action) {
-            if (used) {
-                throw new IllegalStateException();
+            if (disposed) {
+                throw new IllegalStateException("Editor is disposed");
             }
             actions.offer(action);
             return this;
@@ -197,10 +198,9 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
         @Override
         public Completable commit() {
-            if (used) {
-                throw new IllegalStateException();
+            if (disposed) {
+                throw new IllegalStateException("Editor is disposed");
             }
-            Consumer<Disposable> onSubscribe = d -> used = true;
             if (actions.isEmpty()) {
                 Timber.d("commit: no actions");
                 return Completable.complete()
