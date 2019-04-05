@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor;
+package com.italankin.lnch.model.repository.descriptor.apps;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.sort.AscLabelSorter;
 import com.italankin.lnch.model.repository.descriptor.sort.DescLabelSorter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -26,6 +27,7 @@ import com.italankin.lnch.util.IntentUtils;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,10 +45,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getDominantIconColor;
-import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getLabel;
-import static com.italankin.lnch.model.repository.descriptor.LauncherActivityInfoUtils.getVersionCode;
+import static com.italankin.lnch.model.repository.descriptor.apps.LauncherActivityInfoUtils.getComponentName;
 
 public class LauncherDescriptorRepository implements DescriptorRepository {
     private final PackageManager packageManager;
@@ -55,6 +54,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private final ShortcutsRepository shortcutsRepository;
     private final LauncherApps launcherApps;
     private final Preferences preferences;
+    private final AppDescriptors appDescriptors;
 
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
@@ -68,6 +68,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         this.shortcutsRepository = shortcutsRepository;
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
+        this.appDescriptors = new AppDescriptors(packageManager, preferences);
         this.updater = createUpdater();
         subscribeForUpdates();
     }
@@ -150,11 +151,11 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         switch (preferences.get(Preferences.APPS_SORT_MODE)) {
             case AZ: {
                 boolean changed = new AscLabelSorter().sort(appsData.items);
-                return new AppsData(appsData.items, changed || appsData.changed);
+                return appsData.copy(changed);
             }
             case ZA: {
                 boolean changed = new DescLabelSorter().sort(appsData.items);
-                return new AppsData(appsData.items, changed || appsData.changed);
+                return appsData.copy(changed);
             }
             case MANUAL:
             default:
@@ -193,8 +194,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         return Single
                 .fromCallable(() -> {
                     List<Descriptor> items = new ArrayList<>(16);
-                    for (int i = 0, s = infoList.size(); i < s; i++) {
-                        items.add(createItem(infoList.get(i)));
+                    for (LauncherActivityInfo info : infoList) {
+                        items.add(appDescriptors.createItem(info));
                     }
                     return new AppsData(items, true);
                 });
@@ -213,148 +214,170 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                         emitter.onComplete();
                         return;
                     }
-                    List<Descriptor> items = new ArrayList<>(savedItems.size());
-                    List<Descriptor> deleted = new ArrayList<>(8);
-                    Map<String, List<LauncherActivityInfo>> infosByPackageName = infosByPackageName(infoList);
-                    List<Shortcut> pinnedShortcuts = shortcutsRepository.getPinnedShortcuts();
-                    Map<String, AppDescriptor> installedApps = new HashMap<>(savedItems.size());
+                    ProcessingEnv env = new ProcessingEnv(shortcutsRepository.getPinnedShortcuts(), infoList);
                     for (Descriptor item : savedItems) {
                         if (item instanceof PinnedShortcutDescriptor) {
-                            String uri = ((PinnedShortcutDescriptor) item).uri;
-                            Intent intent = IntentUtils.fromUri(uri);
-                            if (IntentUtils.canHandleIntent(packageManager, intent)) {
-                                items.add(item);
-                            } else {
-                                deleted.add(item);
-                            }
-                            continue;
-                        }
-                        if (item instanceof DeepShortcutDescriptor) {
-                            items.add(item);
-                            DeepShortcutDescriptor descriptor = (DeepShortcutDescriptor) item;
-                            if (pinnedShortcuts.isEmpty()) {
-                                descriptor.enabled = false;
-                                continue;
-                            }
-                            boolean enabled = false;
-                            for (Iterator<Shortcut> iter = pinnedShortcuts.iterator(); iter.hasNext(); ) {
-                                Shortcut pinned = iter.next();
-                                if (pinned.getPackageName().equals(descriptor.packageName)
-                                        && pinned.getId().equals(descriptor.id)) {
-                                    iter.remove();
-                                    enabled = pinned.isEnabled();
-                                    break;
-                                }
-                            }
-                            descriptor.enabled = enabled;
-                            continue;
-                        }
-                        if (!(item instanceof AppDescriptor)) {
-                            items.add(item);
-                            continue;
-                        }
-                        AppDescriptor app = (AppDescriptor) item;
-                        LauncherActivityInfo info = findInfo(infosByPackageName, app);
-                        if (info != null) {
-                            long versionCode = getVersionCode(packageManager, app.packageName);
-                            if (app.versionCode != versionCode) {
-                                app.versionCode = versionCode;
-                                app.label = getLabel(info);
-                                app.color = getDominantIconColor(info,
-                                        preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
-                            }
-                            if (app.componentName != null) {
-                                app.componentName = getComponentName(info);
-                            }
-                            items.add(app);
-                            installedApps.put(app.packageName, app);
+                            visitPinnedShortcut(env, (PinnedShortcutDescriptor) item);
+                        } else if (item instanceof DeepShortcutDescriptor) {
+                            visitDeepShortcut(env, (DeepShortcutDescriptor) item);
+                        } else if (item instanceof AppDescriptor) {
+                            visitApp(env, (AppDescriptor) item);
                         } else {
-                            deleted.add(app);
+                            env.items.add(item);
                         }
                     }
-                    for (List<LauncherActivityInfo> infos : infosByPackageName.values()) {
-                        if (infos.size() == 1) {
-                            AppDescriptor item = createItem(infos.get(0));
-                            items.add(item);
-                            installedApps.put(item.packageName, item);
-                        } else {
-                            for (LauncherActivityInfo info : infos) {
-                                AppDescriptor item = createItem(info);
-                                item.componentName = getComponentName(info);
-                                items.add(item);
-                                installedApps.put(item.packageName, item);
-                            }
-                        }
-                    }
-                    for (Shortcut shortcut : pinnedShortcuts) {
-                        String packageName = shortcut.getPackageName();
-                        DeepShortcutDescriptor item = new DeepShortcutDescriptor(
-                                packageName, shortcut.getId());
-                        AppDescriptor app = installedApps.get(packageName);
-                        item.color = app.color;
-                        String label = shortcut.getShortLabel().toString();
-                        if (TextUtils.isEmpty(label)) {
-                            item.label = app.getVisibleLabel();
-                        } else {
-                            item.label = label.toUpperCase(Locale.getDefault());
-                        }
-                        items.add(item);
-                    }
-                    boolean changed = !deleted.isEmpty() || !infosByPackageName.isEmpty()
-                            || !pinnedShortcuts.isEmpty();
-                    emitter.onSuccess(new AppsData(items, changed));
+                    processNewApps(env);
+                    processShortcuts(env);
+                    emitter.onSuccess(env.getData());
                 });
     }
 
-    private Map<String, List<LauncherActivityInfo>> infosByPackageName(List<LauncherActivityInfo> infoList) {
-        Map<String, List<LauncherActivityInfo>> infosByPackageName = new HashMap<>(infoList.size());
-        for (LauncherActivityInfo info : infoList) {
-            String packageName = info.getApplicationInfo().packageName;
-            List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
-            if (list == null) {
-                list = new ArrayList<>(1);
-                infosByPackageName.put(packageName, list);
+    private void processShortcuts(ProcessingEnv env) {
+        for (Shortcut shortcut : env.shortcuts) {
+            String packageName = shortcut.getPackageName();
+            DeepShortcutDescriptor item = new DeepShortcutDescriptor(
+                    packageName, shortcut.getId());
+            AppDescriptor app = env.installed.get(packageName);
+            assert app != null;
+            item.color = app.color;
+            String label = shortcut.getShortLabel().toString();
+            if (TextUtils.isEmpty(label)) {
+                item.label = app.getVisibleLabel();
+            } else {
+                item.label = label.toUpperCase(Locale.getDefault());
             }
-            list.add(info);
+            env.items.add(item);
         }
-        return infosByPackageName;
     }
 
-    private LauncherActivityInfo findInfo(Map<String, List<LauncherActivityInfo>> map, AppDescriptor item) {
-        List<LauncherActivityInfo> infos = map.get(item.packageName);
-        if (infos == null || infos.isEmpty()) {
-            return null;
-        }
-        if (infos.size() == 1) {
-            LauncherActivityInfo result = infos.remove(0);
-            map.remove(item.packageName);
-            return result;
-        } else if (item.componentName != null) {
-            Iterator<LauncherActivityInfo> iter = infos.iterator();
-            while (iter.hasNext()) {
-                LauncherActivityInfo info = iter.next();
-                String componentName = getComponentName(info);
-                if (componentName.equals(item.componentName)) {
-                    iter.remove();
-                    return info;
+    private void processNewApps(ProcessingEnv env) {
+        for (List<LauncherActivityInfo> infos : env.packagesMap.lists()) {
+            if (infos.size() == 1) {
+                AppDescriptor item = appDescriptors.createItem(infos.get(0));
+                env.items.add(item);
+                env.installed.put(item.packageName, item);
+            } else {
+                for (LauncherActivityInfo info : infos) {
+                    AppDescriptor item = appDescriptors.createItem(info, getComponentName(info));
+                    env.items.add(item);
+                    env.installed.put(item.packageName, item);
                 }
             }
         }
-        return null;
     }
 
-    private AppDescriptor createItem(LauncherActivityInfo info) {
-        String packageName = info.getApplicationInfo().packageName;
-        AppDescriptor item = new AppDescriptor(packageName);
-        item.versionCode = getVersionCode(packageManager, packageName);
-        item.label = getLabel(info);
-        item.color = getDominantIconColor(info,
-                preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
-        return item;
+    private void visitApp(ProcessingEnv env, AppDescriptor app) {
+        LauncherActivityInfo info = env.packagesMap.poll(app);
+        if (info != null) {
+            appDescriptors.updateItem(app, info);
+            env.items.add(app);
+            env.installed.put(app.packageName, app);
+        } else {
+            env.deleted.add(app);
+        }
+    }
+
+    private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor item) {
+        env.items.add(item);
+        if (env.shortcuts.isEmpty()) {
+            item.enabled = false;
+            return;
+        }
+        for (Iterator<Shortcut> iter = env.shortcuts.iterator(); iter.hasNext(); ) {
+            Shortcut pinned = iter.next();
+            if (pinned.getPackageName().equals(item.packageName)
+                    && pinned.getId().equals(item.id)) {
+                iter.remove();
+                item.enabled = pinned.isEnabled();
+                return;
+            }
+        }
+    }
+
+    private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
+        String uri = item.uri;
+        Intent intent = IntentUtils.fromUri(uri);
+        if (IntentUtils.canHandleIntent(packageManager, intent)) {
+            env.items.add(item);
+        } else {
+            env.deleted.add(item);
+        }
     }
 
     private void writeToDisk(List<Descriptor> items) {
         descriptorStore.write(packagesStore.output(), items);
+    }
+
+    private static class ProcessingEnv {
+        final List<Descriptor> items = new ArrayList<>(64);
+        final List<Descriptor> deleted = new ArrayList<>(8);
+        final PackagesMap packagesMap;
+        final List<Shortcut> shortcuts;
+        final Map<String, AppDescriptor> installed = new HashMap<>(64);
+
+        ProcessingEnv(List<Shortcut> shortcuts, List<LauncherActivityInfo> infoList) {
+            this.shortcuts = shortcuts;
+            this.packagesMap = new PackagesMap(infoList);
+        }
+
+        AppsData getData() {
+            boolean changed = !deleted.isEmpty() || !packagesMap.isEmpty()
+                    || !shortcuts.isEmpty();
+            return new AppsData(items, changed);
+        }
+    }
+
+    private static class PackagesMap {
+        private final Map<String, List<LauncherActivityInfo>> packages;
+
+        PackagesMap(List<LauncherActivityInfo> infoList) {
+            this.packages = groupByPackage(infoList);
+        }
+
+        boolean isEmpty() {
+            return packages.isEmpty();
+        }
+
+        Collection<List<LauncherActivityInfo>> lists() {
+            return packages.values();
+        }
+
+        private LauncherActivityInfo poll(AppDescriptor item) {
+            List<LauncherActivityInfo> infos = packages.get(item.packageName);
+            if (infos == null || infos.isEmpty()) {
+                return null;
+            }
+            if (infos.size() == 1) {
+                LauncherActivityInfo result = infos.remove(0);
+                packages.remove(item.packageName);
+                return result;
+            } else if (item.componentName != null) {
+                Iterator<LauncherActivityInfo> iter = infos.iterator();
+                while (iter.hasNext()) {
+                    LauncherActivityInfo info = iter.next();
+                    String componentName = getComponentName(info);
+                    if (componentName.equals(item.componentName)) {
+                        iter.remove();
+                        return info;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static Map<String, List<LauncherActivityInfo>> groupByPackage(List<LauncherActivityInfo> infoList) {
+            Map<String, List<LauncherActivityInfo>> infosByPackageName = new HashMap<>(infoList.size());
+            for (LauncherActivityInfo info : infoList) {
+                String packageName = info.getApplicationInfo().packageName;
+                List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
+                if (list == null) {
+                    list = new ArrayList<>(1);
+                    infosByPackageName.put(packageName, list);
+                }
+                list.add(info);
+            }
+            return infosByPackageName;
+        }
     }
 
     private static class AppsData {
@@ -364,6 +387,10 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         AppsData(List<Descriptor> items, boolean changed) {
             this.items = items;
             this.changed = changed;
+        }
+
+        AppsData copy(boolean changed) {
+            return new AppsData(items, changed || this.changed);
         }
     }
 

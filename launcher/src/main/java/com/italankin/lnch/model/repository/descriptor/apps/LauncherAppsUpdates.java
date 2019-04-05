@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor;
+package com.italankin.lnch.model.repository.descriptor.apps;
 
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
