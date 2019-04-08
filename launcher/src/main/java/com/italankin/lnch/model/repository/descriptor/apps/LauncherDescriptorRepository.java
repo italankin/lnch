@@ -8,9 +8,11 @@ import android.os.Process;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.apps.prefs.ApplyPreferences;
-import com.italankin.lnch.model.repository.descriptor.apps.prefs.OverlayTransform;
-import com.italankin.lnch.model.repository.descriptor.apps.prefs.SortTransform;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.AppDescriptorInteractor;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.LoadFromFileInteractor;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.PreferencesInteractor;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.transforms.OverlayTransform;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.transforms.SortTransform;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
@@ -39,9 +41,9 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private final LauncherApps launcherApps;
     private final Preferences preferences;
 
-    private final AppDescriptors appDescriptors;
-    private final LoadFromFile loadFromFile;
-    private final ApplyPreferences applyPreferences;
+    private final AppDescriptorInteractor appDescriptorInteractor;
+    private final LoadFromFileInteractor loadFromFileInteractor;
+    private final PreferencesInteractor preferencesInteractor;
 
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
@@ -54,10 +56,10 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
 
-        this.appDescriptors = new AppDescriptors(packageManager, preferences);
-        this.loadFromFile = new LoadFromFile(appDescriptors, packagesStore, descriptorStore,
+        this.appDescriptorInteractor = new AppDescriptorInteractor(packageManager, preferences);
+        this.loadFromFileInteractor = new LoadFromFileInteractor(appDescriptorInteractor, packagesStore, descriptorStore,
                 shortcutsRepository, packageManager);
-        this.applyPreferences = new ApplyPreferences(preferences, Arrays.asList(
+        this.preferencesInteractor = new PreferencesInteractor(preferences, Arrays.asList(
                 new SortTransform(),
                 new OverlayTransform()
         ));
@@ -110,7 +112,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     ///////////////////////////////////////////////////////////////////////////
 
     private void subscribeForUpdates() {
-        new LauncherAppsUpdates(launcherApps)
+        new LauncherAppsObservable(launcherApps)
                 .flatMapCompletable(change -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates");
@@ -126,7 +128,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private Completable createUpdater() {
         return loadAll()
-                .map(applyPreferences::apply)
+                .map(preferencesInteractor::apply)
                 .doOnSuccess(appsData -> {
                     if (appsData.changed) {
                         Timber.d("data has changed, write to disk");
@@ -144,7 +146,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 .fromCallable(() -> launcherApps.getActivityList(null, Process.myUserHandle()))
                 .flatMap(infoList -> {
                     Single<AppsData> fromList = loadFromList(infoList);
-                    return loadFromFile.load(infoList)
+                    return loadFromFileInteractor.load(infoList)
                             .switchIfEmpty(fromList)
                             .doOnError(throwable -> Timber.e(throwable, "loadAll:"))
                             .onErrorResumeNext(fromList);
@@ -156,7 +158,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 .fromCallable(() -> {
                     List<Descriptor> items = new ArrayList<>(16);
                     for (LauncherActivityInfo info : infoList) {
-                        items.add(appDescriptors.createItem(info));
+                        items.add(appDescriptorInteractor.createItem(info));
                     }
                     return new AppsData(items, true);
                 });

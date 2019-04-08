@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor.apps;
+package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
@@ -6,31 +6,33 @@ import android.content.pm.PackageManager;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-import static com.italankin.lnch.model.repository.descriptor.apps.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.descriptor.apps.LauncherActivityInfoUtils.getDominantIconColor;
-import static com.italankin.lnch.model.repository.descriptor.apps.LauncherActivityInfoUtils.getLabel;
-import static com.italankin.lnch.model.repository.descriptor.apps.LauncherActivityInfoUtils.getVersionCode;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getDominantIconColor;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getLabel;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getVersionCode;
 
-class AppDescriptors {
+public class AppDescriptorInteractor {
 
     private final PackageManager packageManager;
     private final Preferences preferences;
 
-    AppDescriptors(PackageManager packageManager, Preferences preferences) {
+    public AppDescriptorInteractor(PackageManager packageManager, Preferences preferences) {
         this.packageManager = packageManager;
         this.preferences = preferences;
     }
 
-    AppDescriptor createItem(LauncherActivityInfo info) {
-        return createItem(info, null);
+    public AppDescriptor createItem(LauncherActivityInfo info) {
+        return createItem(info, false);
     }
 
-    AppDescriptor createItem(LauncherActivityInfo info, String componentName) {
+    AppDescriptor createItem(LauncherActivityInfo info, boolean withComponentName) {
         String packageName = info.getApplicationInfo().packageName;
         AppDescriptor item = new AppDescriptor(packageName);
         item.versionCode = getVersionCode(packageManager, packageName);
         item.label = getLabel(info);
-        item.componentName = componentName;
+        if (withComponentName) {
+            item.componentName = getComponentName(info);
+        }
         item.color = getDominantIconColor(info,
                 preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
         return item;

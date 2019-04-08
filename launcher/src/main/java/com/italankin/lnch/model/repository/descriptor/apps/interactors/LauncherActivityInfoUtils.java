@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.descriptor.apps;
+package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageInfo;
@@ -11,7 +11,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.palette.graphics.Palette;
 
@@ -57,6 +61,20 @@ final class LauncherActivityInfoUtils {
             hsv[2] = 0.75f;
         }
         return Color.HSVToColor(hsv);
+    }
+
+    static Map<String, List<LauncherActivityInfo>> groupByPackage(List<LauncherActivityInfo> infoList) {
+        Map<String, List<LauncherActivityInfo>> infosByPackageName = new LinkedHashMap<>(infoList.size());
+        for (LauncherActivityInfo info : infoList) {
+            String packageName = info.getApplicationInfo().packageName;
+            List<LauncherActivityInfo> list = infosByPackageName.get(packageName);
+            if (list == null) {
+                list = new ArrayList<>(1);
+                infosByPackageName.put(packageName, list);
+            }
+            list.add(info);
+        }
+        return infosByPackageName;
     }
 
     private static Bitmap getIconBitmap(Drawable icon) {

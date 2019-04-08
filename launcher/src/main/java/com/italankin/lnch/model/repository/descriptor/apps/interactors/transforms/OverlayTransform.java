@@ -1,12 +1,13 @@
-package com.italankin.lnch.model.repository.descriptor.apps.prefs;
+package com.italankin.lnch.model.repository.descriptor.apps.interactors.transforms;
 
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.PreferencesInteractor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class OverlayTransform implements ApplyPreferences.Transform {
+public class OverlayTransform implements PreferencesInteractor.Transform {
 
     @Override
     public AppsData apply(AppsData appsData, Preferences preferences) {

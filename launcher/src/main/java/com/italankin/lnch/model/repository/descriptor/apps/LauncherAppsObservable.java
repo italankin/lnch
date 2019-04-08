@@ -13,12 +13,12 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-class LauncherAppsUpdates extends Observable<Object> {
+class LauncherAppsObservable extends Observable<Object> {
     private static final Object NOTIFICATION = new Object();
 
     private final LauncherApps launcherApps;
 
-    LauncherAppsUpdates(LauncherApps launcherApps) {
+    LauncherAppsObservable(LauncherApps launcherApps) {
         this.launcherApps = launcherApps;
     }
 

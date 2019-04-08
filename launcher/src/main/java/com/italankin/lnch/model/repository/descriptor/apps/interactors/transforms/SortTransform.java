@@ -1,11 +1,12 @@
-package com.italankin.lnch.model.repository.descriptor.apps.prefs;
+package com.italankin.lnch.model.repository.descriptor.apps.interactors.transforms;
 
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
+import com.italankin.lnch.model.repository.descriptor.apps.interactors.PreferencesInteractor;
 import com.italankin.lnch.model.repository.descriptor.sort.AscLabelSorter;
 import com.italankin.lnch.model.repository.descriptor.sort.DescLabelSorter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class SortTransform implements ApplyPreferences.Transform {
+public class SortTransform implements PreferencesInteractor.Transform {
 
     @Override
     public AppsData apply(AppsData appsData, Preferences preferences) {
