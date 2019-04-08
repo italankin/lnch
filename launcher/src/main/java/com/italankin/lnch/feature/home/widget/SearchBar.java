@@ -36,6 +36,8 @@ public class SearchBar extends FrameLayout {
     private final ImageView buttonGlobalSearch;
     private final View buttonSettings;
 
+    private SearchAdapter searchAdapter;
+
     private Listener listener;
 
     public SearchBar(@NonNull Context context) {
@@ -67,7 +69,7 @@ public class SearchBar extends FrameLayout {
         });
 
         SearchRepository searchRepository = LauncherApp.daggerService.main().getSearchRepository();
-        searchEditText.setAdapter(new SearchAdapter(picasso, searchRepository, new SearchAdapter.Listener() {
+        searchAdapter = new SearchAdapter(picasso, searchRepository, new SearchAdapter.Listener() {
             @Override
             public void onSearchItemClick(int position, Match match) {
                 onFireSearch(match);
@@ -86,7 +88,8 @@ public class SearchBar extends FrameLayout {
                     listener.onSearchItemInfoClick(match);
                 }
             }
-        }));
+        });
+        searchEditText.setAdapter(searchAdapter);
     }
 
     public void setListener(Listener listener) {
@@ -157,19 +160,26 @@ public class SearchBar extends FrameLayout {
     }
 
     private void onFireSearch(Match match) {
+        if (listener == null) {
+            return;
+        }
         if (searchEditText.getText().length() > 0) {
             if (!searchEditText.isPopupShowing()) {
                 searchEditText.showDropDown();
                 return;
             }
-            if (match != null && listener != null) {
+            if (match == null) {
+                int count = searchAdapter.getCount();
+                if (count > 0) {
+                    match = searchAdapter.getItem(0);
+                }
+            }
+            if (match != null) {
                 listener.handleIntent(match.getIntent());
             }
             searchEditText.setText("");
         }
-        if (listener != null) {
-            listener.onSearchFired();
-        }
+        listener.onSearchFired();
     }
 
     public interface Listener {
