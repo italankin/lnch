@@ -21,6 +21,8 @@ import androidx.palette.graphics.Palette;
 
 final class LauncherActivityInfoUtils {
 
+    private static final float[] TMP = new float[3];
+
     static String getLabel(LauncherActivityInfo info) {
         return info.getLabel()
                 .toString()
@@ -51,16 +53,15 @@ final class LauncherActivityInfoUtils {
         int color = Palette.from(bitmap)
                 .generate()
                 .getDominantColor(darkTheme ? Color.WHITE : Color.BLACK);
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
+        Color.colorToHSV(color, TMP);
         if (darkTheme) {
-            if (hsv[2] < 0.25) {
-                hsv[2] = 0.25f;
+            if (TMP[2] < 0.25) {
+                TMP[2] = 0.25f;
             }
-        } else if (hsv[2] > 0.75) {
-            hsv[2] = 0.75f;
+        } else if (TMP[2] > 0.75) {
+            TMP[2] = 0.75f;
         }
-        return Color.HSVToColor(hsv);
+        return Color.HSVToColor(TMP);
     }
 
     static Map<String, List<LauncherActivityInfo>> groupByPackage(List<LauncherActivityInfo> infoList) {
