@@ -633,7 +633,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             searchBarBehavior.hide();
             startLnchSettings();
         }, v -> {
-            presenter.startCustomize();
+            searchBarBehavior.hide(presenter::startCustomize);
             return true;
         });
 
