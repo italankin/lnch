@@ -32,4 +32,10 @@ public class HomeRecyclerView extends RecyclerView {
         selfPaddingBottom = bottom;
         super.setPadding(left, top, right, bottomInset + bottom);
     }
+
+    @Override
+    public void setPaddingRelative(int start, int top, int end, int bottom) {
+        selfPaddingBottom = bottom;
+        super.setPaddingRelative(start, top, end, bottomInset + bottom);
+    }
 }
