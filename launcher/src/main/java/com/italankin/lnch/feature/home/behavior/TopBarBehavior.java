@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
@@ -22,7 +23,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private boolean dragInProgress = false;
     private boolean shown = false;
     private boolean enabled = true;
-
+    @NonNull
     private final Listener listener;
 
     public TopBarBehavior(View topView, View bottomView, Listener listener) {
@@ -106,6 +107,16 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     public void show() {
+        show(null);
+    }
+
+    public void show(@Nullable Runnable runnable) {
+        if (topView.getTranslationY() == 0) {
+            if (runnable != null) {
+                runnable.run();
+            }
+            return;
+        }
         dragInProgress = false;
         shown = true;
         topView.animate()
@@ -116,8 +127,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         topView.animate().setListener(null);
-                        if (listener != null) {
-                            listener.onShow();
+                        listener.onShow();
+                        if (runnable != null) {
+                            runnable.run();
                         }
                     }
                 })
@@ -129,6 +141,16 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void hide() {
+        hide(null);
+    }
+
+    public void hide(@Nullable Runnable runnable) {
+        if (topView.getTranslationY() == -maxOffset) {
+            if (runnable != null) {
+                runnable.run();
+            }
+            return;
+        }
         dragInProgress = false;
         shown = false;
         topView.animate()
@@ -139,8 +161,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         topView.animate().setListener(null);
-                        if (listener != null) {
-                            listener.onHide();
+                        listener.onHide();
+                        if (runnable != null) {
+                            runnable.run();
                         }
                     }
                 })
@@ -154,12 +177,12 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     public void showNow() {
         dragInProgress = false;
         shown = true;
+        topView.animate().cancel();
         topView.setTranslationY(0);
         topView.setAlpha(1);
-        if (listener != null) {
-            listener.onShow();
-        }
+        bottomView.animate().cancel();
         bottomView.setTranslationY(maxOffset);
+        listener.onShow();
     }
 
     public boolean isShown() {
