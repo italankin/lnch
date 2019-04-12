@@ -629,7 +629,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             }
         };
         searchBar.setListener(listener);
-        searchBar.setSettings(v -> {
+        searchBar.setupSettings(v -> {
             searchBarBehavior.hide();
             startLnchSettings();
         }, v -> {
@@ -648,7 +648,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             searchBar.hideGlobalSearch();
         } else {
             Uri icon = PackageIconHandler.uriFrom(searchActivity.getPackageName());
-            searchBar.setGlobalSearch(icon, v -> {
+            searchBar.setupGlobalSearch(icon, v -> {
                 Intent intent = new Intent().setComponent(searchActivity);
                 if (IntentUtils.safeStartActivity(this, intent)) {
                     searchBarBehavior.hide();

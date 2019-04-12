@@ -108,7 +108,7 @@ public class SearchBar extends FrameLayout {
         searchEditText.clearFocus();
     }
 
-    public void setGlobalSearch(Uri icon, OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
+    public void setupGlobalSearch(Uri icon, OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
         buttonGlobalSearch.setVisibility(VISIBLE);
         buttonGlobalSearch.setOnClickListener(onClickListener);
         buttonGlobalSearch.setOnLongClickListener(onLongClickListener);
@@ -120,7 +120,7 @@ public class SearchBar extends FrameLayout {
         ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.search_bar_size);
     }
 
-    public void setSettings(OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
+    public void setupSettings(OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
         buttonSettings.setOnClickListener(onClickListener);
         buttonSettings.setOnLongClickListener(onLongClickListener);
     }
