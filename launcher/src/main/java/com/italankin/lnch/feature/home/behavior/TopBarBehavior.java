@@ -111,12 +111,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void show(@Nullable Runnable runnable) {
-        if (topView.getTranslationY() == 0) {
-            if (runnable != null) {
-                runnable.run();
-            }
-            return;
-        }
         dragInProgress = false;
         shown = true;
         topView.animate()
@@ -145,12 +139,6 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void hide(@Nullable Runnable runnable) {
-        if (topView.getTranslationY() == -maxOffset) {
-            if (runnable != null) {
-                runnable.run();
-            }
-            return;
-        }
         dragInProgress = false;
         shown = false;
         topView.animate()
