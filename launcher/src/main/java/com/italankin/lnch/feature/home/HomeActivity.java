@@ -26,6 +26,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
@@ -125,7 +126,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     @ProvidePresenter
     HomePresenter providePresenter() {
-        return daggerService().presenters().home();
+        return LauncherApp.daggerService.presenters().home();
     }
 
     @Override
@@ -133,8 +134,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         super.onCreate(state);
 
         packageManager = getPackageManager();
-        preferences = daggerService().main().getPreferences();
-        picasso = daggerService().main().getPicassoFactory().create(this);
+        preferences = LauncherApp.daggerService.main().getPreferences();
+        picasso = LauncherApp.daggerService.main().getPicassoFactory().create(this);
 
         setScreenOrientation();
         setTheme();

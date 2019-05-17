@@ -3,8 +3,6 @@ package com.italankin.lnch.feature.settings.base;
 import android.os.Bundle;
 
 import com.arellomobile.mvp.MvpDelegate;
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.di.service.DaggerService;
 
 import androidx.fragment.app.Fragment;
 
@@ -99,9 +97,5 @@ public abstract class AppPreferenceFragment extends BasePreferenceFragment {
         }
 
         return mMvpDelegate;
-    }
-
-    protected DaggerService daggerService() {
-        return LauncherApp.daggerService;
     }
 }

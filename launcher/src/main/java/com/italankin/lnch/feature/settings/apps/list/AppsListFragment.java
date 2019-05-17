@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.list.adapter.AppsListFilter;
@@ -54,7 +55,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
 
     @ProvidePresenter
     AppsListPresenter providePresenter() {
-        return daggerService().presenters().apps();
+        return LauncherApp.daggerService.presenters().apps();
     }
 
     @Override
@@ -185,7 +186,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
 
     private void initAdapter() {
         Context context = requireContext();
-        Picasso picasso = daggerService().main().getPicassoFactory().create(context);
+        Picasso picasso = LauncherApp.daggerService.main().getPicassoFactory().create(context);
         adapter = new CompositeAdapter.Builder<AppViewModel>(context)
                 .add(new AppsViewModelAdapter(picasso, this))
                 .recyclerView(list)

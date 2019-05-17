@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -54,7 +55,7 @@ public class WallpaperOverlayFragment extends AppFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        preferences = daggerService().main().getPreferences();
+        preferences = LauncherApp.daggerService.main().getPreferences();
     }
 
     @Nullable

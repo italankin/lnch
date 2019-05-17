@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
@@ -33,7 +34,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
 
     @ProvidePresenter
     BackupPresenter providePresenter() {
-        return daggerService().presenters().backup();
+        return LauncherApp.daggerService.presenters().backup();
     }
 
     @Override

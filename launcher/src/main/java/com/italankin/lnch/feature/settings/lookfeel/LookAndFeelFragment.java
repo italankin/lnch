@@ -7,6 +7,7 @@ import android.view.View;
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -31,13 +32,13 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
 
     @ProvidePresenter
     LookAndFeelPresenter providePresenter() {
-        return daggerService().presenters().lookAndFeel();
+        return LauncherApp.daggerService.presenters().lookAndFeel();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = daggerService().main().getPreferences();
+        preferences = LauncherApp.daggerService.main().getPreferences();
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.BackButtonHandler;
@@ -60,9 +61,8 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = LauncherApp.daggerService.main().getPreferences();
         setHasOptionsMenu(true);
-
-        preferences = daggerService().main().getPreferences();
     }
 
     @Override
