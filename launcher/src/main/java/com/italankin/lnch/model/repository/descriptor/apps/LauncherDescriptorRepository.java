@@ -113,7 +113,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void subscribeForUpdates() {
         new LauncherAppsObservable(launcherApps)
-                .flatMapCompletable(change -> updater.onErrorComplete())
+                .flatMapCompletable(event -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates");
                     return true;
