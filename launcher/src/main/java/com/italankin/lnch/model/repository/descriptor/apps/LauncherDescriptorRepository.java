@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -113,6 +114,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void subscribeForUpdates() {
         new LauncherAppsObservable(launcherApps)
+                .debounce(1, TimeUnit.SECONDS)
                 .flatMapCompletable(event -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates");
