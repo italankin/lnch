@@ -324,7 +324,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .map(ViewModelFactory::createItems)
                 .doOnNext(this::restoreGroupsState)
                 .scan(Update.EMPTY, this::calculateUpdates)
-                .skip(1);
+                .skip(1); // skip empty update
     }
 
     private Observable<UserPrefs> observeUserPrefs() {
