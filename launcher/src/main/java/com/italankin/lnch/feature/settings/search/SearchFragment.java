@@ -4,6 +4,11 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
@@ -11,10 +16,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -51,7 +52,7 @@ public class SearchFragment extends BasePreferenceFragment {
         ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(requireContext());
         if (searchActivity == null) {
             Preference preference = findPreference(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
-            getPreferenceScreen().removePreference(preference);
+            preference.setEnabled(false);
         }
 
         formatPreference = findPreference(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
