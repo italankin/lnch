@@ -10,6 +10,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,15 +39,18 @@ public class LoadFromFileInteractor {
     private final DescriptorStore descriptorStore;
     private final ShortcutsRepository shortcutsRepository;
     private final PackageManager packageManager;
+    private final NameNormalizer nameNormalizer;
 
     public LoadFromFileInteractor(AppDescriptorInteractor appDescriptorInteractor,
             PackagesStore packagesStore, DescriptorStore descriptorStore,
-            ShortcutsRepository shortcutsRepository, PackageManager packageManager) {
+            ShortcutsRepository shortcutsRepository, PackageManager packageManager,
+            NameNormalizer nameNormalizer) {
         this.appDescriptorInteractor = appDescriptorInteractor;
         this.packagesStore = packagesStore;
         this.descriptorStore = descriptorStore;
         this.shortcutsRepository = shortcutsRepository;
         this.packageManager = packageManager;
+        this.nameNormalizer = nameNormalizer;
     }
 
     public Maybe<AppsData> load(List<LauncherActivityInfo> infoList) {
@@ -117,11 +120,11 @@ public class LoadFromFileInteractor {
             AppDescriptor app = env.findInstalled(packageName);
             assert app != null;
             item.color = app.color;
-            String label = shortcut.getShortLabel().toString();
+            CharSequence label = shortcut.getShortLabel();
             if (TextUtils.isEmpty(label)) {
                 item.label = app.getVisibleLabel();
             } else {
-                item.label = label.toUpperCase(Locale.getDefault());
+                item.label = nameNormalizer.normalize(label);
             }
             env.addItem(item);
         }

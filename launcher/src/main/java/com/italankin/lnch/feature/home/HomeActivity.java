@@ -60,6 +60,7 @@ import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -87,7 +88,6 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -617,10 +617,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             @Override
             public void onSearchItemPinClick(Match match) {
                 searchBarBehavior.hide();
-                String label = match.getLabel(HomeActivity.this)
-                        .toString()
-                        .trim()
-                        .toUpperCase(Locale.getDefault());
+                NameNormalizer nameNormalizer = LauncherApp.daggerService.main().getNameNormalizer();
+                String label = nameNormalizer.normalize(match.getLabel(HomeActivity.this));
                 IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
                         label, match.getColor(HomeActivity.this));
                 presenter.pinIntent(intentDescriptor);

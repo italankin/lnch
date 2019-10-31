@@ -8,6 +8,7 @@ import android.os.Process;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.AppDescriptorInteractor;
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.LoadFromFileInteractor;
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.PreferencesInteractor;
@@ -51,15 +52,16 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     public LauncherDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, PackagesStore packagesStore,
-            ShortcutsRepository shortcutsRepository, Preferences preferences) {
+            ShortcutsRepository shortcutsRepository, Preferences preferences,
+            NameNormalizer nameNormalizer) {
         this.descriptorStore = descriptorStore;
         this.packagesStore = packagesStore;
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.preferences = preferences;
 
-        this.appDescriptorInteractor = new AppDescriptorInteractor(packageManager, preferences);
+        this.appDescriptorInteractor = new AppDescriptorInteractor(packageManager, preferences, nameNormalizer);
         this.loadFromFileInteractor = new LoadFromFileInteractor(appDescriptorInteractor, packagesStore, descriptorStore,
-                shortcutsRepository, packageManager);
+                shortcutsRepository, packageManager, nameNormalizer);
         this.preferencesInteractor = new PreferencesInteractor(preferences, Arrays.asList(
                 new SortTransform(),
                 new OverlayTransform()

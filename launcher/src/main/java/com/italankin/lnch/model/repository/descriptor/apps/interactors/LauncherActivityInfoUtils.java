@@ -17,20 +17,11 @@ import com.italankin.lnch.util.ResUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 final class LauncherActivityInfoUtils {
 
     private static final float[] TMP = new float[3];
-
-    static String getLabel(LauncherActivityInfo info) {
-        return info.getLabel()
-                .toString()
-                .replaceAll("\\s+", " ")
-                .trim()
-                .toUpperCase(Locale.getDefault());
-    }
 
     @SuppressWarnings("deprecation")
     static long getVersionCode(PackageManager packageManager, String packageName) {

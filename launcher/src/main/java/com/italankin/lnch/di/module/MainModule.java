@@ -7,6 +7,7 @@ import android.os.Build;
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.LauncherDescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
@@ -56,10 +57,11 @@ public class MainModule {
     @Provides
     @Singleton
     DescriptorRepository provideDescriptorRepository(Context context, PackageManager packageManager,
-            DescriptorStore descriptorStore, PackagesStore packagesStore, ShortcutsRepository shortcutsRepository,
-            Preferences preferences) {
+            DescriptorStore descriptorStore, PackagesStore packagesStore,
+            ShortcutsRepository shortcutsRepository, Preferences preferences,
+            NameNormalizer nameNormalizer) {
         return new LauncherDescriptorRepository(context, packageManager, descriptorStore,
-                packagesStore, shortcutsRepository, preferences);
+                packagesStore, shortcutsRepository, preferences, nameNormalizer);
     }
 
     @Provides
@@ -101,11 +103,12 @@ public class MainModule {
 
     @Provides
     @Singleton
-    ShortcutsRepository provideShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository) {
+    ShortcutsRepository provideShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository,
+            NameNormalizer nameNormalizer) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             return new AppShortcutsRepository(context, descriptorRepository);
         } else {
-            return new BackportShortcutsRepository(context, descriptorRepository);
+            return new BackportShortcutsRepository(context, descriptorRepository, nameNormalizer);
         }
     }
 
@@ -113,5 +116,11 @@ public class MainModule {
     @Singleton
     SeparatorState provideSeparatorState(Context context) {
         return new SeparatorStateImpl(context);
+    }
+
+    @Provides
+    @Singleton
+    NameNormalizer provideNameNormalizer() {
+        return new NameNormalizer();
     }
 }

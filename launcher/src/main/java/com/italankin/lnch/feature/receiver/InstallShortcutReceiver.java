@@ -8,9 +8,8 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
-
-import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -38,8 +37,9 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String uri = target.toUri(0);
 
         String label = name != null ? name : context.getString(R.string.pinned_shortcut_label);
+        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().getNameNormalizer();
         PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri,
-                label.toUpperCase(Locale.getDefault()),
+                nameNormalizer.normalize(label),
                 context.getColor(R.color.pinned_shortcut_default));
 
         DescriptorRepository apps = LauncherApp.daggerService

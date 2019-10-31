@@ -10,6 +10,7 @@ import android.graphics.Color;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dagger.Lazy;
@@ -32,14 +32,17 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
     private final PackageManager packageManager;
     private final LauncherApps launcherApps;
     private final Lazy<DescriptorRepository> descriptorRepository;
+    private final NameNormalizer nameNormalizer;
 
     private final ConcurrentHashMap<String, List<ShortcutBackport>> shortcutsCache = new ConcurrentHashMap<>();
 
-    public BackportShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository) {
+    public BackportShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository,
+            NameNormalizer nameNormalizer) {
         this.context = context;
         this.packageManager = context.getPackageManager();
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.descriptorRepository = descriptorRepository;
+        this.nameNormalizer = nameNormalizer;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
     public Completable pinShortcut(Shortcut shortcut) {
         if (shortcut instanceof ShortcutBackport) {
             ShortcutBackport sb = (ShortcutBackport) shortcut;
-            String label = sb.getShortLabel().toString().toUpperCase(Locale.getDefault());
+            String label = nameNormalizer.normalize(sb.getShortLabel());
             Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
             IntentDescriptor descriptor = new IntentDescriptor(intent, label, Color.WHITE);
             return descriptorRepository.get().edit()
