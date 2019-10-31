@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_mode_edit"
+        android:shortcutId="customize"
+        android:shortcutShortLabel="@string/customize_hint"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="com.android.launcher.action.EDIT_MODE"
+            android:targetClass="com.italankin.lnch.feature.home.HomeActivity"
+            android:targetPackage="com.italankin.lnch" />
+    </shortcut>
+</shortcuts>
