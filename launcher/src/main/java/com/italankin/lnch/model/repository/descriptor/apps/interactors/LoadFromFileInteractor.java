@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -86,6 +87,8 @@ public class LoadFromFileInteractor {
                 visitDeepShortcut(env, (DeepShortcutDescriptor) item);
             } else if (item instanceof AppDescriptor) {
                 visitApp(env, (AppDescriptor) item);
+            } else if (item instanceof IntentDescriptor) {
+                visitIntent(env, (IntentDescriptor) item);
             } else {
                 env.addItem(item);
             }
@@ -160,6 +163,14 @@ public class LoadFromFileInteractor {
             env.addDeleted(item);
         }
     }
+
+    private void visitIntent(ProcessingEnv env, IntentDescriptor item) {
+        if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.intentUri))) {
+            env.addItem(item);
+        } else {
+            env.addDeleted(item);
+        }
+    }
 }
 
 /**
@@ -173,7 +184,7 @@ class ProcessingEnv {
     private final Set<Integer> deleted = new HashSet<>(4);
 
     ProcessingEnv(List<Shortcut> shortcuts, PackagesMap packagesMap) {
-        this.shortcuts = shortcuts;
+        this.shortcuts = new ArrayList<>(shortcuts);
         this.packagesMap = packagesMap;
     }
 

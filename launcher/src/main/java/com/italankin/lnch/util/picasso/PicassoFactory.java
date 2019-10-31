@@ -27,6 +27,7 @@ public class PicassoFactory {
             });
         }
         builder.addRequestHandler(new PackageIconHandler(context));
+        builder.addRequestHandler(new PackageResourceHandler(context));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             builder.addRequestHandler(new ShortcutIconHandler(context));
         }

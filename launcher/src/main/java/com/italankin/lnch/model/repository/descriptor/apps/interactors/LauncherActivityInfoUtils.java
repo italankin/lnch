@@ -5,19 +5,20 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
+
+import androidx.palette.graphics.Palette;
+
+import com.italankin.lnch.util.ResUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import androidx.palette.graphics.Palette;
 
 final class LauncherActivityInfoUtils {
 
@@ -81,12 +82,7 @@ final class LauncherActivityInfoUtils {
     private static Bitmap getIconBitmap(Drawable icon) {
         int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,
                 Resources.getSystem().getDisplayMetrics());
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas();
-        canvas.setBitmap(bitmap);
-        icon.setBounds(0, 0, size, size);
-        icon.draw(canvas);
-        return bitmap;
+        return ResUtils.bitmapFromDrawable(icon, size, size);
     }
 
     private LauncherActivityInfoUtils() {

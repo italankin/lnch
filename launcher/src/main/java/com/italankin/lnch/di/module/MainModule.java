@@ -21,7 +21,7 @@ import com.italankin.lnch.model.repository.search.delegate.IntentSearchDelegate;
 import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.model.repository.shortcuts.StubShortcutsRepository;
+import com.italankin.lnch.model.repository.shortcuts.backport.BackportShortcutsRepository;
 import com.italankin.lnch.model.repository.store.BackupDescriptorStore;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
@@ -101,17 +101,11 @@ public class MainModule {
 
     @Provides
     @Singleton
-    ShortcutsRepository.DescriptorProvider provideAppsProvider(Lazy<DescriptorRepository> lazy) {
-        return () -> lazy.get().items();
-    }
-
-    @Provides
-    @Singleton
-    ShortcutsRepository provideShortcutsRepository(Context context, ShortcutsRepository.DescriptorProvider descriptorProvider) {
+    ShortcutsRepository provideShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            return new AppShortcutsRepository(context, descriptorProvider);
+            return new AppShortcutsRepository(context, descriptorRepository);
         } else {
-            return new StubShortcutsRepository();
+            return new BackportShortcutsRepository(context, descriptorRepository);
         }
     }
 

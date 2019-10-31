@@ -2,7 +2,10 @@ package com.italankin.lnch.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
@@ -38,6 +41,15 @@ public final class ResUtils {
             return Color.BLACK;
         }
         return out.data;
+    }
+
+    public static Bitmap bitmapFromDrawable(Drawable icon, int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas();
+        canvas.setBitmap(bitmap);
+        icon.setBounds(0, 0, width, height);
+        icon.draw(canvas);
+        return bitmap;
     }
 
     private ResUtils() {

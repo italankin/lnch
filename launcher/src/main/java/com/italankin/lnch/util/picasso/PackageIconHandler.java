@@ -3,15 +3,15 @@ package com.italankin.lnch.util.picasso;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
+import com.italankin.lnch.util.ResUtils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
-
-import androidx.annotation.Nullable;
 
 public class PackageIconHandler extends RequestHandler {
 
@@ -43,11 +43,7 @@ public class PackageIconHandler extends RequestHandler {
         }
         int width = icon.getIntrinsicWidth();
         int height = icon.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas();
-        canvas.setBitmap(bitmap);
-        icon.setBounds(0, 0, width, height);
-        icon.draw(canvas);
+        Bitmap bitmap = ResUtils.bitmapFromDrawable(icon, width, height);
         return new Result(bitmap, Picasso.LoadedFrom.DISK);
     }
 }

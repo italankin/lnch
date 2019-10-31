@@ -12,8 +12,12 @@ import android.os.Bundle;
 import android.os.Process;
 import android.os.UserHandle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.picasso.ShortcutIconHandler;
 
@@ -26,8 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import dagger.Lazy;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -37,14 +40,13 @@ import timber.log.Timber;
 public class AppShortcutsRepository implements ShortcutsRepository {
 
     private final LauncherApps launcherApps;
-    private final DescriptorProvider descriptorProvider;
+    private final Lazy<DescriptorRepository> descriptorRepository;
 
     private final Map<Descriptor, List<Shortcut>> shortcutsCache = new ConcurrentHashMap<>();
 
-    public AppShortcutsRepository(Context context, DescriptorProvider descriptorProvider) {
+    public AppShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository) {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-        this.descriptorProvider = descriptorProvider;
-        //noinspection ConstantConditions
+        this.descriptorRepository = descriptorRepository;
         launcherApps.registerCallback(new Callback());
     }
 
@@ -53,7 +55,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (!launcherApps.hasShortcutHostPermission()) {
             return Completable.complete();
         }
-        return Observable.defer(() -> Observable.fromIterable(descriptorProvider.getDescriptors()))
+        return Observable.defer(() -> Observable.fromIterable(descriptorRepository.get().items()))
                 .ofType(AppDescriptor.class)
                 .collectInto(new HashMap<Descriptor, List<Shortcut>>(),
                         (map, descriptor) -> map.put(descriptor, queryShortcuts(descriptor)))
@@ -90,7 +92,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
         return Completable.fromRunnable(() -> {
             String packageName = shortcut.getPackageName();
-            List<String> pinned = getPinnedShortcutIds(packageName);
+            List<String> pinned = new ArrayList<>(getPinnedShortcutIds(packageName));
             pinned.add(shortcut.getId());
             launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
         });
@@ -168,16 +170,19 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         private final LauncherApps launcherApps;
         private final ShortcutInfo shortcutInfo;
 
-        public AppShortcut(LauncherApps launcherApps, ShortcutInfo info) {
+        AppShortcut(LauncherApps launcherApps, ShortcutInfo info) {
             this.launcherApps = launcherApps;
             this.shortcutInfo = info;
         }
 
         @Override
         public boolean start(Rect bounds, Bundle options) {
-            Timber.d("shortcutInfo: %s", shortcutInfo);
+            Timber.d("start: %s", shortcutInfo);
+            if (!launcherApps.hasShortcutHostPermission()) {
+                Timber.e("no permission to start shortcut");
+                return false;
+            }
             try {
-                //noinspection ConstantConditions
                 launcherApps.startShortcut(shortcutInfo, bounds, options);
                 return true;
             } catch (Exception e) {
@@ -312,7 +317,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         private List<AppDescriptor> findByPackageName(String packageName) {
             List<AppDescriptor> result = new ArrayList<>(1);
-            for (Descriptor descriptor : descriptorProvider.getDescriptors()) {
+            for (Descriptor descriptor : descriptorRepository.get().items()) {
                 if (descriptor instanceof AppDescriptor) {
                     AppDescriptor appDescriptor = (AppDescriptor) descriptor;
                     if (appDescriptor.packageName.equals(packageName)) {
