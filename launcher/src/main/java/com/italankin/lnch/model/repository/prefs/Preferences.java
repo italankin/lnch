@@ -1,14 +1,20 @@
 package com.italankin.lnch.model.repository.prefs;
 
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
+import androidx.annotation.NonNull;
+
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 public interface Preferences {
@@ -30,7 +36,17 @@ public interface Preferences {
     interface Pref<T> {
         String key();
 
-        T defaultValue();
+        Fetcher<T> fetcher();
+
+        Updater<T> updater();
+
+        interface Fetcher<T> {
+            T fetch(SharedPreferences preferences);
+        }
+
+        interface Updater<T> {
+            void update(SharedPreferences preferences, T newValue);
+        }
     }
 
     interface RangePref<T> extends Pref<T> {
@@ -43,105 +59,162 @@ public interface Preferences {
     // Preferences
     ///////////////////////////////////////////////////////////////////////////
 
-    Pref<Boolean> SEARCH_SHOW_SOFT_KEYBOARD = Prefs.create(
+    Pref<Boolean> SEARCH_SHOW_SOFT_KEYBOARD = Prefs.createBoolean(
             "search_show_soft_keyboard",
             true);
 
-    Pref<Boolean> SEARCH_SHOW_GLOBAL_SEARCH = Prefs.create(
+    Pref<Boolean> SEARCH_SHOW_GLOBAL_SEARCH = Prefs.createBoolean(
             "search_show_global_search",
             true);
 
-    Pref<Boolean> SEARCH_USE_CUSTOM_TABS = Prefs.create(
+    Pref<Boolean> SEARCH_USE_CUSTOM_TABS = Prefs.createBoolean(
             "search_use_custom_tabs",
             true);
 
     Pref<SearchEngine> SEARCH_ENGINE = Prefs.create(
             "search_engine",
-            SearchEngine.DDG);
+            SearchEngine.DDG,
+            SearchEngine::from);
 
-    Pref<String> CUSTOM_SEARCH_ENGINE_FORMAT = Prefs.create(
+    Pref<String> CUSTOM_SEARCH_ENGINE_FORMAT = Prefs.createString(
             "custom_search_engine_format",
             null);
 
     Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
             "search_targets",
-            SearchTarget.ALL);
+            SearchTarget.ALL,
+            (preferences, key, defaultValue) -> {
+                Set<String> set = preferences.getStringSet(key, null);
+                if (set == null) {
+                    return defaultValue;
+                }
+                Set<SearchTarget> result = new HashSet<>();
+                for (String s : set) {
+                    SearchTarget target = SearchTarget.from(s);
+                    if (target != null) {
+                        result.add(target);
+                    }
+                }
+                return EnumSet.copyOf(result);
+            },
+            (preferences, key, newValue) -> {
+                Set<String> value = new HashSet<>(newValue.size());
+                for (SearchTarget searchTarget : newValue) {
+                    value.add(searchTarget.toString());
+                }
+                preferences.edit().putStringSet(key, value).apply();
+            });
 
-    Pref<Boolean> LARGE_SEARCH_BAR = Prefs.create(
+    Pref<Boolean> LARGE_SEARCH_BAR = Prefs.createBoolean(
             "large_search_bar",
             false);
 
-    Pref<Boolean> WALLPAPER_OVERLAY_SHOW = Prefs.create(
+    Pref<Boolean> WALLPAPER_OVERLAY_SHOW = Prefs.createBoolean(
             "wallpaper_overlay_show",
             false);
 
-    Pref<Integer> WALLPAPER_OVERLAY_COLOR = Prefs.create(
+    Pref<Integer> WALLPAPER_OVERLAY_COLOR = Prefs.createInteger(
             "wallpaper_overlay_color",
             Color.TRANSPARENT);
 
     Pref<HomeLayout> HOME_LAYOUT = Prefs.create(
             "home_layout",
-            HomeLayout.COMPACT);
+            HomeLayout.COMPACT,
+            HomeLayout::from);
 
     Pref<HomeAlignment> HOME_ALIGNMENT = Prefs.create(
             "home_alignment",
-            HomeAlignment.START);
+            HomeAlignment.START,
+            HomeAlignment::from);
 
-    Pref<Boolean> SHOW_SCROLLBAR = Prefs.create(
+    Pref<Boolean> SHOW_SCROLLBAR = Prefs.createBoolean(
             "show_scrollbar",
             false);
 
     Pref<LongClickAction> APP_LONG_CLICK_ACTION = Prefs.create(
             "app_long_click_action",
-            LongClickAction.POPUP);
+            LongClickAction.POPUP,
+            LongClickAction::from);
 
     Pref<ScreenOrientation> SCREEN_ORIENTATION = Prefs.create(
             "screen_orientation",
-            ScreenOrientation.SENSOR);
+            ScreenOrientation.SENSOR,
+            ScreenOrientation::from);
 
-    Pref<Boolean> SCROLL_TO_TOP = Prefs.create(
+    Pref<Boolean> SCROLL_TO_TOP = Prefs.createBoolean(
             "scroll_to_top",
             true);
 
     Pref<ColorTheme> COLOR_THEME = Prefs.create(
             "color_theme",
-            ColorTheme.DARK);
+            ColorTheme.DARK,
+            ColorTheme::from);
 
-    RangePref<Float> ITEM_TEXT_SIZE = Prefs.create(
+    RangePref<Float> ITEM_TEXT_SIZE = Prefs.createFloatRange(
             "item_text_size",
             22f, 12f, 40f);
 
-    RangePref<Integer> ITEM_PADDING = Prefs.create(
+    RangePref<Integer> ITEM_PADDING = Prefs.createIntegerRange(
             "item_padding",
             16, 4, 28);
 
-    RangePref<Float> ITEM_SHADOW_RADIUS = Prefs.create(
+    RangePref<Float> ITEM_SHADOW_RADIUS = Prefs.createFloatRange(
             "item_shadow_radius",
             4f, 0f, 16f);
 
-    Pref<Integer> ITEM_SHADOW_COLOR = Prefs.create(
+    Pref<Integer> ITEM_SHADOW_COLOR = Prefs.createInteger(
             "item_shadow_color",
             null);
 
     Pref<Font> ITEM_FONT = Prefs.create(
             "item_font",
-            Font.DEFAULT);
+            Font.DEFAULT,
+            Font::from);
 
-    Pref<Boolean> FIRST_LAUNCH = Prefs.create(
+    Pref<Boolean> FIRST_LAUNCH = Prefs.createBoolean(
             "first_launch",
             true);
 
     Pref<AppsSortMode> APPS_SORT_MODE = Prefs.create(
             "apps_sort_mode",
-            AppsSortMode.MANUAL);
+            AppsSortMode.MANUAL,
+            AppsSortMode::from);
 
-    Pref<Boolean> APPS_COLOR_OVERLAY_SHOW = Prefs.create(
+    Pref<Boolean> APPS_COLOR_OVERLAY_SHOW = Prefs.createBoolean(
             "apps_color_overlay_show",
             false);
 
-    Pref<Integer> APPS_COLOR_OVERLAY = Prefs.create(
+    Pref<Integer> APPS_COLOR_OVERLAY = Prefs.createInteger(
             "apps_color_overlay",
             Color.WHITE);
+
+    List<Pref<?>> ALL = Arrays.asList(
+            SEARCH_SHOW_SOFT_KEYBOARD,
+            SEARCH_SHOW_GLOBAL_SEARCH,
+            SEARCH_USE_CUSTOM_TABS,
+            SEARCH_ENGINE,
+            CUSTOM_SEARCH_ENGINE_FORMAT,
+            SEARCH_TARGETS,
+            LARGE_SEARCH_BAR,
+            WALLPAPER_OVERLAY_SHOW,
+            WALLPAPER_OVERLAY_COLOR,
+            HOME_LAYOUT,
+            HOME_ALIGNMENT,
+            SHOW_SCROLLBAR,
+            APP_LONG_CLICK_ACTION,
+            SCREEN_ORIENTATION,
+            SCROLL_TO_TOP,
+            COLOR_THEME,
+            ITEM_TEXT_SIZE,
+            ITEM_PADDING,
+            ITEM_SHADOW_RADIUS,
+            ITEM_SHADOW_COLOR,
+            ITEM_FONT,
+            FIRST_LAUNCH,
+            APPS_SORT_MODE,
+            APPS_COLOR_OVERLAY_SHOW,
+            APPS_COLOR_OVERLAY
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     // Enums
