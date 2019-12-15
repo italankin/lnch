@@ -18,19 +18,30 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
 
     companion object {
         val ISSUE = Issue.create(
-                "PrefsDetector",
-                "Preferences defined in XML must have known key and correct defaultValue",
-                "Preferences defined in XML must have known key and correct defaultValue, as defined in Preferences.java",
-                Category.LINT,
-                10,
-                Severity.FATAL,
-                Implementation(PrefsDetector::class.java,
-                        EnumSet.of(Scope.JAVA_FILE, Scope.RESOURCE_FILE)))
+            "PrefsDetector",
+            "Preferences defined in XML must have known key and correct defaultValue",
+            "Preferences defined in XML must have known key and correct defaultValue, as defined in Preferences.java",
+            Category.LINT,
+            10,
+            Severity.FATAL,
+            Implementation(
+                PrefsDetector::class.java,
+                EnumSet.of(Scope.JAVA_FILE, Scope.RESOURCE_FILE)
+            )
+        )
 
         private const val FIRST_PHASE = 1
         private const val SECOND_PHASE = 2
         private const val PREFS = "com.italankin.lnch.model.repository.prefs.Prefs"
-        private const val METHOD_CREATE = "create"
+        private val METHODS = setOf(
+            "create",
+            "createInteger",
+            "createFloat",
+            "createBoolean",
+            "createString",
+            "createFloatRange",
+            "createIntegerRange"
+        )
         private const val ATTR_DEFAULT_VALUE = "defaultValue"
         private const val ATTR_KEY = "key"
     }
@@ -59,7 +70,7 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
         }
         return object : UElementHandler() {
             override fun visitCallExpression(node: UCallExpression) {
-                if (node.methodName != METHOD_CREATE) {
+                if (node.methodName !in METHODS) {
                     return
                 }
                 val containingClass = node.resolve()?.findContainingUClass() ?: return
@@ -78,9 +89,9 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
                 when {
                     prefType.isEnum() -> {
                         val literalValue = defaultValue.tryResolve()
-                                .toUElement(UEnumConstant::class.java)
-                                ?.resolveEnumKey()
-                                ?: return
+                            .toUElement(UEnumConstant::class.java)
+                            ?.resolveEnumKey()
+                            ?: return
                         prefs[name] = Pref(literalValue, location)
                     }
                 }
@@ -107,11 +118,11 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
 
     override fun getApplicableElements(): Collection<String> {
         return listOf(
-                "Preference",
-                "ListPreference",
-                "CheckBoxPreference",
-                "MultiSelectListPreference",
-                "SwitchPreference"
+            "Preference",
+            "ListPreference",
+            "CheckBoxPreference",
+            "MultiSelectListPreference",
+            "SwitchPreference"
         )
     }
 
@@ -177,8 +188,8 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
     ///////////////////////////////////////////////////////////////////////////
 
     private data class Pref(
-            val defaultValue: Any?,
-            val declaration: Location? = null
+        val defaultValue: Any?,
+        val declaration: Location? = null
     ) {
         enum class Value {
             NULL() {
