@@ -73,7 +73,7 @@ public interface Preferences {
 
     Pref<SearchEngine> SEARCH_ENGINE = Prefs.create(
             "search_engine",
-            SearchEngine.DDG,
+            SearchEngine.GOOGLE,
             SearchEngine::from);
 
     Pref<String> CUSTOM_SEARCH_ENGINE_FORMAT = Prefs.createString(
