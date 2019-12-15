@@ -4,7 +4,7 @@ apply from: '../gradle/versions.gradle'
 dependencies {
     compileOnly kotlin
     compileOnly lintApi
-    testCompile lintTests
+    testImplementation lintTests
 }
 
 jar {
