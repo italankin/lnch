@@ -3,14 +3,12 @@ package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -39,18 +37,15 @@ public class LoadFromFileInteractor {
     private final DescriptorStore descriptorStore;
     private final ShortcutsRepository shortcutsRepository;
     private final PackageManager packageManager;
-    private final NameNormalizer nameNormalizer;
 
     public LoadFromFileInteractor(AppDescriptorInteractor appDescriptorInteractor,
             PackagesStore packagesStore, DescriptorStore descriptorStore,
-            ShortcutsRepository shortcutsRepository, PackageManager packageManager,
-            NameNormalizer nameNormalizer) {
+            ShortcutsRepository shortcutsRepository, PackageManager packageManager) {
         this.appDescriptorInteractor = appDescriptorInteractor;
         this.packagesStore = packagesStore;
         this.descriptorStore = descriptorStore;
         this.shortcutsRepository = shortcutsRepository;
         this.packageManager = packageManager;
-        this.nameNormalizer = nameNormalizer;
     }
 
     public Maybe<AppsData> load(List<LauncherActivityInfo> infoList) {
@@ -67,13 +62,10 @@ public class LoadFromFileInteractor {
                             emitter.onComplete();
                             return;
                         }
-                        ProcessingEnv env = new ProcessingEnv(
-                                shortcutsRepository.getPinnedShortcuts(),
-                                new PackagesMap(groupByPackage(infoList)));
+                        ProcessingEnv env = new ProcessingEnv(new PackagesMap(groupByPackage(infoList)));
 
                         processSavedItems(env, savedItems);
                         processNewApps(env);
-                        processShortcuts(env);
 
                         emitter.onSuccess(env.getData());
                     } catch (Exception e) {
@@ -112,24 +104,6 @@ public class LoadFromFileInteractor {
         }
     }
 
-    private void processShortcuts(ProcessingEnv env) {
-        for (Shortcut shortcut : env.shortcuts()) {
-            String packageName = shortcut.getPackageName();
-            DeepShortcutDescriptor item = new DeepShortcutDescriptor(
-                    packageName, shortcut.getId());
-            AppDescriptor app = env.findInstalled(packageName);
-            assert app != null;
-            item.color = app.color;
-            CharSequence label = shortcut.getShortLabel();
-            if (TextUtils.isEmpty(label)) {
-                item.label = app.getVisibleLabel();
-            } else {
-                item.label = nameNormalizer.normalize(label);
-            }
-            env.addItem(item);
-        }
-    }
-
     private void visitApp(ProcessingEnv env, AppDescriptor app) {
         LauncherActivityInfo info = env.pollInfo(app);
         if (info != null) {
@@ -142,19 +116,8 @@ public class LoadFromFileInteractor {
 
     private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor item) {
         env.addItem(item);
-        if (env.isShortcutsEmpty()) {
-            item.enabled = false;
-            return;
-        }
-        for (Iterator<Shortcut> iter = env.shortcuts().iterator(); iter.hasNext(); ) {
-            Shortcut pinned = iter.next();
-            if (pinned.getPackageName().equals(item.packageName)
-                    && pinned.getId().equals(item.id)) {
-                iter.remove();
-                item.enabled = pinned.isEnabled();
-                return;
-            }
-        }
+        Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
+        item.enabled = shortcut != null;
     }
 
     private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
@@ -182,12 +145,10 @@ public class LoadFromFileInteractor {
 class ProcessingEnv {
     private final List<Descriptor> items = new ArrayList<>(64);
     private final PackagesMap packagesMap;
-    private final List<Shortcut> shortcuts;
     private final Map<String, AppDescriptor> installed = new HashMap<>(64);
     private final Set<Integer> deleted = new HashSet<>(4);
 
-    ProcessingEnv(List<Shortcut> shortcuts, PackagesMap packagesMap) {
-        this.shortcuts = new ArrayList<>(shortcuts);
+    ProcessingEnv(PackagesMap packagesMap) {
         this.packagesMap = packagesMap;
     }
 
@@ -212,21 +173,12 @@ class ProcessingEnv {
         return packagesMap.poll(app);
     }
 
-    boolean isShortcutsEmpty() {
-        return shortcuts.isEmpty();
-    }
-
     Iterable<List<LauncherActivityInfo>> packages() {
         return packagesMap.items();
     }
 
-    Iterable<Shortcut> shortcuts() {
-        return shortcuts;
-    }
-
     AppsData getData() {
-        boolean changed = !deleted.isEmpty() || !packagesMap.isEmpty()
-                || !shortcuts.isEmpty();
+        boolean changed = !deleted.isEmpty() || !packagesMap.isEmpty();
         return new AppsData(items, changed);
     }
 }

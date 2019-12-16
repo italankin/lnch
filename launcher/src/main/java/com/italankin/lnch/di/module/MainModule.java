@@ -106,7 +106,7 @@ public class MainModule {
     ShortcutsRepository provideShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository,
             NameNormalizer nameNormalizer) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            return new AppShortcutsRepository(context, descriptorRepository);
+            return new AppShortcutsRepository(context, descriptorRepository, nameNormalizer);
         } else {
             return new BackportShortcutsRepository(context, descriptorRepository, nameNormalizer);
         }

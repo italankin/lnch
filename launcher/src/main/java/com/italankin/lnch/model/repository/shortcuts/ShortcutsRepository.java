@@ -17,8 +17,4 @@ public interface ShortcutsRepository {
     Shortcut getShortcut(String packageName, String shortcutId);
 
     Completable pinShortcut(Shortcut shortcut);
-
-    void unpinShortcut(String packageName, String shortcutId);
-
-    List<Shortcut> getPinnedShortcuts();
 }

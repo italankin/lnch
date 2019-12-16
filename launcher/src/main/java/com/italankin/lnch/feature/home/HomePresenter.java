@@ -12,7 +12,6 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.HiddenDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -23,7 +22,6 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
-import com.italankin.lnch.model.repository.descriptor.actions.UnpinShortcutAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -141,10 +139,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
 
     void removeItem(int position, DescriptorItem item) {
         Descriptor descriptor = item.getDescriptor();
-        if (descriptor instanceof DeepShortcutDescriptor) {
-            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
-        } else {
-            editor.enqueue(new RemoveAction(position));
+        editor.enqueue(new RemoveAction(position));
+        if (item instanceof ExpandableItem) {
             editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }
         items.remove(position);
@@ -247,13 +243,9 @@ public class HomePresenter extends AppPresenter<HomeView> {
     void removeItemImmediate(int position, DescriptorItem item) {
         Descriptor descriptor = item.getDescriptor();
         DescriptorRepository.Editor editor = descriptorRepository.edit();
-        if (descriptor instanceof DeepShortcutDescriptor) {
-            editor.enqueue(new UnpinShortcutAction(shortcutsRepository, (DeepShortcutDescriptor) descriptor));
-        } else {
-            editor.enqueue(new RemoveAction(position));
-            if (descriptor instanceof GroupDescriptor) {
-                editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
-            }
+        editor.enqueue(new RemoveAction(position));
+        if (descriptor instanceof GroupDescriptor) {
+            editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }
         editor.commit()
                 .subscribeOn(Schedulers.io())

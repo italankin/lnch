@@ -3,10 +3,14 @@ package com.italankin.lnch.util;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 
 public final class DescriptorUtils {
 
@@ -26,6 +30,20 @@ public final class DescriptorUtils {
         }
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(descriptor.packageName);
         return intent != null ? intent.getComponent() : null;
+    }
+
+    public static DeepShortcutDescriptor makeDeepShortcut(Shortcut shortcut, AppDescriptor app,
+            NameNormalizer nameNormalizer) {
+        DeepShortcutDescriptor descriptor = new DeepShortcutDescriptor(
+                shortcut.getPackageName(), shortcut.getId());
+        descriptor.color = app.color;
+        CharSequence label = shortcut.getShortLabel();
+        if (TextUtils.isEmpty(label)) {
+            descriptor.label = app.getVisibleLabel();
+        } else {
+            descriptor.label = nameNormalizer.normalize(label);
+        }
+        return descriptor;
     }
 
     private DescriptorUtils() {

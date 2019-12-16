@@ -60,8 +60,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         this.preferences = preferences;
 
         this.appDescriptorInteractor = new AppDescriptorInteractor(packageManager, preferences, nameNormalizer);
-        this.loadFromFileInteractor = new LoadFromFileInteractor(appDescriptorInteractor, packagesStore, descriptorStore,
-                shortcutsRepository, packageManager, nameNormalizer);
+        this.loadFromFileInteractor = new LoadFromFileInteractor(appDescriptorInteractor,
+                packagesStore, descriptorStore, shortcutsRepository, packageManager);
         this.preferencesInteractor = new PreferencesInteractor(preferences, Arrays.asList(
                 new SortTransform(),
                 new OverlayTransform()

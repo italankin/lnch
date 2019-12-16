@@ -17,7 +17,11 @@ import androidx.annotation.RequiresApi;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
+import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
+import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.picasso.ShortcutIconHandler;
 
@@ -41,12 +45,15 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     private final LauncherApps launcherApps;
     private final Lazy<DescriptorRepository> descriptorRepository;
+    private final NameNormalizer nameNormalizer;
 
     private final Map<Descriptor, List<Shortcut>> shortcutsCache = new ConcurrentHashMap<>();
 
-    public AppShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository) {
+    public AppShortcutsRepository(Context context, Lazy<DescriptorRepository> descriptorRepository,
+            NameNormalizer nameNormalizer) {
         this.launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         this.descriptorRepository = descriptorRepository;
+        this.nameNormalizer = nameNormalizer;
         launcherApps.registerCallback(new Callback());
     }
 
@@ -87,52 +94,16 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public Completable pinShortcut(Shortcut shortcut) {
-        if (!launcherApps.hasShortcutHostPermission()) {
-            return Completable.error(new RuntimeException("No permission"));
-        }
-        return Completable.fromRunnable(() -> {
-            String packageName = shortcut.getPackageName();
-            List<String> pinned = new ArrayList<>(getPinnedShortcutIds(packageName));
-            pinned.add(shortcut.getId());
-            launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
-        });
-    }
-
-    @Override
-    public void unpinShortcut(String packageName, String shortcutId) {
-        if (!launcherApps.hasShortcutHostPermission()) {
-            return;
-        }
-        List<String> pinned = getPinnedShortcutIds(packageName);
-        pinned.remove(shortcutId);
-        launcherApps.pinShortcuts(packageName, pinned, Process.myUserHandle());
-    }
-
-    @Override
-    public List<Shortcut> getPinnedShortcuts() {
-        if (!launcherApps.hasShortcutHostPermission()) {
-            return Collections.emptyList();
-        }
-        ShortcutQuery query = new ShortcutQuery().setQueryFlags(ShortcutQuery.FLAG_MATCH_PINNED);
-        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-        return makeShortcuts(shortcuts);
-    }
-
-    private List<String> getPinnedShortcutIds(String packageName) {
-        if (!launcherApps.hasShortcutHostPermission()) {
-            return Collections.emptyList();
-        }
-        ShortcutQuery query = new ShortcutQuery()
-                .setQueryFlags(ShortcutQuery.FLAG_MATCH_PINNED)
-                .setPackage(packageName);
-        List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-        List<String> pinned = new ArrayList<>();
-        if (shortcuts != null && !shortcuts.isEmpty()) {
-            for (ShortcutInfo shortcutInfo : shortcuts) {
-                pinned.add(shortcutInfo.getId());
-            }
-        }
-        return pinned;
+        return Completable
+                .defer(() -> {
+                    String packageName = shortcut.getPackageName();
+                    AppDescriptor app = findAppByPackageName(packageName);
+                    DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(
+                            shortcut, app, nameNormalizer);
+                    return descriptorRepository.get().edit()
+                            .enqueue(new AddAction(descriptor))
+                            .commit();
+                });
     }
 
     private List<Shortcut> queryShortcuts(AppDescriptor descriptor) {
@@ -160,6 +131,15 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
         Collections.sort(result);
         return result;
+    }
+
+    private AppDescriptor findAppByPackageName(String packageName) {
+        for (AppDescriptor item : descriptorRepository.get().itemsOfType(AppDescriptor.class)) {
+            if (packageName.equals(item.packageName)) {
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("Cannot find app with packageName=" + packageName);
     }
 
     ///////////////////////////////////////////////////////////////////////////

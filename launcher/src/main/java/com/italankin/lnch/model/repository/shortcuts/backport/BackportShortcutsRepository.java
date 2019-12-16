@@ -106,16 +106,6 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
         }
     }
 
-    @Override
-    public void unpinShortcut(String packageName, String shortcutId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Shortcut> getPinnedShortcuts() {
-        return Collections.emptyList();
-    }
-
     private List<ShortcutBackport> queryShortcuts(AppDescriptor descriptor) {
         return DeepShortcutManagerBackport.getForPackage(context, packageManager, launcherApps,
                 getComponentName(descriptor), descriptor.packageName);
