@@ -346,14 +346,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             onShortcutDisabled(shortcut.getDisabledMessage());
             return;
         }
-        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
-        Rect bounds = null;
-        Bundle opts = null;
-        if (viewHolder != null) {
-            View view = viewHolder.itemView;
-            bounds = ViewUtils.getViewBounds(view);
-            opts = IntentUtils.getActivityLaunchOptions(view, bounds);
-        }
+        View view = findViewForAdapterPosition(position);
+        Rect bounds = ViewUtils.getViewBounds(view);
+        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
         if (!shortcut.start(bounds, opts)) {
             showError(R.string.error);
         }
@@ -417,7 +412,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(this)
                 .setLabel(R.string.popup_app_info)
                 .setIcon(R.drawable.ic_app_info)
-                .setOnClickListener(v -> startAppSettings(item.packageName));
+                .setOnClickListener(v -> startAppSettings(item.packageName, v));
         ActionPopupWindow.ItemBuilder uninstallItem = new ActionPopupWindow.ItemBuilder(this)
                 .setLabel(R.string.popup_app_uninstall)
                 .setIcon(R.drawable.ic_action_delete)
@@ -455,10 +450,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 );
             }
         }
-        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
-        if (viewHolder != null) {
-            showPopupWindow(popup, viewHolder.itemView);
-        }
+        View view = findViewForAdapterPosition(position);
+        showPopupWindow(popup, view);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -481,7 +474,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         } else {
             switch (preferences.get(Preferences.APP_LONG_CLICK_ACTION)) {
                 case INFO:
-                    startAppSettings(item.packageName);
+                    View view = findViewForAdapterPosition(position);
+                    startAppSettings(item.packageName, view);
                     break;
                 case POPUP:
                 default:
@@ -648,7 +642,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                 }
                 Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
                 String packageName = DescriptorUtils.getPackageName(descriptor);
-                if (packageName != null && startAppSettings(packageName)) {
+                if (packageName != null && startAppSettings(packageName, null)) {
                     searchBarBehavior.hide();
                 }
             }
@@ -681,7 +675,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     showError(R.string.error);
                 }
             }, v -> {
-                return startAppSettings(searchActivity.getPackageName());
+                return startAppSettings(searchActivity.getPackageName(), v);
             });
         }
     }
@@ -694,11 +688,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         searchBarBehavior.hide();
         ComponentName componentName = DescriptorUtils.getComponentName(this, item.getDescriptor());
         if (componentName != null) {
-            View view = null;
-            RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
-            if (holder != null) {
-                view = holder.itemView;
-            }
+            View view = findViewForAdapterPosition(position);
             if (startAppActivity(componentName, view)) {
                 return;
             }
@@ -712,13 +702,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         return IntentUtils.safeStartMainActivity(this, componentName, bounds, opts);
     }
 
-    private boolean startAppSettings(String packageName) {
-        Intent intent = PackageUtils.getPackageSystemSettings(packageName);
-        if (!IntentUtils.safeStartActivity(this, intent)) {
-            showError(R.string.error);
-            return false;
-        }
-        return true;
+    private boolean startAppSettings(String packageName, @Nullable View view) {
+        return IntentUtils.safeStartAppSettings(this, packageName, view);
     }
 
     private void startAppUninstall(AppViewModel item) {
@@ -855,6 +840,15 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         startAppActivity(SettingsActivity.getComponentName(this), view);
     }
 
+    @Nullable
+    private View findViewForAdapterPosition(int position) {
+        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
+        if (viewHolder != null) {
+            return viewHolder.itemView;
+        }
+        return null;
+    }
+
     private void animateListAppearance() {
         float endY = searchBarBehavior.isShown() ? list.getTranslationY() : 0;
         float startY = -endY - getResources().getDimension(R.dimen.list_appearance_translation_offset);
@@ -954,10 +948,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     .setOnClickListener(v -> presenter.removeItem(position, item))
             );
         }
-        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
-        if (viewHolder != null) {
-            showPopupWindow(popup, viewHolder.itemView);
-        }
+        View view = findViewForAdapterPosition(position);
+        showPopupWindow(popup, view);
     }
 
     private void setItemCustomLabel(int position, CustomLabelItem item) {
@@ -1012,7 +1004,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
-                        startAppSettings(((DeepShortcutViewModel) item).packageName);
+                        startAppSettings(((DeepShortcutViewModel) item).packageName, v);
                     })
             );
         }
@@ -1035,17 +1027,18 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                     })
             );
         }
-        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
-        if (viewHolder != null) {
-            showPopupWindow(popup, viewHolder.itemView);
-        }
+        View view = findViewForAdapterPosition(position);
+        showPopupWindow(popup, view);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Popup
     ///////////////////////////////////////////////////////////////////////////
 
-    private void showPopupWindow(ActionPopupWindow popup, View anchor) {
+    private void showPopupWindow(ActionPopupWindow popup, @Nullable View anchor) {
+        if (anchor == null) {
+            return;
+        }
         dismissPopup();
         list.setLayoutFrozen(true);
         popup.setOnDismissListener(() -> list.setLayoutFrozen(false));

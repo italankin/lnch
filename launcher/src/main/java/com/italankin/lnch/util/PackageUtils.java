@@ -30,6 +30,11 @@ public final class PackageUtils {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
+    public static ComponentName getComponentNameForPackage(PackageManager packageManager, String packageName) {
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        return intent != null ? intent.getComponent() : null;
+    }
+
     public static Intent getUninstallIntent(String packageName) {
         return new Intent(Intent.ACTION_UNINSTALL_PACKAGE, asUri(packageName));
     }

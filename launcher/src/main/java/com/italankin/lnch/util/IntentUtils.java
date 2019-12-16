@@ -46,7 +46,34 @@ public final class IntentUtils {
             launcherApps.startMainActivity(componentName, Process.myUserHandle(), bounds, opts);
             return true;
         } catch (Exception e) {
-            Timber.w(e, "safeStartActivity:");
+            Timber.w(e, "safeStartMainActivity:");
+            return false;
+        }
+    }
+
+    public static boolean safeStartAppSettings(Context context, String packageName, @Nullable View view) {
+        ComponentName componentName = PackageUtils.getComponentNameForPackage(context.getPackageManager(), packageName);
+        if (componentName != null) {
+            Rect bounds = ViewUtils.getViewBounds(view);
+            Bundle options = IntentUtils.getActivityLaunchOptions(view, bounds);
+            return IntentUtils.safeStartAppSettings(context, componentName, bounds, options);
+        } else {
+            Intent intent = PackageUtils.getPackageSystemSettings(packageName);
+            return IntentUtils.safeStartActivity(context, intent);
+        }
+    }
+
+    public static boolean safeStartAppSettings(Context context, @Nullable ComponentName componentName,
+            @Nullable Rect bounds, @Nullable Bundle opts) {
+        if (componentName == null) {
+            return false;
+        }
+        try {
+            LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            launcherApps.startAppDetailsActivity(componentName, Process.myUserHandle(), bounds, opts);
+            return true;
+        } catch (Exception e) {
+            Timber.w(e, "safeStartAppSettings");
             return false;
         }
     }
