@@ -699,14 +699,14 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             if (holder != null) {
                 view = holder.itemView;
             }
-            if (startMainActivity(componentName, view)) {
+            if (startAppActivity(componentName, view)) {
                 return;
             }
         }
         showError(R.string.error);
     }
 
-    private boolean startMainActivity(ComponentName componentName, View view) {
+    private boolean startAppActivity(ComponentName componentName, View view) {
         Rect bounds = ViewUtils.getViewBounds(view);
         Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
         return IntentUtils.safeStartMainActivity(this, componentName, bounds, opts);
@@ -852,7 +852,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     private void startLnchSettings(View view) {
-        startMainActivity(SettingsActivity.getComponentName(this), view);
+        startAppActivity(SettingsActivity.getComponentName(this), view);
     }
 
     private void animateListAppearance() {
