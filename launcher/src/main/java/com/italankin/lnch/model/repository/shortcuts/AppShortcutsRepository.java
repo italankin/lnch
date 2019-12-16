@@ -62,8 +62,8 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (!launcherApps.hasShortcutHostPermission()) {
             return Completable.complete();
         }
-        return Observable.defer(() -> Observable.fromIterable(descriptorRepository.get().items()))
-                .ofType(AppDescriptor.class)
+        return Observable
+                .defer(() -> Observable.fromIterable(descriptorRepository.get().itemsOfType(AppDescriptor.class)))
                 .collectInto(new HashMap<Descriptor, List<Shortcut>>(),
                         (map, descriptor) -> map.put(descriptor, queryShortcuts(descriptor)))
                 .doOnSuccess(result -> {
@@ -297,12 +297,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         private List<AppDescriptor> findByPackageName(String packageName) {
             List<AppDescriptor> result = new ArrayList<>(1);
-            for (Descriptor descriptor : descriptorRepository.get().items()) {
-                if (descriptor instanceof AppDescriptor) {
-                    AppDescriptor appDescriptor = (AppDescriptor) descriptor;
-                    if (appDescriptor.packageName.equals(packageName)) {
-                        result.add(appDescriptor);
-                    }
+            for (AppDescriptor descriptor : descriptorRepository.get().itemsOfType(AppDescriptor.class)) {
+                if (descriptor.packageName.equals(packageName)) {
+                    result.add(descriptor);
                 }
             }
             return result;

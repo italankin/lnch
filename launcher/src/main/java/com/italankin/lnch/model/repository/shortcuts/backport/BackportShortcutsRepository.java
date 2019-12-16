@@ -47,8 +47,8 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
 
     @Override
     public Completable loadShortcuts() {
-        return Observable.defer(() -> Observable.fromIterable(descriptorRepository.get().items()))
-                .ofType(AppDescriptor.class)
+        return Observable
+                .defer(() -> Observable.fromIterable(descriptorRepository.get().itemsOfType(AppDescriptor.class)))
                 .collectInto(new HashMap<String, List<ShortcutBackport>>(), (map, descriptor) -> {
                     map.put(descriptor.getId(), queryShortcuts(descriptor));
                 })
