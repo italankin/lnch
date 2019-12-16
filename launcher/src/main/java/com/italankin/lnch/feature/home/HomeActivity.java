@@ -80,6 +80,7 @@ import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
@@ -283,7 +284,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (update.items.isEmpty()) {
             root.empty()
                     .message(R.string.apps_list_empty)
-                    .button(R.string.open_settings, v -> startLnchSettings())
+                    .button(R.string.open_settings, this::startLnchSettings)
                     .show();
         } else {
             root.showContent();
@@ -453,7 +454,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            startApp(item);
+            startApp(position, item);
         }
     }
 
@@ -639,7 +640,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         searchBar.setListener(listener);
         searchBar.setupSettings(v -> {
             searchBarBehavior.hide();
-            startLnchSettings();
+            startLnchSettings(v);
         }, v -> {
             searchBarBehavior.hide(presenter::startCustomize);
             return true;
@@ -673,16 +674,26 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     // Start
     ///////////////////////////////////////////////////////////////////////////
 
-    private void startApp(AppViewModel item) {
+    private void startApp(int position, AppViewModel item) {
         searchBarBehavior.hide();
-        Intent intent = DescriptorUtils.getLaunchIntent(packageManager, item.getDescriptor());
-        if (intent != null) {
-            Intent resolved = IntentUtils.resolveSelfIntent(this, intent);
-            if (IntentUtils.safeStartActivity(this, resolved)) {
+        ComponentName componentName = DescriptorUtils.getComponentName(this, item.getDescriptor());
+        if (componentName != null) {
+            View view = null;
+            RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+            if (holder != null) {
+                view = holder.itemView;
+            }
+            if (startMainActivity(componentName, view)) {
                 return;
             }
         }
         showError(R.string.error);
+    }
+
+    private boolean startMainActivity(ComponentName componentName, View view) {
+        Rect bounds = ViewUtils.getViewBounds(view);
+        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
+        return IntentUtils.safeStartMainActivity(this, componentName, bounds, opts);
     }
 
     private boolean startAppSettings(String packageName) {
@@ -816,7 +827,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         }
         ComponentName cn = intent.getComponent();
         if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
-            startLnchSettings();
+            startLnchSettings(null);
             return;
         }
         if (!IntentUtils.safeStartActivity(this, intent)) {
@@ -824,9 +835,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         }
     }
 
-    private void startLnchSettings() {
-        Intent settingsIntent = SettingsActivity.getStartIntent(this);
-        startActivity(settingsIntent);
+    private void startLnchSettings(View view) {
+        startMainActivity(SettingsActivity.getComponentName(this), view);
     }
 
     private void animateListAppearance() {

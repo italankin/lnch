@@ -1,8 +1,16 @@
 package com.italankin.lnch.feature.settings;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -21,12 +29,6 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -38,8 +40,8 @@ public class SettingsActivity extends AppCompatActivity implements
         WallpaperOverlayFragment.Callbacks,
         LookAndFeelFragment.Callbacks {
 
-    public static Intent getStartIntent(Context context) {
-        return new Intent(context, SettingsActivity.class);
+    public static ComponentName getComponentName(Context context) {
+        return new ComponentName(context, SettingsActivity.class);
     }
 
     private Toolbar toolbar;

@@ -1,5 +1,7 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import android.content.ComponentName;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -17,6 +19,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public int color;
     public Integer customColor;
     public boolean hidden;
+    private ComponentName componentNameValue;
 
     public AppDescriptor() {
     }
@@ -102,5 +105,12 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         int result = packageName.hashCode();
         result = 31 * result + (componentName != null ? componentName.hashCode() : 0);
         return result;
+    }
+
+    public ComponentName getComponentName() {
+        if (componentNameValue == null && componentName != null) {
+            componentNameValue = ComponentName.unflattenFromString(componentName);
+        }
+        return componentNameValue;
     }
 }

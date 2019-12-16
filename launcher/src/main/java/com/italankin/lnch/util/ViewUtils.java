@@ -1,9 +1,11 @@
 package com.italankin.lnch.util;
 
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 public final class ViewUtils {
@@ -40,6 +42,15 @@ public final class ViewUtils {
 
     public static void onGlobalLayout(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new OneTimeListener(view, listener));
+    }
+
+    public static Rect getViewBounds(@Nullable View view) {
+        if (view == null) {
+            return null;
+        }
+        int[] pos = new int[2];
+        view.getLocationOnScreen(pos);
+        return new Rect(pos[0], pos[1], pos[0] + view.getWidth(), pos[1] + view.getHeight());
     }
 
     private static class OneTimeListener implements ViewTreeObserver.OnGlobalLayoutListener {

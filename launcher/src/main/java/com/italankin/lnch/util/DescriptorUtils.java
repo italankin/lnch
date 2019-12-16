@@ -1,8 +1,8 @@
 package com.italankin.lnch.util;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
@@ -17,15 +17,15 @@ public final class DescriptorUtils {
         return null;
     }
 
-    public static Intent getLaunchIntent(PackageManager packageManager, AppDescriptor descriptor) {
-        Intent intent = packageManager.getLaunchIntentForPackage(descriptor.packageName);
-        if (intent != null) {
-            if (descriptor.componentName != null) {
-                intent.setComponent(ComponentName.unflattenFromString(descriptor.componentName));
+    public static ComponentName getComponentName(Context context, AppDescriptor descriptor) {
+        if (descriptor.componentName != null) {
+            ComponentName componentName = descriptor.getComponentName();
+            if (componentName != null) {
+                return componentName;
             }
-            return intent;
         }
-        return null;
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(descriptor.packageName);
+        return intent != null ? intent.getComponent() : null;
     }
 
     private DescriptorUtils() {

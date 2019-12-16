@@ -1,16 +1,21 @@
 package com.italankin.lnch.util;
 
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Process;
+import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.feature.home.HomeActivity;
-import com.italankin.lnch.feature.settings.SettingsActivity;
 
 import java.net.URISyntaxException;
 
@@ -19,15 +24,11 @@ import timber.log.Timber;
 public final class IntentUtils {
 
     public static boolean safeStartActivity(Context context, Intent intent) {
-        return safeStartActivity(context, intent, null);
-    }
-
-    public static boolean safeStartActivity(Context context, Intent intent, Bundle options) {
         if (!canHandleIntent(context, intent)) {
             return false;
         }
         try {
-            context.startActivity(intent, options);
+            context.startActivity(intent, null);
             return true;
         } catch (ActivityNotFoundException e) {
             Timber.w(e, "safeStartActivity:");
@@ -35,7 +36,22 @@ public final class IntentUtils {
         }
     }
 
-    public static boolean canHandleIntent(PackageManager packageManager, Intent intent) {
+    public static boolean safeStartMainActivity(Context context, @Nullable ComponentName componentName,
+            @Nullable Rect bounds, @Nullable Bundle opts) {
+        if (componentName == null) {
+            return false;
+        }
+        try {
+            LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            launcherApps.startMainActivity(componentName, Process.myUserHandle(), bounds, opts);
+            return true;
+        } catch (Exception e) {
+            Timber.w(e, "safeStartActivity:");
+            return false;
+        }
+    }
+
+    public static boolean canHandleIntent(PackageManager packageManager, @Nullable Intent intent) {
         if (intent == null) {
             return false;
         }
@@ -46,21 +62,11 @@ public final class IntentUtils {
         return false;
     }
 
-    /**
-     * If we try to start {@link HomeActivity} from itself, start {@link SettingsActivity} instead.
-     */
-    public static Intent resolveSelfIntent(Context context, Intent intent) {
-        ComponentName cn = intent.getComponent();
-        if (cn != null && cn.getClassName().equals(HomeActivity.class.getCanonicalName())) {
-            return SettingsActivity.getStartIntent(context);
-        }
-        return intent;
-    }
-
     public static Intent fromUri(String uri) {
         return fromUri(uri, 0);
     }
 
+    @Nullable
     public static Intent fromUri(String uri, int flags) {
         try {
             return Intent.parseUri(uri, flags);
@@ -71,6 +77,17 @@ public final class IntentUtils {
 
     public static boolean canHandleIntent(Context context, Intent intent) {
         return canHandleIntent(context.getPackageManager(), intent);
+    }
+
+    @Nullable
+    public static Bundle getActivityLaunchOptions(View view, Rect bounds) {
+        if (view == null || bounds == null) {
+            return null;
+        }
+        ActivityOptions activityOptions = ActivityOptions.makeClipRevealAnimation(view,
+                0, 0,
+                bounds.width(), bounds.height());
+        return activityOptions.toBundle();
     }
 
     private IntentUtils() {
