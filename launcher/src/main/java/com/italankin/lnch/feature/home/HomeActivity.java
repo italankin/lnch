@@ -779,13 +779,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     private void setLayout(Preferences.HomeLayout layout, Preferences.HomeAlignment homeAlignment) {
         if (layout != this.layout) {
             this.layout = layout;
-            RecyclerView.LayoutManager layoutManager;
-            switch (layout) {
-                case COMPACT:
-                default:
-                    layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW);
-            }
-            list.setLayoutManager(layoutManager);
+            list.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
         }
         if (list.getLayoutManager() instanceof FlexboxLayoutManager) {
             FlexboxLayoutManager lm = (FlexboxLayoutManager) list.getLayoutManager();
