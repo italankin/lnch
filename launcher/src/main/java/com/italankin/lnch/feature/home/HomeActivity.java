@@ -100,6 +100,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         PinnedShortcutViewModelAdapter.Listener, DeepShortcutViewModelAdapter.Listener, IntentViewModelAdapter.Listener {
 
     public static final String ACTION_EDIT_MODE = "com.android.launcher.action.EDIT_MODE";
+    public static final String SHORTCUT_ID_CUSTOMIZE = "customize";
 
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
@@ -342,6 +343,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     @Override
     public void startShortcut(int position, Shortcut shortcut) {
+        if (handleCustomizeShortcut(shortcut.getPackageName(), shortcut.getId())) {
+            return;
+        }
         if (!shortcut.isEnabled()) {
             onShortcutDisabled(shortcut.getDisabledMessage());
             return;
@@ -435,6 +439,9 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                         .setIcon(shortcut.getIconUri())
                         .setEnabled(shortcut.isEnabled())
                         .setOnClickListener(v -> {
+                            if (handleCustomizeShortcut(shortcut.getPackageName(), shortcut.getId())) {
+                                return;
+                            }
                             if (!shortcut.isEnabled()) {
                                 onShortcutDisabled(shortcut.getDisabledMessage());
                             } else {
@@ -817,13 +824,26 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
                 StartShortcutReceiver.ACTION.equals(intent.getAction())) {
-            // start deep shortcut
-            sendBroadcast(intent);
+            String packageName = intent.getStringExtra(StartShortcutReceiver.EXTRA_PACKAGE_NAME);
+            String shortcutId = intent.getStringExtra(StartShortcutReceiver.EXTRA_ID);
+            if (!handleCustomizeShortcut(packageName, shortcutId)) {
+                // start deep shortcut
+                sendBroadcast(intent);
+            }
             return;
         }
         if (!IntentUtils.safeStartActivity(this, intent)) {
             showError(R.string.error);
         }
+    }
+
+    private boolean handleCustomizeShortcut(String packageName, String shortcutId) {
+        if (getPackageName().equals(packageName)
+                && SHORTCUT_ID_CUSTOMIZE.equals(shortcutId)) {
+            presenter.startCustomize();
+            return true;
+        }
+        return false;
     }
 
     private void startLnchSettings(View view) {
@@ -1047,4 +1067,3 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         return false;
     }
 }
-

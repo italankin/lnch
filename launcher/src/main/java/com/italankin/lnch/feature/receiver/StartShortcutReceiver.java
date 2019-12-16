@@ -9,21 +9,22 @@ import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
+
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.util.ShortcutUtils;
 
 import java.util.List;
 
-import androidx.annotation.RequiresApi;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class StartShortcutReceiver extends BroadcastReceiver {
 
     public static final String ACTION = "com.italankin.lnch.action.START_SHORTCUT";
-    private static final String EXTRA_PACKAGE_NAME = "PACKAGE_NAME";
-    private static final String EXTRA_ID = "ID";
+    public static final String EXTRA_PACKAGE_NAME = "PACKAGE_NAME";
+    public static final String EXTRA_ID = "ID";
 
     public static Intent makeStartIntent(Shortcut shortcut) {
         Intent intent = new Intent(StartShortcutReceiver.ACTION);
@@ -44,7 +45,6 @@ public class StartShortcutReceiver extends BroadcastReceiver {
             return;
         }
         LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-        //noinspection ConstantConditions
         if (!launcherApps.hasShortcutHostPermission()) {
             return;
         }
