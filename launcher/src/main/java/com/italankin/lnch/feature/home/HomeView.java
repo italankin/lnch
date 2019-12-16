@@ -48,7 +48,7 @@ interface HomeView extends MvpView {
     void onShortcutPinned(Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void startShortcut(Shortcut shortcut);
+    void startShortcut(int position, Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsSwap(int from, int to);

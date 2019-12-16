@@ -1,5 +1,8 @@
 package com.italankin.lnch.feature.home;
 
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
@@ -43,8 +46,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.ColorInt;
-import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -230,11 +231,11 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 });
     }
 
-    void startShortcut(DeepShortcutViewModel item) {
+    void startShortcut(int position, DeepShortcutViewModel item) {
         Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
         if (shortcut != null) {
             if (shortcut.isEnabled()) {
-                getViewState().startShortcut(shortcut);
+                getViewState().startShortcut(position, shortcut);
             } else {
                 getViewState().onShortcutDisabled(shortcut.getDisabledMessage());
             }

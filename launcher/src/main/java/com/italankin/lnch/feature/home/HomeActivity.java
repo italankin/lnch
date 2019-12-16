@@ -341,8 +341,20 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     }
 
     @Override
-    public void startShortcut(Shortcut shortcut) {
-        if (!shortcut.start(null, null)) {
+    public void startShortcut(int position, Shortcut shortcut) {
+        if (!shortcut.isEnabled()) {
+            onShortcutDisabled(shortcut.getDisabledMessage());
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = list.findViewHolderForAdapterPosition(position);
+        Rect bounds = null;
+        Bundle opts = null;
+        if (viewHolder != null) {
+            View view = viewHolder.itemView;
+            bounds = ViewUtils.getViewBounds(view);
+            opts = IntentUtils.getActivityLaunchOptions(view, bounds);
+        }
+        if (!shortcut.start(bounds, opts)) {
             showError(R.string.error);
         }
     }
@@ -430,9 +442,13 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
                         .setOnClickListener(v -> {
                             if (!shortcut.isEnabled()) {
                                 onShortcutDisabled(shortcut.getDisabledMessage());
-                            } else if (!shortcut.start(null, null)) {
-                                showError(R.string.error);
-                                presenter.updateShortcuts(item.getDescriptor());
+                            } else {
+                                Rect bounds = ViewUtils.getViewBounds(v);
+                                Bundle opts = IntentUtils.getActivityLaunchOptions(v, bounds);
+                                if (!shortcut.start(bounds, opts)) {
+                                    showError(R.string.error);
+                                    presenter.updateShortcuts(item.getDescriptor());
+                                }
                             }
                         })
                         .setOnPinClickListener(v -> presenter.pinShortcut(shortcut))
@@ -516,7 +532,7 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            presenter.startShortcut(item);
+            presenter.startShortcut(position, item);
         }
     }
 
