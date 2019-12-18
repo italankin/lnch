@@ -23,10 +23,9 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private boolean dragInProgress = false;
     private boolean shown = false;
     private boolean enabled = true;
-    @NonNull
     private final Listener listener;
 
-    public TopBarBehavior(View topView, View bottomView, Listener listener) {
+    public TopBarBehavior(View topView, View bottomView, @NonNull Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
         this.listener = listener;
@@ -95,8 +94,15 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (enabled && velocityY > 0 && (shown || dragInProgress)) {
+        if (!enabled) {
+            return false;
+        }
+        if (velocityY > 0 && (shown || dragInProgress)) {
             hide();
+            return true;
+        }
+        if (shown && velocityY < 0) {
+            listener.onShowExpand();
             return true;
         }
         return false;
@@ -249,5 +255,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         void onShow();
 
         void onHide();
+
+        void onShowExpand();
     }
 }

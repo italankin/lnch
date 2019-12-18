@@ -80,6 +80,7 @@ import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.StatusBarUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
@@ -614,6 +615,14 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             @Override
             public void onHide() {
                 searchBar.reset();
+            }
+
+            @Override
+            public void onShowExpand() {
+                Boolean expandNotifications = preferences.get(Preferences.EXPAND_NOTIFICATIONS);
+                if (expandNotifications) {
+                    StatusBarUtils.expandStatusBar(HomeActivity.this);
+                }
             }
         });
         searchBarBehavior.setEnabled(!editMode);

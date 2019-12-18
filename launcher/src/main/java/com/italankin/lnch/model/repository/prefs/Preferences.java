@@ -188,6 +188,10 @@ public interface Preferences {
             "apps_color_overlay",
             Color.WHITE);
 
+    Pref<Boolean> EXPAND_NOTIFICATIONS = Prefs.createBoolean(
+            "expand_notifications",
+            true);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -213,7 +217,8 @@ public interface Preferences {
             FIRST_LAUNCH,
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
-            APPS_COLOR_OVERLAY
+            APPS_COLOR_OVERLAY,
+            EXPAND_NOTIFICATIONS
     );
 
     ///////////////////////////////////////////////////////////////////////////

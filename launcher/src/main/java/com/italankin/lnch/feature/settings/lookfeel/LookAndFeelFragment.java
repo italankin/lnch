@@ -4,6 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
+
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -14,11 +19,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
 
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView {
 
@@ -77,7 +77,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             updateColorOverlay((Boolean) newValue);
             return true;
         });
-        findPreference(Preferences.APPS_COLOR_OVERLAY).setOnPreferenceClickListener(preference -> {
+        findPreference(Preferences.EXPAND_NOTIFICATIONS).setOnPreferenceClickListener(preference -> {
             onColorOverlayClick();
             return true;
         });
@@ -85,7 +85,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     }
 
     private void updateColorOverlay(Boolean newValue) {
-        Preference preference = findPreference(Preferences.APPS_COLOR_OVERLAY);
+        Preference preference = findPreference(Preferences.EXPAND_NOTIFICATIONS);
         if (newValue) {
             int color = preferences.get(Preferences.APPS_COLOR_OVERLAY);
             preference.setSummary(String.format("#%06x", color & 0x00ffffff));
