@@ -192,6 +192,10 @@ public interface Preferences {
             "expand_notifications",
             true);
 
+    Pref<Integer> STATUS_BAR_COLOR = Prefs.createInteger(
+            "status_bar_color",
+            null);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -218,7 +222,8 @@ public interface Preferences {
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
             APPS_COLOR_OVERLAY,
-            EXPAND_NOTIFICATIONS
+            EXPAND_NOTIFICATIONS,
+            STATUS_BAR_COLOR
     );
 
     ///////////////////////////////////////////////////////////////////////////

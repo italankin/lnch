@@ -22,14 +22,18 @@
             android:key="large_search_bar"
             android:summary="@string/settings_home_laf_other_large_search_Bar_summary"
             android:title="@string/settings_home_laf_other_large_search_Bar" />
+        <Preference
+            android:key="status_bar_color"
+            android:title="@string/settings_home_laf_other_status_bar_color"
+            tools:ignore="PrefsDetector" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="apps_color_overlay_show"
-            android:title="@string/settings_home_laf_other_color_show" />
+            android:title="@string/settings_home_laf_other_color_overlay_show" />
         <Preference
             android:dependency="apps_color_overlay_show"
             android:key="apps_color_overlay"
-            android:title="@string/settings_home_laf_other_color"
+            android:title="@string/settings_home_laf_other_color_overlay"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
 </PreferenceScreen>

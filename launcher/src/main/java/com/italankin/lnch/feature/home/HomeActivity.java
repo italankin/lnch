@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -585,7 +586,12 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
             root.setPadding(insets.getStableInsetLeft(), stableInsetTop,
                     insets.getStableInsetRight(), 0);
             list.setBottomInset(insets.getStableInsetBottom());
-            root.setForeground(new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop));
+            Integer statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
+            FakeStatusBarDrawable foreground = new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop);
+            if (statusBarColor != null) {
+                foreground.setColor(statusBarColor);
+            }
+            root.setForeground(foreground);
             return insets;
         });
         window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
@@ -780,6 +786,11 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         searchBar.setSearchBarSizeDimen(userPrefs.largeSearchBar
                 ? R.dimen.search_bar_size_large
                 : R.dimen.search_bar_size);
+        Drawable foreground = root.getForeground();
+        if (foreground instanceof FakeStatusBarDrawable) {
+            FakeStatusBarDrawable d = (FakeStatusBarDrawable) foreground;
+            d.setColor(userPrefs.statusBarColor);
+        }
     }
 
     private void setScreenOrientation() {

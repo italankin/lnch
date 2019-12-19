@@ -1,12 +1,13 @@
 package com.italankin.lnch.feature.home.model;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 public final class UserPrefs {
 
@@ -34,6 +35,8 @@ public final class UserPrefs {
     public final boolean showScrollbar;
     public final boolean globalSearch;
     public final boolean largeSearchBar;
+    @ColorInt
+    public final Integer statusBarColor;
     public final ItemPrefs itemPrefs;
 
     public UserPrefs(Preferences preferences) {
@@ -43,6 +46,7 @@ public final class UserPrefs {
         showScrollbar = preferences.get(Preferences.SHOW_SCROLLBAR);
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
+        statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
         itemPrefs = new UserPrefs.ItemPrefs(preferences);
     }
 
@@ -73,6 +77,9 @@ public final class UserPrefs {
         if (homeAlignment != userPrefs.homeAlignment) {
             return false;
         }
+        if (!Objects.equals(statusBarColor, userPrefs.statusBarColor)) {
+            return false;
+        }
         return itemPrefs.equals(userPrefs.itemPrefs);
     }
 
@@ -85,6 +92,9 @@ public final class UserPrefs {
         result = 31 * result + itemPrefs.hashCode();
         result = 31 * result + (globalSearch ? 1 : 0);
         result = 31 * result + (largeSearchBar ? 1 : 0);
+        if (statusBarColor != null) {
+            result = 31 * result + statusBarColor.hashCode();
+        }
         return result;
     }
 
@@ -97,6 +107,7 @@ public final class UserPrefs {
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
                 ", largeSearchBar=" + largeSearchBar +
+                ", statusBarColor=" + statusBarColor +
                 ", itemPrefs=" + itemPrefs +
                 '}';
     }

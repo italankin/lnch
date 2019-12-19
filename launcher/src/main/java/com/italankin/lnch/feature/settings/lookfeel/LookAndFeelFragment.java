@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
@@ -81,7 +82,12 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             onColorOverlayClick();
             return true;
         });
+        findPreference(Preferences.STATUS_BAR_COLOR).setOnPreferenceClickListener(preference -> {
+            onStatusBarColorClick();
+            return true;
+        });
         updateColorOverlay(preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW));
+        updateStatusBarColor();
     }
 
     private void updateColorOverlay(Boolean newValue) {
@@ -106,6 +112,29 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .show(getChildFragmentManager(), TAG_COLOR_OVERLAY);
     }
 
+    private void updateStatusBarColor() {
+        Preference preference = findPreference(Preferences.STATUS_BAR_COLOR);
+        Integer statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
+        if (statusBarColor != null) {
+            preference.setSummary(String.format("#%06x", statusBarColor));
+        } else {
+            preference.setSummary(null);
+        }
+    }
+
+    private void onStatusBarColorClick() {
+        Integer color = preferences.get(Preferences.STATUS_BAR_COLOR);
+        new ColorPickerDialogFragment.Builder()
+                .setColorModel(ColorPickerView.ColorModel.ARGB)
+                .setHexVisible(false)
+                .setPreviewVisible(true)
+                .setSelectedColor(color != null ? color : Color.TRANSPARENT)
+                .showResetButton(true)
+                .setListenerProvider(new SetStatusBarColor())
+                .build()
+                .show(getChildFragmentManager(), TAG_COLOR_OVERLAY);
+    }
+
     private static class SetAppsColorOverlay implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
@@ -121,6 +150,26 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 public void onColorReset() {
                     fragment.preferences.reset(Preferences.APPS_COLOR_OVERLAY);
                     fragment.updateColorOverlay(true);
+                }
+            };
+        }
+    }
+
+    private static class SetStatusBarColor implements ListenerFragment<ColorPickerDialogFragment.Listener> {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
+            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
+            return new ColorPickerDialogFragment.Listener() {
+                @Override
+                public void onColorPicked(int newColor) {
+                    fragment.preferences.set(Preferences.STATUS_BAR_COLOR, newColor);
+                    fragment.updateStatusBarColor();
+                }
+
+                @Override
+                public void onColorReset() {
+                    fragment.preferences.reset(Preferences.STATUS_BAR_COLOR);
+                    fragment.updateStatusBarColor();
                 }
             };
         }

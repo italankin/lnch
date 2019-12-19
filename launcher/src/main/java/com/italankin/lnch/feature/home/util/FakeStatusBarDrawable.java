@@ -7,16 +7,19 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class FakeStatusBarDrawable extends Drawable {
 
-    private final Drawable drawable;
+    private final ColorDrawable drawable;
+    private final int defaultColor;
     private final int height;
 
     public FakeStatusBarDrawable(int color, int height) {
         this.drawable = new ColorDrawable(color);
+        this.defaultColor = color;
         this.height = height;
     }
 
@@ -44,5 +47,9 @@ public class FakeStatusBarDrawable extends Drawable {
     protected void onBoundsChange(Rect bounds) {
         bounds.bottom = height;
         drawable.setBounds(bounds);
+    }
+
+    public void setColor(@ColorInt Integer color) {
+        drawable.setColor(color != null ? color : defaultColor);
     }
 }
