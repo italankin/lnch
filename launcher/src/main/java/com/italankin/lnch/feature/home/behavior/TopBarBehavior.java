@@ -3,6 +3,8 @@ package com.italankin.lnch.feature.home.behavior;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,9 +14,9 @@ import androidx.core.view.ViewCompat;
 public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 160;
-    private static final float DRAG_RESISTANCE = 0.77f;
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
     private static final float HIDDEN_SHOW_THRESHOLD = .6f;
+    private static final float MIN_RESISTANCE_FACTOR = 0.05f;
 
     private final View topView;
     private final View bottomView;
@@ -24,6 +26,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private boolean shown = false;
     private boolean enabled = true;
     private final Listener listener;
+    private final Interpolator resistanceInterpolator = new DecelerateInterpolator(0.25f);
 
     public TopBarBehavior(View topView, View bottomView, @NonNull Listener listener) {
         this.topView = topView;
@@ -212,8 +215,11 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         if (dy == 0) {
             return;
         }
-        int actual = (int) (dy * (1 - DRAG_RESISTANCE));
-        float cty = topView.getTranslationY() - actual;
+        float currentTy = topView.getTranslationY();
+        float progress = Math.abs(currentTy) / maxOffset;
+        float resistanceFactor = Math.max(resistanceInterpolator.getInterpolation(progress), MIN_RESISTANCE_FACTOR);
+        float actualDy = dy * resistanceFactor;
+        float cty = currentTy - actualDy;
         if (cty < -maxOffset) {
             cty = -maxOffset;
         } else if (cty > 0) {
@@ -221,7 +227,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         }
         topView.setTranslationY(cty);
         topView.setAlpha(1 - Math.abs(cty) / maxOffset);
-        float tty = bottomView.getTranslationY() - actual;
+        float tty = bottomView.getTranslationY() - actualDy;
         if (tty < 0) {
             tty = 0;
         } else if (tty > maxOffset) {
