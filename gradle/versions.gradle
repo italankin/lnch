@@ -7,7 +7,7 @@ ext {
     materialVersion = "1.0.0"
     moxyVersion = "1.5.3"
     daggerVersion = "2.11"
-    flexboxVersion = "1.1.0"
+    flexboxVersion = "2.0.0"
     gsonVersion = "2.8.2"
     rxJavaVersion = "2.1.13"
     rxAndroidVersion = "2.0.2"
