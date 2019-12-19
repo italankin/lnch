@@ -21,6 +21,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         PREFERENCES.add(Preferences.LARGE_SEARCH_BAR);
+        PREFERENCES.add(Preferences.STATUS_BAR_COLOR);
         PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
         PREFERENCES.add(Preferences.ITEM_PADDING);
         PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
