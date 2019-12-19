@@ -77,7 +77,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             updateColorOverlay((Boolean) newValue);
             return true;
         });
-        findPreference(Preferences.EXPAND_NOTIFICATIONS).setOnPreferenceClickListener(preference -> {
+        findPreference(Preferences.APPS_COLOR_OVERLAY).setOnPreferenceClickListener(preference -> {
             onColorOverlayClick();
             return true;
         });
@@ -85,7 +85,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     }
 
     private void updateColorOverlay(Boolean newValue) {
-        Preference preference = findPreference(Preferences.EXPAND_NOTIFICATIONS);
+        Preference preference = findPreference(Preferences.APPS_COLOR_OVERLAY);
         if (newValue) {
             int color = preferences.get(Preferences.APPS_COLOR_OVERLAY);
             preference.setSummary(String.format("#%06x", color & 0x00ffffff));
