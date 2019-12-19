@@ -215,25 +215,17 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
         if (dy == 0) {
             return;
         }
-        float currentTy = topView.getTranslationY();
-        float progress = Math.abs(currentTy) / maxOffset;
+        float currentTopViewTy = topView.getTranslationY();
+        float progress = Math.abs(currentTopViewTy) / maxOffset;
         float resistanceFactor = Math.max(resistanceInterpolator.getInterpolation(progress), MIN_RESISTANCE_FACTOR);
         float actualDy = dy * resistanceFactor;
-        float cty = currentTy - actualDy;
-        if (cty < -maxOffset) {
-            cty = -maxOffset;
-        } else if (cty > 0) {
-            cty = 0;
-        }
-        topView.setTranslationY(cty);
-        topView.setAlpha(1 - Math.abs(cty) / maxOffset);
-        float tty = bottomView.getTranslationY() - actualDy;
-        if (tty < 0) {
-            tty = 0;
-        } else if (tty > maxOffset) {
-            tty = maxOffset;
-        }
-        bottomView.setTranslationY(tty);
+
+        float topViewTy = box(currentTopViewTy - actualDy, -maxOffset, 0);
+        topView.setTranslationY(topViewTy);
+        topView.setAlpha(1 - Math.abs(topViewTy) / maxOffset);
+
+        float bottomViewTy = box(bottomView.getTranslationY() - actualDy, 0, maxOffset);
+        bottomView.setTranslationY(bottomViewTy);
     }
 
     private void jumpToActualState() {
@@ -251,6 +243,15 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
                 hide();
             }
         }
+    }
+
+    private static float box(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        }
+        return value;
     }
 
     ///////////////////////////////////////////////////////////////////////////
