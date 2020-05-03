@@ -3,15 +3,36 @@ package com.italankin.lintchecks.detectors
 import com.android.SdkConstants
 import com.android.resources.ResourceFolderType
 import com.android.tools.lint.client.api.UElementHandler
-import com.android.tools.lint.detector.api.*
+import com.android.tools.lint.detector.api.Category
+import com.android.tools.lint.detector.api.Context
+import com.android.tools.lint.detector.api.Detector
+import com.android.tools.lint.detector.api.Implementation
+import com.android.tools.lint.detector.api.Issue
+import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.Location
+import com.android.tools.lint.detector.api.Scope
+import com.android.tools.lint.detector.api.Severity
+import com.android.tools.lint.detector.api.SourceCodeScanner
+import com.android.tools.lint.detector.api.XmlContext
+import com.android.tools.lint.detector.api.XmlScanner
+import com.android.tools.lint.detector.api.isString
 import com.intellij.psi.PsiClassType
 import com.italankin.lintchecks.util.getAndroidAttrNode
 import com.italankin.lintchecks.util.isBoxedPrimitive
 import com.italankin.lintchecks.util.isEnum
-import org.jetbrains.uast.*
+import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UClass
+import org.jetbrains.uast.UElement
+import org.jetbrains.uast.UEnumConstant
+import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.evaluateString
+import org.jetbrains.uast.findContaining
+import org.jetbrains.uast.getOutermostQualified
+import org.jetbrains.uast.toUElement
+import org.jetbrains.uast.tryResolve
 import org.w3c.dom.Attr
 import org.w3c.dom.Element
-import java.util.*
+import java.util.EnumSet
 import java.util.concurrent.ConcurrentHashMap
 
 class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
@@ -73,7 +94,8 @@ class PrefsDetector : Detector(), SourceCodeScanner, XmlScanner {
                 if (node.methodName !in METHODS) {
                     return
                 }
-                val containingClass = node.resolve()?.findContainingUClass() ?: return
+                val resolve = node.resolve()?.toUElement(UMethod::class.java)
+                val containingClass = resolve?.findContaining(UClass::class.java) ?: return
                 if (containingClass.qualifiedName != PREFS) {
                     return
                 }

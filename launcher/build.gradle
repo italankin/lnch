@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../gradle/versions.gradle'
 
 android {
@@ -47,10 +46,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
-}
-
-dexcount {
-    enabled = false
 }
 
 dependencies {
