@@ -55,7 +55,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
 
     @ProvidePresenter
     AppsListPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().apps();
+        return LauncherApp.daggerService.presenters().appsList();
     }
 
     @Override

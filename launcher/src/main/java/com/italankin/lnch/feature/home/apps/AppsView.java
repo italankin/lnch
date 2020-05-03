@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home;
+package com.italankin.lnch.feature.home.apps;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
@@ -12,7 +12,7 @@ import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 
 import java.util.List;
 
-interface HomeView extends MvpView {
+interface AppsView extends MvpView {
 
     String CONTENT = "content";
     String CUSTOMIZE = "customize";

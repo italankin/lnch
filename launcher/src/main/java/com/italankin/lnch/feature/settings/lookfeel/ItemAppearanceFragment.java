@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.settings.BackButtonHandler;
+import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;

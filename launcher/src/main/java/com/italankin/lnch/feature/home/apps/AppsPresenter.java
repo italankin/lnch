@@ -1,7 +1,4 @@
-package com.italankin.lnch.feature.home;
-
-import androidx.annotation.ColorInt;
-import androidx.recyclerview.widget.DiffUtil;
+package com.italankin.lnch.feature.home.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -44,6 +41,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -52,7 +51,7 @@ import timber.log.Timber;
 import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
-public class HomePresenter extends AppPresenter<HomeView> {
+public class AppsPresenter extends AppPresenter<AppsView> {
 
     private static final List<DescriptorItem> INITIAL = new ArrayList<>();
 
@@ -68,7 +67,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
     private DescriptorRepository.Editor editor;
 
     @Inject
-    HomePresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
+    AppsPresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
             Preferences preferences, SeparatorState separatorState) {
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
@@ -167,12 +166,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
-                    protected void onComplete(HomeView viewState) {
+                    protected void onComplete(AppsView viewState) {
                         viewState.onStopCustomize();
                     }
 
                     @Override
-                    protected void onError(HomeView viewState, Throwable e) {
+                    protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });
@@ -202,12 +201,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
-                    protected void onComplete(HomeView viewState) {
+                    protected void onComplete(AppsView viewState) {
                         viewState.onShortcutPinned(shortcut);
                     }
 
                     @Override
-                    protected void onError(HomeView viewState, Throwable e) {
+                    protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });
@@ -221,7 +220,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
-                    protected void onError(HomeView viewState, Throwable e) {
+                    protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });
@@ -294,7 +293,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Update>() {
                     @Override
-                    protected void onNext(HomeView viewState, Update update) {
+                    protected void onNext(AppsView viewState, Update update) {
                         Timber.d("Update: %s", update);
                         items = update.items;
                         viewState.onReceiveUpdate(update);
@@ -302,7 +301,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
 
                     @Override
-                    protected void onError(HomeView viewState, Throwable e) {
+                    protected void onError(AppsView viewState, Throwable e) {
                         if (items == INITIAL) {
                             viewState.onReceiveUpdateError(e);
                         } else {

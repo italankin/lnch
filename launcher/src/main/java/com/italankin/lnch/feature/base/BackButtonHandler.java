@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings;
+package com.italankin.lnch.feature.base;
 
 public interface BackButtonHandler {
 

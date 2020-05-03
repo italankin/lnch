@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
-public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
+public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 160;
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
@@ -28,7 +28,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     private final Listener listener;
     private final Interpolator resistanceInterpolator = new DecelerateInterpolator(0.25f);
 
-    public TopBarBehavior(View topView, View bottomView, @NonNull Listener listener) {
+    public SearchBarBehavior(View topView, View bottomView, @NonNull Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
         this.listener = listener;
@@ -70,7 +70,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target,
-            int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+            int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
         if (!enabled) {
             return;
         }
@@ -259,6 +259,7 @@ public class TopBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     public interface Listener {
+
         void onShow();
 
         void onHide();

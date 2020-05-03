@@ -5,15 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
 import com.italankin.lnch.feature.common.preferences.ThemeObservable;
@@ -29,6 +23,12 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 

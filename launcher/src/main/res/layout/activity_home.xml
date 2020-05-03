@@ -1,44 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.italankin.lnch.util.widget.LceLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:fitsSystemWindows="false"
     tools:background="@tools:sample/backgrounds/scenic"
     tools:backgroundTint="#a000"
-    tools:backgroundTintMode="src_atop"
-    tools:ignore="RtlSymmetry,RtlHardcoded">
+    tools:backgroundTintMode="src_atop">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+        android:layout_height="match_parent" />
 
-        <com.italankin.lnch.feature.home.widget.SearchBar
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <com.italankin.lnch.feature.home.widget.HomeRecyclerView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:scrollbars="vertical"
-            android:visibility="invisible"
-            app:layout_behavior="com.italankin.lnch.feature.home.behavior.HomeListBehavior"
-            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:listitem="@layout/item_app"
-            tools:spanCount="2"
-            tools:visibility="visible" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-</com.italankin.lnch.util.widget.LceLayout>
+</FrameLayout>
