@@ -4,11 +4,6 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
@@ -16,6 +11,10 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -90,9 +89,9 @@ public class SearchFragment extends BasePreferenceFragment {
     private void subscribeForUpdates() {
         Disposable disposable = preferences.observe(Preferences.SEARCH_ENGINE)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(engine -> {
-                    boolean enabled = engine == Preferences.SearchEngine.CUSTOM;
-                    formatPreference.setEnabled(enabled);
+                .subscribe(value -> {
+                    Preferences.SearchEngine engine = value.get();
+                    formatPreference.setEnabled(engine == Preferences.SearchEngine.CUSTOM);
                 });
         disposables.add(disposable);
     }

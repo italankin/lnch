@@ -5,8 +5,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import androidx.annotation.NonNull;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -15,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 public interface Preferences {
@@ -25,13 +24,26 @@ public interface Preferences {
 
     Observable<Pref<?>> observe();
 
-    <T> Observable<T> observe(Pref<T> pref);
+    <T> Observable<Value<T>> observe(Pref<T> pref);
 
     void reset(Pref<?>... prefs);
 
     ///////////////////////////////////////////////////////////////////////////
     // Preferences interfaces
     ///////////////////////////////////////////////////////////////////////////
+
+    class Value<T> {
+
+        private final T value;
+
+        Value(T value) {
+            this.value = value;
+        }
+
+        public T get() {
+            return value;
+        }
+    }
 
     interface Pref<T> {
         String key();

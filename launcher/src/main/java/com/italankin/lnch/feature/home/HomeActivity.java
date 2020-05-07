@@ -177,21 +177,24 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     }
 
     private void observePreferences() {
-        Disposable d = preferences.observe()
+        Disposable overlayColor = preferences.observe(Preferences.APPS_COLOR_OVERLAY)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pref -> {
-                    if (pref == Preferences.APPS_COLOR_OVERLAY) {
-                        Integer color = preferences.get(Preferences.APPS_COLOR_OVERLAY);
+                .subscribe(value -> {
+                    Integer color = value.get();
+                    if (color != null) {
                         root.setBackgroundColor(color);
-                    } else if (pref == Preferences.STATUS_BAR_COLOR) {
-                        Drawable foreground = root.getForeground();
-                        if (foreground instanceof FakeStatusBarDrawable) {
-                            FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
-                            Integer color = preferences.get(Preferences.STATUS_BAR_COLOR);
-                            drawable.setColor(color);
-                        }
                     }
                 });
-        compositeDisposable.add(d);
+        compositeDisposable.add(overlayColor);
+        Disposable statusBarColor = preferences.observe(Preferences.STATUS_BAR_COLOR)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(value -> {
+                    Drawable foreground = root.getForeground();
+                    if (foreground instanceof FakeStatusBarDrawable) {
+                        FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
+                        drawable.setColor(value.get());
+                    }
+                });
+        compositeDisposable.add(statusBarColor);
     }
 }

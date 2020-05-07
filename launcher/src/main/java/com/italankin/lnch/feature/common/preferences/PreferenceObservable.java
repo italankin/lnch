@@ -21,14 +21,16 @@ abstract class PreferenceObservable<V, L> {
         onSubscribe(listener, currentValue);
         return preferences.observe(pref)
                 .filter(value -> {
+                    V newValue = value.get();
                     return currentValue == null
-                            ? value == null
-                            : !currentValue.equals(value);
+                            ? newValue == null
+                            : !currentValue.equals(newValue);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
-                    onValueChanged(listener, currentValue, value);
-                    currentValue = value;
+                    V newValue = value.get();
+                    onValueChanged(listener, currentValue, newValue);
+                    currentValue = newValue;
                 });
     }
 
