@@ -77,13 +77,17 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         if (action == null) {
             return;
         }
+        AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+        if (appsFragment == null) {
+            return;
+        }
         switch (action) {
             case Intent.ACTION_MAIN: {
-                pagerAdapter.getAppsFragment().handleActionMain();
+                appsFragment.handleActionMain();
                 break;
             }
             case ACTION_EDIT_MODE: {
-                pagerAdapter.getAppsFragment().handleEditMode();
+                appsFragment.handleEditMode();
                 break;
             }
         }
