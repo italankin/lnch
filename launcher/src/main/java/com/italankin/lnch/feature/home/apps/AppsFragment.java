@@ -145,12 +145,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         animateOnResume = true;
     }
 
-    public void onRestart() {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -745,7 +739,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             searchBar.reset();
             searchBarBehavior.hide();
         } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
-            list.scrollToPosition(0);
+            list.smoothScrollToPosition(0);
         }
     }
 
