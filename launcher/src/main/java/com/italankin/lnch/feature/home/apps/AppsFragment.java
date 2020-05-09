@@ -98,7 +98,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         GroupViewModelAdapter.Listener,
         PinnedShortcutViewModelAdapter.Listener {
 
-    public static final String SHORTCUT_ID_CUSTOMIZE = "customize";
+    private static final String SHORTCUT_ID_CUSTOMIZE = "customize";
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
     private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
