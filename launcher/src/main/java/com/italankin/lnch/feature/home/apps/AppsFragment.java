@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.PopupWindow;
@@ -192,10 +193,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         touchHelper = new ItemTouchHelper(new SwapItemHelper(presenter::swapApps));
         touchHelper.attachToRecyclerView(list);
 
-        view.setOnApplyWindowInsetsListener((v, insets) -> {
-            list.setBottomInset(insets.getStableInsetBottom());
-            return insets;
-        });
+        registerWindowInsets(view);
 
         if (!HomeActivity.ACTION_EDIT_MODE.equals(requireActivity().getIntent().getAction())
                 && savedInstanceState != null
@@ -1001,6 +999,18 @@ public class AppsFragment extends AppFragment implements AppsView,
                     lm.setJustifyContent(JustifyContent.FLEX_END);
                     break;
             }
+        }
+    }
+
+    private void registerWindowInsets(View view) {
+        view.setOnApplyWindowInsetsListener((v, insets) -> {
+            list.setBottomInset(insets.getStableInsetBottom());
+            return insets;
+        });
+
+        WindowInsets insets = view.getRootWindowInsets();
+        if (insets != null) {
+            list.setBottomInset(insets.getStableInsetBottom());
         }
     }
 
