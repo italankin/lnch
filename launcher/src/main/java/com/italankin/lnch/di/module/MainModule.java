@@ -6,6 +6,7 @@ import android.os.Build;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
+import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.LauncherDescriptorRepository;
@@ -122,5 +123,11 @@ public class MainModule {
     @Singleton
     NameNormalizer provideNameNormalizer() {
         return new NameNormalizer();
+    }
+
+    @Provides
+    @Singleton
+    IntentQueue provideIntentQueue() {
+        return new IntentQueue();
     }
 }

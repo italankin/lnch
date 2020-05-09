@@ -16,6 +16,7 @@ import com.italankin.lnch.feature.common.preferences.ThemeObservable;
 import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
+import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import androidx.annotation.NonNull;
@@ -30,18 +31,20 @@ import io.reactivex.disposables.Disposable;
 public class HomeActivity extends AppCompatActivity implements SupportsOrientation, ThemedActivity,
         AppsFragment.Callbacks {
 
-    public static final String ACTION_EDIT_MODE = "com.android.launcher.action.EDIT_MODE";
     public static final String STATE_CURRENT_PAGER_ITEM = "current_pager_item";
+
+    private Preferences preferences;
+    private IntentQueue intentQueue;
 
     private View root;
     private ViewPager pager;
-    private Preferences preferences;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HomePagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
         preferences = LauncherApp.daggerService.main().getPreferences();
+        intentQueue = LauncherApp.daggerService.main().getIntentQueue();
 
         setTheme();
         setScreenOrientation();
@@ -56,6 +59,8 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         observePreferences();
 
         setupPager(state);
+
+        intentQueue.post(getIntent());
     }
 
     @Override
@@ -67,24 +72,7 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String action = intent.getAction();
-        if (action == null) {
-            return;
-        }
-        AppsFragment appsFragment = pagerAdapter.getAppsFragment();
-        if (appsFragment == null) {
-            return;
-        }
-        switch (action) {
-            case Intent.ACTION_MAIN: {
-                appsFragment.handleActionMain();
-                break;
-            }
-            case ACTION_EDIT_MODE: {
-                appsFragment.handleEditMode();
-                break;
-            }
-        }
+        intentQueue.post(intent);
     }
 
     @Override

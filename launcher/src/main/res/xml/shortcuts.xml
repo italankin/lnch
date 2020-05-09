@@ -8,7 +8,7 @@
         android:shortcutShortLabel="@string/customize_hint"
         tools:targetApi="n_mr1">
         <intent
-            android:action="com.android.launcher.action.EDIT_MODE"
+            android:action="com.italankin.lnch.action.EDIT_MODE"
             android:targetClass="com.italankin.lnch.feature.home.HomeActivity"
             android:targetPackage="com.italankin.lnch" />
     </shortcut>

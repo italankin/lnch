@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.util.ShortcutUtils;
 
 import java.util.List;
@@ -22,25 +23,21 @@ import timber.log.Timber;
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class StartShortcutReceiver extends BroadcastReceiver {
 
-    public static final String ACTION = "com.italankin.lnch.action.START_SHORTCUT";
-    public static final String EXTRA_PACKAGE_NAME = "PACKAGE_NAME";
-    public static final String EXTRA_ID = "ID";
-
     public static Intent makeStartIntent(Shortcut shortcut) {
-        Intent intent = new Intent(StartShortcutReceiver.ACTION);
-        intent.putExtra(StartShortcutReceiver.EXTRA_PACKAGE_NAME, shortcut.getPackageName());
-        intent.putExtra(StartShortcutReceiver.EXTRA_ID, shortcut.getId());
+        Intent intent = new Intent(LauncherIntents.ACTION_START_SHORTCUT);
+        intent.putExtra(LauncherIntents.EXTRA_PACKAGE_NAME, shortcut.getPackageName());
+        intent.putExtra(LauncherIntents.EXTRA_SHORTCUT_ID, shortcut.getId());
         intent.setComponent(new ComponentName(BuildConfig.APPLICATION_ID, StartShortcutReceiver.class.getName()));
         return intent;
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!ACTION.equals(intent.getAction())) {
+        if (!LauncherIntents.ACTION_START_SHORTCUT.equals(intent.getAction())) {
             return;
         }
-        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-        String shortcutId = intent.getStringExtra(EXTRA_ID);
+        String packageName = intent.getStringExtra(LauncherIntents.EXTRA_PACKAGE_NAME);
+        String shortcutId = intent.getStringExtra(LauncherIntents.EXTRA_SHORTCUT_ID);
         if (TextUtils.isEmpty(packageName) || TextUtils.isEmpty(shortcutId)) {
             return;
         }

@@ -29,9 +29,10 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.api.LauncherIntents;
+import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
-import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
@@ -42,11 +43,11 @@ import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.home.widget.SearchBar;
-import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -92,22 +93,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsFragment extends AppFragment implements AppsView,
         BackButtonHandler,
+        IntentQueue.OnIntentAction,
         DeepShortcutViewModelAdapter.Listener,
         IntentViewModelAdapter.Listener,
         AppViewModelAdapter.Listener,
         GroupViewModelAdapter.Listener,
         PinnedShortcutViewModelAdapter.Listener {
 
-    private static final String SHORTCUT_ID_CUSTOMIZE = "customize";
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
-
-    private static final String KEY_SEARCH_SHOWN = "SEARCH_SHOWN";
 
     @InjectPresenter
     AppsPresenter presenter;
 
     private Preferences preferences;
     private Picasso picasso;
+    private IntentQueue intentQueue;
 
     private LceLayout lce;
     private HomeRecyclerView list;
@@ -137,6 +137,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         super.onAttach(context);
         preferences = LauncherApp.daggerService.main().getPreferences();
         picasso = LauncherApp.daggerService.main().getPicassoFactory().create(requireContext());
+        intentQueue = LauncherApp.daggerService.main().getIntentQueue();
         callbacks = (Callbacks) context;
     }
 
@@ -169,12 +170,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         callbacks = null;
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_SEARCH_SHOWN, searchBarBehavior.isShown());
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -195,11 +190,41 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         registerWindowInsets(view);
 
-        if (!HomeActivity.ACTION_EDIT_MODE.equals(requireActivity().getIntent().getAction())
-                && savedInstanceState != null
-                && savedInstanceState.getBoolean(KEY_SEARCH_SHOWN, false)) {
-            searchBarBehavior.showNow();
+        intentQueue.registerOnIntentAction(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        intentQueue.unregisterOnIntentAction(this);
+    }
+
+    @Override
+    public boolean onIntent(Intent intent) {
+        String action = intent.getAction();
+        if (action == null) {
+            return false;
         }
+        switch (action) {
+            case Intent.ACTION_MAIN: {
+                dismissPopup();
+                if (searchBarBehavior.isShown()) {
+                    searchBar.reset();
+                    searchBarBehavior.hide();
+                } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
+                    list.smoothScrollToPosition(0);
+                }
+                return true;
+            }
+            case LauncherIntents.ACTION_EDIT_MODE: {
+                if (!editMode) {
+                    animateOnResume = false;
+                    presenter.startCustomize();
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -715,9 +740,9 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
-                StartShortcutReceiver.ACTION.equals(intent.getAction())) {
-            String packageName = intent.getStringExtra(StartShortcutReceiver.EXTRA_PACKAGE_NAME);
-            String shortcutId = intent.getStringExtra(StartShortcutReceiver.EXTRA_ID);
+                LauncherIntents.ACTION_START_SHORTCUT.equals(intent.getAction())) {
+            String packageName = intent.getStringExtra(LauncherIntents.EXTRA_PACKAGE_NAME);
+            String shortcutId = intent.getStringExtra(LauncherIntents.EXTRA_SHORTCUT_ID);
             if (!handleCustomizeShortcut(packageName, shortcutId)) {
                 // start deep shortcut
                 if (callbacks != null) {
@@ -728,23 +753,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         if (!IntentUtils.safeStartActivity(context, intent)) {
             showError(R.string.error);
-        }
-    }
-
-    public void handleActionMain() {
-        dismissPopup();
-        if (searchBarBehavior.isShown()) {
-            searchBar.reset();
-            searchBarBehavior.hide();
-        } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
-            list.smoothScrollToPosition(0);
-        }
-    }
-
-    public void handleEditMode() {
-        if (!editMode) {
-            animateOnResume = false;
-            presenter.startCustomize();
         }
     }
 
@@ -910,7 +918,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private boolean handleCustomizeShortcut(String packageName, String shortcutId) {
         if (requireContext().getPackageName().equals(packageName)
-                && SHORTCUT_ID_CUSTOMIZE.equals(shortcutId)) {
+                && LauncherShortcuts.ID_SHORTCUT_CUSTOMIZE.equals(shortcutId)) {
             presenter.startCustomize();
             return true;
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.italankin.lnch.di.module.AppModule;
 import com.italankin.lnch.di.module.MainModule;
+import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -41,4 +42,6 @@ public interface MainComponent {
     PackagesStore getPackagesStore();
 
     NameNormalizer getNameNormalizer();
+
+    IntentQueue getIntentQueue();
 }

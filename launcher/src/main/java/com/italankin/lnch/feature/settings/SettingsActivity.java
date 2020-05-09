@@ -12,7 +12,6 @@ import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable
 import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
 import com.italankin.lnch.feature.common.preferences.ThemeObservable;
 import com.italankin.lnch.feature.common.preferences.ThemedActivity;
-import com.italankin.lnch.feature.home.HomeActivity;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
@@ -22,6 +21,7 @@ import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.api.LauncherIntents;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -117,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void launchEditMode() {
         finish();
-        startActivity(new Intent(HomeActivity.ACTION_EDIT_MODE));
+        startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
     }
 
     @Override
