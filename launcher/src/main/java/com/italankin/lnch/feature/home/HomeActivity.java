@@ -19,6 +19,8 @@ import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
+import java.util.Arrays;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,7 +60,7 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         setupRoot();
         observePreferences();
 
-        setupPager(state);
+        setupPager();
 
         intentQueue.post(getIntent());
     }
@@ -92,8 +94,11 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         if (fragment instanceof BackButtonHandler) {
             handled = ((BackButtonHandler) fragment).onBackPressed();
         }
-        if (!handled && currentItem != HomePagerAdapter.POSITION_APPS) {
-            pager.setCurrentItem(HomePagerAdapter.POSITION_APPS, true);
+        if (!handled) {
+            int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
+            if (currentItem != appsPosition) {
+                pager.setCurrentItem(appsPosition, true);
+            }
         }
     }
 
@@ -143,12 +148,10 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
                 WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
     }
 
-    private void setupPager(@Nullable Bundle state) {
+    private void setupPager() {
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        pagerAdapter.setPages(Arrays.asList(AppsFragment.class)); // TODO
         pager.setAdapter(pagerAdapter);
-        pager.setCurrentItem(state != null
-                ? state.getInt(STATE_CURRENT_PAGER_ITEM)
-                : HomePagerAdapter.POSITION_APPS);
     }
 
     private void setupRoot() {

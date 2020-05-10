@@ -2,7 +2,8 @@ package com.italankin.lnch.feature.home;
 
 import android.view.ViewGroup;
 
-import com.italankin.lnch.feature.home.apps.AppsFragment;
+import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -11,27 +12,19 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 class HomePagerAdapter extends FragmentStatePagerAdapter {
 
-    private static final int PAGE_COUNT = 1;
-    static final int POSITION_APPS = 0;
+    private List<Class<? extends Fragment>> pages = Collections.emptyList();
+    private Fragment[] fragments = new Fragment[0];
 
-    private final Fragment[] fragments = new Fragment[PAGE_COUNT];
-
-    HomePagerAdapter(@NonNull FragmentManager fm) {
+    HomePagerAdapter(FragmentManager fm) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
-    @NonNull
-    @Override
-    public Fragment getItem(int position) {
-        if (position == POSITION_APPS) {
-            return new AppsFragment();
-        } else {
-            throw new IllegalArgumentException("unknown position=" + position);
+    void setPages(List<Class<? extends Fragment>> pages) {
+        if (!this.pages.equals(pages)) {
+            this.pages = pages;
+            this.fragments = new Fragment[pages.size()];
+            notifyDataSetChanged();
         }
-    }
-
-    Fragment getFragmentAt(int position) {
-        return fragments[position];
     }
 
     @NonNull
@@ -42,12 +35,28 @@ class HomePagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
-    AppsFragment getAppsFragment() {
-        return (AppsFragment) fragments[POSITION_APPS];
+    @NonNull
+    @Override
+    public Fragment getItem(int position) {
+        Class<? extends Fragment> fragmentClass = pages.get(position);
+        try {
+            return fragmentClass.newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("Unable to create fragment '" +
+                    fragmentClass.getName() + "': " + e.getMessage(), e);
+        }
     }
 
     @Override
     public int getCount() {
-        return PAGE_COUNT;
+        return pages.size();
+    }
+
+    Fragment getFragmentAt(int position) {
+        return fragments[position];
+    }
+
+    int indexOfFragment(Class<? extends Fragment> fragmentClass) {
+        return pages.indexOf(fragmentClass);
     }
 }
