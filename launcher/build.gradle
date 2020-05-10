@@ -73,9 +73,7 @@ dependencies {
     implementation annotation
 
     implementation flexbox
-    implementation(picasso) {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
+    implementation(picasso)
 
     lintChecks project(':lintchecks')
 }
