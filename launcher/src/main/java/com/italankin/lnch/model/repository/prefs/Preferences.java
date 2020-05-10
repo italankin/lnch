@@ -212,6 +212,10 @@ public interface Preferences {
             "max_dynamic_shortcuts",
             "default");
 
+    Pref<Boolean> SHOW_WIDGETS = Prefs.createBoolean(
+            "show_widgets",
+            true);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -240,7 +244,9 @@ public interface Preferences {
             APPS_COLOR_OVERLAY,
             EXPAND_NOTIFICATIONS,
             STATUS_BAR_COLOR,
-            MAX_DYNAMIC_SHORTCUTS
+            MAX_DYNAMIC_SHORTCUTS,
+            STATUS_BAR_COLOR,
+            SHOW_WIDGETS
     );
 
     ///////////////////////////////////////////////////////////////////////////
