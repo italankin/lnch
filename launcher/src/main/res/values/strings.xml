@@ -9,6 +9,9 @@
     <string name="preview">Preview</string>
     <string name="open_settings">Open Settings</string>
 
+    <string name="widgets_empty">No widgets added</string>
+    <string name="widgets_add">Add widget</string>
+
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
 
@@ -62,6 +65,7 @@
     <string name="settings_home_misc_long_action">App long click action</string>
     <string name="settings_home_misc_max_dynamic_shortcuts">Maximum dynamic shortcuts to display</string>
     <string name="settings_home_misc_orientation">Screen orientation</string>
+    <string name="settings_home_misc_widgets">Show widgets page</string>
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
     <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n<i>Note: will not work for some devices and OS versions</i></string>
 
