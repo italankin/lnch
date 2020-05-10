@@ -17,9 +17,12 @@ import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.feature.home.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -83,6 +86,13 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+            int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
+            if (pager.getCurrentItem() != appsPosition) {
+                pager.setCurrentItem(appsPosition, true);
+                return;
+            }
+        }
         intentQueue.post(intent);
     }
 
@@ -150,8 +160,20 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
 
     private void setupPager() {
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-        pagerAdapter.setPages(Arrays.asList(AppsFragment.class)); // TODO
+        updateAdapter(preferences.get(Preferences.SHOW_WIDGETS));
+    }
+
+    private void updateAdapter(boolean showWidgets) {
+        List<Class<? extends Fragment>> pages;
+        if (showWidgets) {
+            pages = Arrays.asList(WidgetsFragment.class, AppsFragment.class);
+        } else {
+            pages = Collections.singletonList(AppsFragment.class);
+        }
+        pagerAdapter.setPages(pages);
         pager.setAdapter(pagerAdapter);
+        int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
+        pager.setCurrentItem(appsPosition);
     }
 
     private void setupRoot() {
@@ -190,5 +212,9 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
                     }
                 });
         compositeDisposable.add(statusBarColor);
+        Disposable showWidget = preferences.observe(Preferences.SHOW_WIDGETS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(value -> updateAdapter(value.get()));
+        compositeDisposable.add(showWidget);
     }
 }
