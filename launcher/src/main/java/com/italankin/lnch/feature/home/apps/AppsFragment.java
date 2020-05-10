@@ -184,7 +184,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        lce = view.findViewById(R.id.lceApps);
+        lce = view.findViewById(R.id.lce_apps);
         searchBar = view.findViewById(R.id.search_bar);
         list = view.findViewById(R.id.list);
         coordinator = view.findViewById(R.id.coordinator);
