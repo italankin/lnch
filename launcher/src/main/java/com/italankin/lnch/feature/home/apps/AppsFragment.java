@@ -268,7 +268,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else {
-            list.scrollToPosition(0);
+            list.smoothScrollToPosition(0);
         }
         return true;
     }
