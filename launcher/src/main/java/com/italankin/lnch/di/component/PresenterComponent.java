@@ -2,6 +2,7 @@ package com.italankin.lnch.di.component;
 
 import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.home.apps.AppsPresenter;
+import com.italankin.lnch.feature.home.widgets.WidgetsPresenter;
 import com.italankin.lnch.feature.settings.apps.list.AppsListPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
@@ -19,4 +20,6 @@ public interface PresenterComponent {
     LookAndFeelPresenter lookAndFeel();
 
     BackupPresenter backup();
+
+    WidgetsPresenter widgets();
 }
