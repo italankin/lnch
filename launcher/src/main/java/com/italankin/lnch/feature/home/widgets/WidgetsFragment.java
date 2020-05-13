@@ -71,7 +71,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
         view.findViewById(R.id.add_widget).setOnClickListener(v -> startAddNewWidget());
 
-        view.findViewById(R.id.reset_widgets).setOnClickListener(v -> {
+        view.findViewById(R.id.add_widget).setOnLongClickListener(v -> {
             for (int i = widgetContainer.getChildCount(); i >= 0; i--) {
                 View child = widgetContainer.getChildAt(i);
                 if (child instanceof AppWidgetHostView) {
@@ -82,6 +82,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             }
             appWidgetHost.deleteHost();
             showNoWidgets();
+            return true;
         });
 
         if (addBoundWidgets()) {
