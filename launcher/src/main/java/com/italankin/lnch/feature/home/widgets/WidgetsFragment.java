@@ -23,6 +23,7 @@ import com.italankin.lnch.util.widget.LceLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 public class WidgetsFragment extends AppFragment implements WidgetsView {
 
@@ -72,16 +73,23 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         view.findViewById(R.id.add_widget).setOnClickListener(v -> startAddNewWidget());
 
         view.findViewById(R.id.add_widget).setOnLongClickListener(v -> {
-            for (int i = widgetContainer.getChildCount(); i >= 0; i--) {
-                View child = widgetContainer.getChildAt(i);
-                if (child instanceof AppWidgetHostView) {
-                    int appWidgetId = ((AppWidgetHostView) child).getAppWidgetId();
-                    appWidgetHost.deleteAppWidgetId(appWidgetId);
-                    widgetContainer.removeViewAt(i);
-                }
-            }
-            appWidgetHost.deleteHost();
-            showNoWidgets();
+            AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
+                    .setTitle("Reset widgets?")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Reset", (dialog, which) -> {
+                        for (int i = widgetContainer.getChildCount(); i >= 0; i--) {
+                            View child = widgetContainer.getChildAt(i);
+                            if (child instanceof AppWidgetHostView) {
+                                int appWidgetId = ((AppWidgetHostView) child).getAppWidgetId();
+                                appWidgetHost.deleteAppWidgetId(appWidgetId);
+                                widgetContainer.removeViewAt(i);
+                            }
+                        }
+                        appWidgetHost.deleteHost();
+                        showNoWidgets();
+                    })
+                    .create();
+            alertDialog.show();
             return true;
         });
 
