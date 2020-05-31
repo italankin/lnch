@@ -170,6 +170,12 @@ public class AppsFragment extends AppFragment implements AppsView,
         callbacks = null;
     }
 
+    public void onRestart() {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
