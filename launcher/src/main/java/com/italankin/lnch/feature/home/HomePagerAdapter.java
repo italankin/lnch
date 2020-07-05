@@ -2,6 +2,8 @@ package com.italankin.lnch.feature.home;
 
 import android.view.ViewGroup;
 
+import com.italankin.lnch.feature.home.apps.AppsFragment;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -58,5 +60,9 @@ class HomePagerAdapter extends FragmentStatePagerAdapter {
 
     int indexOfFragment(Class<? extends Fragment> fragmentClass) {
         return pages.indexOf(fragmentClass);
+    }
+
+    AppsFragment getAppsFragment() {
+        return (AppsFragment) getFragmentAt(indexOfFragment(AppsFragment.class));
     }
 }
