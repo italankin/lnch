@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.LabelDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -44,6 +46,22 @@ public final class DescriptorUtils {
             descriptor.label = nameNormalizer.normalize(label);
         }
         return descriptor;
+    }
+
+    public static String getLabel(Descriptor descriptor) {
+        return descriptor instanceof LabelDescriptor ? ((LabelDescriptor) descriptor).getLabel() : descriptor.getId();
+    }
+
+    public static String getVisibleLabel(Descriptor descriptor) {
+        if (descriptor instanceof CustomLabelDescriptor) {
+            String visibleLabel = ((CustomLabelDescriptor) descriptor).getVisibleLabel();
+            return visibleLabel != null ? visibleLabel : "";
+        }
+        if (descriptor instanceof LabelDescriptor) {
+            String label = ((LabelDescriptor) descriptor).getLabel();
+            return label != null ? label : "";
+        }
+        return descriptor.getId();
     }
 
     private DescriptorUtils() {
