@@ -2,24 +2,13 @@ package com.italankin.lnch.util.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Outline;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
@@ -33,69 +22,34 @@ import java.util.List;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
-public class ActionPopupWindow extends PopupWindow {
+public class ActionPopupWindow extends BasePopupWindow {
 
-    private static final float MAX_WIDTH_FACTOR = 0.66f;
-    private static final float MAX_HEIGHT_FACTOR = 0.8f;
     private static final float DISABLED_ALPHA = 0.33f;
 
-    private final Context context;
     private final Picasso picasso;
     private final LayoutInflater inflater;
-    private final ViewGroup contentView;
-    private final ViewGroup popupContainer;
-    private final ViewGroup actionContainer;
-    private final ViewGroup shortcutContainer;
+    private ViewGroup actionContainer;
+    private ViewGroup shortcutContainer;
 
     private final List<ItemBuilder> actions = new ArrayList<>(1);
     private final List<ItemBuilder> shortcuts = new ArrayList<>(4);
 
-    private final int arrowSize;
-
-    private final int darkArrowColor;
-    private final int lightArrowColor;
-
-    @SuppressLint("InflateParams")
     public ActionPopupWindow(Context context, Picasso picasso) {
-        super(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        this.context = context;
+        super(context);
+        this.inflater = LayoutInflater.from(context);
         this.picasso = picasso;
-        inflater = LayoutInflater.from(context);
-        contentView = (ViewGroup) inflater.inflate(R.layout.widget_action_popup, null);
-        popupContainer = contentView.findViewById(R.id.popup_container);
+    }
+
+    @Override
+    protected void onCreateView(ViewGroup parent) {
+        ViewGroup contentView = (ViewGroup) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.widget_action_popup, parent);
         actionContainer = contentView.findViewById(R.id.action_container);
         shortcutContainer = contentView.findViewById(R.id.shortcut_container);
-        popupContainer.setClipToOutline(true);
-        Resources res = context.getResources();
-        setContentView(contentView);
-        setOutsideTouchable(true);
-        setFocusable(true);
-        setElevation(res.getDimensionPixelSize(R.dimen.popup_window_elevation));
-
-        arrowSize = res.getDimensionPixelSize(R.dimen.popup_window_arrow_size);
-        darkArrowColor = ResUtils.resolveColor(context, R.attr.colorPopupActionsBackground);
-        lightArrowColor = ResUtils.resolveColor(context, R.attr.colorPopupBackground);
-
-        contentView.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                boolean arrowBottom = ((ViewGroup) view).getChildAt(0) == popupContainer;
-                float radius = ResUtils.px2dp(view.getContext(), 8);
-                Rect rect = new Rect(view.getPaddingLeft(),
-                        0,
-                        view.getWidth() - view.getPaddingRight(),
-                        view.getHeight() - arrowSize);
-                if (!arrowBottom) {
-                    rect.offset(0, arrowSize);
-                }
-                outline.setRoundRect(rect, radius);
-            }
-        });
+        contentView.findViewById(R.id.popup_container)
+                .setClipToOutline(true);
     }
 
     public ActionPopupWindow addAction(ItemBuilder item) {
@@ -111,59 +65,12 @@ public class ActionPopupWindow extends PopupWindow {
     @SuppressLint("RtlHardcoded")
     public void showAtAnchor(View anchorView, Rect bounds) {
         populateItems();
+        super.showAtAnchor(anchorView, bounds);
+    }
 
-        int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
-        int maxHeight = (int) (bounds.height() * MAX_HEIGHT_FACTOR);
-        contentView.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.AT_MOST));
-
-        int[] tmp = new int[2];
-        anchorView.getLocationOnScreen(tmp);
-
-        int contentWidth = contentView.getMeasuredWidth();
-        int anchorWidth = anchorView.getMeasuredWidth();
-        int xOffset = (anchorWidth - contentWidth) / 2;
-        boolean beyondLeft = false, beyondRight = false;
-        if (tmp[0] + xOffset < 0) {
-            xOffset = 0;
-            beyondLeft = true;
-        } else {
-            int contentRight = tmp[0] + xOffset + contentWidth;
-            if (contentRight > bounds.right) {
-                xOffset -= (contentRight - bounds.right);
-                beyondRight = true;
-            }
-        }
-
-        int anchorHeight = anchorView.getMeasuredHeight();
-        int additionalVerticalOffset = (anchorView.getPaddingTop() + anchorView.getPaddingTop()) / 2;
-        int yOffset = -additionalVerticalOffset;
-
-        int arrowCenter;
-        if (beyondLeft) {
-            arrowCenter = anchorWidth / 2 - contentView.getPaddingLeft();
-        } else if (beyondRight) {
-            arrowCenter = Math.abs(xOffset) + anchorWidth / 2 - contentView.getPaddingRight();
-        } else {
-            arrowCenter = contentWidth / 2 - contentView.getPaddingLeft();
-        }
-        View arrowView = new View(context);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(arrowSize, arrowSize);
-        lp.setMarginStart(arrowCenter - arrowSize / 2);
-        int anchorViewBottom = tmp[1] + anchorHeight;
-        int contentHeight = contentView.getMeasuredHeight() + arrowSize;
-        if (bounds.bottom - anchorViewBottom < contentHeight + additionalVerticalOffset) {
-            yOffset = -contentHeight - anchorHeight + additionalVerticalOffset;
-            arrowView.setBackground(new ArrowDrawable(lightArrowColor, arrowSize, true));
-            contentView.addView(arrowView, lp);
-        } else {
-            int color = actionContainer.getChildCount() > 0 ? darkArrowColor : lightArrowColor;
-            arrowView.setBackground(new ArrowDrawable(color, arrowSize, false));
-            contentView.addView(arrowView, 0, lp);
-        }
-
-        setWidth(contentWidth);
-        showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
+    @Override
+    protected boolean isDarkArrow() {
+        return actionContainer.getChildCount() > 0;
     }
 
     private void populateItems() {
@@ -246,6 +153,7 @@ public class ActionPopupWindow extends PopupWindow {
     }
 
     public static class ItemBuilder {
+
         private final Context context;
         private CharSequence label;
         private Drawable iconDrawable;
@@ -311,51 +219,6 @@ public class ActionPopupWindow extends PopupWindow {
         public ItemBuilder setOnPinClickListener(View.OnClickListener listener) {
             this.onPinClickListener = listener;
             return this;
-        }
-    }
-
-    private static class ArrowDrawable extends Drawable {
-        private static final float HEIGHT_FACTOR = .66f;
-
-        private final Paint paint;
-        private final Path path;
-
-        private ArrowDrawable(@ColorInt int color, @Px int size, boolean pointDown) {
-            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(color);
-
-            path = new Path();
-            int height = (int) (size * HEIGHT_FACTOR);
-            if (pointDown) {
-                path.moveTo(0, 0);
-                path.lineTo(size, 0);
-                path.lineTo(size / 2f, height);
-            } else {
-                path.moveTo(size / 2f, size - height);
-                path.lineTo(size, size);
-                path.lineTo(0, size);
-            }
-            path.close();
-        }
-
-        @Override
-        public void draw(@NonNull Canvas canvas) {
-            canvas.drawPath(path, paint);
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-            paint.setAlpha(alpha);
-        }
-
-        @Override
-        public void setColorFilter(@Nullable ColorFilter colorFilter) {
-            paint.setColorFilter(colorFilter);
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.TRANSPARENT;
         }
     }
 }
