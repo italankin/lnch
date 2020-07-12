@@ -61,7 +61,7 @@ public final class DescriptorUtils {
             String label = ((LabelDescriptor) descriptor).getLabel();
             return label != null ? label : "";
         }
-        return descriptor.getId();
+        return "";
     }
 
     private DescriptorUtils() {
