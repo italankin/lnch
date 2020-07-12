@@ -7,8 +7,11 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.HiddenItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
+import java.util.Objects;
+
 public final class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
         VisibleItem {
+
     public final String componentName;
     public final String packageName;
     private final AppDescriptor descriptor;
@@ -99,9 +102,10 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
         if (this.getClass() != another.getClass()) {
             return false;
         }
-        VisibleItem that = (VisibleItem) another;
-        return this.getDescriptor().getId().equals(that.getDescriptor().getId())
-                && this.isVisible() == that.isVisible();
+        AppViewModel that = (AppViewModel) another;
+        return this.descriptor.getId().equals(that.descriptor.getId())
+                && this.visible == that.visible
+                && this.hidden == that.hidden;
     }
 
     @Override
@@ -113,16 +117,12 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
             return false;
         }
         AppViewModel that = (AppViewModel) another;
-        if (this.customLabel != null
-                ? !this.customLabel.equals(that.customLabel)
-                : that.customLabel != null) {
+        if (!Objects.equals(this.customLabel, that.customLabel)) {
             return false;
         }
-        if (this.customColor != null
-                ? !this.customColor.equals(that.customColor)
-                : that.customColor != null) {
+        if (!Objects.equals(this.customColor, that.customColor)) {
             return false;
         }
-        return this.isVisible() == that.isVisible();
+        return this.hidden == that.hidden && this.visible == that.visible;
     }
 }
