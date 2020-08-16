@@ -86,7 +86,7 @@ public final class GroupViewModel implements DescriptorItem, CustomColorItem, Cu
             return false;
         }
         GroupViewModel that = (GroupViewModel) another;
-        return this.getDescriptor().getId().equals(that.getDescriptor().getId());
+        return this.descriptor.equals(that.descriptor);
     }
 
     @Override
@@ -98,8 +98,9 @@ public final class GroupViewModel implements DescriptorItem, CustomColorItem, Cu
             return false;
         }
         GroupViewModel that = (GroupViewModel) another;
-        return Objects.equals(this.customLabel, that.customLabel) &&
-                Objects.equals(this.customColor, that.customColor) &&
-                this.expanded == that.expanded;
+        return this.descriptor.equals(that.descriptor)
+                && Objects.equals(this.customLabel, that.customLabel)
+                && Objects.equals(this.customColor, that.customColor)
+                && this.expanded == that.expanded;
     }
 }

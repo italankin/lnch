@@ -91,7 +91,7 @@ public final class IntentViewModel implements DescriptorItem, CustomLabelItem, C
             return false;
         }
         IntentViewModel that = (IntentViewModel) another;
-        return this.getDescriptor().getId().equals(that.getDescriptor().getId())
+        return this.descriptor.equals(that.descriptor)
                 && this.isVisible() == that.isVisible();
     }
 
@@ -104,8 +104,9 @@ public final class IntentViewModel implements DescriptorItem, CustomLabelItem, C
             return false;
         }
         IntentViewModel that = (IntentViewModel) another;
-        return Objects.equals(this.customLabel, that.customLabel) &&
-                Objects.equals(this.customColor, that.customColor) &&
-                this.visible == that.visible;
+        return this.descriptor.equals(that.descriptor)
+                && Objects.equals(this.customLabel, that.customLabel)
+                && Objects.equals(this.customColor, that.customColor)
+                && this.visible == that.visible;
     }
 }

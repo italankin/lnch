@@ -103,7 +103,7 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
             return false;
         }
         AppViewModel that = (AppViewModel) another;
-        return this.descriptor.getId().equals(that.descriptor.getId())
+        return this.descriptor.equals(that.descriptor)
                 && this.visible == that.visible
                 && this.hidden == that.hidden;
     }
@@ -117,12 +117,10 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
             return false;
         }
         AppViewModel that = (AppViewModel) another;
-        if (!Objects.equals(this.customLabel, that.customLabel)) {
-            return false;
-        }
-        if (!Objects.equals(this.customColor, that.customColor)) {
-            return false;
-        }
-        return this.hidden == that.hidden && this.visible == that.visible;
+        return this.descriptor.equals(that.descriptor)
+                && Objects.equals(this.customLabel, that.customLabel)
+                && Objects.equals(this.customColor, that.customColor)
+                && this.hidden == that.hidden
+                && this.visible == that.visible;
     }
 }

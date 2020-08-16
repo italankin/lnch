@@ -92,8 +92,8 @@ public final class DeepShortcutViewModel implements DescriptorItem, CustomLabelI
             return false;
         }
         DeepShortcutViewModel that = (DeepShortcutViewModel) another;
-        return this.getDescriptor().getId().equals(that.getDescriptor().getId())
-                && this.isVisible() == that.isVisible();
+        return this.descriptor.equals(that.descriptor)
+                && this.visible == that.visible;
     }
 
     @Override
@@ -105,8 +105,9 @@ public final class DeepShortcutViewModel implements DescriptorItem, CustomLabelI
             return false;
         }
         DeepShortcutViewModel that = (DeepShortcutViewModel) another;
-        return Objects.equals(this.customLabel, that.customLabel) &&
-                Objects.equals(this.customColor, that.customColor) &&
-                this.visible == that.visible;
+        return this.descriptor.equals(that.descriptor)
+                && Objects.equals(this.customLabel, that.customLabel)
+                && Objects.equals(this.customColor, that.customColor)
+                && this.visible == that.visible;
     }
 }
