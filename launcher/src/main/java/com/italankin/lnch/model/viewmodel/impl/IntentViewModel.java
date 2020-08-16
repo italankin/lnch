@@ -10,8 +10,11 @@ import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 import com.italankin.lnch.util.IntentUtils;
 
+import java.util.Objects;
+
 public final class IntentViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         RemovableItem, VisibleItem {
+
     public final Intent intent;
     private final IntentDescriptor descriptor;
     private final String label;
@@ -101,16 +104,8 @@ public final class IntentViewModel implements DescriptorItem, CustomLabelItem, C
             return false;
         }
         IntentViewModel that = (IntentViewModel) another;
-        if (this.customLabel != null
-                ? !this.customLabel.equals(that.customLabel)
-                : that.customLabel != null) {
-            return false;
-        }
-        if (this.customColor != null
-                ? !this.customColor.equals(that.customColor)
-                : that.customColor != null) {
-            return false;
-        }
-        return this.visible == that.visible;
+        return Objects.equals(this.customLabel, that.customLabel) &&
+                Objects.equals(this.customColor, that.customColor) &&
+                this.visible == that.visible;
     }
 }

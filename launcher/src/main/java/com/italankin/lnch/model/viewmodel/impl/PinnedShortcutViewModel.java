@@ -7,8 +7,11 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 import com.italankin.lnch.model.viewmodel.VisibleItem;
 
+import java.util.Objects;
+
 public final class PinnedShortcutViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem,
         RemovableItem, VisibleItem {
+
     public final String uri;
     private final PinnedShortcutDescriptor descriptor;
     private final String label;
@@ -98,16 +101,8 @@ public final class PinnedShortcutViewModel implements DescriptorItem, CustomLabe
             return false;
         }
         PinnedShortcutViewModel that = (PinnedShortcutViewModel) another;
-        if (this.customLabel != null
-                ? !this.customLabel.equals(that.customLabel)
-                : that.customLabel != null) {
-            return false;
-        }
-        if (this.customColor != null
-                ? !this.customColor.equals(that.customColor)
-                : that.customColor != null) {
-            return false;
-        }
-        return this.visible == that.visible;
+        return Objects.equals(this.customLabel, that.customLabel) &&
+                Objects.equals(this.customColor, that.customColor) &&
+                this.visible == that.visible;
     }
 }

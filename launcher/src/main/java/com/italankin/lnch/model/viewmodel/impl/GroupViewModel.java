@@ -7,8 +7,11 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 import com.italankin.lnch.model.viewmodel.ExpandableItem;
 import com.italankin.lnch.model.viewmodel.RemovableItem;
 
+import java.util.Objects;
+
 public final class GroupViewModel implements DescriptorItem, CustomColorItem, CustomLabelItem,
         RemovableItem, ExpandableItem {
+
     private final GroupDescriptor descriptor;
     private final String label;
     private final int color;
@@ -95,16 +98,8 @@ public final class GroupViewModel implements DescriptorItem, CustomColorItem, Cu
             return false;
         }
         GroupViewModel that = (GroupViewModel) another;
-        if (this.customLabel != null
-                ? !this.customLabel.equals(that.customLabel)
-                : that.customLabel != null) {
-            return false;
-        }
-        if (this.customColor != null
-                ? !this.customColor.equals(that.customColor)
-                : that.customColor != null) {
-            return false;
-        }
-        return this.expanded == that.expanded;
+        return Objects.equals(this.customLabel, that.customLabel) &&
+                Objects.equals(this.customColor, that.customColor) &&
+                this.expanded == that.expanded;
     }
 }
