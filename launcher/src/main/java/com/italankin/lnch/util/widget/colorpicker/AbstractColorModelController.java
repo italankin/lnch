@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.NumberUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
@@ -55,11 +56,10 @@ abstract class AbstractColorModelController implements ColorModelController {
                                 .getString(R.string.color_picker_edit_value_hint, 0, max));
                     })
                     .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                        try {
-                            String s = editText.getText().toString().trim();
-                            int value = Integer.parseInt(s);
+                        String s = editText.getText().toString().trim();
+                        Integer value = NumberUtils.parseInt(s);
+                        if (value != null) {
                             seekBarView.setProgress(Math.min(max, Math.max(0, value)));
-                        } catch (NumberFormatException ignored) {
                         }
                     })
                     .setNegativeButton(R.string.cancel, null)

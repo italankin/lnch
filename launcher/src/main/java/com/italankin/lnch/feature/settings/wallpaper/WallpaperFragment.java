@@ -9,6 +9,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.NumberUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,10 +52,9 @@ public class WallpaperFragment extends BasePreferenceFragment {
     private void setupOverlayColor() {
         Preference pref = findPreference(Preferences.WALLPAPER_OVERLAY_COLOR);
         pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            try {
-                int color = Integer.parseInt(String.valueOf(newValue));
+            Integer color = NumberUtils.parseInt(String.valueOf(newValue));
+            if (color != null) {
                 preference.setSummary(String.format("#%08x", color));
-            } catch (NumberFormatException ignored) {
             }
             return true;
         });
