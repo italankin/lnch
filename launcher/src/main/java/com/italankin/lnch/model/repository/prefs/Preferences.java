@@ -208,6 +208,10 @@ public interface Preferences {
             "status_bar_color",
             null);
 
+    Pref<String> MAX_DYNAMIC_SHORTCUTS = Prefs.createString(
+            "max_dynamic_shortcuts",
+            "default");
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -235,7 +239,8 @@ public interface Preferences {
             APPS_COLOR_OVERLAY_SHOW,
             APPS_COLOR_OVERLAY,
             EXPAND_NOTIFICATIONS,
-            STATUS_BAR_COLOR
+            STATUS_BAR_COLOR,
+            MAX_DYNAMIC_SHORTCUTS
     );
 
     ///////////////////////////////////////////////////////////////////////////

@@ -35,6 +35,7 @@ import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
 import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
 import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
+import com.italankin.lnch.util.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +181,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void showAppPopup(int position, AppViewModel item) {
         List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
-        getViewState().showAppPopup(position, item, shortcuts);
+        getViewState().showAppPopup(position, item, filterDynamicShortcuts(shortcuts));
     }
 
     void updateShortcuts(AppDescriptor descriptor) {
@@ -342,6 +343,20 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         DescriptorItemDiffCallback callback = new DescriptorItemDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
         return new Update(newItems, diffResult);
+    }
+
+    private List<Shortcut> filterDynamicShortcuts(List<Shortcut> shortcuts) {
+        int max = NumberUtils.parseInt(preferences.get(Preferences.MAX_DYNAMIC_SHORTCUTS), -1);
+        if (max < 0 || shortcuts.size() <= max) {
+            return shortcuts;
+        }
+        List<Shortcut> result = new ArrayList<>(shortcuts.size());
+        for (Shortcut shortcut : shortcuts) {
+            if (!shortcut.isDynamic() || max-- > 0) {
+                result.add(shortcut);
+            }
+        }
+        return result;
     }
 
     private void setItemExpanded(List<DescriptorItem> items, int position, boolean expanded, boolean notify) {

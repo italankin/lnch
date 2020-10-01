@@ -18,6 +18,17 @@
         <item>Open app info</item>
     </string-array>
 
+    <string-array name="pref_values_app_max_dynamic_shortcuts">
+        <item>default</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="pref_desc_app_max_dynamic_shortcuts">
+        <item>default</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
     <string-array name="pref_values_search_targets">
         <item>hidden</item>
         <item>shortcut</item>
