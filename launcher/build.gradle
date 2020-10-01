@@ -7,7 +7,7 @@ android {
         applicationId "com.italankin.lnch"
         minSdkVersion minSdk
         targetSdkVersion targetSdk
-        versionCode 3
+        versionCode 4
         versionName "1.3.0"
     }
     compileOptions {
