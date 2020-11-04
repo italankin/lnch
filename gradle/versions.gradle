@@ -1,6 +1,6 @@
 ext {
-    targetSdk = 28
-    compileSdk = 28
+    targetSdk = 30
+    compileSdk = 30
     minSdk = 23
 
     androidxVersion = "1.1.0"

@@ -9,7 +9,8 @@
     android:fitsSystemWindows="false"
     tools:background="@tools:sample/backgrounds/scenic"
     tools:backgroundTint="#a000"
-    tools:backgroundTintMode="src_atop">
+    tools:backgroundTintMode="src_atop"
+    tools:ignore="MergeRootFrame">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
