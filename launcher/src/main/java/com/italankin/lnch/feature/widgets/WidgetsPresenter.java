@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.widgets;
+package com.italankin.lnch.feature.widgets;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;

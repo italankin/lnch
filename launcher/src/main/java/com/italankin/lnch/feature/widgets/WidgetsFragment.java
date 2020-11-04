@@ -1,7 +1,6 @@
-package com.italankin.lnch.feature.home.widgets;
+package com.italankin.lnch.feature.widgets;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -19,7 +18,10 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.util.widget.LceLayout;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,8 +30,6 @@ import androidx.appcompat.app.AlertDialog;
 public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private static final int APP_WIDGET_HOST_ID = 101;
-
-    private static final int APP_WIDGET_ID_NONE = -1;
 
     private static final int REQUEST_PICK_APPWIDGET = 0;
     private static final int REQUEST_CREATE_APPWIDGET = 1;
@@ -41,9 +41,9 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     private LceLayout lce;
     private ViewGroup widgetContainer;
 
-    private AppWidgetHost appWidgetHost;
+    private LauncherAppWidgetHost appWidgetHost;
     private AppWidgetManager appWidgetManager;
-    private int newAppWidgetId = APP_WIDGET_ID_NONE;
+    private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     @ProvidePresenter
     WidgetsPresenter providePresenter() {
@@ -53,7 +53,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        appWidgetHost = new AppWidgetHost(context, APP_WIDGET_HOST_ID);
+        appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
     }
 
@@ -104,11 +104,11 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case REQUEST_PICK_APPWIDGET:
-                if (data != null) {
+                if (resultCode == Activity.RESULT_OK && data != null) {
                     int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
                     addAppWidget(appWidgetId, info);
-                } else if (newAppWidgetId != APP_WIDGET_ID_NONE) {
+                } else {
                     cancelAddNewWidget();
                 }
                 break;
@@ -116,7 +116,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 if (resultCode == Activity.RESULT_OK) {
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
                     addWidgetView(newAppWidgetId, info);
-                    newAppWidgetId = APP_WIDGET_ID_NONE;
+                    newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                 } else {
                     cancelAddNewWidget();
                 }
@@ -142,7 +142,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private boolean addBoundWidgets() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // TODO
+            // TODO get a list of all the appWidgetIds that are bound to the current host
             return false;
         } else {
             int[] appWidgetIds = appWidgetHost.getAppWidgetIds();
@@ -156,8 +156,10 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
-        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
-        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId);
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
+                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId)
+                .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, new ArrayList<>())
+                .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, new ArrayList<>());
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
     }
 
@@ -165,35 +167,64 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         if (appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, info.provider)) {
             configureWidget(appWidgetId, info);
         } else {
-            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.provider);
+            Bundle options = new Bundle();
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN);
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widgetContainer.getMinimumWidth());
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widgetContainer.getWidth());
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, widgetContainer.getMinimumHeight());
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, widgetContainer.getHeight());
+
+            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.provider)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, info.getProfile())
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_OPTIONS, options);
             startActivityForResult(intent, REQUEST_BIND_APPWIDGET);
         }
     }
 
     private void configureWidget(int appWidgetId, AppWidgetProviderInfo info) {
         if (info.configure != null) {
-            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-            intent.setComponent(info.configure);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+                    .setComponent(info.configure)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
         } else {
             addWidgetView(appWidgetId, info);
-            // TODO write widget id
-            newAppWidgetId = APP_WIDGET_ID_NONE;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                // TODO save appWidgetId
+            }
+            newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         }
     }
 
     private void addWidgetView(int appWidgetId, AppWidgetProviderInfo info) {
-        AppWidgetHostView widgetView = appWidgetHost.createView(requireContext(), appWidgetId, info);
+        AppWidgetHostView widgetView = appWidgetHost.createView(appWidgetId, info);
+        widgetView.setOnLongClickListener(v -> {
+            AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete widget?")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        widgetContainer.removeView(widgetView);
+                        appWidgetHost.deleteAppWidgetId(appWidgetId);
+                        if (widgetContainer.getChildCount() == 1) {
+                            showNoWidgets();
+                        }
+                    })
+                    .create();
+            alertDialog.show();
+            return false;
+        });
         widgetContainer.addView(widgetView);
         lce.showContent();
     }
 
     private void cancelAddNewWidget() {
+        if (newAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            return;
+        }
         appWidgetHost.deleteAppWidgetId(newAppWidgetId);
-        newAppWidgetId = APP_WIDGET_ID_NONE;
+        newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     }
 
     private void registerWindowInsets(View view) {

@@ -17,7 +17,7 @@ import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.home.widgets.WidgetsFragment;
+import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.Arrays;
