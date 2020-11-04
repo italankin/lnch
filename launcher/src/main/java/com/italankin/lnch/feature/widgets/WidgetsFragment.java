@@ -115,7 +115,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             case REQUEST_CREATE_APPWIDGET:
                 if (resultCode == Activity.RESULT_OK) {
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
-                    addWidgetView(newAppWidgetId, info);
+                    addWidgetView(newAppWidgetId, info, false);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                 } else {
                     cancelAddNewWidget();
@@ -148,7 +148,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             int[] appWidgetIds = appWidgetHost.getAppWidgetIds();
             for (int appWidgetId : appWidgetIds) {
                 AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-                addWidgetView(appWidgetId, info);
+                addWidgetView(appWidgetId, info, true);
             }
             return appWidgetIds.length > 0;
         }
@@ -167,13 +167,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         if (appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, info.provider)) {
             configureWidget(appWidgetId, info);
         } else {
-            Bundle options = new Bundle();
+            Bundle options = createWidgetOptions(false);
             options.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN);
-            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widgetContainer.getMinimumWidth());
-            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widgetContainer.getWidth());
-            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, widgetContainer.getMinimumHeight());
-            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, widgetContainer.getHeight());
-
             Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.provider)
@@ -190,7 +185,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
         } else {
-            addWidgetView(appWidgetId, info);
+            addWidgetView(appWidgetId, info, false);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 // TODO save appWidgetId
             }
@@ -198,8 +193,10 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         }
     }
 
-    private void addWidgetView(int appWidgetId, AppWidgetProviderInfo info) {
+    private void addWidgetView(int appWidgetId, AppWidgetProviderInfo info, boolean restored) {
         AppWidgetHostView widgetView = appWidgetHost.createView(appWidgetId, info);
+        Bundle options = createWidgetOptions(restored);
+        widgetView.updateAppWidgetOptions(options);
         widgetView.setOnLongClickListener(v -> {
             AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
                     .setTitle("Delete widget?")
@@ -247,5 +244,18 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     startAddNewWidget();
                 })
                 .show();
+    }
+
+    private Bundle createWidgetOptions(boolean restored) {
+        Bundle options = new Bundle();
+        // TODO set min width & height
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widgetContainer.getMinimumWidth());
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widgetContainer.getWidth());
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, widgetContainer.getMinimumHeight());
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, widgetContainer.getHeight()); // TODO constrain height
+        if (restored && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            options.putBoolean(AppWidgetManager.OPTION_APPWIDGET_RESTORE_COMPLETED, true);
+        }
+        return options;
     }
 }
