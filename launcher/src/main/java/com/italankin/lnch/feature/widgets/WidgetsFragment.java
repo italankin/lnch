@@ -70,9 +70,14 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
         registerWindowInsets(view);
 
-        view.findViewById(R.id.add_widget).setOnClickListener(v -> startAddNewWidget());
+        widgetContainer.setOnLongClickListener(v -> {
+            startAddNewWidget();
+            return true;
+        });
 
-        view.findViewById(R.id.add_widget).setOnLongClickListener(v -> {
+        View addWidgetButton = view.findViewById(R.id.add_widget);
+        addWidgetButton.setOnClickListener(v -> startAddNewWidget());
+        addWidgetButton.setOnLongClickListener(v -> {
             AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
                     .setTitle("Reset widgets?")
                     .setNegativeButton("Cancel", null)
