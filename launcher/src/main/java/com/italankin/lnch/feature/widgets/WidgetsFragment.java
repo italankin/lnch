@@ -20,6 +20,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
+import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -175,13 +176,31 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     }
 
     private void addWidgetView(int appWidgetId, AppWidgetProviderInfo info, boolean restored) {
-        AppWidgetHostView widgetView = appWidgetHost.createView(appWidgetId, info);
-        Bundle options = createWidgetOptions(restored);
-        widgetView.updateAppWidgetOptions(options);
+        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        if (restored && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            options.putBoolean(AppWidgetManager.OPTION_APPWIDGET_RESTORE_COMPLETED, true);
+        }
+        int minWidth = Math.max(
+                getResources().getDimensionPixelSize(R.dimen.widget_min_width),
+                options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+        );
+        int minHeight = Math.max(
+                getResources().getDimensionPixelSize(R.dimen.widget_min_height),
+                options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+        );
+        int size = getResources().getDimensionPixelSize(R.dimen.widget_max_height);
+        int maxHeight = Math.max(size, Math.min(size, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)));
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, minWidth);
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, minHeight);
+        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeight);
+
+        LauncherAppWidgetHostView widgetView = appWidgetHost.createView(appWidgetId, info);
         widgetView.setOnLongClickListener(v -> {
             showDeleteDialog(appWidgetId, widgetView);
             return true;
         });
+        widgetView.setDimensionsConstraints(minWidth, minHeight, 0, maxHeight);
+        widgetView.updateAppWidgetOptions(options);
         widgetContainer.addView(widgetView);
         lce.showContent();
     }
@@ -214,19 +233,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     startAddNewWidget();
                 })
                 .show();
-    }
-
-    private Bundle createWidgetOptions(boolean restored) {
-        Bundle options = new Bundle();
-        // TODO set min width & height
-        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widgetContainer.getMinimumWidth());
-        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widgetContainer.getWidth());
-        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, widgetContainer.getMinimumHeight());
-        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, widgetContainer.getHeight()); // TODO constrain height
-        if (restored && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            options.putBoolean(AppWidgetManager.OPTION_APPWIDGET_RESTORE_COMPLETED, true);
-        }
-        return options;
     }
 
     private void showDeleteDialog(int appWidgetId, AppWidgetHostView widgetView) {

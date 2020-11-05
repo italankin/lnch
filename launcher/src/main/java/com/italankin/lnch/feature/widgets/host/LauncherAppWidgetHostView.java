@@ -27,15 +27,32 @@ import com.italankin.lnch.feature.widgets.util.CheckLongPressHelper;
 
 import timber.log.Timber;
 
-class LauncherAppWidgetHostView extends AppWidgetHostView {
+public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this);
     private float mSlop;
     private float mStartX;
     private float mStartY;
 
+    private int maxWidth;
+    private int maxHeight;
+
     LauncherAppWidgetHostView(Context context) {
         super(context);
+    }
+
+    @Override
+    public void setMinimumWidth(int minWidth) {
+        super.setMinimumWidth(minWidth);
+    }
+
+    public void setDimensionsConstraints(int minWidth, int minHeight, int maxWidth, int maxHeight) {
+        setMinimumWidth(minWidth);
+        setMinimumHeight(minHeight);
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
+        requestLayout();
+        invalidate();
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -95,6 +112,14 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(
+                constrain(widthMeasureSpec, getMinimumWidth(), maxWidth),
+                constrain(heightMeasureSpec, getMinimumHeight(), maxHeight)
+        );
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
@@ -127,7 +152,30 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
         }
     }
 
-    public static boolean pointInView(View v, float localX, float localY, float slop) {
+    private static int constrain(int spec, int min, int max) {
+        if (max <= 0) {
+            return spec;
+        }
+        int mode = MeasureSpec.getMode(spec);
+        int size = MeasureSpec.getSize(spec);
+        switch (mode) {
+            case MeasureSpec.UNSPECIFIED:
+                return MeasureSpec.makeMeasureSpec(min, MeasureSpec.AT_MOST);
+            case MeasureSpec.AT_MOST:
+                if (size > max) {
+                    return MeasureSpec.makeMeasureSpec(max, MeasureSpec.AT_MOST);
+                }
+                break;
+            case MeasureSpec.EXACTLY:
+                if (size > max) {
+                    return MeasureSpec.makeMeasureSpec(max, MeasureSpec.EXACTLY);
+                }
+                break;
+        }
+        return spec;
+    }
+
+    private static boolean pointInView(View v, float localX, float localY, float slop) {
         return localX >= -slop && localY >= -slop && localX < (v.getWidth() + slop) && localY < (v.getHeight() + slop);
     }
 }

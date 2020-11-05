@@ -20,8 +20,8 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
         return new LauncherAppWidgetHostView(context);
     }
 
-    public final AppWidgetHostView createView(int appWidgetId, AppWidgetProviderInfo appWidget) {
-        return createView(fixedContext, appWidgetId, appWidget);
+    public final LauncherAppWidgetHostView createView(int appWidgetId, AppWidgetProviderInfo appWidget) {
+        return (LauncherAppWidgetHostView) createView(fixedContext, appWidgetId, appWidget);
     }
 
     private static class FixedContextWrapper extends ContextWrapper {
