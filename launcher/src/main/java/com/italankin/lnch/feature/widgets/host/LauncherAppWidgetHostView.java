@@ -31,6 +31,8 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this);
     private float mSlop;
+    private float mStartX;
+    private float mStartY;
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
@@ -51,6 +53,8 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
 
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mStartX = ev.getX();
+                mStartY = ev.getY();
                 mLongPressHelper.postCheckForLongPress();
                 break;
             case MotionEvent.ACTION_UP:
@@ -58,7 +62,9 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
                 mLongPressHelper.cancelLongPress();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!pointInView(this, ev.getX(), ev.getY(), mSlop)) {
+                float x = ev.getX();
+                float y = ev.getY();
+                if (!pointInView(this, x, y, mSlop) || Math.abs(x - mStartX) >= mSlop || Math.abs(y - mStartY) >= mSlop) {
                     mLongPressHelper.cancelLongPress();
                 }
                 break;
@@ -78,7 +84,9 @@ class LauncherAppWidgetHostView extends AppWidgetHostView {
                 mLongPressHelper.cancelLongPress();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!pointInView(this, ev.getX(), ev.getY(), mSlop)) {
+                float x = ev.getX();
+                float y = ev.getY();
+                if (!pointInView(this, x, y, mSlop) || Math.abs(x - mStartX) >= mSlop || Math.abs(y - mStartY) >= mSlop) {
                     mLongPressHelper.cancelLongPress();
                 }
                 break;
