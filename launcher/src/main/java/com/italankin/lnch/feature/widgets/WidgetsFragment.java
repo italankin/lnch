@@ -33,7 +33,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private static final int REQUEST_PICK_APPWIDGET = 0;
     private static final int REQUEST_CREATE_APPWIDGET = 1;
-    private static final int REQUEST_BIND_APPWIDGET = 2;
 
     @InjectPresenter
     WidgetsPresenter presenter;
@@ -112,7 +111,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-                    addAppWidget(appWidgetId, info);
+                    configureWidget(appWidgetId, info);
                 } else {
                     cancelAddNewWidget();
                 }
@@ -125,10 +124,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 } else {
                     cancelAddNewWidget();
                 }
-                break;
-            case REQUEST_BIND_APPWIDGET:
-                AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
-                configureWidget(newAppWidgetId, info);
                 break;
         }
     }
@@ -166,21 +161,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, new ArrayList<>())
                 .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, new ArrayList<>());
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
-    }
-
-    private void addAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
-        if (appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, info.provider)) {
-            configureWidget(appWidgetId, info);
-        } else {
-            Bundle options = createWidgetOptions(false);
-            options.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN);
-            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.provider)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, info.getProfile())
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_OPTIONS, options);
-            startActivityForResult(intent, REQUEST_BIND_APPWIDGET);
-        }
     }
 
     private void configureWidget(int appWidgetId, AppWidgetProviderInfo info) {
