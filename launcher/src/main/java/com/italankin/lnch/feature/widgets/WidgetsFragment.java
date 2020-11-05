@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -101,7 +102,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
                     configureWidget(appWidgetId, info);
                 } else {
-                    cancelAddNewWidget();
+                    cancelAddNewWidget(newAppWidgetId);
                 }
                 break;
             case REQUEST_CREATE_APPWIDGET:
@@ -111,7 +112,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     addWidgetView(appWidgetId, info, false);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                 } else {
-                    cancelAddNewWidget();
+                    cancelAddNewWidget(newAppWidgetId);
                 }
                 break;
         }
@@ -165,7 +166,12 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
                     .setComponent(info.configure)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+            try {
+                startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+            } catch (Exception e) {
+                cancelAddNewWidget(appWidgetId);
+                Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
+            }
         } else {
             addWidgetView(appWidgetId, info, false);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -205,8 +211,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         lce.showContent();
     }
 
-    private void cancelAddNewWidget() {
-        if (newAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+    private void cancelAddNewWidget(int appWidgetId) {
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             return;
         }
         appWidgetHost.deleteAppWidgetId(newAppWidgetId);
