@@ -21,21 +21,26 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.RemoteViews;
 
 import com.italankin.lnch.feature.widgets.util.CheckLongPressHelper;
 
 import timber.log.Timber;
 
-public class LauncherAppWidgetHostView extends AppWidgetHostView {
+public class LauncherAppWidgetHostView extends AppWidgetHostView implements View.OnLongClickListener {
 
-    private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this);
+    private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this, this);
+
+    private boolean mIsScrollable;
     private float mSlop;
-    private float mStartX;
-    private float mStartY;
 
     private int maxWidth;
     private int maxHeight;
+
+    private float mStartX;
+    private float mStartY;
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
@@ -55,6 +60,15 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
         invalidate();
     }
 
+    @Override
+    public boolean onLongClick(View view) {
+        if (mIsScrollable) {
+            getParent().requestDisallowInterceptTouchEvent(false);
+        }
+        view.performLongClick();
+        return true;
+    }
+
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         // Just in case the previous long press hasn't been cleared, we make sure to start fresh
         // on touch down.
@@ -72,6 +86,9 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             case MotionEvent.ACTION_DOWN:
                 mStartX = ev.getX();
                 mStartY = ev.getY();
+                if (mIsScrollable) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 mLongPressHelper.postCheckForLongPress();
                 break;
             case MotionEvent.ACTION_UP:
@@ -150,6 +167,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             Timber.e(e);
             post(this::switchToErrorView);
         }
+        mIsScrollable = checkScrollableRecursively(this);
     }
 
     private static int constrain(int spec, int min, int max) {
@@ -173,6 +191,22 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
                 break;
         }
         return spec;
+    }
+
+    private boolean checkScrollableRecursively(ViewGroup viewGroup) {
+        if (viewGroup instanceof AdapterView) {
+            return true;
+        } else {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                if (child instanceof ViewGroup) {
+                    if (checkScrollableRecursively((ViewGroup) child)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean pointInView(View v, float localX, float localY, float slop) {

@@ -20,9 +20,10 @@ import android.view.View;
 
 public class CheckLongPressHelper {
 
-    public static final int DEFAULT_LONG_PRESS_TIMEOUT = 300;
+    public static final int DEFAULT_LONG_PRESS_TIMEOUT = 500;
 
     View mView;
+    View.OnLongClickListener mListener;
     boolean mHasPerformedLongPress;
     private CheckForLongPress mPendingCheckForLongPress;
 
@@ -30,7 +31,7 @@ public class CheckLongPressHelper {
         public void run() {
             if ((mView.getParent() != null) && mView.hasWindowFocus()
                     && !mHasPerformedLongPress) {
-                if (mView.performLongClick()) {
+                if (mListener.onLongClick(mView)) {
                     mView.setPressed(false);
                     mHasPerformedLongPress = true;
                 }
@@ -38,8 +39,9 @@ public class CheckLongPressHelper {
         }
     }
 
-    public CheckLongPressHelper(View v) {
+    public CheckLongPressHelper(View v, View.OnLongClickListener listener) {
         mView = v;
+        mListener = listener;
     }
 
     public void postCheckForLongPress() {
