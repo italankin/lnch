@@ -109,7 +109,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         switch (requestCode) {
             case REQUEST_PICK_APPWIDGET:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+                    int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
                     configureWidget(appWidgetId, info);
                 } else {
@@ -117,9 +117,10 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 }
                 break;
             case REQUEST_CREATE_APPWIDGET:
-                if (resultCode == Activity.RESULT_OK) {
-                    AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
-                    addWidgetView(newAppWidgetId, info, false);
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+                    AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
+                    addWidgetView(appWidgetId, info, false);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                 } else {
                     cancelAddNewWidget();
