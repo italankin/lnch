@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,7 +20,10 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
+import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -42,11 +46,20 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private LauncherAppWidgetHost appWidgetHost;
     private AppWidgetManager appWidgetManager;
+    private Picasso picasso;
+
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private ActionPopupWindow popupWindow;
 
     @ProvidePresenter
     WidgetsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().widgets();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        picasso = LauncherApp.daggerService.main().getPicassoFactory().create(requireContext());
     }
 
     @Override
@@ -69,33 +82,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
         registerWindowInsets(view);
 
-        widgetContainer.setOnLongClickListener(v -> {
-            startAddNewWidget();
-            return true;
-        });
-
-        View addWidgetButton = view.findViewById(R.id.add_widget);
-        addWidgetButton.setOnClickListener(v -> startAddNewWidget());
-        addWidgetButton.setOnLongClickListener(v -> {
-            AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
-                    .setTitle("Reset widgets?")
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton("Reset", (dialog, which) -> {
-                        for (int i = widgetContainer.getChildCount(); i >= 0; i--) {
-                            View child = widgetContainer.getChildAt(i);
-                            if (child instanceof AppWidgetHostView) {
-                                int appWidgetId = ((AppWidgetHostView) child).getAppWidgetId();
-                                appWidgetHost.deleteAppWidgetId(appWidgetId);
-                                widgetContainer.removeViewAt(i);
-                            }
-                        }
-                        appWidgetHost.deleteHost();
-                        showNoWidgets();
-                    })
-                    .create();
-            alertDialog.show();
-            return true;
-        });
+        view.findViewById(R.id.add_widget).setOnClickListener(v -> startAddNewWidget());
 
         if (addBoundWidgets()) {
             lce.showContent();
@@ -141,6 +128,14 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         appWidgetHost.stopListening();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (popupWindow != null) {
+            popupWindow.dismiss();
+        }
+    }
+
     private boolean addBoundWidgets() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // TODO get a list of all the appWidgetIds that are bound to the current host
@@ -184,19 +179,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         Bundle options = createWidgetOptions(restored);
         widgetView.updateAppWidgetOptions(options);
         widgetView.setOnLongClickListener(v -> {
-            AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
-                    .setTitle("Delete widget?")
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton("Delete", (dialog, which) -> {
-                        widgetContainer.removeView(widgetView);
-                        appWidgetHost.deleteAppWidgetId(appWidgetId);
-                        if (widgetContainer.getChildCount() == 1) {
-                            showNoWidgets();
-                        }
-                    })
-                    .create();
-            alertDialog.show();
-            return false;
+            showDeleteDialog(appWidgetId, widgetView);
+            return true;
         });
         widgetContainer.addView(widgetView);
         lce.showContent();
@@ -243,5 +227,52 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             options.putBoolean(AppWidgetManager.OPTION_APPWIDGET_RESTORE_COMPLETED, true);
         }
         return options;
+    }
+
+    private void showDeleteDialog(int appWidgetId, AppWidgetHostView widgetView) {
+        Rect bounds = new Rect();
+        lce.getWindowVisibleDisplayFrame(bounds);
+        Context context = requireContext();
+        popupWindow = new ActionPopupWindow(context, picasso)
+                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                        .setLabel(R.string.widgets_app_info)
+                        .setOnClickListener(v -> showAppInfo(widgetView))
+                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setIcon(R.drawable.ic_app_info))
+                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                        .setLabel(R.string.widgets_remove)
+                        .setOnClickListener(v -> showRemoveConfirmDialog(appWidgetId, widgetView))
+                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setIcon(R.drawable.ic_action_delete));
+        popupWindow.showAtAnchor(widgetView, bounds);
+    }
+
+    private void showRemoveConfirmDialog(int appWidgetId, AppWidgetHostView widgetView) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.widgets_remove_dialog_title)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.widgets_remove_dialog_action, (dialog, which) -> {
+                    widgetContainer.removeView(widgetView);
+                    appWidgetHost.deleteAppWidgetId(appWidgetId);
+                    // TODO delete widget ID
+                    updateWidgetsView();
+                })
+                .create()
+                .show();
+    }
+
+    private void showAppInfo(AppWidgetHostView widgetView) {
+        String packageName = widgetView.getAppWidgetInfo().provider.getPackageName();
+        IntentUtils.safeStartAppSettings(requireContext(), packageName, widgetView);
+    }
+
+    private void updateWidgetsView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (appWidgetHost.getAppWidgetIds().length == 0) {
+                showNoWidgets();
+            }
+        } else {
+            // TODO
+        }
     }
 }
