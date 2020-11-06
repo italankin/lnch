@@ -17,6 +17,7 @@
 package com.italankin.lnch.feature.widgets.host;
 
 import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,16 +47,20 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
         super(context);
     }
 
-    @Override
-    public void setMinimumWidth(int minWidth) {
-        super.setMinimumWidth(minWidth);
-    }
-
     public void setDimensionsConstraints(int minWidth, int minHeight, int maxWidth, int maxHeight) {
-        setMinimumWidth(minWidth);
-        setMinimumHeight(minHeight);
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
+        AppWidgetProviderInfo info = getAppWidgetInfo();
+        setMinimumWidth(Math.max(minWidth, info.minWidth));
+        setMinimumHeight(Math.max(minHeight, info.minHeight));
+        if ((info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) == 0) {
+            this.maxWidth = Math.min(getMinimumWidth(), maxWidth);
+        } else {
+            this.maxWidth = maxWidth;
+        }
+        if ((info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) == 0) {
+            this.maxHeight = Math.min(getMinimumHeight(), maxHeight);
+        } else {
+            this.maxHeight = maxHeight;
+        }
         requestLayout();
         invalidate();
     }
@@ -131,8 +136,8 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(
-                constrain(widthMeasureSpec, getMinimumWidth(), maxWidth),
-                constrain(heightMeasureSpec, getMinimumHeight(), maxHeight)
+                constrainWidth(maxWidth),
+                constrainHeight(heightMeasureSpec, maxHeight)
         );
     }
 
@@ -170,27 +175,29 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
         mIsScrollable = checkScrollableRecursively(this);
     }
 
-    private static int constrain(int spec, int min, int max) {
-        if (max <= 0) {
-            return spec;
+    private int constrainWidth(int max) {
+        if ((getAppWidgetInfo().resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) == 0) {
+            return MeasureSpec.makeMeasureSpec(getMinimumWidth(), MeasureSpec.EXACTLY);
+        } else {
+            return MeasureSpec.makeMeasureSpec(max, MeasureSpec.EXACTLY);
+        }
+    }
+
+    private int constrainHeight(int spec, int max) {
+        if ((getAppWidgetInfo().resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) == 0) {
+            return MeasureSpec.makeMeasureSpec(getMinimumHeight(), MeasureSpec.EXACTLY);
         }
         int mode = MeasureSpec.getMode(spec);
         int size = MeasureSpec.getSize(spec);
         switch (mode) {
-            case MeasureSpec.UNSPECIFIED:
-                return MeasureSpec.makeMeasureSpec(min, MeasureSpec.AT_MOST);
             case MeasureSpec.AT_MOST:
-                if (size > max) {
-                    return MeasureSpec.makeMeasureSpec(max, MeasureSpec.AT_MOST);
-                }
-                break;
+                return MeasureSpec.makeMeasureSpec(Math.min(size, max), MeasureSpec.AT_MOST);
             case MeasureSpec.EXACTLY:
-                if (size > max) {
-                    return MeasureSpec.makeMeasureSpec(max, MeasureSpec.EXACTLY);
-                }
-                break;
+                return MeasureSpec.makeMeasureSpec(Math.min(size, max), MeasureSpec.EXACTLY);
+            default:
+            case MeasureSpec.UNSPECIFIED:
+                return MeasureSpec.makeMeasureSpec(max, MeasureSpec.AT_MOST);
         }
-        return spec;
     }
 
     private boolean checkScrollableRecursively(ViewGroup viewGroup) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.italankin.lnch.util.widget.LceLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/lce_widgets"
     android:layout_width="match_parent"
@@ -7,33 +8,33 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/widgets_root_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/widget_container"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/add_widget"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:background="?selectableItemBackground"
+            android:padding="16dp"
+            android:src="@drawable/ic_add_widget"
+            tools:ignore="ContentDescription" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/widgets_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:orientation="vertical">
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-            <ImageView
-                android:id="@+id/add_widget"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|top"
-                android:background="?selectableItemBackground"
-                android:padding="16dp"
-                android:src="@drawable/ic_add_widget"
-                tools:ignore="ContentDescription" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </LinearLayout>
 
 </com.italankin.lnch.util.widget.LceLayout>
