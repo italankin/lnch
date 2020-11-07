@@ -15,42 +15,34 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
-import com.italankin.lnch.feature.widgets.model.AddWidget;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
-import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class WidgetsFragment extends AppFragment implements WidgetsView {
+@RequiresApi(Build.VERSION_CODES.O)
+public class WidgetsFragment extends Fragment implements WidgetsView {
 
     private static final int APP_WIDGET_HOST_ID = 101;
 
     private static final int REQUEST_PICK_APPWIDGET = 0;
     private static final int REQUEST_CREATE_APPWIDGET = 1;
-
-    @InjectPresenter
-    WidgetsPresenter presenter;
 
     private LceLayout lce;
     private RecyclerView widgetsList;
@@ -63,12 +55,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     private ActionPopupWindow popupWindow;
 
     private WidgetCompositeAdapter adapter;
-    private final List<WidgetAdapterItem> appWidgets = new ArrayList<>(Collections.singleton(new AddWidget()));
-
-    @ProvidePresenter
-    WidgetsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().widgets();
-    }
+    private final WidgetItemsState widgetItemsState = new WidgetItemsState();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,8 +119,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
                     addWidget(appWidgetId, info, false);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-                    adapter.setDataset(appWidgets);
-                    adapter.notifyDataSetChanged();
+                    updateWidgets();
                     lce.showContent();
                 } else {
                     cancelAddNewWidget(newAppWidgetId);
@@ -163,21 +149,14 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     }
 
     private boolean addBoundWidgets() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // TODO get a list of all the appWidgetIds that are bound to the current host
-            return false;
-        } else {
-            int[] appWidgetIds = appWidgetHost.getAppWidgetIds();
-            appWidgets.clear();
-            appWidgets.add(new AddWidget());
-            for (int appWidgetId : appWidgetIds) {
-                AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-                addWidget(appWidgetId, info, true);
-            }
-            adapter.setDataset(appWidgets);
-            adapter.notifyDataSetChanged();
-            return appWidgetIds.length > 0;
+        int[] appWidgetIds = appWidgetHost.getAppWidgetIds();
+        widgetItemsState.clearWidgets();
+        for (int appWidgetId : appWidgetIds) {
+            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            addWidget(appWidgetId, info, true);
         }
+        updateWidgets();
+        return appWidgetIds.length > 0;
     }
 
     private void startAddNewWidget() {
@@ -203,12 +182,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         } else {
             addWidget(appWidgetId, info, false);
             newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-            adapter.setDataset(appWidgets);
-            adapter.notifyDataSetChanged();
+            updateWidgets();
             lce.showContent();
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                // TODO save appWidgetId
-            }
         }
     }
 
@@ -231,7 +206,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, minHeight);
         options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeight);
 
-        appWidgets.add(new AppWidget(appWidgetId, info, options,
+        widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options,
                 minWidth, minHeight, getResources().getDisplayMetrics().widthPixels, maxHeight));
     }
 
@@ -288,22 +263,10 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 .setTitle(R.string.widgets_remove_dialog_title)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.widgets_remove_dialog_action, (dialog, which) -> {
-                    Iterator<WidgetAdapterItem> iterator = appWidgets.iterator();
-                    while (iterator.hasNext()) {
-                        WidgetAdapterItem next = iterator.next();
-                        if (!(next instanceof AppWidget)) {
-                            continue;
-                        }
-                        if (((AppWidget) next).appWidgetId == appWidgetId) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-                    adapter.setDataset(appWidgets);
-                    adapter.notifyDataSetChanged();
+                    widgetItemsState.removeWidgetById(appWidgetId);
+                    updateWidgets();
                     appWidgetHost.deleteAppWidgetId(appWidgetId);
-                    // TODO delete widget ID
-                    updateWidgetsView();
+                    updateWidgets();
                 })
                 .create()
                 .show();
@@ -314,13 +277,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         IntentUtils.safeStartAppSettings(requireContext(), packageName, widgetView);
     }
 
-    private void updateWidgetsView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (appWidgetHost.getAppWidgetIds().length == 0) {
-                showNoWidgets();
-            }
-        } else {
-            // TODO
-        }
+    private void updateWidgets() {
+        adapter.setDataset(widgetItemsState.getItems());
+        adapter.notifyDataSetChanged();
     }
 }

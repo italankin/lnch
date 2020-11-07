@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
@@ -14,14 +15,13 @@ import com.italankin.lnch.feature.common.preferences.ThemeObservable;
 import com.italankin.lnch.feature.common.preferences.ThemedActivity;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
-import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
+import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.api.LauncherIntents;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -142,7 +142,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showMiscPreferences() {
-        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_misc), R.string.settings_home_misc);
+        showFragment(new MiscFragment(), R.string.settings_home_misc);
     }
 
     @Override
@@ -206,5 +206,4 @@ public class SettingsActivity extends AppCompatActivity implements
         Disposable disposable = new ThemeObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
     }
-
 }
