@@ -86,5 +86,4 @@ public interface AdapterDelegate<VH extends RecyclerView.ViewHolder, T> {
      * @see RecyclerView.Adapter#hasStableIds()
      */
     long getItemId(int position, T item);
-
 }

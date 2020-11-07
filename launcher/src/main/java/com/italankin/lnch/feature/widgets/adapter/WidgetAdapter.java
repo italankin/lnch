@@ -1,53 +1,37 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
-import android.view.ViewGroup;
-
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class WidgetAdapter extends ListAdapter<AppWidget, WidgetAdapter.WidgetViewHolder> {
+public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetViewHolder> {
 
     private final LauncherAppWidgetHost appWidgetHost;
     private final OnWidgetLongClickListener longClickListener;
 
     public WidgetAdapter(LauncherAppWidgetHost appWidgetHost, OnWidgetLongClickListener longClickListener) {
-        super(new WidgetDiffUtilCallback());
         this.appWidgetHost = appWidgetHost;
         this.longClickListener = longClickListener;
     }
 
-    @NonNull
     @Override
-    public WidgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        AppWidget appWidget = getItem(viewType);
-        return new WidgetViewHolder(appWidgetHost.createView(appWidget.appWidgetId, appWidget.providerInfo));
+    public WidgetViewHolder onCreate(AppWidget item) {
+        LauncherAppWidgetHostView view = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
+        return new WidgetViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WidgetViewHolder holder, int position) {
-        AppWidget appWidget = getItem(position);
+    public void onBind(WidgetViewHolder holder, int position, AppWidget item) {
         holder.hostView.setDimensionsConstraints(
-                appWidget.minWidth, appWidget.minHeight, appWidget.maxWidth, appWidget.maxHeight
+                item.minWidth, item.minHeight, item.maxWidth, item.maxHeight
         );
-        holder.hostView.updateAppWidgetOptions(appWidget.options);
+        holder.hostView.updateAppWidgetOptions(item.options);
         holder.hostView.setOnLongClickListener(v -> {
-            return longClickListener.onWidgetLongClick(appWidget.appWidgetId, holder.hostView);
+            return longClickListener.onWidgetLongClick(item.appWidgetId, holder.hostView);
         });
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return getItem(position).appWidgetId;
     }
 
     static class WidgetViewHolder extends RecyclerView.ViewHolder {
@@ -57,6 +41,8 @@ public class WidgetAdapter extends ListAdapter<AppWidget, WidgetAdapter.WidgetVi
         WidgetViewHolder(@NonNull LauncherAppWidgetHostView itemView) {
             super(itemView);
             this.hostView = itemView;
+            // do not recycle view holders, because the same widget id might be bound to different widgets
+            setIsRecyclable(false);
         }
     }
 
