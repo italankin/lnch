@@ -2,13 +2,9 @@ package com.italankin.lnch.feature.settings.lookfeel;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -20,6 +16,11 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView {
 
@@ -86,6 +87,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             onStatusBarColorClick();
             return true;
         });
+        findPreference(Preferences.APPS_LIST_ANIMATE).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
         updateColorOverlay(preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW));
         updateStatusBarColor();
     }

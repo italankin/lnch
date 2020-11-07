@@ -216,6 +216,10 @@ public interface Preferences {
             "show_widgets",
             true);
 
+    Pref<Boolean> APPS_LIST_ANIMATE = Prefs.createBoolean(
+            "apps_list_animate",
+            true);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -246,7 +250,8 @@ public interface Preferences {
             STATUS_BAR_COLOR,
             MAX_DYNAMIC_SHORTCUTS,
             STATUS_BAR_COLOR,
-            SHOW_WIDGETS
+            SHOW_WIDGETS,
+            APPS_LIST_ANIMATE
     );
 
     ///////////////////////////////////////////////////////////////////////////

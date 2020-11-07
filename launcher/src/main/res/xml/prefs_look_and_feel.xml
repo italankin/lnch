@@ -35,5 +35,9 @@
             android:key="apps_color_overlay"
             android:title="@string/settings_home_laf_other_color_overlay"
             tools:ignore="PrefsDetector" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="apps_list_animate"
+            android:title="@string/settings_home_laf_other_apps_list_animate" />
     </PreferenceCategory>
 </PreferenceScreen>
