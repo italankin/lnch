@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.italankin.lnch.util.widget.LceLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/lce_widgets"
+    android:id="@+id/widgets_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
-    android:clipToPadding="false">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/widgets_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_add_widget" />
-
-</com.italankin.lnch.util.widget.LceLayout>
+    android:clipToPadding="false"
+    android:overScrollMode="ifContentScrolls"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:listitem="@layout/item_add_widget" />

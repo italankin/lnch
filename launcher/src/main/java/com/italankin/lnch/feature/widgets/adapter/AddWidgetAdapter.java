@@ -3,13 +3,13 @@ package com.italankin.lnch.feature.widgets.adapter;
 import android.view.View;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.widgets.model.AddWidget;
+import com.italankin.lnch.feature.widgets.model.AddWidgetItem;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AddWidgetAdapter extends BaseAdapterDelegate<AddWidgetAdapter.AddWidgetViewHolder, AddWidget> {
+public class AddWidgetAdapter extends BaseAdapterDelegate<AddWidgetAdapter.AddWidgetViewHolder, AddWidgetItem> {
 
     private final View.OnClickListener onClickListener;
 
@@ -31,12 +31,12 @@ public class AddWidgetAdapter extends BaseAdapterDelegate<AddWidgetAdapter.AddWi
     }
 
     @Override
-    public void onBind(AddWidgetViewHolder holder, int position, AddWidget item) {
+    public void onBind(AddWidgetViewHolder holder, int position, AddWidgetItem item) {
     }
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof AddWidget;
+        return item instanceof AddWidgetItem;
     }
 
     static class AddWidgetViewHolder extends RecyclerView.ViewHolder {

@@ -18,13 +18,13 @@ import android.widget.Toast;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
+import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
-import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -44,12 +44,12 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
     private static final int REQUEST_PICK_APPWIDGET = 0;
     private static final int REQUEST_CREATE_APPWIDGET = 1;
 
-    private LceLayout lce;
+    private Picasso picasso;
+
     private RecyclerView widgetsList;
 
     private LauncherAppWidgetHost appWidgetHost;
     private AppWidgetManager appWidgetManager;
-    private Picasso picasso;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private ActionPopupWindow popupWindow;
@@ -78,7 +78,6 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        lce = view.findViewById(R.id.lce_widgets);
         widgetsList = view.findViewById(R.id.widgets_list);
 
         adapter = new WidgetCompositeAdapter.Builder(requireContext())
@@ -89,16 +88,13 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
                 .add(new AddWidgetAdapter(v -> {
                     startAddNewWidget();
                 }))
+                .add(new NoWidgetsAdapter())
                 .recyclerView(widgetsList)
                 .create();
 
         registerWindowInsets(view);
 
-        if (addBoundWidgets()) {
-            lce.showContent();
-        } else {
-            showNoWidgets();
-        }
+        addBoundWidgets();
     }
 
     @Override
@@ -120,7 +116,6 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
                     addWidget(appWidgetId, info, false);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                     updateWidgets();
-                    lce.showContent();
                 } else {
                     cancelAddNewWidget(newAppWidgetId);
                 }
@@ -183,7 +178,6 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
             addWidget(appWidgetId, info, false);
             newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
             updateWidgets();
-            lce.showContent();
         }
     }
 
@@ -230,19 +224,9 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
         }
     }
 
-    private void showNoWidgets() {
-        lce.error()
-                .message(R.string.widgets_empty)
-                .button(R.string.widgets_add, v -> {
-                    // TODO
-                    startAddNewWidget();
-                })
-                .show();
-    }
-
     private void showActionsPopup(int appWidgetId, AppWidgetHostView widgetView) {
         Rect bounds = new Rect();
-        lce.getWindowVisibleDisplayFrame(bounds);
+        widgetsList.getWindowVisibleDisplayFrame(bounds);
         Context context = requireContext();
         popupWindow = new ActionPopupWindow(context, picasso)
                 .addShortcut(new ActionPopupWindow.ItemBuilder(context)
