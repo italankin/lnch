@@ -95,11 +95,19 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     public Completable pinShortcut(Shortcut shortcut) {
         return Completable
                 .defer(() -> {
+                    DescriptorRepository descriptorRepository = this.descriptorRepository.get();
+                    List<DeepShortcutDescriptor> deepShortcuts = descriptorRepository
+                            .itemsOfType(DeepShortcutDescriptor.class);
                     String packageName = shortcut.getPackageName();
+                    String id = shortcut.getId();
+                    for (DeepShortcutDescriptor deepShortcut : deepShortcuts) {
+                        if (deepShortcut.packageName.equals(packageName) && deepShortcut.id.equals(id)) {
+                            return Completable.error(new IllegalStateException("Shortcut already pinned"));
+                        }
+                    }
                     AppDescriptor app = findAppByPackageName(packageName);
-                    DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(
-                            shortcut, app, nameNormalizer);
-                    return descriptorRepository.get().edit()
+                    DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(shortcut, app, nameNormalizer);
+                    return descriptorRepository.edit()
                             .enqueue(new AddAction(descriptor))
                             .commit();
                 });
