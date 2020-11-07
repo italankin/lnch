@@ -17,4 +17,6 @@ public interface ShortcutsRepository {
     Shortcut getShortcut(String packageName, String shortcutId);
 
     Completable pinShortcut(Shortcut shortcut);
+
+    Completable pinShortcut(String packageName, String shortcutId);
 }

@@ -106,6 +106,15 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
         }
     }
 
+    @Override
+    public Completable pinShortcut(String packageName, String shortcutId) {
+        Shortcut shortcut = getShortcut(packageName, shortcutId);
+        if (shortcut == null) {
+            return Completable.error(new NullPointerException("Shortcut not found"));
+        }
+        return pinShortcut(shortcut);
+    }
+
     private List<ShortcutBackport> queryShortcuts(AppDescriptor descriptor) {
         return DeepShortcutManagerBackport.getForPackage(context, packageManager, launcherApps,
                 getComponentName(descriptor), descriptor.packageName);

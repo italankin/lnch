@@ -24,8 +24,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.util.picasso.PackageResourceHandler;
 
@@ -36,6 +34,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import timber.log.Timber;
 
 class ShortcutBackport implements Shortcut {

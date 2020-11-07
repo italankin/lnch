@@ -12,9 +12,6 @@ import android.os.Bundle;
 import android.os.Process;
 import android.os.UserHandle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -34,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import dagger.Lazy;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -104,6 +103,15 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                             .enqueue(new AddAction(descriptor))
                             .commit();
                 });
+    }
+
+    @Override
+    public Completable pinShortcut(String packageName, String shortcutId) {
+        List<ShortcutInfo> shortcuts = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
+        if (shortcuts.isEmpty()) {
+            return Completable.error(new IllegalArgumentException());
+        }
+        return pinShortcut(new AppShortcut(launcherApps, shortcuts.get(0)));
     }
 
     private List<Shortcut> queryShortcuts(AppDescriptor descriptor) {
