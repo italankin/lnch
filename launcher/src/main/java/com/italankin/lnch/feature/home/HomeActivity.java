@@ -9,7 +9,6 @@ import android.view.WindowManager;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
@@ -79,7 +78,7 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     protected void onResume() {
         super.onResume();
         AppsFragment appsFragment = pagerAdapter.getAppsFragment();
-        if (appsFragment != null && pagerAdapter.indexOfFragment(AppFragment.class) == pager.getCurrentItem()) {
+        if (appsFragment != null && pagerAdapter.indexOfFragment(AppsFragment.class) == pager.getCurrentItem()) {
             appsFragment.onActivityResume();
         }
     }
