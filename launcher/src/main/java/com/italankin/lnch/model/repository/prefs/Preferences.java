@@ -214,7 +214,7 @@ public interface Preferences {
 
     Pref<Boolean> SHOW_WIDGETS = Prefs.createBoolean(
             "show_widgets",
-            true);
+            false);
 
     Pref<Boolean> APPS_LIST_ANIMATE = Prefs.createBoolean(
             "apps_list_animate",

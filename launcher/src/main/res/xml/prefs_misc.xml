@@ -8,7 +8,7 @@
         android:summary="%s"
         android:title="@string/settings_home_misc_orientation" />
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="show_widgets"
         android:title="@string/settings_home_misc_widgets" />
     <ListPreference
