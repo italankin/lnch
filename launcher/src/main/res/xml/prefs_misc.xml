@@ -7,10 +7,6 @@
         android:key="screen_orientation"
         android:summary="%s"
         android:title="@string/settings_home_misc_orientation" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="show_widgets"
-        android:title="@string/settings_home_misc_widgets" />
     <ListPreference
         android:defaultValue="popup"
         android:entries="@array/pref_desc_app_long_click_actions"

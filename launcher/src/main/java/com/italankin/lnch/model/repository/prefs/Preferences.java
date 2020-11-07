@@ -212,9 +212,14 @@ public interface Preferences {
             "max_dynamic_shortcuts",
             "default");
 
-    Pref<Boolean> SHOW_WIDGETS = Prefs.createBoolean(
-            "show_widgets",
+    Pref<Boolean> ENABLE_WIDGETS = Prefs.createBoolean(
+            "enable_widgets",
             false);
+
+    Pref<WidgetsPosition> WIDGETS_POSITION = Prefs.create(
+            "widgets_position",
+            WidgetsPosition.LEFT,
+            WidgetsPosition::from);
 
     Pref<Boolean> APPS_LIST_ANIMATE = Prefs.createBoolean(
             "apps_list_animate",
@@ -250,7 +255,8 @@ public interface Preferences {
             STATUS_BAR_COLOR,
             MAX_DYNAMIC_SHORTCUTS,
             STATUS_BAR_COLOR,
-            SHOW_WIDGETS,
+            ENABLE_WIDGETS,
+            WIDGETS_POSITION,
             APPS_LIST_ANIMATE
     );
 
@@ -500,6 +506,35 @@ public interface Preferences {
         private final String key;
 
         AppsSortMode(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Widgets page position on home screen
+     */
+    enum WidgetsPosition {
+        LEFT("left"),
+        RIGHT("right");
+
+        static WidgetsPosition from(String s, WidgetsPosition defaultValue) {
+            for (WidgetsPosition item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        WidgetsPosition(String key) {
             this.key = key;
         }
 

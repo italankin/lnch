@@ -85,6 +85,12 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
+        findPreference(R.string.pref_key_home_widgets).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showWidgetPreferences();
+            }
+            return true;
+        });
         findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showBackupPreferences();
@@ -124,6 +130,8 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         void showLookAndFeelPreferences();
 
         void showMiscPreferences();
+
+        void showWidgetPreferences();
 
         void showWallpaperPreferences();
 

@@ -19,6 +19,7 @@ import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -169,16 +171,11 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
 
     private void setupPager() {
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-        updateAdapter(preferences.get(Preferences.SHOW_WIDGETS));
+        updateAdapter();
     }
 
-    private void updateAdapter(boolean showWidgets) {
-        List<Class<? extends Fragment>> pages;
-        if (showWidgets) {
-            pages = Arrays.asList(WidgetsFragment.class, AppsFragment.class);
-        } else {
-            pages = Collections.singletonList(AppsFragment.class);
-        }
+    private void updateAdapter() {
+        List<Class<? extends Fragment>> pages = getPages();
         pagerAdapter.setPages(pages);
         pager.setAdapter(pagerAdapter);
         int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
@@ -221,9 +218,25 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
                     }
                 });
         compositeDisposable.add(statusBarColor);
-        Disposable showWidget = preferences.observe(Preferences.SHOW_WIDGETS)
+        Disposable showWidget = Observable
+                .merge(preferences.observe(Preferences.ENABLE_WIDGETS), preferences.observe(Preferences.WIDGETS_POSITION))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> updateAdapter(value.get()));
+                .subscribe(ignored -> updateAdapter());
         compositeDisposable.add(showWidget);
+    }
+
+    private List<Class<? extends Fragment>> getPages() {
+        if (preferences.get(Preferences.ENABLE_WIDGETS)) {
+            WidgetsPosition position = preferences.get(Preferences.WIDGETS_POSITION);
+            switch (position) {
+                case RIGHT:
+                    return Arrays.asList(AppsFragment.class, WidgetsFragment.class);
+                default:
+                case LEFT:
+                    return Arrays.asList(WidgetsFragment.class, AppsFragment.class);
+            }
+        } else {
+            return Collections.singletonList(AppsFragment.class);
+        }
     }
 }

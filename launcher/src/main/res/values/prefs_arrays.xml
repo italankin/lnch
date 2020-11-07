@@ -91,4 +91,13 @@
         <item>Center</item>
         <item>End</item>
     </string-array>
+
+    <string-array name="pref_values_home_widgets_position">
+        <item>left</item>
+        <item>right</item>
+    </string-array>
+    <string-array name="pref_desc_home_widgets_position">
+        <item>Left</item>
+        <item>Right</item>
+    </string-array>
 </resources>

@@ -69,7 +69,6 @@
     <string name="settings_home_misc_long_action">App long click action</string>
     <string name="settings_home_misc_max_dynamic_shortcuts">Maximum dynamic shortcuts to display</string>
     <string name="settings_home_misc_orientation">Screen orientation</string>
-    <string name="settings_home_misc_widgets">Show widgets page</string>
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
     <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n<i>Note: will not work for some devices and OS versions</i></string>
 
@@ -83,6 +82,11 @@
     <string name="settings_apps_list_filter_visible">Visible</string>
     <string name="settings_apps_list_filter_hidden">Hidden</string>
     <string name="settings_apps_sorting">Sorting</string>
+
+    <string name="settings_home_widgets">Widgets</string>
+    <string name="settings_home_widgets_enable">Enable widgets</string>
+    <string name="settings_home_widgets_enable_summary">Add a page with widgets on home screen</string>
+    <string name="settings_home_widgets_position">Widgets page position</string>
 
     <string name="settings_category_search">Search</string>
     <string name="settings_search">Search settings</string>

@@ -25,6 +25,10 @@
             android:summary="%s"
             android:title="Alignment" />
         <Preference
+            android:icon="@drawable/ic_widgets"
+            android:key="@string/pref_key_home_widgets"
+            android:title="@string/settings_home_widgets" />
+        <Preference
             android:icon="@drawable/ic_settings_home_misc"
             android:key="@string/pref_key_home_misc"
             android:title="@string/settings_home_misc" />
