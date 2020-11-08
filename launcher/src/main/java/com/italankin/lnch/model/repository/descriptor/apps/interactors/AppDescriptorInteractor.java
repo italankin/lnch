@@ -36,8 +36,7 @@ public class AppDescriptorInteractor {
         if (withComponentName) {
             item.componentName = getComponentName(info);
         }
-        item.color = getDominantIconColor(info,
-                preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
+        item.color = getDominantIconColor(info, isDarkTheme());
         return item;
     }
 
@@ -46,12 +45,14 @@ public class AppDescriptorInteractor {
         if (app.versionCode != versionCode) {
             app.versionCode = versionCode;
             app.label = nameNormalizer.normalize(info.getLabel());
-            app.color = getDominantIconColor(info,
-                    preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK);
+            app.color = getDominantIconColor(info, isDarkTheme());
         }
         if (app.componentName != null) {
             app.componentName = getComponentName(info);
-
         }
+    }
+
+    private boolean isDarkTheme() {
+        return preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK;
     }
 }
