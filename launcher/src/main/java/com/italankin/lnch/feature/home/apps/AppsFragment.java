@@ -141,7 +141,9 @@ public class AppsFragment extends AppFragment implements AppsView,
         callbacks = (Callbacks) context;
     }
 
-    public void onActivityResume() {
+    @Override
+    public void onStart() {
+        super.onStart();
         animateOnResume = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 preferences.get(Preferences.APPS_LIST_ANIMATE);
     }

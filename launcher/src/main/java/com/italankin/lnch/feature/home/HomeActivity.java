@@ -77,15 +77,6 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        AppsFragment appsFragment = pagerAdapter.getAppsFragment();
-        if (appsFragment != null && pagerAdapter.indexOfFragment(AppsFragment.class) == pager.getCurrentItem()) {
-            appsFragment.onActivityResume();
-        }
-    }
-
-    @Override
     protected void onRestart() {
         super.onRestart();
         AppsFragment appsFragment = pagerAdapter.getAppsFragment();
