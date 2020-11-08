@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -37,8 +36,6 @@ import io.reactivex.disposables.Disposable;
 
 public class HomeActivity extends AppCompatActivity implements SupportsOrientation, ThemedActivity,
         AppsFragment.Callbacks {
-
-    public static final String STATE_CURRENT_PAGER_ITEM = "current_pager_item";
 
     private Preferences preferences;
     private IntentQueue intentQueue;
@@ -68,12 +65,6 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         setupPager();
 
         intentQueue.post(getIntent());
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_CURRENT_PAGER_ITEM, pager.getCurrentItem());
     }
 
     @Override
@@ -170,7 +161,7 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         pagerAdapter.setPages(pages);
         pager.setAdapter(pagerAdapter);
         int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
-        pager.setCurrentItem(appsPosition);
+        pager.setCurrentItem(appsPosition, false);
     }
 
     private void setupRoot() {
