@@ -62,7 +62,6 @@ public class HomeActivity extends AppActivity implements HomeView, AppsFragment.
         root = findViewById(R.id.root);
         pager = findViewById(R.id.pager);
         setupRoot();
-
         setupPager();
 
         intentQueue.post(getIntent());
@@ -133,8 +132,7 @@ public class HomeActivity extends AppActivity implements HomeView, AppsFragment.
         Window window = getWindow();
         window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
             int stableInsetTop = insets.getStableInsetTop();
-            root.setPadding(insets.getStableInsetLeft(), stableInsetTop,
-                    insets.getStableInsetRight(), 0);
+            root.setPadding(insets.getStableInsetLeft(), stableInsetTop, insets.getStableInsetRight(), 0);
             FakeStatusBarDrawable foreground = new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop);
             Integer statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
             foreground.setColor(statusBarColor);
