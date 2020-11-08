@@ -7,8 +7,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
@@ -26,16 +29,16 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class HomeActivity extends AppCompatActivity implements SupportsOrientation, ThemedActivity,
+public class HomeActivity extends AppActivity implements HomeView, SupportsOrientation, ThemedActivity,
         AppsFragment.Callbacks {
+
+    @InjectPresenter
+    HomePresenter presenter;
 
     private Preferences preferences;
     private IntentQueue intentQueue;
@@ -44,6 +47,11 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     private ViewPager pager;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HomePagerAdapter pagerAdapter;
+
+    @ProvidePresenter
+    HomePresenter providePresenter() {
+        return LauncherApp.daggerService.presenters().home();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
@@ -60,7 +68,6 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
         root = findViewById(R.id.root);
         pager = findViewById(R.id.pager);
         setupRoot();
-        observePreferences();
 
         setupPager();
 
@@ -103,6 +110,25 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
                 pager.setCurrentItem(appsPosition, true);
             }
         }
+    }
+
+    @Override
+    public void onAppsColorOverlayChanged(Integer color) {
+        root.setBackgroundColor(color);
+    }
+
+    @Override
+    public void onStatusBarColorChanged(Integer color) {
+        Drawable foreground = root.getForeground();
+        if (foreground instanceof FakeStatusBarDrawable) {
+            FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
+            drawable.setColor(color);
+        }
+    }
+
+    @Override
+    public void onWidgetPreferencesUpdated() {
+        updateAdapter();
     }
 
     @Override
@@ -165,7 +191,6 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     }
 
     private void setupRoot() {
-        root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
@@ -178,33 +203,6 @@ public class HomeActivity extends AppCompatActivity implements SupportsOrientati
     private void setTheme() {
         Disposable disposable = new ThemeObservable(preferences).subscribe(this);
         compositeDisposable.add(disposable);
-    }
-
-    private void observePreferences() {
-        Disposable overlayColor = preferences.observe(Preferences.APPS_COLOR_OVERLAY)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
-                    Integer color = value.get();
-                    if (color != null) {
-                        root.setBackgroundColor(color);
-                    }
-                });
-        compositeDisposable.add(overlayColor);
-        Disposable statusBarColor = preferences.observe(Preferences.STATUS_BAR_COLOR)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
-                    Drawable foreground = root.getForeground();
-                    if (foreground instanceof FakeStatusBarDrawable) {
-                        FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
-                        drawable.setColor(value.get());
-                    }
-                });
-        compositeDisposable.add(statusBarColor);
-        Disposable showWidget = Observable
-                .merge(preferences.observe(Preferences.ENABLE_WIDGETS), preferences.observe(Preferences.WIDGETS_POSITION))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> updateAdapter());
-        compositeDisposable.add(showWidget);
     }
 
     private List<Class<? extends Fragment>> getPages() {
