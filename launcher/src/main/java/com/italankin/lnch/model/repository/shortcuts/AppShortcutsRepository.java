@@ -92,8 +92,8 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     }
 
     @Override
-    public Completable pinShortcut(Shortcut shortcut) {
-        return Completable
+    public Single<Boolean> pinShortcut(Shortcut shortcut) {
+        return Single
                 .defer(() -> {
                     DescriptorRepository descriptorRepository = this.descriptorRepository.get();
                     List<DeepShortcutDescriptor> deepShortcuts = descriptorRepository
@@ -102,22 +102,23 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                     String id = shortcut.getId();
                     for (DeepShortcutDescriptor deepShortcut : deepShortcuts) {
                         if (deepShortcut.packageName.equals(packageName) && deepShortcut.id.equals(id)) {
-                            return Completable.error(new IllegalStateException("Shortcut already pinned"));
+                            return Single.just(false);
                         }
                     }
                     AppDescriptor app = findAppByPackageName(packageName);
                     DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(shortcut, app, nameNormalizer);
                     return descriptorRepository.edit()
                             .enqueue(new AddAction(descriptor))
-                            .commit();
+                            .commit()
+                            .toSingleDefault(true);
                 });
     }
 
     @Override
-    public Completable pinShortcut(String packageName, String shortcutId) {
+    public Single<Boolean> pinShortcut(String packageName, String shortcutId) {
         List<ShortcutInfo> shortcuts = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
         if (shortcuts.isEmpty()) {
-            return Completable.error(new IllegalArgumentException());
+            return Single.error(new IllegalArgumentException("Shortcut not found"));
         }
         return pinShortcut(new AppShortcut(launcherApps, shortcuts.get(0)));
     }

@@ -5,6 +5,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public interface ShortcutsRepository {
 
@@ -16,7 +17,7 @@ public interface ShortcutsRepository {
 
     Shortcut getShortcut(String packageName, String shortcutId);
 
-    Completable pinShortcut(Shortcut shortcut);
+    Single<Boolean> pinShortcut(Shortcut shortcut);
 
-    Completable pinShortcut(String packageName, String shortcutId);
+    Single<Boolean> pinShortcut(String packageName, String shortcutId);
 }

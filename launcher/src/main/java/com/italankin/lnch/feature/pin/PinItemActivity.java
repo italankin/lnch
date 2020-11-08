@@ -12,6 +12,7 @@ import com.italankin.lnch.LauncherApp;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import timber.log.Timber;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class PinItemActivity extends Activity {
@@ -33,10 +34,15 @@ public class PinItemActivity extends Activity {
                         if (shortcutInfo == null) {
                             break;
                         }
-                        LauncherApp.daggerService.main()
+                        Boolean pinned = LauncherApp.daggerService.main()
                                 .getShortcutsRepository()
                                 .pinShortcut(shortcutInfo.getPackage(), shortcutInfo.getId())
-                                .blockingAwait();
+                                .blockingGet();
+                        if (pinned) {
+                            Timber.d("Shortcut '%s' pinned", shortcutInfo);
+                        } else {
+                            Timber.d("Shortcut '%s' already pinned", shortcutInfo);
+                        }
                     }
                     break;
                 case PinItemRequest.REQUEST_TYPE_APPWIDGET:

@@ -48,6 +48,9 @@ interface AppsView extends MvpView {
     void onShortcutPinned(Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutAlreadyPinnedError(Shortcut shortcut);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void startShortcut(int position, Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)

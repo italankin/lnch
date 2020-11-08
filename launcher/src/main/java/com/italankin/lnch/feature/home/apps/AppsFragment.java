@@ -606,6 +606,12 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
+    public void onShortcutAlreadyPinnedError(Shortcut shortcut) {
+        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void startShortcut(int position, Shortcut shortcut) {
         if (handleCustomizeShortcut(shortcut.getPackageName(), shortcut.getId())) {
             return;

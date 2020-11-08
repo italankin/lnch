@@ -197,13 +197,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void pinShortcut(Shortcut shortcut) {
         shortcutsRepository.pinShortcut(shortcut)
-                .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableState() {
+                .subscribe(new SingleState<Boolean>() {
                     @Override
-                    protected void onComplete(AppsView viewState) {
-                        viewState.onShortcutPinned(shortcut);
+                    protected void onSuccess(AppsView viewState, Boolean pinned) {
+                        if (pinned) {
+                            viewState.onShortcutPinned(shortcut);
+                        } else {
+                            viewState.onShortcutAlreadyPinnedError(shortcut);
+                        }
                     }
 
                     @Override

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -92,25 +93,38 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
     }
 
     @Override
-    public Completable pinShortcut(Shortcut shortcut) {
+    public Single<Boolean> pinShortcut(Shortcut shortcut) {
         if (shortcut instanceof ShortcutBackport) {
-            ShortcutBackport sb = (ShortcutBackport) shortcut;
-            String label = nameNormalizer.normalize(sb.getShortLabel());
-            Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
-            IntentDescriptor descriptor = new IntentDescriptor(intent, label, Color.WHITE);
-            return descriptorRepository.get().edit()
-                    .enqueue(new AddAction(descriptor))
-                    .commit();
+            return Single.defer(() -> {
+                ShortcutBackport sb = (ShortcutBackport) shortcut;
+                DescriptorRepository descriptorRepository = this.descriptorRepository.get();
+                List<DeepShortcutDescriptor> deepShortcuts = descriptorRepository
+                        .itemsOfType(DeepShortcutDescriptor.class);
+                String packageName = sb.getPackageName();
+                String id = sb.getId();
+                for (DeepShortcutDescriptor deepShortcut : deepShortcuts) {
+                    if (deepShortcut.packageName.equals(packageName) && deepShortcut.id.equals(id)) {
+                        return Single.just(false);
+                    }
+                }
+                String label = nameNormalizer.normalize(sb.getShortLabel());
+                Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
+                IntentDescriptor descriptor = new IntentDescriptor(intent, label, Color.WHITE);
+                return descriptorRepository.edit()
+                        .enqueue(new AddAction(descriptor))
+                        .commit()
+                        .toSingleDefault(true);
+            });
         } else {
-            return Completable.error(new IllegalArgumentException("Error"));
+            return Single.error(new IllegalArgumentException("Unknown shortcut type"));
         }
     }
 
     @Override
-    public Completable pinShortcut(String packageName, String shortcutId) {
+    public Single<Boolean> pinShortcut(String packageName, String shortcutId) {
         Shortcut shortcut = getShortcut(packageName, shortcutId);
         if (shortcut == null) {
-            return Completable.error(new NullPointerException("Shortcut not found"));
+            return Single.error(new NullPointerException("Shortcut not found"));
         }
         return pinShortcut(shortcut);
     }
