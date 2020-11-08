@@ -9,10 +9,8 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
-import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
-import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
-import com.italankin.lnch.feature.common.preferences.ThemeObservable;
-import com.italankin.lnch.feature.common.preferences.ThemedActivity;
+import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
+import com.italankin.lnch.feature.common.preferences.ThemedActivityDelegate;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
@@ -31,10 +29,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
 public class SettingsActivity extends AppCompatActivity implements
-        ThemedActivity, SupportsOrientation,
         SettingsRootFragment.Callbacks,
         ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
@@ -52,9 +48,11 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme();
+        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+        ThemedActivityDelegate.attach(this, preferences);
+        SupportsOrientationDelegate.attach(this, preferences);
+
         super.onCreate(savedInstanceState);
-        setScreenOrientation();
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
@@ -93,26 +91,6 @@ public class SettingsActivity extends AppCompatActivity implements
             return;
         }
         super.onBackPressed();
-    }
-
-    @Override
-    public void onThemeChanged(Preferences.ColorTheme colorTheme, boolean changed) {
-        switch (colorTheme) {
-            case DARK:
-                setTheme(R.style.AppTheme_Dark_Preferences);
-                break;
-            case LIGHT:
-                setTheme(R.style.AppTheme_Light_Preferences);
-                break;
-        }
-        if (changed) {
-            recreate();
-        }
-    }
-
-    @Override
-    public void onOrientationChange(Preferences.ScreenOrientation screenOrientation, boolean changed) {
-        setRequestedOrientation(screenOrientation.value());
     }
 
     @Override
@@ -199,17 +177,5 @@ public class SettingsActivity extends AppCompatActivity implements
                 .setBreadCrumbTitle(title)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private void setScreenOrientation() {
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
-        Disposable disposable = new ScreenOrientationObservable(preferences).subscribe(this);
-        compositeDisposable.add(disposable);
-    }
-
-    private void setTheme() {
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
-        Disposable disposable = new ThemeObservable(preferences).subscribe(this);
-        compositeDisposable.add(disposable);
     }
 }

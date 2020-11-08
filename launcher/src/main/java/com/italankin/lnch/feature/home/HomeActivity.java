@@ -13,10 +13,8 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.base.BackButtonHandler;
-import com.italankin.lnch.feature.common.preferences.ScreenOrientationObservable;
-import com.italankin.lnch.feature.common.preferences.SupportsOrientation;
-import com.italankin.lnch.feature.common.preferences.ThemeObservable;
-import com.italankin.lnch.feature.common.preferences.ThemedActivity;
+import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
+import com.italankin.lnch.feature.common.preferences.ThemedActivityDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -31,11 +29,8 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
-public class HomeActivity extends AppActivity implements HomeView, SupportsOrientation, ThemedActivity,
-        AppsFragment.Callbacks {
+public class HomeActivity extends AppActivity implements HomeView, AppsFragment.Callbacks {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -45,7 +40,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
 
     private View root;
     private ViewPager pager;
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HomePagerAdapter pagerAdapter;
 
     @ProvidePresenter
@@ -58,8 +52,8 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         preferences = LauncherApp.daggerService.main().getPreferences();
         intentQueue = LauncherApp.daggerService.main().getIntentQueue();
 
-        setTheme();
-        setScreenOrientation();
+        ThemedActivityDelegate.attach(this, preferences);
+        SupportsOrientationDelegate.attach(this, preferences);
 
         super.onCreate(state);
 
@@ -131,32 +125,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
         updateAdapter();
     }
 
-    @Override
-    public void onOrientationChange(Preferences.ScreenOrientation screenOrientation, boolean changed) {
-        setRequestedOrientation(screenOrientation.value());
-    }
-
-    @Override
-    public void onThemeChanged(Preferences.ColorTheme colorTheme, boolean changed) {
-        switch (colorTheme) {
-            case DARK:
-                setTheme(R.style.AppTheme_Dark_Launcher);
-                break;
-            case LIGHT:
-                setTheme(R.style.AppTheme_Light_Launcher);
-                break;
-        }
-        if (changed) {
-            recreate();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        compositeDisposable.dispose();
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // Setup
     ///////////////////////////////////////////////////////////////////////////
@@ -193,16 +161,6 @@ public class HomeActivity extends AppActivity implements HomeView, SupportsOrien
     private void setupRoot() {
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-    }
-
-    private void setScreenOrientation() {
-        Disposable disposable = new ScreenOrientationObservable(preferences).subscribe(this);
-        compositeDisposable.add(disposable);
-    }
-
-    private void setTheme() {
-        Disposable disposable = new ThemeObservable(preferences).subscribe(this);
-        compositeDisposable.add(disposable);
     }
 
     private List<Class<? extends Fragment>> getPages() {
