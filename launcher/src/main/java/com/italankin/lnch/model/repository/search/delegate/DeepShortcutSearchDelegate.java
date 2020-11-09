@@ -57,7 +57,11 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         Set<ShortcutData> result = new LinkedHashSet<>(descriptors.size() * 2);
         for (Descriptor descriptor : descriptors) {
             if (descriptor instanceof AppDescriptor) {
-                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts((AppDescriptor) descriptor);
+                AppDescriptor appDescriptor = (AppDescriptor) descriptor;
+                if (!appDescriptor.shortcutsSearchVisible) {
+                    continue;
+                }
+                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(appDescriptor);
                 if (shortcuts == null || shortcuts.isEmpty()) {
                     continue;
                 }

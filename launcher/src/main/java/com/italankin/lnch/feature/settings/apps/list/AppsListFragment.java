@@ -18,6 +18,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.list.adapter.AppsListFilter;
 import com.italankin.lnch.feature.settings.apps.list.adapter.AppsViewModelAdapter;
+import com.italankin.lnch.feature.settings.apps.list.dialog.AppSettingsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.list.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
@@ -43,6 +44,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
     private static final String TAG_FILTER_FLAGS = "filter";
+    private static final String TAG_APP_SETTINGS = "app_settings";
 
     @InjectPresenter
     AppsListPresenter presenter;
@@ -169,6 +171,15 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     }
 
     @Override
+    public void onAppClick(int position, AppViewModel item) {
+        new AppSettingsDialogFragment.Builder()
+                .setApp(item)
+                .setListenerProvider(new AppSettingsDialogListenerProvider())
+                .build()
+                .show(getChildFragmentManager(), TAG_APP_SETTINGS);
+    }
+
+    @Override
     public void onFilterResult(String query, List<AppViewModel> items) {
         if (items.isEmpty()) {
             String message = TextUtils.isEmpty(query)
@@ -222,6 +233,24 @@ public class AppsListFragment extends AppFragment implements AppsListView,
                 @Override
                 public void onFlagsReset() {
                     fragment.filter.resetFlags();
+                }
+            };
+        }
+    }
+
+    private static class AppSettingsDialogListenerProvider implements ListenerFragment<AppSettingsDialogFragment.Listener> {
+        @Override
+        public AppSettingsDialogFragment.Listener get(Fragment parentFragment) {
+            AppsListFragment fragment = (AppsListFragment) parentFragment;
+            return new AppSettingsDialogFragment.Listener() {
+                @Override
+                public void onAppSettingsUpdated(String id, boolean searchVisible, boolean shortcutsSearchVisible) {
+                    fragment.presenter.setAppSettings(id, searchVisible, shortcutsSearchVisible);
+                }
+
+                @Override
+                public void onAppSettingsReset(String id) {
+                    fragment.presenter.resetAppSettings(id);
                 }
             };
         }

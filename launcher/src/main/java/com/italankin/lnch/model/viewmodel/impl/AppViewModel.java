@@ -19,6 +19,8 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
     private final String label;
     private boolean hidden;
     private boolean visible;
+    private boolean searchVisible;
+    private boolean shortcutsSearchVisible;
     private String customLabel;
     private Integer customColor;
 
@@ -32,6 +34,8 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.searchVisible = descriptor.searchVisible;
+        this.shortcutsSearchVisible = descriptor.shortcutsSearchVisible;
     }
 
     @Override
@@ -72,6 +76,22 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
     @Override
     public boolean isVisible() {
         return !hidden && visible;
+    }
+
+    public void setSearchVisible(boolean searchVisible) {
+        this.searchVisible = searchVisible;
+    }
+
+    public boolean isSearchVisible() {
+        return searchVisible;
+    }
+
+    public void setShortcutsSearchVisible(boolean shortcutsSearchVisible) {
+        this.shortcutsSearchVisible = shortcutsSearchVisible;
+    }
+
+    public boolean isShortcutsSearchVisible() {
+        return shortcutsSearchVisible;
     }
 
     @Override

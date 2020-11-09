@@ -83,6 +83,12 @@
     <string name="settings_apps_list_filter_visible">Visible</string>
     <string name="settings_apps_list_filter_hidden">Hidden</string>
     <string name="settings_apps_sorting">Sorting</string>
+    <string name="settings_apps_list_options_save">Save</string>
+    <string name="settings_apps_list_options_reset">Reset</string>
+    <string-array name="settings_apps_list_options">
+        <item>Show in search</item>
+        <item>Show shortcuts in search</item>
+    </string-array>
 
     <string name="settings_home_widgets">Widgets</string>
     <string name="settings_home_widgets_enable">Enable widgets</string>

@@ -37,6 +37,12 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
                 listener.onVisibilityClick(pos, getItem(pos));
             }
         });
+        holder.itemView.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onAppClick(pos, getItem(pos));
+            }
+        });
         return holder;
     }
 
@@ -51,6 +57,8 @@ public class AppsViewModelAdapter extends BaseAdapterDelegate<AppsViewModelAdapt
     }
 
     public interface Listener {
+        void onAppClick(int position, AppViewModel item);
+
         void onVisibilityClick(int position, AppViewModel item);
     }
 

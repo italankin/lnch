@@ -30,7 +30,7 @@ public class AppSearchDelegate implements SearchDelegate {
         boolean skipHidden = !searchTargets.contains(Preferences.SearchTarget.HIDDEN);
         List<PartialMatch> matches = new ArrayList<>(4);
         for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
-            if (descriptor.hidden && skipHidden) {
+            if (descriptor.hidden && skipHidden || !descriptor.searchVisible) {
                 continue;
             }
             PartialMatch match = testApp(descriptor, query);

@@ -38,6 +38,12 @@ public final class AppModel implements JsonModel {
     @SerializedName("hidden")
     public boolean hidden;
 
+    @SerializedName("search_visible")
+    public Boolean searchVisible;
+
+    @SerializedName("shortcuts_search_visible")
+    public Boolean shortcutsSearchVisible;
+
     @Keep
     public AppModel() {
     }
@@ -51,6 +57,8 @@ public final class AppModel implements JsonModel {
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
         this.hidden = descriptor.hidden;
+        this.searchVisible = descriptor.searchVisible ? null : false;
+        this.shortcutsSearchVisible = descriptor.shortcutsSearchVisible ? null : false;
     }
 
     @Override
@@ -64,6 +72,8 @@ public final class AppModel implements JsonModel {
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
         descriptor.hidden = this.hidden;
+        descriptor.searchVisible = this.searchVisible == null || this.searchVisible;
+        descriptor.shortcutsSearchVisible = this.shortcutsSearchVisible == null || this.shortcutsSearchVisible;
         return descriptor;
     }
 }

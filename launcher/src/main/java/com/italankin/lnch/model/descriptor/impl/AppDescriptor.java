@@ -21,6 +21,8 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public int color;
     public Integer customColor;
     public boolean hidden;
+    public boolean searchVisible = true;
+    public boolean shortcutsSearchVisible = true;
     private ComponentName componentNameValue;
 
     public AppDescriptor() {
