@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class NoWidgetsAdapter extends BaseAdapterDelegate<NoWidgetsAdapter.NoWidgetsViewHolder, NoWidgetsItem> {
 
+    private static final float SCREEN_HEIGHT_RATIO = .7f;
+
     @Override
     protected int getLayoutRes() {
         return R.layout.item_no_widgets;
@@ -19,13 +21,13 @@ public class NoWidgetsAdapter extends BaseAdapterDelegate<NoWidgetsAdapter.NoWid
     @NonNull
     @Override
     protected NoWidgetsViewHolder createViewHolder(View itemView) {
+        int height = (int) (itemView.getResources().getDisplayMetrics().heightPixels * SCREEN_HEIGHT_RATIO);
+        itemView.setMinimumHeight(height);
         return new NoWidgetsViewHolder(itemView);
     }
 
     @Override
     public void onBind(NoWidgetsViewHolder holder, int position, NoWidgetsItem item) {
-        int height = (int) (holder.itemView.getResources().getDisplayMetrics().heightPixels * .7f);
-        holder.itemView.setMinimumHeight(height);
     }
 
     @Override
