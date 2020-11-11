@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-public class HomeActivity extends AppActivity implements HomeView, AppsFragment.Callbacks {
+public class HomeActivity extends AppActivity implements HomeView, ThemedActivityDelegate.ThemeProvider, AppsFragment.Callbacks {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -102,6 +102,17 @@ public class HomeActivity extends AppActivity implements HomeView, AppsFragment.
             if (currentItem != appsPosition) {
                 pager.setCurrentItem(appsPosition, true);
             }
+        }
+    }
+
+    @Override
+    public int getTheme(Preferences.ColorTheme colorTheme) {
+        switch (colorTheme) {
+            case LIGHT:
+                return R.style.AppTheme_Light_Launcher;
+            default:
+            case DARK:
+                return R.style.AppTheme_Dark_Launcher;
         }
     }
 

@@ -8,7 +8,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
 
 public class SupportsOrientationDelegate implements LifecycleEventObserver, SupportsOrientation {
 
@@ -17,26 +16,19 @@ public class SupportsOrientationDelegate implements LifecycleEventObserver, Supp
     }
 
     private final AppCompatActivity activity;
-    private final ScreenOrientationObservable screenOrientationObservable;
-
-    private Disposable disposable = Disposables.disposed();
+    private final Disposable disposable;
 
     private SupportsOrientationDelegate(AppCompatActivity activity, Preferences preferences) {
         this.activity = activity;
-        this.screenOrientationObservable = new ScreenOrientationObservable(preferences);
+        this.disposable = new ScreenOrientationObservable(preferences).subscribe(this);
 
         activity.getLifecycle().addObserver(this);
     }
 
     @Override
     public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
-        switch (event) {
-            case ON_CREATE:
-                disposable = screenOrientationObservable.subscribe(this);
-                break;
-            case ON_DESTROY:
-                disposable.dispose();
-                break;
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            disposable.dispose();
         }
     }
 

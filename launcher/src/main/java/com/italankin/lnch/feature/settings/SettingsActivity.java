@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentManager;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class SettingsActivity extends AppCompatActivity implements
+        ThemedActivityDelegate.ThemeProvider,
         SettingsRootFragment.Callbacks,
         ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
@@ -91,6 +92,17 @@ public class SettingsActivity extends AppCompatActivity implements
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public int getTheme(Preferences.ColorTheme colorTheme) {
+        switch (colorTheme) {
+            case LIGHT:
+                return R.style.AppTheme_Light_Preferences;
+            default:
+            case DARK:
+                return R.style.AppTheme_Dark_Preferences;
+        }
     }
 
     @Override
