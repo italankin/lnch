@@ -4,7 +4,7 @@
     android:id="@+id/label"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
+    android:background="@drawable/selector_item"
     android:ellipsize="none"
     android:fadingEdgeLength="24dp"
     android:includeFontPadding="false"
