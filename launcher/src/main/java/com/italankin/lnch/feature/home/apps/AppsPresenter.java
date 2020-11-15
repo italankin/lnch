@@ -19,6 +19,8 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
+import com.italankin.lnch.model.repository.notifications.NotificationBadge;
+import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
@@ -38,8 +40,11 @@ import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
 import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -59,6 +64,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
+    private final NotificationsRepository notificationsRepository;
     private final Preferences preferences;
     private final SeparatorState separatorState;
     /**
@@ -70,9 +76,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @Inject
     AppsPresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
-            Preferences preferences, SeparatorState separatorState) {
+            NotificationsRepository notificationsRepository, Preferences preferences, SeparatorState separatorState) {
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
+        this.notificationsRepository = notificationsRepository;
         this.preferences = preferences;
         this.separatorState = separatorState;
     }
@@ -317,11 +324,46 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     private Observable<Update> observeApps() {
-        return descriptorRepository.observe()
+        Observable<List<DescriptorItem>> observeApps = descriptorRepository.observe()
                 .map(ViewModelFactory::createItems)
-                .doOnNext(this::restoreGroupsState)
+                .doOnNext(this::restoreGroupsState);
+        return Observable.combineLatest(observeApps, observeNotifications(), this::concatNotifications)
                 .scan(Update.EMPTY, this::calculateUpdates)
                 .skip(1); // skip empty update
+    }
+
+    private Observable<Map<AppDescriptor, NotificationBadge>> observeNotifications() {
+        return notificationsRepository.observe()
+                .doOnNext(map -> {
+                    Timber.d("notifications=%s", map);
+                });
+    }
+
+    @NotNull
+    private List<DescriptorItem> concatNotifications(List<DescriptorItem> items,
+            Map<AppDescriptor, NotificationBadge> notifications) {
+        if (!preferences.get(Preferences.NOTIFICATION_BADGE)) {
+            return items;
+        }
+        List<DescriptorItem> result = new ArrayList<>(items.size());
+        for (DescriptorItem item : items) {
+            if (!(item instanceof AppViewModel)) {
+                result.add(item);
+                continue;
+            }
+            AppViewModel app = (AppViewModel) item;
+            NotificationBadge notificationBadge = notifications.get(app.getDescriptor());
+            boolean badgeVisible = notificationBadge != null && notificationBadge.getCount() > 0;
+            if (badgeVisible != app.isBadgeVisible()) {
+                // create a copy of AppViewModel to update state correctly
+                AppViewModel newApp = new AppViewModel(app);
+                newApp.setBadgeVisible(badgeVisible);
+                result.add(newApp);
+            } else {
+                result.add(app);
+            }
+        }
+        return result;
     }
 
     private Observable<UserPrefs> observeUserPrefs() {

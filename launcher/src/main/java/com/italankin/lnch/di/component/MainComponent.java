@@ -7,6 +7,7 @@ import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
+import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.WidgetsState;
@@ -47,4 +48,6 @@ public interface MainComponent {
     IntentQueue getIntentQueue();
 
     WidgetsState getWidgetsState();
+
+    NotificationsRepository getNotificationsRepository();
 }

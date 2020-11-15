@@ -10,6 +10,8 @@ import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.LauncherDescriptorRepository;
+import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
+import com.italankin.lnch.model.repository.notifications.NotificationsRepositoryImpl;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
@@ -141,5 +143,11 @@ public class MainModule {
             gsonBuilder.setPrettyPrinting();
         }
         return new WidgetsStateImpl(context, gsonBuilder.create());
+    }
+
+    @Provides
+    @Singleton
+    NotificationsRepository provideNotificationsRepository(DescriptorRepository descriptorRepository) {
+        return new NotificationsRepositoryImpl(descriptorRepository);
     }
 }

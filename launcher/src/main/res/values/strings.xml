@@ -9,6 +9,8 @@
     <string name="preview">Preview</string>
     <string name="open_settings">Open Settings</string>
 
+    <string name="notification_service_name">Notifications badge</string>
+
     <string name="widgets_empty">No widgets added</string>
     <string name="widgets_add_error">Error adding widget</string>
     <string name="widgets_remove">Remove widget</string>
@@ -65,6 +67,8 @@
 
     <string name="settings_home_misc">Miscellaneous</string>
     <string name="settings_home_misc_scrollbar">Show scroll indicator</string>
+    <string name="settings_home_misc_notification_badge">Notification badge</string>
+    <string name="settings_home_misc_notification_badge_summary">Show a badge on apps which have active notifications</string>
     <string name="settings_home_misc_scroll_top">Scroll to top</string>
     <string name="settings_home_misc_scroll_top_summary">Scroll apps list to top when then launcher becomes visible</string>
     <string name="settings_home_misc_long_action">App long click action</string>

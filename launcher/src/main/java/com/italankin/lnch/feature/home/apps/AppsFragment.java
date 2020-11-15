@@ -234,7 +234,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onReceiveUpdate(Update update) {
-        setItems(update.items);
+        setItems(update);
         if (update.items.isEmpty()) {
             lce.empty()
                     .message(R.string.apps_list_empty)
@@ -983,7 +983,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
     }
 
-    private void setItems(List<DescriptorItem> items) {
+    private void setItems(Update update) {
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(getContext())
                     .add(new AppViewModelAdapter(this))
@@ -995,8 +995,9 @@ public class AppsFragment extends AppFragment implements AppsView,
                     .recyclerView(list)
                     .setHasStableIds(true)
                     .create();
+            adapter.updateUserPrefs(update.userPrefs);
         }
-        adapter.setDataset(items);
+        adapter.setDataset(update.items);
         list.setVisibility(View.VISIBLE);
     }
 

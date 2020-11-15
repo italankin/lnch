@@ -230,6 +230,10 @@ public interface Preferences {
             ShortcutsSortMode.DEFAULT,
             ShortcutsSortMode::from);
 
+    Pref<Boolean> NOTIFICATION_BADGE = Prefs.createBoolean(
+            "notification_badge",
+            false);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -263,7 +267,8 @@ public interface Preferences {
             ENABLE_WIDGETS,
             WIDGETS_POSITION,
             APPS_LIST_ANIMATE,
-            SHORTCUTS_SORT_MODE
+            SHORTCUTS_SORT_MODE,
+            NOTIFICATION_BADGE
     );
 
     ///////////////////////////////////////////////////////////////////////////

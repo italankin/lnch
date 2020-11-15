@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.viewmodel.impl;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.viewmodel.BadgeItem;
 import com.italankin.lnch.model.viewmodel.CustomColorItem;
 import com.italankin.lnch.model.viewmodel.CustomLabelItem;
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
@@ -10,7 +11,7 @@ import com.italankin.lnch.model.viewmodel.VisibleItem;
 import java.util.Objects;
 
 public final class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
-        VisibleItem {
+        VisibleItem, BadgeItem {
 
     public final String componentName;
     public final String packageName;
@@ -23,6 +24,7 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
     private boolean shortcutsSearchVisible;
     private String customLabel;
     private Integer customColor;
+    private boolean badgeVisible;
 
     public AppViewModel(AppDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -36,6 +38,21 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
         this.customColor = descriptor.customColor;
         this.searchVisible = descriptor.searchVisible;
         this.shortcutsSearchVisible = descriptor.shortcutsSearchVisible;
+    }
+
+    public AppViewModel(AppViewModel item) {
+        this.descriptor = item.descriptor;
+        this.packageName = item.packageName;
+        this.componentName = item.componentName;
+        this.label = item.label;
+        this.hidden = item.hidden;
+        this.visible = item.visible;
+        this.customLabel = item.customLabel;
+        this.color = item.color;
+        this.customColor = item.customColor;
+        this.searchVisible = item.searchVisible;
+        this.shortcutsSearchVisible = item.shortcutsSearchVisible;
+        this.badgeVisible = item.badgeVisible;
     }
 
     @Override
@@ -110,8 +127,18 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
     }
 
     @Override
+    public void setBadgeVisible(boolean visible) {
+        badgeVisible = visible;
+    }
+
+    @Override
+    public boolean isBadgeVisible() {
+        return badgeVisible;
+    }
+
+    @Override
     public String toString() {
-        return descriptor.toString();
+        return "App{" + packageName + (hidden ? "*" : "") + (badgeVisible ? "!" : "") + "}";
     }
 
     @Override
@@ -130,9 +157,6 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
 
     @Override
     public boolean deepEquals(DescriptorItem another) {
-        if (this == another) {
-            return true;
-        }
         if (this.getClass() != another.getClass()) {
             return false;
         }
@@ -141,6 +165,7 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
                 && Objects.equals(this.customLabel, that.customLabel)
                 && Objects.equals(this.customColor, that.customColor)
                 && this.hidden == that.hidden
-                && this.visible == that.visible;
+                && this.visible == that.visible
+                && this.badgeVisible == that.badgeVisible;
     }
 }

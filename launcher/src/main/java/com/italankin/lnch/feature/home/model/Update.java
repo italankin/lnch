@@ -2,6 +2,8 @@ package com.italankin.lnch.feature.home.model;
 
 import com.italankin.lnch.model.viewmodel.DescriptorItem;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public final class Update {
         this.diffResult = diffResult;
     }
 
+    @NotNull
     public Update with(UserPrefs userPrefs) {
         this.userPrefs = userPrefs;
         return this;
