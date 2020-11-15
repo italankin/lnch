@@ -9,6 +9,7 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
+import com.italankin.lnch.model.repository.prefs.WidgetsState;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
@@ -44,4 +45,6 @@ public interface MainComponent {
     NameNormalizer getNameNormalizer();
 
     IntentQueue getIntentQueue();
+
+    WidgetsState getWidgetsState();
 }

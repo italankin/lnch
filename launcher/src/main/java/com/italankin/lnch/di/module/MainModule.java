@@ -14,6 +14,8 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
+import com.italankin.lnch.model.repository.prefs.WidgetsState;
+import com.italankin.lnch.model.repository.prefs.WidgetsStateImpl;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
@@ -73,7 +75,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    DescriptorStore provideDescriptorStore(PackagesStore packagesStore, Context context) {
+    DescriptorStore provideDescriptorStore(Context context, PackagesStore packagesStore) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
@@ -129,5 +131,15 @@ public class MainModule {
     @Singleton
     IntentQueue provideIntentQueue() {
         return new IntentQueue();
+    }
+
+    @Provides
+    @Singleton
+    WidgetsState provideWidgetsState(Context context) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        if (BuildConfig.DEBUG) {
+            gsonBuilder.setPrettyPrinting();
+        }
+        return new WidgetsStateImpl(context, gsonBuilder.create());
     }
 }

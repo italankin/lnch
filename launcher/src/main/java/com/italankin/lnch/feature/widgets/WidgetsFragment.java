@@ -15,8 +15,11 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
@@ -28,21 +31,29 @@ import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends Fragment implements WidgetsView {
+public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private static final int APP_WIDGET_HOST_ID = 101;
 
     private static final int REQUEST_PICK_APPWIDGET = 0;
     private static final int REQUEST_CREATE_APPWIDGET = 1;
+
+    @InjectPresenter
+    WidgetsPresenter presenter;
+
+    @ProvidePresenter
+    WidgetsPresenter providePresenter() {
+        return LauncherApp.daggerService.presenters().widgets();
+    }
 
     private Picasso picasso;
 
@@ -94,7 +105,22 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
 
         registerWindowInsets(view);
 
-        addBoundWidgets();
+        presenter.loadWidgets();
+    }
+
+    @Override
+    public void onBindWidgets(List<Integer> appWidgetIds) {
+        widgetItemsState.clearWidgets();
+        for (int appWidgetId : appWidgetIds) {
+            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            if (info != null) {
+                addWidget(appWidgetId, info, true);
+            } else {
+                appWidgetHost.deleteAppWidgetId(appWidgetId);
+                presenter.removeWidget(appWidgetId);
+            }
+        }
+        updateWidgets();
     }
 
     @Override
@@ -114,6 +140,7 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
                     int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
                     addWidget(appWidgetId, info, false);
+                    presenter.addWidget(appWidgetId);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
                     updateWidgets();
                 } else {
@@ -143,17 +170,6 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
         }
     }
 
-    private boolean addBoundWidgets() {
-        int[] appWidgetIds = appWidgetHost.getAppWidgetIds();
-        widgetItemsState.clearWidgets();
-        for (int appWidgetId : appWidgetIds) {
-            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-            addWidget(appWidgetId, info, true);
-        }
-        updateWidgets();
-        return appWidgetIds.length > 0;
-    }
-
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
         Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
@@ -176,6 +192,7 @@ public class WidgetsFragment extends Fragment implements WidgetsView {
             }
         } else {
             addWidget(appWidgetId, info, false);
+            presenter.addWidget(appWidgetId);
             newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
             updateWidgets();
         }

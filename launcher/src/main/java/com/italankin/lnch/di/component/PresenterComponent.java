@@ -6,6 +6,7 @@ import com.italankin.lnch.feature.home.apps.AppsPresenter;
 import com.italankin.lnch.feature.settings.apps.list.AppsListPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
+import com.italankin.lnch.feature.widgets.WidgetsPresenter;
 
 import dagger.Component;
 
@@ -22,4 +23,6 @@ public interface PresenterComponent {
     LookAndFeelPresenter lookAndFeel();
 
     BackupPresenter backup();
+
+    WidgetsPresenter widgets();
 }
