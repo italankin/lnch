@@ -13,9 +13,9 @@ import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate
 import com.italankin.lnch.feature.common.preferences.ThemedActivityDelegate;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
-import com.italankin.lnch.feature.settings.base.SimplePreferencesFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
+import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
@@ -36,7 +36,8 @@ public class SettingsActivity extends AppCompatActivity implements
         ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
-        LookAndFeelFragment.Callbacks {
+        LookAndFeelFragment.Callbacks,
+        MiscFragment.Callbacks {
 
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
@@ -133,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showMiscPreferences() {
-        showFragment(SimplePreferencesFragment.newInstance(R.xml.prefs_misc), R.string.settings_home_misc);
+        showFragment(new MiscFragment(), R.string.settings_home_misc);
     }
 
     @Override
@@ -164,6 +165,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void onWallpaperOverlayFinish() {
         fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void showShortcutsPreferences() {
+        showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
     }
 
     private void updateToolbar() {
