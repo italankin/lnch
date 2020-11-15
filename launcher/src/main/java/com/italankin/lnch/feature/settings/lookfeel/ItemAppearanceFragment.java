@@ -241,8 +241,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     private void initPreview(View view) {
         preview = view.findViewById(R.id.item_preview);
-        int backgroundColor = ResUtils.resolveColor(requireContext(), R.attr.colorSelector);
-        preview.setBackgroundColor(backgroundColor & 0x20ffffff);
+        preview.setBackgroundResource(R.drawable.selector_item);
         preview.setText(R.string.preview);
         preview.setAllCaps(true);
         preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));

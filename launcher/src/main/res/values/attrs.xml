@@ -9,9 +9,6 @@
     <!-- divier color (e.g. for lists) -->
     <attr name="colorDivider" format="color|reference" />
 
-    <!-- color for selectable backgrounds -->
-    <attr name="colorSelector" format="color|reference" />
-
     <!-- icons tint -->
     <attr name="colorIconTint" format="color|reference" />
 
