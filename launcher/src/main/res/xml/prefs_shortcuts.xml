@@ -2,6 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
         android:defaultValue="default"
+        android:entries="@array/pref_desc_shortcuts_sort_mode"
+        android:entryValues="@array/pref_values_shortcuts_sort_mode"
+        android:key="shortcuts_sort_mode"
+        android:summary="%s"
+        android:title="@string/settings_home_misc_shortcuts_sort_mode" />
+    <ListPreference
+        android:defaultValue="default"
         android:entries="@array/pref_desc_app_max_dynamic_shortcuts"
         android:entryValues="@array/pref_values_app_max_dynamic_shortcuts"
         android:key="max_dynamic_shortcuts"

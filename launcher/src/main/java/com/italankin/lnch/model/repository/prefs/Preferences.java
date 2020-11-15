@@ -225,6 +225,11 @@ public interface Preferences {
             "apps_list_animate",
             true);
 
+    Pref<ShortcutsSortMode> SHORTCUTS_SORT_MODE = Prefs.create(
+            "shortcuts_sort_mode",
+            ShortcutsSortMode.DEFAULT,
+            ShortcutsSortMode::from);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -257,7 +262,8 @@ public interface Preferences {
             STATUS_BAR_COLOR,
             ENABLE_WIDGETS,
             WIDGETS_POSITION,
-            APPS_LIST_ANIMATE
+            APPS_LIST_ANIMATE,
+            SHORTCUTS_SORT_MODE
     );
 
     ///////////////////////////////////////////////////////////////////////////
@@ -568,6 +574,35 @@ public interface Preferences {
         private final String key;
 
         SearchEngine(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Sorting mode for shortcuts
+     */
+    enum ShortcutsSortMode {
+        DEFAULT("default"),
+        REVERSED("reversed");
+
+        static ShortcutsSortMode from(String s, ShortcutsSortMode defaultValue) {
+            for (ShortcutsSortMode item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        ShortcutsSortMode(String key) {
             this.key = key;
         }
 

@@ -20,6 +20,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -181,7 +182,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void showAppPopup(int position, AppViewModel item) {
         List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
-        getViewState().showAppPopup(position, item, filterDynamicShortcuts(shortcuts));
+        getViewState().showAppPopup(position, item, processShortcuts(shortcuts));
     }
 
     void updateShortcuts(AppDescriptor descriptor) {
@@ -348,7 +349,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         return new Update(newItems, diffResult);
     }
 
-    private List<Shortcut> filterDynamicShortcuts(List<Shortcut> shortcuts) {
+    private List<Shortcut> processShortcuts(List<Shortcut> shortcuts) {
+        if (preferences.get(Preferences.SHORTCUTS_SORT_MODE) == ShortcutsSortMode.REVERSED) {
+            shortcuts = ListUtils.reversedCopy(shortcuts);
+        }
         int max = NumberUtils.parseInt(preferences.get(Preferences.MAX_DYNAMIC_SHORTCUTS), -1);
         if (max < 0 || shortcuts.size() <= max) {
             return shortcuts;

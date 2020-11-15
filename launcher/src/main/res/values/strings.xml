@@ -74,6 +74,7 @@
 
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
+    <string name="settings_home_misc_shortcuts_sort_mode">Sorting</string>
 
     <string name="settings_home_laf">Look and feel</string>
 
