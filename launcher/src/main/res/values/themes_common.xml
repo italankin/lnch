@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.Preferences">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:textColorSecondary">?colorTextSecondary</item>
+    </style>
+
+    <style name="AppTheme.Overlay" parent="ThemeOverlay.AppCompat.DayNight">
+        <item name="android:textColorSecondary">?colorText</item>
+    </style>
+</resources>

@@ -24,7 +24,7 @@
         android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Dark"
+        android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
@@ -32,7 +32,7 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
-            android:theme="@style/AppTheme.Dark.Launcher">
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,7 +51,7 @@
             android:autoRemoveFromRecents="true"
             android:label="@string/settings_title"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.Dark.Preferences"
+            android:theme="@style/AppTheme.Preferences"
             android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="@string/settings_title">
                 <action android:name="android.intent.action.MAIN" />

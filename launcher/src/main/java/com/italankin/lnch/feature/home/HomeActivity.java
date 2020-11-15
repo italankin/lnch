@@ -14,7 +14,6 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.feature.common.preferences.ThemedActivityDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -30,7 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-public class HomeActivity extends AppActivity implements HomeView, ThemedActivityDelegate.ThemeProvider, AppsFragment.Callbacks {
+public class HomeActivity extends AppActivity implements HomeView, AppsFragment.Callbacks {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -52,7 +51,6 @@ public class HomeActivity extends AppActivity implements HomeView, ThemedActivit
         preferences = LauncherApp.daggerService.main().getPreferences();
         intentQueue = LauncherApp.daggerService.main().getIntentQueue();
 
-        ThemedActivityDelegate.attach(this, preferences);
         SupportsOrientationDelegate.attach(this, preferences);
 
         super.onCreate(state);
@@ -102,17 +100,6 @@ public class HomeActivity extends AppActivity implements HomeView, ThemedActivit
             if (currentItem != appsPosition) {
                 pager.setCurrentItem(appsPosition, true);
             }
-        }
-    }
-
-    @Override
-    public int getTheme(Preferences.ColorTheme colorTheme) {
-        switch (colorTheme) {
-            case LIGHT:
-                return R.style.AppTheme_Light_Launcher;
-            default:
-            case DARK:
-                return R.style.AppTheme_Dark_Launcher;
         }
     }
 

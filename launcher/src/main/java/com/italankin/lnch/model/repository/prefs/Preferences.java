@@ -274,6 +274,7 @@ public interface Preferences {
      * Color theme of the Launcher's UI
      */
     enum ColorTheme {
+        SYSTEM("system"),
         DARK("dark"),
         LIGHT("light");
 

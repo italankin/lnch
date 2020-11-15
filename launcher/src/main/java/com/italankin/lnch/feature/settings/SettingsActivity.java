@@ -10,7 +10,6 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.feature.common.preferences.ThemedActivityDelegate;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
@@ -28,10 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class SettingsActivity extends AppCompatActivity implements
-        ThemedActivityDelegate.ThemeProvider,
         SettingsRootFragment.Callbacks,
         ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
@@ -46,12 +43,9 @@ public class SettingsActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
 
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Preferences preferences = LauncherApp.daggerService.main().getPreferences();
-        ThemedActivityDelegate.attach(this, preferences);
         SupportsOrientationDelegate.attach(this, preferences);
 
         super.onCreate(savedInstanceState);
@@ -81,29 +75,12 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        compositeDisposable.dispose();
-    }
-
-    @Override
     public void onBackPressed() {
         Fragment fragment = fragmentManager.findFragmentById(R.id.container);
         if (fragment instanceof BackButtonHandler && !((BackButtonHandler) fragment).onBackPressed()) {
             return;
         }
         super.onBackPressed();
-    }
-
-    @Override
-    public int getTheme(Preferences.ColorTheme colorTheme) {
-        switch (colorTheme) {
-            case LIGHT:
-                return R.style.AppTheme_Light_Preferences;
-            default:
-            case DARK:
-                return R.style.AppTheme_Dark_Preferences;
-        }
     }
 
     @Override
