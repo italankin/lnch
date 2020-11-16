@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory android:title="@string/settings_home_laf_color_theme">
         <ListPreference
-            android:defaultValue="dark"
+            android:defaultValue="system"
             android:entries="@array/pref_desc_color_themes"
             android:entryValues="@array/pref_values_color_themes"
             android:key="color_theme"

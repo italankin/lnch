@@ -159,7 +159,7 @@ public interface Preferences {
 
     Pref<ColorTheme> COLOR_THEME = Prefs.create(
             "color_theme",
-            ColorTheme.DARK,
+            ColorTheme.SYSTEM,
             ColorTheme::from);
 
     RangePref<Float> ITEM_TEXT_SIZE = Prefs.createFloatRange(

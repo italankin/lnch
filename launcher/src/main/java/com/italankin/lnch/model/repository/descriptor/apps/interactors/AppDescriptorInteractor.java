@@ -53,6 +53,7 @@ public class AppDescriptorInteractor {
     }
 
     private boolean isDarkTheme() {
-        return preferences.get(Preferences.COLOR_THEME) == Preferences.ColorTheme.DARK;
+        Preferences.ColorTheme colorTheme = preferences.get(Preferences.COLOR_THEME);
+        return colorTheme != Preferences.ColorTheme.LIGHT;
     }
 }
