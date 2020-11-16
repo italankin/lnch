@@ -243,7 +243,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         } else {
             lce.showContent();
         }
-        dismissPopup();
 
         applyUserPrefs(update.userPrefs);
 
