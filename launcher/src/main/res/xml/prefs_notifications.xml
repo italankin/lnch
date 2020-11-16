@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_home_misc_notifications_dot">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="notification_dot"
+            android:summary="@string/settings_home_misc_notifications_dot_summary"
+            android:title="@string/settings_home_misc_notifications_dot" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="notification_dot"
+            android:key="notification_dot_ongoing"
+            android:title="@string/settings_home_misc_notifications_dot_ongoing" />
+    </PreferenceCategory>
+</PreferenceScreen>

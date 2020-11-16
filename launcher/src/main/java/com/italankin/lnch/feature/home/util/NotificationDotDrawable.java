@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class NotificationBadgeDrawable extends Drawable {
+public class NotificationDotDrawable extends Drawable {
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Rect rect = new Rect();
@@ -21,7 +21,7 @@ public class NotificationBadgeDrawable extends Drawable {
     private boolean isVisible = false;
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    public NotificationBadgeDrawable(int size, int color, int shadowColor) {
+    public NotificationDotDrawable(int size, int color, int shadowColor) {
         this.size = size;
         this.radius = size / 2;
         paint.setColor(color);

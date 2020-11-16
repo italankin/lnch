@@ -12,9 +12,11 @@ public interface NotificationsRepository {
 
     void postNotification(StatusBarNotification sbn);
 
+    void postNotifications(StatusBarNotification... sbns);
+
     void removeNotification(StatusBarNotification sbn);
 
     void clearNotifications();
 
-    Observable<Map<AppDescriptor, NotificationBadge>> observe();
+    Observable<Map<AppDescriptor, NotificationDot>> observe();
 }

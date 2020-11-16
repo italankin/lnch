@@ -5,15 +5,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NotificationBadge {
+public class NotificationDot {
 
     final Set<Integer> ids;
 
-    NotificationBadge(Integer... ids) {
+    NotificationDot(Integer... ids) {
         this(new HashSet<>(Arrays.asList(ids)));
     }
 
-    NotificationBadge(Set<Integer> ids) {
+    NotificationDot(Set<Integer> ids) {
         this.ids = Collections.unmodifiableSet(ids);
     }
 
@@ -29,7 +29,7 @@ public class NotificationBadge {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        NotificationBadge that = (NotificationBadge) o;
+        NotificationDot that = (NotificationDot) o;
         return ids.equals(that.ids);
     }
 

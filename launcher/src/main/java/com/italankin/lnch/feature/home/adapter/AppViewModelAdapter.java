@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.util.NotificationBadgeDrawable;
+import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.ResUtils;
 
@@ -62,26 +62,26 @@ public class AppViewModelAdapter
 
     static class ViewHolder extends HomeAdapterDelegate.ViewHolder<AppViewModel> {
         final TextView label;
-        final NotificationBadgeDrawable notificationBadge;
+        final NotificationDotDrawable notificationDot;
 
         ViewHolder(View itemView) {
             super(itemView);
             label = itemView.findViewById(R.id.label);
 
-            int size = itemView.getResources().getDimensionPixelSize(R.dimen.notification_badge_size);
-            notificationBadge = new NotificationBadgeDrawable(size,
-                    ContextCompat.getColor(itemView.getContext(), R.color.notification_badge),
+            notificationDot = new NotificationDotDrawable(
+                    itemView.getResources().getDimensionPixelSize(R.dimen.notification_dot_size),
+                    ContextCompat.getColor(itemView.getContext(), R.color.notification_dot),
                     ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault));
             label.setForegroundGravity(Gravity.END | Gravity.TOP);
-            label.setForeground(notificationBadge);
+            label.setForeground(notificationDot);
         }
 
         @Override
         void bind(AppViewModel item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
-            notificationBadge.setMargin(itemPrefs.itemPadding * 2);
-            notificationBadge.setVisible(item.isBadgeVisible());
+            notificationDot.setMargin(itemPrefs.itemPadding * 2);
+            notificationDot.setVisible(item.isBadgeVisible());
         }
 
         @Nullable

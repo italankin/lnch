@@ -15,6 +15,7 @@ import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
+import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
 import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
@@ -147,6 +148,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showShortcutsPreferences() {
         showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
+    }
+
+    @Override
+    public void showNotificationsPreferences() {
+        showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
     }
 
     private void updateToolbar() {

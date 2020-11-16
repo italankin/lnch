@@ -5,6 +5,7 @@ import android.service.notification.StatusBarNotification;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,22 +23,34 @@ import io.reactivex.subjects.PublishSubject;
 public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private final DescriptorRepository descriptorRepository;
-    private final PublishSubject<Map<AppDescriptor, NotificationBadge>> updates = PublishSubject.create();
+    private final Preferences preferences;
+    private final PublishSubject<Map<AppDescriptor, NotificationDot>> updates = PublishSubject.create();
 
-    private final ConcurrentMap<AppDescriptor, NotificationBadge> state = new ConcurrentHashMap<>();
+    private final ConcurrentMap<AppDescriptor, NotificationDot> state = new ConcurrentHashMap<>();
 
-    public NotificationsRepositoryImpl(DescriptorRepository descriptorRepository) {
+    public NotificationsRepositoryImpl(DescriptorRepository descriptorRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
+        this.preferences = preferences;
     }
 
     @Override
     public void postNotification(StatusBarNotification sbn) {
-        sendUpdate(sbn.getPackageName(), sbn.getId(), Type.POSTED);
+        modifyState(sbn, Type.POSTED);
+        updates.onNext(state);
     }
 
     @Override
     public void removeNotification(StatusBarNotification sbn) {
-        sendUpdate(sbn.getPackageName(), sbn.getId(), Type.REMOVED);
+        modifyState(sbn, Type.REMOVED);
+        updates.onNext(state);
+    }
+
+    @Override
+    public void postNotifications(StatusBarNotification... sbns) {
+        for (StatusBarNotification sbn : sbns) {
+            modifyState(sbn, Type.POSTED);
+        }
+        updates.onNext(state);
     }
 
     @Override
@@ -47,23 +60,12 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     @Override
-    public Observable<Map<AppDescriptor, NotificationBadge>> observe() {
+    public Observable<Map<AppDescriptor, NotificationDot>> observe() {
         return observeApps()
                 .map(this::updateState)
                 .startWith(state)
                 .mergeWith(updates)
                 .map(Collections::unmodifiableMap);
-    }
-
-    private Map<AppDescriptor, NotificationBadge> updateState(List<AppDescriptor> appDescriptors) {
-        // remove any notifications, which belong to non-existent apps
-        Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
-        for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
-            if (!apps.contains(i.next())) {
-                i.remove();
-            }
-        }
-        return state;
     }
 
     private Observable<List<AppDescriptor>> observeApps() {
@@ -80,37 +82,60 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .distinctUntilChanged();
     }
 
-    private void sendUpdate(String packageName, int id, Type type) {
+    private Map<AppDescriptor, NotificationDot> updateState(List<AppDescriptor> appDescriptors) {
+        // remove any notifications, which belong to non-existent apps
+        Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
+        for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
+            if (!apps.contains(i.next())) {
+                i.remove();
+            }
+        }
+        return state;
+    }
+
+    private void modifyState(StatusBarNotification sbn, Type type) {
+        if (sbn.isOngoing() && !preferences.get(Preferences.NOTIFICATION_DOT_ONGOING)) {
+            return;
+        }
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
-        AppDescriptor app = findAppDescriptor(appDescriptors, packageName);
+        AppDescriptor app = findAppDescriptor(appDescriptors, sbn.getPackageName());
         if (app != null) {
-            NotificationBadge badge = state.get(app);
-            if (badge != null) {
+            NotificationDot dot = state.get(app);
+            if (dot != null) {
                 switch (type) {
                     case POSTED:
-                        if (!badge.ids.contains(id)) {
-                            HashSet<Integer> s = new HashSet<>(badge.ids);
-                            s.add(id);
-                            state.put(app, new NotificationBadge(s));
-                        }
+                        modifyStatePost(app, dot, sbn.getId());
                         break;
                     case REMOVED:
-                        if (badge.ids.contains(id)) {
-                            HashSet<Integer> s = new HashSet<>(badge.ids);
-                            s.remove(id);
-                            if (s.isEmpty()) {
-                                state.remove(app);
-                            } else {
-                                state.put(app, new NotificationBadge(s));
-                            }
-                        }
+                        modifyStateRemove(app, dot, sbn.getId());
                         break;
                 }
             } else if (type == Type.POSTED) {
-                state.put(app, new NotificationBadge(id));
+                state.put(app, new NotificationDot(sbn.getId()));
             }
         }
-        updates.onNext(state);
+    }
+
+    private void modifyStatePost(AppDescriptor app, NotificationDot dot, int id) {
+        if (dot.ids.contains(id)) {
+            return;
+        }
+        HashSet<Integer> s = new HashSet<>(dot.ids);
+        s.add(id);
+        state.put(app, new NotificationDot(s));
+    }
+
+    private void modifyStateRemove(AppDescriptor app, NotificationDot dot, int id) {
+        if (!dot.ids.contains(id)) {
+            return;
+        }
+        HashSet<Integer> s = new HashSet<>(dot.ids);
+        s.remove(id);
+        if (s.isEmpty()) {
+            state.remove(app);
+        } else {
+            state.put(app, new NotificationDot(s));
+        }
     }
 
     private AppDescriptor findAppDescriptor(List<AppDescriptor> descriptors, String packageName) {

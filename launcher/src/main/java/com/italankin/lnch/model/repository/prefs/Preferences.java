@@ -230,8 +230,12 @@ public interface Preferences {
             ShortcutsSortMode.DEFAULT,
             ShortcutsSortMode::from);
 
-    Pref<Boolean> NOTIFICATION_BADGE = Prefs.createBoolean(
-            "notification_badge",
+    Pref<Boolean> NOTIFICATION_DOT = Prefs.createBoolean(
+            "notification_dot",
+            false);
+
+    Pref<Boolean> NOTIFICATION_DOT_ONGOING = Prefs.createBoolean(
+            "notification_dot_ongoing",
             false);
 
     List<Pref<?>> ALL = Arrays.asList(
@@ -268,7 +272,8 @@ public interface Preferences {
             WIDGETS_POSITION,
             APPS_LIST_ANIMATE,
             SHORTCUTS_SORT_MODE,
-            NOTIFICATION_BADGE
+            NOTIFICATION_DOT,
+            NOTIFICATION_DOT_ONGOING
     );
 
     ///////////////////////////////////////////////////////////////////////////

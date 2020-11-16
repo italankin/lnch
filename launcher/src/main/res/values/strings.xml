@@ -67,8 +67,6 @@
 
     <string name="settings_home_misc">Miscellaneous</string>
     <string name="settings_home_misc_scrollbar">Show scroll indicator</string>
-    <string name="settings_home_misc_notification_badge">Notification badge</string>
-    <string name="settings_home_misc_notification_badge_summary">Show a badge on apps which have active notifications</string>
     <string name="settings_home_misc_scroll_top">Scroll to top</string>
     <string name="settings_home_misc_scroll_top_summary">Scroll apps list to top when then launcher becomes visible</string>
     <string name="settings_home_misc_long_action">App long click action</string>
@@ -79,6 +77,12 @@
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
     <string name="settings_home_misc_shortcuts_sort_mode">Sorting</string>
+
+    <string name="settings_home_misc_notifications_title">Notifications</string>
+    <string name="settings_home_misc_notifications">Manage notification settings</string>
+    <string name="settings_home_misc_notifications_dot">Notification dots</string>
+    <string name="settings_home_misc_notifications_dot_summary">Show a badge on apps which have active notifications</string>
+    <string name="settings_home_misc_notifications_dot_ongoing">Show for ongoing notifications</string>
 
     <string name="settings_home_laf">Look and feel</string>
 

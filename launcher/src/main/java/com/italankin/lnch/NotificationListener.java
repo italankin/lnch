@@ -8,36 +8,47 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class NotificationListener extends NotificationListenerService {
 
-    private Disposable prefDisposable = Disposables.disposed();
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     private NotificationsRepository notificationsRepository;
+    private Preferences preferences;
 
     @Override
     public void onListenerConnected() {
         Timber.d("onListenerConnected");
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+
+        preferences = LauncherApp.daggerService.main().getPreferences();
         notificationsRepository = LauncherApp.daggerService.main().getNotificationsRepository();
-        prefDisposable = preferences.observe(Preferences.NOTIFICATION_BADGE)
+
+        Disposable dot = preferences.observe(Preferences.NOTIFICATION_DOT)
                 .subscribeOn(Schedulers.io())
                 .map(Preferences.Value::get)
-                .startWith(preferences.get(Preferences.NOTIFICATION_BADGE))
+                .startWith(preferences.get(Preferences.NOTIFICATION_DOT))
                 .delay(500, TimeUnit.MILLISECONDS)
-                .subscribe(notificationBadgeEnabled -> {
-                    if (notificationBadgeEnabled) {
-                        for (StatusBarNotification sbn : getActiveNotifications()) {
-                            notificationsRepository.postNotification(sbn);
-                        }
+                .subscribe(enabled -> {
+                    if (enabled) {
+                        notificationsRepository.postNotifications(getActiveNotifications());
                     } else {
                         notificationsRepository.clearNotifications();
                     }
                 });
+        disposables.add(dot);
+
+        Disposable ongoing = preferences.observe(Preferences.NOTIFICATION_DOT_ONGOING)
+                .subscribeOn(Schedulers.io())
+                .delay(500, TimeUnit.MILLISECONDS)
+                .subscribe(ignored -> {
+                    notificationsRepository.clearNotifications();
+                    notificationsRepository.postNotifications(getActiveNotifications());
+                });
+        disposables.add(ongoing);
     }
 
     @Override
@@ -56,6 +67,6 @@ public class NotificationListener extends NotificationListenerService {
     public void onListenerDisconnected() {
         Timber.d("onListenerDisconnected");
         notificationsRepository.clearNotifications();
-        prefDisposable.dispose();
+        disposables.clear();
     }
 }

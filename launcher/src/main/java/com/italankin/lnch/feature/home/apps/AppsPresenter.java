@@ -19,7 +19,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
-import com.italankin.lnch.model.repository.notifications.NotificationBadge;
+import com.italankin.lnch.model.repository.notifications.NotificationDot;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
@@ -336,7 +336,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .skip(1); // skip empty update
     }
 
-    private Observable<Map<AppDescriptor, NotificationBadge>> observeNotifications() {
+    private Observable<Map<AppDescriptor, NotificationDot>> observeNotifications() {
         return notificationsRepository.observe()
                 .doOnNext(map -> {
                     Timber.d("notifications=%s", map);
@@ -345,8 +345,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @NotNull
     private List<DescriptorItem> concatNotifications(List<DescriptorItem> items,
-            Map<AppDescriptor, NotificationBadge> notifications) {
-        if (!preferences.get(Preferences.NOTIFICATION_BADGE)) {
+            Map<AppDescriptor, NotificationDot> notifications) {
+        if (!preferences.get(Preferences.NOTIFICATION_DOT)) {
             return items;
         }
         List<DescriptorItem> result = new ArrayList<>(items.size());
@@ -356,8 +356,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 continue;
             }
             AppViewModel app = (AppViewModel) item;
-            NotificationBadge notificationBadge = notifications.get(app.getDescriptor());
-            boolean badgeVisible = notificationBadge != null && notificationBadge.getCount() > 0;
+            NotificationDot notificationDot = notifications.get(app.getDescriptor());
+            boolean badgeVisible = notificationDot != null && notificationDot.getCount() > 0;
             if (badgeVisible != app.isBadgeVisible()) {
                 // create a copy of AppViewModel to update state correctly
                 AppViewModel newApp = new AppViewModel(app);
