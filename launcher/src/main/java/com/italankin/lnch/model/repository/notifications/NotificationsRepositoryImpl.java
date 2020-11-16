@@ -1,10 +1,10 @@
 package com.italankin.lnch.model.repository.notifications;
 
+import android.service.notification.StatusBarNotification;
+
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,6 @@ import io.reactivex.subjects.PublishSubject;
 public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private final DescriptorRepository descriptorRepository;
-    private final PublishSubject<Event> events = PublishSubject.create();
     private final PublishSubject<Map<AppDescriptor, NotificationBadge>> updates = PublishSubject.create();
 
     private final ConcurrentMap<AppDescriptor, NotificationBadge> state = new ConcurrentHashMap<>();
@@ -32,13 +31,13 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     @Override
-    public void postNotification(String packageName, int id) {
-        events.onNext(new Event(packageName, Event.Type.POSTED, id));
+    public void postNotification(StatusBarNotification sbn) {
+        sendUpdate(sbn.getPackageName(), sbn.getId(), Type.POSTED);
     }
 
     @Override
-    public void removeNotification(String packageName, int id) {
-        events.onNext(new Event(packageName, Event.Type.REMOVED, id));
+    public void removeNotification(StatusBarNotification sbn) {
+        sendUpdate(sbn.getPackageName(), sbn.getId(), Type.REMOVED);
     }
 
     @Override
@@ -49,42 +48,14 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     @Override
     public Observable<Map<AppDescriptor, NotificationBadge>> observe() {
-        return Observable.combineLatest(observeApps(), events, this::updateState)
+        return observeApps()
+                .map(this::updateState)
                 .startWith(state)
                 .mergeWith(updates)
                 .map(Collections::unmodifiableMap);
     }
 
-    @NotNull
-    private Map<AppDescriptor, NotificationBadge> updateState(List<AppDescriptor> appDescriptors, Event event) {
-        AppDescriptor app = findAppDescriptor(appDescriptors, event.packageName);
-        if (app != null) {
-            NotificationBadge badge = state.get(app);
-            if (badge != null) {
-                switch (event.type) {
-                    case POSTED:
-                        if (!badge.ids.contains(event.id)) {
-                            Set<Integer> s = new HashSet<>(badge.ids);
-                            s.add(event.id);
-                            state.put(app, new NotificationBadge(s));
-                        }
-                        break;
-                    case REMOVED:
-                        if (badge.ids.contains(event.id)) {
-                            Set<Integer> s = new HashSet<>(badge.ids);
-                            s.remove(event.id);
-                            if (s.isEmpty()) {
-                                state.remove(app);
-                            } else {
-                                state.put(app, new NotificationBadge(s));
-                            }
-                        }
-                        break;
-                }
-            } else if (event.type == Event.Type.POSTED) {
-                state.put(app, new NotificationBadge(event.id));
-            }
-        }
+    private Map<AppDescriptor, NotificationBadge> updateState(List<AppDescriptor> appDescriptors) {
         // remove any notifications, which belong to non-existent apps
         Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
         for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
@@ -109,6 +80,39 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .distinctUntilChanged();
     }
 
+    private void sendUpdate(String packageName, int id, Type type) {
+        List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
+        AppDescriptor app = findAppDescriptor(appDescriptors, packageName);
+        if (app != null) {
+            NotificationBadge badge = state.get(app);
+            if (badge != null) {
+                switch (type) {
+                    case POSTED:
+                        if (!badge.ids.contains(id)) {
+                            HashSet<Integer> s = new HashSet<>(badge.ids);
+                            s.add(id);
+                            state.put(app, new NotificationBadge(s));
+                        }
+                        break;
+                    case REMOVED:
+                        if (badge.ids.contains(id)) {
+                            HashSet<Integer> s = new HashSet<>(badge.ids);
+                            s.remove(id);
+                            if (s.isEmpty()) {
+                                state.remove(app);
+                            } else {
+                                state.put(app, new NotificationBadge(s));
+                            }
+                        }
+                        break;
+                }
+            } else if (type == Type.POSTED) {
+                state.put(app, new NotificationBadge(id));
+            }
+        }
+        updates.onNext(state);
+    }
+
     private AppDescriptor findAppDescriptor(List<AppDescriptor> descriptors, String packageName) {
         for (AppDescriptor appDescriptor : descriptors) {
             if (appDescriptor.packageName.equals(packageName)) {
@@ -118,20 +122,8 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         return null;
     }
 
-    private static class Event {
-        final String packageName;
-        final Type type;
-        final int id;
-
-        Event(String packageName, Type type, int id) {
-            this.packageName = packageName;
-            this.type = type;
-            this.id = id;
-        }
-
-        enum Type {
-            POSTED,
-            REMOVED
-        }
+    private enum Type {
+        POSTED,
+        REMOVED
     }
 }

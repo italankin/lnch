@@ -32,7 +32,7 @@ public class NotificationListener extends NotificationListenerService {
                 .subscribe(notificationBadgeEnabled -> {
                     if (notificationBadgeEnabled) {
                         for (StatusBarNotification sbn : getActiveNotifications()) {
-                            notificationsRepository.postNotification(sbn.getPackageName(), sbn.getId());
+                            notificationsRepository.postNotification(sbn);
                         }
                     } else {
                         notificationsRepository.clearNotifications();
@@ -43,13 +43,13 @@ public class NotificationListener extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         Timber.d("onNotificationPosted: %s", sbn);
-        notificationsRepository.postNotification(sbn.getPackageName(), sbn.getId());
+        notificationsRepository.postNotification(sbn);
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         Timber.d("onNotificationRemoved: %s", sbn);
-        notificationsRepository.removeNotification(sbn.getPackageName(), sbn.getId());
+        notificationsRepository.removeNotification(sbn);
     }
 
     @Override
