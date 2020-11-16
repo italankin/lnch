@@ -126,9 +126,11 @@
     <string name="settings_home_laf_color_theme">Color theme</string>
     <string name="settings_home_laf_other_large_search_Bar">Large search bar</string>
     <string name="settings_home_laf_other_large_search_Bar_summary">Increase height of the search bar</string>
-    <string name="settings_home_laf_other_color_overlay_show">Use one color for all apps</string>
+    <string name="settings_home_laf_other_apps">Apps</string>
+    <string name="settings_home_laf_other_color_overlay_show">Single apps color</string>
+    <string name="settings_home_laf_other_color_overlay_show_summary">Use the same color for all apps</string>
     <string name="settings_home_laf_other_apps_list_animate">Animate apps list appearance</string>
-    <string name="settings_home_laf_other_color_overlay">Custom color for all apps</string>
+    <string name="settings_home_laf_other_color_overlay">Custom color</string>
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
 
     <string name="settings_home_laf_appearance">Item appearance</string>
