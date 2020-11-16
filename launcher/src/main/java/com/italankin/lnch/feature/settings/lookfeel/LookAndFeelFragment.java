@@ -19,12 +19,15 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView {
 
     private static final String TAG_COLOR_OVERLAY = "color_overlay";
+    private static final String TAG_STATUS_COLOR = "status_color";
+    private static final String TAG_DOT_COLOR = "dot_color";
 
     @InjectPresenter
     LookAndFeelPresenter presenter;
@@ -87,9 +90,14 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             onStatusBarColorClick();
             return true;
         });
+        findPreference(Preferences.NOTIFICATION_DOT_COLOR).setOnPreferenceClickListener(preference -> {
+            onNotificationDotColorClick();
+            return true;
+        });
         findPreference(Preferences.APPS_LIST_ANIMATE).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
         updateColorOverlay(preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW));
         updateStatusBarColor();
+        updateNotificationDotColor();
     }
 
     private void updateColorOverlay(Boolean newValue) {
@@ -134,7 +142,33 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .showResetButton(true)
                 .setListenerProvider(new SetStatusBarColor())
                 .build()
-                .show(getChildFragmentManager(), TAG_COLOR_OVERLAY);
+                .show(getChildFragmentManager(), TAG_STATUS_COLOR);
+    }
+
+    private void onNotificationDotColorClick() {
+        Integer color = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
+        int selectedColor = color != null ? color : ContextCompat.getColor(requireContext(), R.color.notification_dot);
+        new ColorPickerDialogFragment.Builder()
+                .setColorModel(ColorPickerView.ColorModel.RGB)
+                .setHexVisible(false)
+                .setPreviewVisible(true)
+                .setSelectedColor(selectedColor)
+                .showResetButton(true)
+                .setListenerProvider(new NotificationDotColor())
+                .build()
+                .show(getChildFragmentManager(), TAG_DOT_COLOR);
+    }
+
+    private void updateNotificationDotColor() {
+        Preference preference = findPreference(Preferences.NOTIFICATION_DOT_COLOR);
+        boolean dotEnabled = preferences.get(Preferences.NOTIFICATION_DOT);
+        preference.setEnabled(dotEnabled);
+        Integer color = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
+        if (dotEnabled && color != null) {
+            preference.setSummary(String.format("#%06x", color));
+        } else {
+            preference.setSummary(null);
+        }
     }
 
     private static class SetAppsColorOverlay implements ListenerFragment<ColorPickerDialogFragment.Listener> {
@@ -172,6 +206,26 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 public void onColorReset() {
                     fragment.preferences.reset(Preferences.STATUS_BAR_COLOR);
                     fragment.updateStatusBarColor();
+                }
+            };
+        }
+    }
+
+    private static class NotificationDotColor implements ListenerFragment<ColorPickerDialogFragment.Listener> {
+        @Override
+        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
+            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
+            return new ColorPickerDialogFragment.Listener() {
+                @Override
+                public void onColorPicked(int newColor) {
+                    fragment.preferences.set(Preferences.NOTIFICATION_DOT_COLOR, newColor);
+                    fragment.updateNotificationDotColor();
+                }
+
+                @Override
+                public void onColorReset() {
+                    fragment.preferences.reset(Preferences.NOTIFICATION_DOT_COLOR);
+                    fragment.updateNotificationDotColor();
                 }
             };
         }

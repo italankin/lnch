@@ -1,13 +1,13 @@
 package com.italankin.lnch.feature.home.model;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 public final class UserPrefs {
 
@@ -26,6 +26,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
         PREFERENCES.add(Preferences.ITEM_SHADOW_COLOR);
         PREFERENCES.add(Preferences.ITEM_FONT);
+        PREFERENCES.add(Preferences.NOTIFICATION_DOT_COLOR);
     }
 
     public final Preferences.HomeLayout homeLayout;
@@ -120,6 +121,7 @@ public final class UserPrefs {
         @Nullable
         public final Integer itemShadowColor;
         public final Preferences.Font itemFont;
+        public final Integer notificationDotColor;
 
         private ItemPrefs(Preferences preferences) {
             itemTextSize = preferences.get(Preferences.ITEM_TEXT_SIZE);
@@ -127,6 +129,7 @@ public final class UserPrefs {
             itemShadowRadius = preferences.get(Preferences.ITEM_SHADOW_RADIUS);
             itemShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
             itemFont = preferences.get(Preferences.ITEM_FONT);
+            notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
         }
 
         @Override
@@ -144,12 +147,13 @@ public final class UserPrefs {
             if (itemPadding != itemPrefs.itemPadding) {
                 return false;
             }
+            if (!Objects.equals(notificationDotColor, itemPrefs.notificationDotColor)) {
+                return false;
+            }
             if (Float.compare(itemPrefs.itemShadowRadius, itemShadowRadius) != 0) {
                 return false;
             }
-            if (itemShadowColor != null
-                    ? itemShadowColor.equals(itemPrefs.itemShadowColor)
-                    : itemPrefs.itemShadowColor != null) {
+            if (!Objects.equals(itemShadowColor, itemPrefs.itemShadowColor)) {
                 return false;
             }
             return itemFont == itemPrefs.itemFont;
@@ -161,6 +165,9 @@ public final class UserPrefs {
             result = 31 * result + itemPadding;
             result = 31 * result + (itemShadowRadius != +0.0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
+            if (notificationDotColor != null) {
+                result = 31 * result + notificationDotColor;
+            }
             if (itemShadowColor != null) {
                 result = 31 * result + itemShadowColor;
             }
@@ -173,8 +180,10 @@ public final class UserPrefs {
                     "itemTextSize=" + itemTextSize +
                     ", itemPadding=" + itemPadding +
                     ", itemShadowRadius=" + itemShadowRadius +
-                    ", itemShadowColor=" + (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
+                    ", itemShadowColor=" +
+                    (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
                     ", itemFont=" + itemFont +
+                    ", notificationDotColor=" + notificationDotColor +
                     '}';
         }
     }

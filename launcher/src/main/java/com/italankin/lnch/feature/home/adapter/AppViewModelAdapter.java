@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.ResUtils;
@@ -47,6 +48,12 @@ public class AppViewModelAdapter
             return false;
         });
         return holder;
+    }
+
+    @Override
+    protected void update(ViewHolder holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
+        super.update(holder, label, itemPrefs);
+        holder.notificationDot.setColor(itemPrefs.notificationDotColor);
     }
 
     @Override

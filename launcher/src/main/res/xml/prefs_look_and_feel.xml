@@ -30,6 +30,12 @@
             android:title="@string/settings_home_laf_other_color_overlay"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_home_laf_notification">
+        <Preference
+            android:key="notification_dot_color"
+            android:title="@string/settings_home_laf_notification_dot_color"
+            tools:ignore="PrefsDetector" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other">
         <CheckBoxPreference
             android:defaultValue="false"

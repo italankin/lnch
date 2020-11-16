@@ -16,16 +16,26 @@ public class NotificationDotDrawable extends Drawable {
     private final Rect rect = new Rect();
     private final int size;
     private final int radius;
+    private final int defaultColor;
     private int margin;
 
     private boolean isVisible = false;
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    public NotificationDotDrawable(int size, int color, int shadowColor) {
+    public NotificationDotDrawable(int size, int defaultColor, int shadowColor) {
         this.size = size;
         this.radius = size / 2;
-        paint.setColor(color);
+        this.defaultColor = defaultColor;
+        paint.setColor(defaultColor);
         paint.setShadowLayer(size / 4, 0, 0, shadowColor);
+    }
+
+    public void setColor(Integer color) {
+        int newColor = color != null ? color : defaultColor;
+        if (paint.getColor() != newColor) {
+            paint.setColor(newColor);
+            invalidateSelf();
+        }
     }
 
     public void setMargin(int margin) {

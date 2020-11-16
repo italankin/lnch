@@ -44,24 +44,28 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
         this.itemPrefs = itemPrefs;
     }
 
-    private void updateHolderView(ViewHolder<T> holder) {
+    private void updateHolderView(VH holder) {
         try {
             TextView label = holder.getLabel();
             if (label == null || itemPrefs == null || itemPrefs.equals(holder.itemPrefs)) {
                 return;
             }
-            int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
-            ViewUtils.setPadding(label, padding);
-            label.setTextSize(itemPrefs.itemTextSize);
-            int shadowColor = itemPrefs.itemShadowColor != null
-                    ? itemPrefs.itemShadowColor
-                    : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
-            label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
-                    label.getShadowDy(), shadowColor);
-            label.setTypeface(itemPrefs.itemFont.typeface());
+            update(holder, label, itemPrefs);
         } finally {
             holder.itemPrefs = itemPrefs;
         }
+    }
+
+    protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
+        int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
+        ViewUtils.setPadding(label, padding);
+        label.setTextSize(itemPrefs.itemTextSize);
+        int shadowColor = itemPrefs.itemShadowColor != null
+                ? itemPrefs.itemShadowColor
+                : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
+        label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
+                label.getShadowDy(), shadowColor);
+        label.setTypeface(itemPrefs.itemFont.typeface());
     }
 
     abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {

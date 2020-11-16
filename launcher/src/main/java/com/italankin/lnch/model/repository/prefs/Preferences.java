@@ -234,6 +234,10 @@ public interface Preferences {
             "notification_dot",
             false);
 
+    Pref<Integer> NOTIFICATION_DOT_COLOR = Prefs.createInteger(
+            "notification_dot_color",
+            null);
+
     Pref<Boolean> NOTIFICATION_DOT_ONGOING = Prefs.createBoolean(
             "notification_dot_ongoing",
             false);
@@ -273,6 +277,7 @@ public interface Preferences {
             APPS_LIST_ANIMATE,
             SHORTCUTS_SORT_MODE,
             NOTIFICATION_DOT,
+            NOTIFICATION_DOT_COLOR,
             NOTIFICATION_DOT_ONGOING
     );
 

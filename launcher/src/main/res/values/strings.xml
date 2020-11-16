@@ -122,6 +122,9 @@
     <string name="settings_search_engine_custom_format_hint">Must start with <i>http://</i> or <i>https://</i> and contain <i>%s</i> as a query placeholder</string>
     <string name="settings_search_engine_custom_format_edit_hint">https://example.com/search?q=%s</string>
 
+    <string name="settings_home_laf_notification">Notification dots</string>
+    <string name="settings_home_laf_notification_dot_color">Notification dot color</string>
+
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>
     <string name="settings_home_laf_other_large_search_Bar">Large search bar</string>
