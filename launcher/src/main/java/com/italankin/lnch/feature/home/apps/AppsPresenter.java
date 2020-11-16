@@ -170,6 +170,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void stopCustomize() {
+        if (editor.isEmpty()) {
+            update();
+            return;
+        }
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
