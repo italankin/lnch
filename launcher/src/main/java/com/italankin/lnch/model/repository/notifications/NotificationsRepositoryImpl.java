@@ -94,11 +94,15 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     private void modifyState(StatusBarNotification sbn, Type type) {
-        if (sbn.isOngoing() && !preferences.get(Preferences.NOTIFICATION_DOT_ONGOING)) {
-            return;
-        }
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
         AppDescriptor app = findAppDescriptor(appDescriptors, sbn.getPackageName());
+        if (sbn.isOngoing() && !showOngoing()) {
+            NotificationDot dot = state.get(app);
+            if (dot != null) {
+                modifyStateRemove(app, dot, sbn.getId());
+            }
+            return;
+        }
         if (app != null) {
             NotificationDot dot = state.get(app);
             if (dot != null) {
@@ -145,6 +149,10 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
             }
         }
         return null;
+    }
+
+    private Boolean showOngoing() {
+        return preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
     }
 
     private enum Type {
