@@ -35,22 +35,28 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     @Override
     public void postNotification(StatusBarNotification sbn) {
-        modifyState(sbn, Type.POSTED);
-        updates.onNext(state);
+        if (modifyState(sbn, Type.POSTED)) {
+            updates.onNext(state);
+        }
     }
 
     @Override
     public void removeNotification(StatusBarNotification sbn) {
-        modifyState(sbn, Type.REMOVED);
-        updates.onNext(state);
+        if (modifyState(sbn, Type.REMOVED)) {
+            updates.onNext(state);
+        }
     }
 
     @Override
     public void postNotifications(StatusBarNotification... sbns) {
+        boolean modified = false;
         for (StatusBarNotification sbn : sbns) {
-            modifyState(sbn, Type.POSTED);
+            // always run modifyState function
+            modified = modifyState(sbn, Type.POSTED) | modified;
         }
-        updates.onNext(state);
+        if (modified) {
+            updates.onNext(state);
+        }
     }
 
     @Override
@@ -93,53 +99,55 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         return state;
     }
 
-    private void modifyState(StatusBarNotification sbn, Type type) {
+    private boolean modifyState(StatusBarNotification sbn, Type type) {
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
         AppDescriptor app = findAppDescriptor(appDescriptors, sbn.getPackageName());
-        if (sbn.isOngoing() && !showOngoing()) {
-            NotificationDot dot = state.get(app);
-            if (dot != null) {
-                modifyStateRemove(app, dot, sbn.getId());
-            }
-            return;
-        }
         if (app != null) {
+            if (sbn.isOngoing() && !showOngoing()) {
+                NotificationDot dot = state.get(app);
+                if (dot != null) {
+                    return modifyStateRemove(app, dot, sbn.getId());
+                }
+                return false;
+            }
             NotificationDot dot = state.get(app);
             if (dot != null) {
                 switch (type) {
                     case POSTED:
-                        modifyStatePost(app, dot, sbn.getId());
-                        break;
+                        return modifyStatePost(app, dot, sbn.getId());
                     case REMOVED:
-                        modifyStateRemove(app, dot, sbn.getId());
-                        break;
+                        return modifyStateRemove(app, dot, sbn.getId());
                 }
             } else if (type == Type.POSTED) {
                 state.put(app, new NotificationDot(sbn.getId()));
+                return true;
             }
         }
+        return false;
     }
 
-    private void modifyStatePost(AppDescriptor app, NotificationDot dot, int id) {
+    private boolean modifyStatePost(AppDescriptor app, NotificationDot dot, int id) {
         if (dot.ids.contains(id)) {
-            return;
+            return false;
         }
         HashSet<Integer> s = new HashSet<>(dot.ids);
         s.add(id);
         state.put(app, new NotificationDot(s));
+        return true;
     }
 
-    private void modifyStateRemove(AppDescriptor app, NotificationDot dot, int id) {
+    private boolean modifyStateRemove(AppDescriptor app, NotificationDot dot, int id) {
         if (!dot.ids.contains(id)) {
-            return;
+            return false;
         }
         HashSet<Integer> s = new HashSet<>(dot.ids);
         s.remove(id);
         if (s.isEmpty()) {
             state.remove(app);
         } else {
-            state.put(app, new NotificationDot(s));
+            state.replace(app, new NotificationDot(s));
         }
+        return true;
     }
 
     private AppDescriptor findAppDescriptor(List<AppDescriptor> descriptors, String packageName) {
