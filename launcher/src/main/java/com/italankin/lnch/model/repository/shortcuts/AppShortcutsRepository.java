@@ -105,7 +105,11 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                             return Single.just(false);
                         }
                     }
-                    AppDescriptor app = findAppByPackageName(packageName);
+                    List<AppDescriptor> appDescriptors = this.descriptorRepository.get().itemsOfType(AppDescriptor.class);
+                    AppDescriptor app = DescriptorUtils.findAppByPackageName(appDescriptors, packageName);
+                    if (app == null) {
+                        throw new IllegalArgumentException("Cannot find app with packageName=" + packageName);
+                    }
                     DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(shortcut, app, nameNormalizer);
                     return descriptorRepository.edit()
                             .enqueue(new AddAction(descriptor))
@@ -148,15 +152,6 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         }
         Collections.sort(result);
         return result;
-    }
-
-    private AppDescriptor findAppByPackageName(String packageName) {
-        for (AppDescriptor item : descriptorRepository.get().itemsOfType(AppDescriptor.class)) {
-            if (packageName.equals(item.packageName)) {
-                return item;
-            }
-        }
-        throw new IllegalArgumentException("Cannot find app with packageName=" + packageName);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -253,7 +248,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             }
 
             List<AppDescriptor> updated = new ArrayList<>(1);
-            for (AppDescriptor descriptor : findByPackageName(packageName)) {
+            for (AppDescriptor descriptor : findAllByPackageName(packageName)) {
                 if (descriptor.componentName == null || componentNames.contains(
                         ComponentName.unflattenFromString(descriptor.componentName))) {
                     updated.add(descriptor);
@@ -268,7 +263,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             if (!Process.myUserHandle().equals(user)) {
                 return;
             }
-            for (AppDescriptor descriptor : findByPackageName(packageName)) {
+            for (AppDescriptor descriptor : findAllByPackageName(packageName)) {
                 shortcutsCache.remove(descriptor);
             }
         }
@@ -278,7 +273,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             if (!Process.myUserHandle().equals(user)) {
                 return;
             }
-            updateCache(findByPackageName(packageName));
+            updateCache(findAllByPackageName(packageName));
         }
 
         @Override
@@ -286,7 +281,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             if (!Process.myUserHandle().equals(user)) {
                 return;
             }
-            updateCache(findByPackageName(packageName));
+            updateCache(findAllByPackageName(packageName));
         }
 
         @Override
@@ -295,7 +290,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                 return;
             }
             for (String packageName : packageNames) {
-                updateCache(findByPackageName(packageName));
+                updateCache(findAllByPackageName(packageName));
             }
         }
 
@@ -305,14 +300,14 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                 return;
             }
             for (String packageName : packageNames) {
-                List<AppDescriptor> descriptors = findByPackageName(packageName);
+                List<AppDescriptor> descriptors = findAllByPackageName(packageName);
                 for (AppDescriptor descriptor : descriptors) {
                     shortcutsCache.remove(descriptor);
                 }
             }
         }
 
-        private List<AppDescriptor> findByPackageName(String packageName) {
+        private List<AppDescriptor> findAllByPackageName(String packageName) {
             List<AppDescriptor> result = new ArrayList<>(1);
             for (AppDescriptor descriptor : descriptorRepository.get().itemsOfType(AppDescriptor.class)) {
                 if (descriptor.packageName.equals(packageName)) {

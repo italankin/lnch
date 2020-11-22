@@ -14,6 +14,10 @@ import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 
+import java.util.List;
+
+import androidx.annotation.Nullable;
+
 public final class DescriptorUtils {
 
     public static String getPackageName(Descriptor descriptor) {
@@ -62,6 +66,16 @@ public final class DescriptorUtils {
             return label != null ? label : "";
         }
         return "";
+    }
+
+    @Nullable
+    public static AppDescriptor findAppByPackageName(List<? extends Descriptor> descriptors, String packageName) {
+        for (Descriptor item : descriptors) {
+            if (item instanceof AppDescriptor && packageName.equals(((AppDescriptor) item).packageName)) {
+                return (AppDescriptor) item;
+            }
+        }
+        return null;
     }
 
     private DescriptorUtils() {

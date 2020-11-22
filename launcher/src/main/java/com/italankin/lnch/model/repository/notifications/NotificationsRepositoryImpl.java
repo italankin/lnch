@@ -6,6 +6,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +102,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private boolean modifyState(StatusBarNotification sbn, Type type) {
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
-        AppDescriptor app = findAppDescriptor(appDescriptors, sbn.getPackageName());
+        AppDescriptor app = DescriptorUtils.findAppByPackageName(appDescriptors, sbn.getPackageName());
         if (app != null) {
             if (sbn.isOngoing() && !showOngoing()) {
                 NotificationDot dot = state.get(app);
@@ -148,15 +149,6 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
             state.replace(app, new NotificationDot(s));
         }
         return true;
-    }
-
-    private AppDescriptor findAppDescriptor(List<AppDescriptor> descriptors, String packageName) {
-        for (AppDescriptor appDescriptor : descriptors) {
-            if (appDescriptor.packageName.equals(packageName)) {
-                return appDescriptor;
-            }
-        }
-        return null;
     }
 
     private Boolean showOngoing() {
