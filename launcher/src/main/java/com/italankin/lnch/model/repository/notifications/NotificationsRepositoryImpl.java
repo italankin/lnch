@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
@@ -104,30 +105,25 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
         AppDescriptor app = DescriptorUtils.findAppByPackageName(appDescriptors, sbn.getPackageName());
         if (app != null) {
-            if (sbn.isOngoing() && !showOngoing()) {
-                NotificationDot dot = state.get(app);
-                if (dot != null) {
-                    return modifyStateRemove(app, dot, sbn.getId());
-                }
-                return false;
-            }
             NotificationDot dot = state.get(app);
-            if (dot != null) {
-                switch (type) {
-                    case POSTED:
-                        return modifyStatePost(app, dot, sbn.getId());
-                    case REMOVED:
-                        return modifyStateRemove(app, dot, sbn.getId());
-                }
-            } else if (type == Type.POSTED) {
-                state.put(app, new NotificationDot(sbn.getId()));
-                return true;
+            if (sbn.isOngoing() && !showOngoing()) {
+                return modifyStateRemove(app, dot, sbn.getId());
+            }
+            switch (type) {
+                case POSTED:
+                    return modifyStatePost(app, dot, sbn.getId());
+                case REMOVED:
+                    return modifyStateRemove(app, dot, sbn.getId());
             }
         }
         return false;
     }
 
-    private boolean modifyStatePost(AppDescriptor app, NotificationDot dot, int id) {
+    private boolean modifyStatePost(AppDescriptor app, @Nullable NotificationDot dot, int id) {
+        if (dot == null) {
+            state.put(app, new NotificationDot(id));
+            return true;
+        }
         if (dot.ids.contains(id)) {
             return false;
         }
@@ -137,8 +133,8 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         return true;
     }
 
-    private boolean modifyStateRemove(AppDescriptor app, NotificationDot dot, int id) {
-        if (!dot.ids.contains(id)) {
+    private boolean modifyStateRemove(AppDescriptor app, @Nullable NotificationDot dot, int id) {
+        if (dot == null || !dot.ids.contains(id)) {
             return false;
         }
         HashSet<Integer> s = new HashSet<>(dot.ids);
