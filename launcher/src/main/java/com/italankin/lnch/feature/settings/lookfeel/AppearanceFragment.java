@@ -37,7 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-public class ItemAppearanceFragment extends AppFragment implements BackButtonHandler {
+public class AppearanceFragment extends AppFragment implements BackButtonHandler {
 
     private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
     private static final String TAG_SHADOW_COLOR_PICKER = "shadow_color_picker";
@@ -81,7 +81,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_item_appearance, container, false);
+        return inflater.inflate(R.layout.fragment_settings_appearance, container, false);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_item_appearance, menu);
+        inflater.inflate(R.menu.settings_appearance, menu);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
             case R.id.action_save:
                 save();
                 if (callbacks != null) {
-                    callbacks.onItemAppearanceFinish();
+                    callbacks.onAppearanceFinish();
                 }
                 return true;
             case R.id.action_reset:
@@ -129,7 +129,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
                         Preferences.ITEM_SHADOW_COLOR
                 );
                 if (callbacks != null) {
-                    callbacks.onItemAppearanceFinish();
+                    callbacks.onAppearanceFinish();
                 }
                 return true;
         }
@@ -180,9 +180,9 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
             return () -> {
-                Callbacks callbacks = ((ItemAppearanceFragment) parentFragment).callbacks;
+                Callbacks callbacks = ((AppearanceFragment) parentFragment).callbacks;
                 if (callbacks != null) {
-                    callbacks.onItemAppearanceFinish();
+                    callbacks.onAppearanceFinish();
                 }
             };
         }
@@ -257,7 +257,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     private static class PreviewColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            ItemAppearanceFragment fragment = (ItemAppearanceFragment) parentFragment;
+            AppearanceFragment fragment = (AppearanceFragment) parentFragment;
             return fragment.preview::setTextColor;
         }
     }
@@ -343,7 +343,7 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     private static class ShadowColorListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
         @Override
         public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            ItemAppearanceFragment fragment = (ItemAppearanceFragment) parentFragment;
+            AppearanceFragment fragment = (AppearanceFragment) parentFragment;
             return new ColorPickerDialogFragment.Listener() {
                 @Override
                 public void onColorPicked(int newColor) {
@@ -423,6 +423,6 @@ public class ItemAppearanceFragment extends AppFragment implements BackButtonHan
     }
 
     public interface Callbacks {
-        void onItemAppearanceFinish();
+        void onAppearanceFinish();
     }
 }

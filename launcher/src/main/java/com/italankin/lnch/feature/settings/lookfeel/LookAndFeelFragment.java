@@ -72,7 +72,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(R.string.pref_key_item_appearance).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_appearance).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showItemLookPreferences();
             }

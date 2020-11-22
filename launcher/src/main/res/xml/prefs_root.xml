@@ -16,14 +16,6 @@
             android:icon="@drawable/ic_action_color"
             android:key="@string/pref_key_look_and_feel"
             android:title="@string/settings_home_laf" />
-        <ListPreference
-            android:defaultValue="start"
-            android:entries="@array/pref_desc_home_layout_alignment"
-            android:entryValues="@array/pref_values_home_layout_alignment"
-            android:icon="@drawable/ic_settings_alignment"
-            android:key="home_alignment"
-            android:summary="%s"
-            android:title="Alignment" />
         <Preference
             android:icon="@drawable/ic_widgets"
             android:key="@string/pref_key_home_widgets"
@@ -38,14 +30,6 @@
             android:icon="@drawable/ic_settings_apps"
             android:key="@string/pref_key_apps_list"
             android:title="@string/settings_apps_list" />
-        <ListPreference
-            android:defaultValue="manual"
-            android:entries="@array/pref_desc_apps_sort_mode"
-            android:entryValues="@array/pref_values_apps_sort_mode"
-            android:icon="@drawable/ic_settings_sort"
-            android:key="apps_sort_mode"
-            android:summary="%s"
-            android:title="@string/settings_apps_sorting" />
         <Preference
             android:icon="@drawable/ic_settings_shortcuts"
             android:key="@string/pref_key_misc_shortcuts"

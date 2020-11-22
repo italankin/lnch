@@ -33,7 +33,7 @@
     <ScrollView
         android:id="@+id/prefs_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/item_appearance_prefs_container_height"
+        android:layout_height="@dimen/appearance_prefs_container_height"
         android:layout_alignParentBottom="true"
         android:background="?colorPrimary"
         android:fillViewport="true">

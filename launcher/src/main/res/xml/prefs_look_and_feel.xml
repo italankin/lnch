@@ -12,9 +12,23 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other_apps">
         <Preference
-            android:key="@string/pref_key_item_appearance"
+            android:key="@string/pref_key_appearance"
             android:summary="@string/settings_home_laf_appearance_summary"
             android:title="@string/settings_home_laf_appearance" />
+        <ListPreference
+            android:defaultValue="start"
+            android:entries="@array/pref_desc_home_layout_alignment"
+            android:entryValues="@array/pref_values_home_layout_alignment"
+            android:key="home_alignment"
+            android:summary="%s"
+            android:title="Alignment" />
+        <ListPreference
+            android:defaultValue="manual"
+            android:entries="@array/pref_desc_apps_sort_mode"
+            android:entryValues="@array/pref_values_apps_sort_mode"
+            android:key="apps_sort_mode"
+            android:summary="%s"
+            android:title="@string/settings_apps_sorting" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="apps_list_animate"

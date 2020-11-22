@@ -12,7 +12,7 @@ import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
-import com.italankin.lnch.feature.settings.lookfeel.ItemAppearanceFragment;
+import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
@@ -31,7 +31,7 @@ import androidx.fragment.app.FragmentManager;
 
 public class SettingsActivity extends AppCompatActivity implements
         SettingsRootFragment.Callbacks,
-        ItemAppearanceFragment.Callbacks,
+        AppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
         LookAndFeelFragment.Callbacks {
@@ -101,7 +101,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showItemLookPreferences() {
-        showFragment(new ItemAppearanceFragment(), R.string.settings_home_laf_appearance);
+        showFragment(new AppearanceFragment(), R.string.settings_home_laf_appearance);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onItemAppearanceFinish() {
+    public void onAppearanceFinish() {
         fragmentManager.popBackStack();
     }
 
