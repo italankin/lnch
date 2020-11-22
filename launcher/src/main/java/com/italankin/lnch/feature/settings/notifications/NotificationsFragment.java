@@ -15,6 +15,7 @@ import com.italankin.lnch.util.NotificationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
 
 public class NotificationsFragment extends BasePreferenceFragment {
@@ -27,18 +28,33 @@ public class NotificationsFragment extends BasePreferenceFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPreference(Preferences.NOTIFICATION_DOT).setOnPreferenceClickListener(preference -> {
+        CheckBoxPreference notificationDot = findPreference(Preferences.NOTIFICATION_DOT);
+        notificationDot.setOnPreferenceClickListener(preference -> {
             Context context = requireContext();
             if (NotificationUtils.isNotificationAccessGranted(context)) {
                 return false;
             } else {
-                ((CheckBoxPreference) preference).setChecked(false);
-                Intent notificationSettings = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-                if (!IntentUtils.safeStartActivity(context, notificationSettings)) {
-                    Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
-                }
+                notificationDot.setChecked(false);
+                showRequestNotificationAccessDialog();
                 return true;
             }
         });
+        if (!NotificationUtils.isNotificationAccessGranted(requireContext())) {
+            notificationDot.setChecked(false);
+        }
+    }
+
+    private void showRequestNotificationAccessDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.settings_home_misc_notifications_dot_dialog_title)
+                .setMessage(R.string.settings_home_misc_notifications_dot_dialog_message)
+                .setPositiveButton(R.string.settings_home_misc_notifications_dot_dialog_allow, (dialog, which) -> {
+                    Intent notificationSettings = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+                    if (!IntentUtils.safeStartActivity(requireContext(), notificationSettings)) {
+                        Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 }
