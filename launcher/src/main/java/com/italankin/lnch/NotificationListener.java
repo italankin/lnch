@@ -15,18 +15,14 @@ import timber.log.Timber;
 
 public class NotificationListener extends NotificationListenerService {
 
-    private CompositeDisposable disposables = new CompositeDisposable();
-
+    private final CompositeDisposable disposables = new CompositeDisposable();
     private NotificationsRepository notificationsRepository;
-    private Preferences preferences;
 
     @Override
     public void onListenerConnected() {
         Timber.d("onListenerConnected");
-
-        preferences = LauncherApp.daggerService.main().getPreferences();
         notificationsRepository = LauncherApp.daggerService.main().getNotificationsRepository();
-
+        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
         Disposable dot = preferences.observe(Preferences.NOTIFICATION_DOT)
                 .subscribeOn(Schedulers.io())
                 .map(Preferences.Value::get)
