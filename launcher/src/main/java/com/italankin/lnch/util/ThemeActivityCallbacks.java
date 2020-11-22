@@ -20,7 +20,9 @@ public class ThemeActivityCallbacks implements Application.ActivityLifecycleCall
     @Override
     public void onActivityPreCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
         if (disposable.isDisposed()) {
-            disposable = LauncherApp.daggerService.main().getPreferences()
+            Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+            ThemeUtils.applyTheme(preferences.get(Preferences.COLOR_THEME));
+            disposable = preferences
                     .observe(Preferences.COLOR_THEME)
                     .map(Preferences.Value::get)
                     .observeOn(AndroidSchedulers.mainThread())
