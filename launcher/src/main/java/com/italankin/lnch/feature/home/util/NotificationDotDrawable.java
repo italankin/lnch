@@ -16,19 +16,20 @@ import androidx.annotation.Nullable;
 public class NotificationDotDrawable extends Drawable {
 
     private static final AccelerateDecelerateInterpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
+    private static final long DURATION = 350;
     private static final float[] VALUES_APPEAR = {0, 1};
     private static final float[] VALUES_DISAPPEAR = {1, 0};
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final int defaultColor;
     private final Rect rect = new Rect();
     private final int size;
     private final int radius;
-    private final int defaultColor;
     private int margin;
 
     private boolean visible = false;
     private ValueAnimator animator;
-    private float scale = 1f;
+    private float scale = 0f;
     private final ValueAnimator.AnimatorUpdateListener updateListener = animation -> {
         this.scale = (float) animation.getAnimatedValue();
         invalidateSelf();
@@ -68,10 +69,10 @@ public class NotificationDotDrawable extends Drawable {
                 animator = ObjectAnimator.ofFloat(visible ? VALUES_APPEAR : VALUES_DISAPPEAR);
                 animator.setInterpolator(INTERPOLATOR);
                 animator.addUpdateListener(updateListener);
+                animator.setDuration(DURATION);
                 animator.start();
-            } else {
-                scale = 1f;
             }
+            scale = visible ? 0f : 1f;
             invalidateSelf();
         }
     }
@@ -79,7 +80,7 @@ public class NotificationDotDrawable extends Drawable {
     @Override
     public void draw(@NonNull Canvas canvas) {
         int rad = (int) (radius * scale);
-        if (!visible || rad == 0 || !isVisible()) {
+        if (rad == 0 || !isVisible()) {
             return;
         }
         canvas.drawCircle(rect.centerX(), rect.centerY(), rad, paint);
