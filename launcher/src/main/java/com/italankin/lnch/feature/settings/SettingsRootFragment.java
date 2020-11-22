@@ -73,6 +73,18 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
+        findPreference(R.string.pref_key_misc_shortcuts).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showShortcutsPreferences();
+            }
+            return true;
+        });
+        findPreference(R.string.pref_key_misc_notifications).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showNotificationsPreferences();
+            }
+            return true;
+        });
         findPreference(R.string.pref_key_look_and_feel).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showLookAndFeelPreferences();
@@ -126,6 +138,10 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         void showSearchPreferences();
 
         void showAppsPreferences();
+
+        void showShortcutsPreferences();
+
+        void showNotificationsPreferences();
 
         void showLookAndFeelPreferences();
 

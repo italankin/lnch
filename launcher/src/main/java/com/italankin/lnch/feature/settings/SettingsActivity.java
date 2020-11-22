@@ -34,8 +34,7 @@ public class SettingsActivity extends AppCompatActivity implements
         ItemAppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
-        LookAndFeelFragment.Callbacks,
-        MiscFragment.Callbacks {
+        LookAndFeelFragment.Callbacks {
 
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
