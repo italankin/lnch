@@ -10,6 +10,8 @@ import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
 import com.italankin.lnch.util.ResUtils;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -85,16 +87,26 @@ public class AppViewModelAdapter
 
         @Override
         void bind(AppViewModel item) {
-            label.setText(item.getVisibleLabel());
-            label.setTextColor(item.getVisibleColor());
-            notificationDot.setMargin(itemPrefs.itemPadding * 2);
-            notificationDot.setVisible(item.isBadgeVisible());
+            bindItem(item);
+            notificationDot.setBadgeVisible(item.isBadgeVisible(), false);
+        }
+
+        @Override
+        protected void bind(AppViewModel item, List<Object> payloads) {
+            bindItem(item);
+            notificationDot.setBadgeVisible(item.isBadgeVisible(), payloads.contains(AppViewModel.PAYLOAD_BADGE));
         }
 
         @Nullable
         @Override
         TextView getLabel() {
             return label;
+        }
+
+        private void bindItem(AppViewModel item) {
+            label.setText(item.getVisibleLabel());
+            label.setTextColor(item.getVisibleColor());
+            notificationDot.setMargin(itemPrefs.itemPadding * 2);
         }
     }
 }

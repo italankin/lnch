@@ -13,6 +13,8 @@ import java.util.Objects;
 public final class AppViewModel implements DescriptorItem, CustomLabelItem, CustomColorItem, HiddenItem,
         VisibleItem, BadgeItem {
 
+    public static final Object PAYLOAD_BADGE = new Object();
+
     public final String componentName;
     public final String packageName;
     private final AppDescriptor descriptor;
@@ -167,5 +169,13 @@ public final class AppViewModel implements DescriptorItem, CustomLabelItem, Cust
                 && this.hidden == that.hidden
                 && this.visible == that.visible
                 && this.badgeVisible == that.badgeVisible;
+    }
+
+    @Override
+    public Object getChangePayload(DescriptorItem oldItem) {
+        if (this.badgeVisible != ((AppViewModel) oldItem).badgeVisible) {
+            return PAYLOAD_BADGE;
+        }
+        return null;
     }
 }

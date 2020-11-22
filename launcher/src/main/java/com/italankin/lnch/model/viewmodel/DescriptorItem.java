@@ -22,4 +22,8 @@ public interface DescriptorItem {
      * @return {@code true}, if this item has the same content as {@code another}
      */
     boolean deepEquals(DescriptorItem another);
+
+    default Object getChangePayload(DescriptorItem oldItem) {
+        return null;
+    }
 }

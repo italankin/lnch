@@ -12,6 +12,8 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,9 +24,15 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
     private UserPrefs.ItemPrefs itemPrefs;
 
     @Override
-    public void onBind(VH holder, int position, T item) {
+    public final void onBind(VH holder, int position, T item) {
         updateHolderView(holder);
         holder.bind(item);
+    }
+
+    @Override
+    public final void onBind(VH holder, int position, T item, List<Object> payloads) {
+        updateHolderView(holder);
+        holder.bind(item, payloads);
     }
 
     @NonNull
@@ -76,6 +84,10 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
         }
 
         abstract void bind(T item);
+
+        protected void bind(T item, List<Object> payloads) {
+            bind(item);
+        }
 
         @Nullable
         abstract TextView getLabel();

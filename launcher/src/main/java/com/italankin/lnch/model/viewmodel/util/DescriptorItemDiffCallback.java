@@ -4,6 +4,7 @@ import com.italankin.lnch.model.viewmodel.DescriptorItem;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
 public class DescriptorItemDiffCallback extends DiffUtil.Callback {
@@ -37,5 +38,13 @@ public class DescriptorItemDiffCallback extends DiffUtil.Callback {
         DescriptorItem oldItem = oldList.get(oldItemPosition);
         DescriptorItem newItem = newList.get(newItemPosition);
         return oldItem.deepEquals(newItem);
+    }
+
+    @Nullable
+    @Override
+    public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+        DescriptorItem oldItem = oldList.get(oldItemPosition);
+        DescriptorItem newItem = newList.get(newItemPosition);
+        return newItem.getChangePayload(oldItem);
     }
 }
