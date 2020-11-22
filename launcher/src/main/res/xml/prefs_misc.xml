@@ -28,7 +28,7 @@
         android:key="expand_notifications"
         android:summary="@string/settings_home_misc_expand_status_bar_summary"
         android:title="@string/settings_home_misc_expand_status_bar" />
-    <PreferenceCategory android:title="@string/settings_home_misc_shortcuts">
+    <PreferenceCategory android:title="@string/settings_home_misc_shortcuts_title">
         <Preference
             android:key="@string/pref_key_misc_shortcuts"
             android:title="@string/settings_home_misc_shortcuts" />

@@ -74,7 +74,8 @@
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
     <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n<i>Note: will not work for some devices and OS versions</i></string>
 
-    <string name="settings_home_misc_shortcuts">Shortcuts</string>
+    <string name="settings_home_misc_shortcuts_title">Shortcuts</string>
+    <string name="settings_home_misc_shortcuts">Manage shortcuts settings</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
     <string name="settings_home_misc_shortcuts_sort_mode">Sorting</string>
 
