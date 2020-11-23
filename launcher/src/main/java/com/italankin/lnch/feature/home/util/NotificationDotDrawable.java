@@ -71,8 +71,10 @@ public class NotificationDotDrawable extends Drawable {
                 animator.addUpdateListener(updateListener);
                 animator.setDuration(DURATION);
                 animator.start();
+                scale = visible ? 0f : 1f;
+            } else {
+                scale = visible ? 1f : 0f;
             }
-            scale = visible ? 0f : 1f;
             invalidateSelf();
         }
     }
