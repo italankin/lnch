@@ -16,6 +16,7 @@
 
 package com.italankin.lnch.feature.widgets.host;
 
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
@@ -113,6 +114,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
         return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         // If the widget does not handle touch, then cancel

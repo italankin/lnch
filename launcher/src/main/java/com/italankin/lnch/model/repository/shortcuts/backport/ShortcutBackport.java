@@ -62,6 +62,7 @@ class ShortcutBackport implements Shortcut {
 
     private final Intent mIntent;
 
+    @SuppressWarnings("DefaultLocale")
     ShortcutBackport(Context context, Resources resources, String packageName, XmlResourceParser parseXml)
             throws XmlPullParserException, IOException {
         this.context = context;
