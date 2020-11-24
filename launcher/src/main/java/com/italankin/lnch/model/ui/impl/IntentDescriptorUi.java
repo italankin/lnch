@@ -95,7 +95,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
         }
         IntentDescriptorUi that = (IntentDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
-                && this.isVisible() == that.isVisible();
+                && this.visible == that.visible;
     }
 
     @Override
