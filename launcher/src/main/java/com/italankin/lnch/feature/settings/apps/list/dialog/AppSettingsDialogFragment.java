@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
@@ -45,11 +46,14 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
                 .setPositiveButton(R.string.settings_apps_list_options_save, (dialog, which) -> {
                     Listener listener = getListener();
                     if (listener != null) {
-                        listener.onAppSettingsUpdated(
-                                getArgs().getString(ARG_ID),
-                                checkedItems[ARG_SEARCH_VISIBLE],
-                                checkedItems[ARG_SHORTCUTS_SEARCH_VISIBLE]
-                        );
+                        int flags = 0;
+                        if (checkedItems[ARG_SEARCH_VISIBLE]) {
+                            flags |= AppDescriptor.FLAG_SEARCH_VISIBLE;
+                        }
+                        if (checkedItems[ARG_SHORTCUTS_SEARCH_VISIBLE]) {
+                            flags |= AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
+                        }
+                        listener.onAppSettingsUpdated(getArgs().getString(ARG_ID), flags);
                     }
                 })
                 .create();
@@ -64,7 +68,11 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
     public static class Builder extends BaseBuilder<AppSettingsDialogFragment, Listener, Builder> {
 
         public Builder setApp(AppDescriptorUi app) {
-            boolean[] values = {app.isSearchVisible(), app.isShortcutsSearchVisible()};
+            int searchFlags = app.getSearchFlags();
+            boolean[] values = {
+                    (searchFlags & AppDescriptor.FLAG_SEARCH_VISIBLE) == AppDescriptor.FLAG_SEARCH_VISIBLE,
+                    (searchFlags & AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE) == AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE
+            };
             arguments.putString(ARG_NAME, app.getVisibleLabel());
             arguments.putBooleanArray(ARG_ITEMS, values);
             arguments.putString(ARG_ID, app.getDescriptor().getId());
@@ -78,7 +86,7 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
     }
 
     public interface Listener {
-        void onAppSettingsUpdated(String id, boolean searchVisible, boolean shortcutsSearchVisible);
+        void onAppSettingsUpdated(String id, int searchFlags);
 
         void onAppSettingsReset(String id);
     }

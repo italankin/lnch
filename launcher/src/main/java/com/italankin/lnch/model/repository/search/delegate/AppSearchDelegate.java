@@ -30,7 +30,7 @@ public class AppSearchDelegate implements SearchDelegate {
         boolean skipIgnored = !searchTargets.contains(Preferences.SearchTarget.IGNORED);
         List<PartialMatch> matches = new ArrayList<>(4);
         for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
-            if (descriptor.ignored && skipIgnored || !descriptor.searchVisible) {
+            if (descriptor.ignored && skipIgnored || (descriptor.searchFlags & AppDescriptor.FLAG_SEARCH_VISIBLE) == 0) {
                 continue;
             }
             PartialMatch match = testApp(descriptor, query);

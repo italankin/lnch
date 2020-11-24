@@ -58,7 +58,7 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         for (Descriptor descriptor : descriptors) {
             if (descriptor instanceof AppDescriptor) {
                 AppDescriptor appDescriptor = (AppDescriptor) descriptor;
-                if (!appDescriptor.shortcutsSearchVisible) {
+                if ((appDescriptor.searchFlags & AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE) == 0) {
                     continue;
                 }
                 List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(appDescriptor);

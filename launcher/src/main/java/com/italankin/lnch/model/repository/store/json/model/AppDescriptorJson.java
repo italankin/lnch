@@ -38,11 +38,8 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName(value = "ignored", alternate = "hidden")
     public boolean ignored;
 
-    @SerializedName("search_visible")
-    public Boolean searchVisible;
-
-    @SerializedName("shortcuts_search_visible")
-    public Boolean shortcutsSearchVisible;
+    @SerializedName("search_flags")
+    public int searchFlags = AppDescriptor.SEARCH_DEFAULT_FLAGS;
 
     @Keep
     public AppDescriptorJson() {
@@ -57,8 +54,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
         this.ignored = descriptor.ignored;
-        this.searchVisible = descriptor.searchVisible ? null : false;
-        this.shortcutsSearchVisible = descriptor.shortcutsSearchVisible ? null : false;
+        this.searchFlags = descriptor.searchFlags;
     }
 
     @Override
@@ -72,8 +68,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
         descriptor.ignored = this.ignored;
-        descriptor.searchVisible = this.searchVisible == null || this.searchVisible;
-        descriptor.shortcutsSearchVisible = this.shortcutsSearchVisible == null || this.shortcutsSearchVisible;
+        descriptor.searchFlags = this.searchFlags;
         return descriptor;
     }
 }

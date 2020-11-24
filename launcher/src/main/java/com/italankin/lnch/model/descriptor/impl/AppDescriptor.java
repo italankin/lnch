@@ -13,6 +13,10 @@ import java.util.Objects;
 public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor,
         CustomLabelDescriptor, IgnorableDescriptor {
 
+    public static final int FLAG_SEARCH_VISIBLE = 0x1;
+    public static final int FLAG_SEARCH_SHORTCUTS_VISIBLE = 0x2;
+    public static final int SEARCH_DEFAULT_FLAGS = FLAG_SEARCH_VISIBLE | FLAG_SEARCH_SHORTCUTS_VISIBLE;
+
     public String packageName;
     public long versionCode;
     public String componentName;
@@ -21,8 +25,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public int color;
     public Integer customColor;
     public boolean ignored;
-    public boolean searchVisible = true;
-    public boolean shortcutsSearchVisible = true;
+    public int searchFlags = SEARCH_DEFAULT_FLAGS;
     private ComponentName componentNameValue;
 
     public AppDescriptor() {

@@ -5,7 +5,7 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetSearchVisibilityAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.ArrayList;
@@ -45,20 +45,19 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
         getViewState().onItemChanged(position);
     }
 
-    void setAppSettings(String id, boolean searchVisible, boolean shortcutsSearchVisible) {
+    void setAppSettings(String id, int searchFlags) {
         for (AppDescriptorUi item : items) {
             AppDescriptor descriptor = item.getDescriptor();
             if (descriptor.getId().equals(id)) {
-                item.setSearchVisible(searchVisible);
-                item.setShortcutsSearchVisible(shortcutsSearchVisible);
-                editor.enqueue(new SetSearchVisibilityAction(descriptor.getId(), searchVisible, shortcutsSearchVisible));
+                item.setSearchFlags(searchFlags);
+                editor.enqueue(new SetSearchFlagsAction(descriptor.getId(), searchFlags));
                 break;
             }
         }
     }
 
     void resetAppSettings(String id) {
-        setAppSettings(id, true, true);
+        setAppSettings(id, AppDescriptor.SEARCH_DEFAULT_FLAGS);
     }
 
     void saveChanges() {

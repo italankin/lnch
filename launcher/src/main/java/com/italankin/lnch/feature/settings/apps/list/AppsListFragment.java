@@ -244,8 +244,8 @@ public class AppsListFragment extends AppFragment implements AppsListView,
             AppsListFragment fragment = (AppsListFragment) parentFragment;
             return new AppSettingsDialogFragment.Listener() {
                 @Override
-                public void onAppSettingsUpdated(String id, boolean searchVisible, boolean shortcutsSearchVisible) {
-                    fragment.presenter.setAppSettings(id, searchVisible, shortcutsSearchVisible);
+                public void onAppSettingsUpdated(String id, int searchFlags) {
+                    fragment.presenter.setAppSettings(id, searchFlags);
                 }
 
                 @Override
