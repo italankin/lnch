@@ -4,7 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 import androidx.annotation.NonNull;
@@ -34,8 +34,7 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
         CharSequence[] titles = requireContext().getResources().getTextArray(R.array.settings_apps_list_options);
         return new AlertDialog.Builder(requireContext())
                 .setTitle(getArgs().getString(ARG_NAME))
-                .setMultiChoiceItems(titles, checkedItems,
-                        (dialog, which, isChecked) -> checkedItems[which] = isChecked)
+                .setMultiChoiceItems(titles, checkedItems, (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.settings_apps_list_options_reset, (dialog, which) -> {
                     Listener listener = getListener();
@@ -64,7 +63,7 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
 
     public static class Builder extends BaseBuilder<AppSettingsDialogFragment, Listener, Builder> {
 
-        public Builder setApp(AppViewModel app) {
+        public Builder setApp(AppDescriptorUi app) {
             boolean[] values = {app.isSearchVisible(), app.isShortcutsSearchVisible()};
             arguments.putString(ARG_NAME, app.getVisibleLabel());
             arguments.putBooleanArray(ARG_ITEMS, values);

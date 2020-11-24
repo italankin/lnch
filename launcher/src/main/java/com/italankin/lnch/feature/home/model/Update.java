@@ -1,6 +1,6 @@
 package com.italankin.lnch.feature.home.model;
 
-import com.italankin.lnch.model.viewmodel.DescriptorItem;
+import com.italankin.lnch.model.ui.DescriptorUi;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 public final class Update {
     public static final Update EMPTY = new Update(Collections.emptyList(), null);
 
-    public final List<DescriptorItem> items;
+    public final List<DescriptorUi> items;
     public UserPrefs userPrefs;
     @Nullable
     private final DiffUtil.DiffResult diffResult;
 
-    public Update(List<DescriptorItem> items, @Nullable DiffUtil.DiffResult diffResult) {
+    public Update(List<DescriptorUi> items, @Nullable DiffUtil.DiffResult diffResult) {
         this.items = items;
         this.diffResult = diffResult;
     }

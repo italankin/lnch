@@ -7,7 +7,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.HiddenDescriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -26,17 +26,17 @@ import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.model.viewmodel.CustomColorItem;
-import com.italankin.lnch.model.viewmodel.CustomLabelItem;
-import com.italankin.lnch.model.viewmodel.DescriptorItem;
-import com.italankin.lnch.model.viewmodel.ExpandableItem;
-import com.italankin.lnch.model.viewmodel.HiddenItem;
-import com.italankin.lnch.model.viewmodel.VisibleItem;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
-import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
-import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.util.DescriptorItemDiffCallback;
-import com.italankin.lnch.model.viewmodel.util.ViewModelFactory;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.ExpandableDescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.VisibleDescriptorUi;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
+import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
+import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
 
@@ -60,7 +60,7 @@ import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
 
-    private static final List<DescriptorItem> INITIAL = new ArrayList<>();
+    private static final List<DescriptorUi> INITIAL = new ArrayList<>();
 
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
@@ -71,7 +71,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
      */
-    private List<DescriptorItem> items = INITIAL;
+    private List<DescriptorUi> items = INITIAL;
     private DescriptorRepository.Editor editor;
 
     @Inject
@@ -95,7 +95,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void toggleExpandableItemState(int position, ExpandableItem item) {
+    void toggleExpandableItemState(int position, ExpandableDescriptorUi item) {
         setItemExpanded(items, position, !item.isExpanded(), true);
     }
 
@@ -105,8 +105,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
         editor = descriptorRepository.edit();
         for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorItem item = items.get(i);
-            if (item instanceof ExpandableItem) {
+            DescriptorUi item = items.get(i);
+            if (item instanceof ExpandableDescriptorUi) {
                 setItemExpanded(items, i, true, true);
             }
         }
@@ -119,36 +119,36 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemsSwap(from, to);
     }
 
-    void renameItem(int position, CustomLabelItem item, String customLabel) {
+    void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
         String s = customLabel.trim().isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction((CustomLabelDescriptor) item.getDescriptor(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
-    void changeItemCustomColor(int position, CustomColorItem item, Integer color) {
+    void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
         editor.enqueue(new RecolorAction((CustomColorDescriptor) item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
-    void hideItem(int position, HiddenItem item) {
-        editor.enqueue(new SetVisibilityAction((HiddenDescriptor) item.getDescriptor(), false));
-        item.setHidden(true);
+    void ignoreItem(int position, IgnorableDescriptorUi item) {
+        editor.enqueue(new SetVisibilityAction((IgnorableDescriptor) item.getDescriptor(), false));
+        item.setIgnored(true);
         getViewState().onItemChanged(position);
     }
 
     void addGroup(int position, String label, @ColorInt int color) {
         GroupDescriptor item = new GroupDescriptor(label, color);
         editor.enqueue(new AddAction(position, item));
-        items.add(position, new GroupViewModel(item));
+        items.add(position, new GroupDescriptorUi(item));
         getViewState().onItemInserted(position);
     }
 
-    void removeItem(int position, DescriptorItem item) {
+    void removeItem(int position, DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
         editor.enqueue(new RemoveAction(position));
-        if (item instanceof ExpandableItem) {
+        if (item instanceof ExpandableDescriptorUi) {
             editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }
         items.remove(position);
@@ -191,7 +191,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor = null;
     }
 
-    void showAppPopup(int position, AppViewModel item) {
+    void showAppPopup(int position, AppDescriptorUi item) {
         List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
         getViewState().showAppPopup(position, item, processShortcuts(shortcuts));
     }
@@ -242,7 +242,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    void startShortcut(int position, DeepShortcutViewModel item) {
+    void startShortcut(int position, DeepShortcutDescriptorUi item) {
         Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
         if (shortcut != null) {
             if (shortcut.isEnabled()) {
@@ -255,7 +255,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    void removeItemImmediate(int position, DescriptorItem item) {
+    void removeItemImmediate(int position, DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
         DescriptorRepository.Editor editor = descriptorRepository.edit();
         editor.enqueue(new RemoveAction(position));
@@ -328,8 +328,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     private Observable<Update> observeApps() {
-        Observable<List<DescriptorItem>> observeApps = descriptorRepository.observe()
-                .map(ViewModelFactory::createItems)
+        Observable<List<DescriptorUi>> observeApps = descriptorRepository.observe()
+                .map(DescriptorUiFactory::createItems)
                 .doOnNext(this::restoreGroupsState);
         return Observable.combineLatest(observeApps, observeNotifications(), this::concatNotifications)
                 .scan(Update.EMPTY, this::calculateUpdates)
@@ -344,23 +344,23 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     @NotNull
-    private List<DescriptorItem> concatNotifications(List<DescriptorItem> items,
+    private List<DescriptorUi> concatNotifications(List<DescriptorUi> items,
             Map<AppDescriptor, NotificationDot> notifications) {
         if (!preferences.get(Preferences.NOTIFICATION_DOT)) {
             return items;
         }
-        List<DescriptorItem> result = new ArrayList<>(items.size());
-        for (DescriptorItem item : items) {
-            if (!(item instanceof AppViewModel)) {
+        List<DescriptorUi> result = new ArrayList<>(items.size());
+        for (DescriptorUi item : items) {
+            if (!(item instanceof AppDescriptorUi)) {
                 result.add(item);
                 continue;
             }
-            AppViewModel app = (AppViewModel) item;
+            AppDescriptorUi app = (AppDescriptorUi) item;
             NotificationDot notificationDot = notifications.get(app.getDescriptor());
             boolean badgeVisible = notificationDot != null && notificationDot.getCount() > 0;
             if (badgeVisible != app.isBadgeVisible()) {
-                // create a copy of AppViewModel to update state correctly
-                AppViewModel newApp = new AppViewModel(app);
+                // create a copy of AppDescriptorUi to update state correctly
+                AppDescriptorUi newApp = new AppDescriptorUi(app);
                 newApp.setBadgeVisible(badgeVisible);
                 result.add(newApp);
             } else {
@@ -378,19 +378,19 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .distinctUntilChanged();
     }
 
-    private void restoreGroupsState(List<DescriptorItem> items) {
+    private void restoreGroupsState(List<DescriptorUi> items) {
         for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorItem item = items.get(i);
-            if (item instanceof ExpandableItem) {
-                ExpandableItem expandableItem = (ExpandableItem) item;
-                String id = expandableItem.getDescriptor().getId();
+            DescriptorUi item = items.get(i);
+            if (item instanceof ExpandableDescriptorUi) {
+                ExpandableDescriptorUi expandable = (ExpandableDescriptorUi) item;
+                String id = expandable.getDescriptor().getId();
                 setItemExpanded(items, i, separatorState.isExpanded(id), false);
             }
         }
     }
 
-    private Update calculateUpdates(Update previous, List<DescriptorItem> newItems) {
-        DescriptorItemDiffCallback callback = new DescriptorItemDiffCallback(previous.items, newItems);
+    private Update calculateUpdates(Update previous, List<DescriptorUi> newItems) {
+        DescriptorUiDiffCallback callback = new DescriptorUiDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
         return new Update(newItems, diffResult);
     }
@@ -412,8 +412,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         return result;
     }
 
-    private void setItemExpanded(List<DescriptorItem> items, int position, boolean expanded, boolean notify) {
-        ExpandableItem item = (ExpandableItem) items.get(position);
+    private void setItemExpanded(List<DescriptorUi> items, int position, boolean expanded, boolean notify) {
+        ExpandableDescriptorUi item = (ExpandableDescriptorUi) items.get(position);
         if (expanded == item.isExpanded()) {
             return;
         }
@@ -429,7 +429,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         item.setExpanded(expanded);
         separatorState.setExpanded(item.getDescriptor().getId(), expanded);
         for (int i = startIndex; i < endIndex; i++) {
-            VisibleItem visibleItem = (VisibleItem) items.get(i);
+            VisibleDescriptorUi visibleItem = (VisibleDescriptorUi) items.get(i);
             visibleItem.setVisible(expanded);
         }
         if (!notify) {
@@ -442,9 +442,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    private static int findNextExpandableItemIndex(List<DescriptorItem> items, int startPosition) {
+    private static int findNextExpandableItemIndex(List<DescriptorUi> items, int startPosition) {
         for (int i = startPosition; i < items.size(); i++) {
-            if (items.get(i) instanceof ExpandableItem) {
+            if (items.get(i) instanceof ExpandableDescriptorUi) {
                 return i;
             }
         }

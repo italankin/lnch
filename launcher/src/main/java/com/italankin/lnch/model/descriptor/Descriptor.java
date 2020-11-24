@@ -1,5 +1,8 @@
 package com.italankin.lnch.model.descriptor;
 
+/**
+ * Base interface for all items which are displayed on home page
+ */
 public interface Descriptor {
 
     /**

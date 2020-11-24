@@ -5,13 +5,13 @@ import android.content.ComponentName;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.HiddenDescriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
 import java.util.Objects;
 
-public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor, CustomLabelDescriptor,
-        HiddenDescriptor {
+public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor,
+        CustomLabelDescriptor, IgnorableDescriptor {
 
     public String packageName;
     public long versionCode;
@@ -20,7 +20,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public String customLabel;
     public int color;
     public Integer customColor;
-    public boolean hidden;
+    public boolean ignored;
     public boolean searchVisible = true;
     public boolean shortcutsSearchVisible = true;
     private ComponentName componentNameValue;
@@ -73,18 +73,18 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     }
 
     @Override
-    public boolean isHidden() {
-        return hidden;
+    public boolean isIgnored() {
+        return ignored;
     }
 
     @Override
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
     }
 
     @Override
     public String toString() {
-        return "App{" + packageName + (hidden ? "*" : "") + "}";
+        return "App{" + packageName + (ignored ? "*" : "") + "}";
     }
 
     @Override

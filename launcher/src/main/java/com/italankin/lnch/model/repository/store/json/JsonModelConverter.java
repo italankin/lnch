@@ -6,34 +6,34 @@ import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
-import com.italankin.lnch.model.repository.store.json.model.AppModel;
-import com.italankin.lnch.model.repository.store.json.model.DeepShortcutModel;
-import com.italankin.lnch.model.repository.store.json.model.GroupModel;
-import com.italankin.lnch.model.repository.store.json.model.IntentModel;
-import com.italankin.lnch.model.repository.store.json.model.JsonModel;
-import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutModel;
+import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DeepShortcutDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.GroupDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
 
 class JsonModelConverter {
 
-    Descriptor fromJson(JsonModel jsonModel) {
-        return jsonModel.toDescriptor();
+    Descriptor fromJson(DescriptorJson descriptorJson) {
+        return descriptorJson.toDescriptor();
     }
 
-    JsonModel toJson(Descriptor descriptor) {
+    DescriptorJson toJson(Descriptor descriptor) {
         if (descriptor instanceof AppDescriptor) {
-            return new AppModel((AppDescriptor) descriptor);
+            return new AppDescriptorJson((AppDescriptor) descriptor);
         }
         if (descriptor instanceof GroupDescriptor) {
-            return new GroupModel((GroupDescriptor) descriptor);
+            return new GroupDescriptorJson((GroupDescriptor) descriptor);
         }
         if (descriptor instanceof DeepShortcutDescriptor) {
-            return new DeepShortcutModel((DeepShortcutDescriptor) descriptor);
+            return new DeepShortcutDescriptorJson((DeepShortcutDescriptor) descriptor);
         }
         if (descriptor instanceof PinnedShortcutDescriptor) {
-            return new PinnedShortcutModel((PinnedShortcutDescriptor) descriptor);
+            return new PinnedShortcutDescriptorJson((PinnedShortcutDescriptor) descriptor);
         }
         if (descriptor instanceof IntentDescriptor) {
-            return new IntentModel((IntentDescriptor) descriptor);
+            return new IntentDescriptorJson((IntentDescriptor) descriptor);
         }
         throw new IllegalArgumentException("Unknown Descriptor: " + descriptor);
     }

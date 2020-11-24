@@ -33,13 +33,13 @@ import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
-import com.italankin.lnch.feature.home.adapter.AppViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.DeepShortcutViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.GroupViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.HiddenAppViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.GroupDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
-import com.italankin.lnch.feature.home.adapter.IntentViewModelAdapter;
-import com.italankin.lnch.feature.home.adapter.PinnedShortcutViewModelAdapter;
+import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.NotVisibleDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -56,17 +56,17 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.model.viewmodel.CustomColorItem;
-import com.italankin.lnch.model.viewmodel.CustomLabelItem;
-import com.italankin.lnch.model.viewmodel.DescriptorItem;
-import com.italankin.lnch.model.viewmodel.HiddenItem;
-import com.italankin.lnch.model.viewmodel.RemovableItem;
-import com.italankin.lnch.model.viewmodel.VisibleItem;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
-import com.italankin.lnch.model.viewmodel.impl.DeepShortcutViewModel;
-import com.italankin.lnch.model.viewmodel.impl.GroupViewModel;
-import com.italankin.lnch.model.viewmodel.impl.IntentViewModel;
-import com.italankin.lnch.model.viewmodel.impl.PinnedShortcutViewModel;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.VisibleDescriptorUi;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
+import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
+import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
@@ -94,11 +94,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AppsFragment extends AppFragment implements AppsView,
         BackButtonHandler,
         IntentQueue.OnIntentAction,
-        DeepShortcutViewModelAdapter.Listener,
-        IntentViewModelAdapter.Listener,
-        AppViewModelAdapter.Listener,
-        GroupViewModelAdapter.Listener,
-        PinnedShortcutViewModelAdapter.Listener {
+        DeepShortcutDescriptorUiAdapter.Listener,
+        IntentDescriptorUiAdapter.Listener,
+        AppDescriptorUiAdapter.Listener,
+        GroupDescriptorUiAdapter.Listener,
+        PinnedShortcutDescriptorUiAdapter.Listener {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
@@ -275,7 +275,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Start
     ///////////////////////////////////////////////////////////////////////////
 
-    private void startApp(int position, AppViewModel item) {
+    private void startApp(int position, AppDescriptorUi item) {
         searchBarBehavior.hide();
         ComponentName componentName = DescriptorUtils.getComponentName(requireContext(), item.getDescriptor());
         if (componentName != null) {
@@ -301,14 +301,14 @@ public class AppsFragment extends AppFragment implements AppsView,
         startAppActivity(SettingsActivity.getComponentName(requireContext()), view);
     }
 
-    private void startAppUninstall(AppViewModel item) {
+    private void startAppUninstall(AppDescriptorUi item) {
         Intent intent = PackageUtils.getUninstallIntent(item.packageName);
         if (!IntentUtils.safeStartActivity(requireContext(), intent)) {
             showError(R.string.error);
         }
     }
 
-    private void startShortcut(PinnedShortcutViewModel item) {
+    private void startShortcut(PinnedShortcutDescriptorUi item) {
         Intent intent = IntentUtils.fromUri(item.uri);
         if (!IntentUtils.safeStartActivity(requireContext(), intent)) {
             showError(R.string.error);
@@ -320,7 +320,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onAppClick(int position, AppViewModel item) {
+    public void onAppClick(int position, AppDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -329,7 +329,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onAppLongClick(int position, AppViewModel item) {
+    public void onAppLongClick(int position, AppDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -347,7 +347,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onGroupClick(int position, GroupViewModel item) {
+    public void onGroupClick(int position, GroupDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -356,7 +356,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onGroupLongClick(int position, GroupViewModel item) {
+    public void onGroupLongClick(int position, GroupDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -365,7 +365,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onPinnedShortcutClick(int position, PinnedShortcutViewModel item) {
+    public void onPinnedShortcutClick(int position, PinnedShortcutDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -374,7 +374,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onPinnedShortcutLongClick(int position, PinnedShortcutViewModel item) {
+    public void onPinnedShortcutLongClick(int position, PinnedShortcutDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -383,7 +383,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onDeepShortcutClick(int position, DeepShortcutViewModel item) {
+    public void onDeepShortcutClick(int position, DeepShortcutDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -392,7 +392,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onDeepShortcutLongClick(int position, DeepShortcutViewModel item) {
+    public void onDeepShortcutLongClick(int position, DeepShortcutDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -401,7 +401,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onIntentClick(int position, IntentViewModel item) {
+    public void onIntentClick(int position, IntentDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -410,7 +410,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onIntentLongClick(int position, IntentViewModel item) {
+    public void onIntentLongClick(int position, IntentDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -441,33 +441,33 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
-    private void showCustomizePopup(int position, DescriptorItem item) {
+    private void showCustomizePopup(int position, DescriptorUi item) {
         Context context = requireContext();
         ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (item instanceof HiddenItem) {
+        if (item instanceof IgnorableDescriptorUi) {
             popup.addAction(new ActionPopupWindow.ItemBuilder(context)
                     .setIcon(R.drawable.ic_action_hide)
-                    .setOnClickListener(v -> presenter.hideItem(position, (HiddenItem) item))
+                    .setOnClickListener(v -> presenter.ignoreItem(position, (IgnorableDescriptorUi) item))
             );
         }
-        if (item instanceof CustomLabelItem) {
+        if (item instanceof CustomLabelDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_rename)
                     .setIcon(R.drawable.ic_action_rename)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> setItemCustomLabel(position, (CustomLabelItem) item))
+                    .setOnClickListener(v -> setItemCustomLabel(position, (CustomLabelDescriptorUi) item))
             );
         }
-        if (item instanceof CustomColorItem) {
+        if (item instanceof CustomColorDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_color)
                     .setEnabled(!preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW))
                     .setIcon(R.drawable.ic_action_color)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> setItemColor(position, (CustomColorItem) item))
+                    .setOnClickListener(v -> setItemColor(position, (CustomColorDescriptorUi) item))
             );
         }
-        if (item instanceof VisibleItem) {
+        if (item instanceof VisibleDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_add_group)
                     .setIcon(R.drawable.ic_action_add_group)
@@ -478,7 +478,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     })
             );
         }
-        if (item instanceof RemovableItem) {
+        if (item instanceof RemovableDescriptorUi) {
             popup.addAction(new ActionPopupWindow.ItemBuilder(context)
                     .setIcon(R.drawable.ic_action_delete)
                     .setOnClickListener(v -> presenter.removeItem(position, item))
@@ -488,7 +488,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         showPopupWindow(popup, view);
     }
 
-    private void setItemCustomLabel(int position, CustomLabelItem item) {
+    private void setItemCustomLabel(int position, CustomLabelDescriptorUi item) {
         String visibleLabel = item.getVisibleLabel();
         EditTextAlertDialog.builder(requireContext())
                 .setTitle(item.getVisibleLabel())
@@ -515,7 +515,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .show();
     }
 
-    private void setItemColor(int position, CustomColorItem item) {
+    private void setItemColor(int position, CustomColorDescriptorUi item) {
         int visibleColor = item.getVisibleColor();
         ColorPickerDialog.builder(requireContext())
                 .setHexVisible(false)
@@ -532,26 +532,26 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .show();
     }
 
-    private void showItemPopup(int position, DescriptorItem item) {
+    private void showItemPopup(int position, DescriptorUi item) {
         Context context = requireContext();
         ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (item instanceof DeepShortcutViewModel) {
+        if (item instanceof DeepShortcutDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setIcon(R.drawable.ic_app_info)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
-                        startAppSettings(((DeepShortcutViewModel) item).packageName, v);
+                        startAppSettings(((DeepShortcutDescriptorUi) item).packageName, v);
                     })
             );
         }
-        if (item instanceof RemovableItem) {
+        if (item instanceof RemovableDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setIcon(R.drawable.ic_action_delete)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.customize_item_delete)
                     .setOnClickListener(v -> {
-                        String visibleLabel = ((CustomLabelItem) item).getVisibleLabel();
+                        String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
                         String message = getString(R.string.popup_delete_message, visibleLabel);
                         new AlertDialog.Builder(requireContext())
                                 .setTitle(R.string.popup_delete_title)
@@ -675,7 +675,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showAppPopup(int position, AppViewModel item, List<Shortcut> shortcuts) {
+    public void showAppPopup(int position, AppDescriptorUi item, List<Shortcut> shortcuts) {
         Context context = requireContext();
         boolean uninstallAvailable = !PackageUtils.isSystem(context.getPackageManager(), item.packageName);
         ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(context)
@@ -985,12 +985,12 @@ public class AppsFragment extends AppFragment implements AppsView,
     private void setItems(Update update) {
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(getContext())
-                    .add(new AppViewModelAdapter(this))
-                    .add(new HiddenAppViewModelAdapter())
-                    .add(new GroupViewModelAdapter(this))
-                    .add(new PinnedShortcutViewModelAdapter(this))
-                    .add(new IntentViewModelAdapter(this))
-                    .add(new DeepShortcutViewModelAdapter(this))
+                    .add(new AppDescriptorUiAdapter(this))
+                    .add(new NotVisibleDescriptorUiAdapter())
+                    .add(new GroupDescriptorUiAdapter(this))
+                    .add(new PinnedShortcutDescriptorUiAdapter(this))
+                    .add(new IntentDescriptorUiAdapter(this))
+                    .add(new DeepShortcutDescriptorUiAdapter(this))
                     .recyclerView(list)
                     .setHasStableIds(true)
                     .create();

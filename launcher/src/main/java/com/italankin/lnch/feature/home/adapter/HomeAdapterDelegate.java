@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.model.viewmodel.DescriptorItem;
+import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorItem>
+abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
         extends BaseAdapterDelegate<VH, T> {
 
     private UserPrefs.ItemPrefs itemPrefs;

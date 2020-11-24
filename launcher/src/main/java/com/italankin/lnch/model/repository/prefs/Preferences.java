@@ -414,7 +414,7 @@ public interface Preferences {
      * Search items of these properties
      */
     enum SearchTarget {
-        HIDDEN("hidden"),
+        IGNORED("ignored"),
         SHORTCUT("shortcut"),
         WEB("web"),
         URL("url");

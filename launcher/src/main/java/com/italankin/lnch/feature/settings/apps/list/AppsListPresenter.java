@@ -6,7 +6,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchVisibilityAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
     private final DescriptorRepository descriptorRepository;
     private final DescriptorRepository.Editor editor;
 
-    private List<AppViewModel> items = Collections.emptyList();
+    private List<AppDescriptorUi> items = Collections.emptyList();
 
     @Inject
     AppsListPresenter(DescriptorRepository descriptorRepository) {
@@ -38,15 +38,15 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
         loadApps();
     }
 
-    void toggleAppVisibility(int position, AppViewModel item) {
-        boolean hidden = !item.isHidden();
-        item.setHidden(hidden);
-        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !hidden));
+    void toggleAppVisibility(int position, AppDescriptorUi item) {
+        boolean ignored = !item.isIgnored();
+        item.setIgnored(ignored);
+        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !ignored));
         getViewState().onItemChanged(position);
     }
 
     void setAppSettings(String id, boolean searchVisible, boolean shortcutsSearchVisible) {
-        for (AppViewModel item : items) {
+        for (AppDescriptorUi item : items) {
             AppDescriptor descriptor = item.getDescriptor();
             if (descriptor.getId().equals(id)) {
                 item.setSearchVisible(searchVisible);
@@ -76,9 +76,9 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
         Single
                 .fromCallable(() -> {
                     List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
-                    ArrayList<AppViewModel> result = new ArrayList<>(appDescriptors.size());
+                    ArrayList<AppDescriptorUi> result = new ArrayList<>(appDescriptors.size());
                     for (AppDescriptor appDescriptor : appDescriptors) {
-                        result.add(new AppViewModel(appDescriptor));
+                        result.add(new AppDescriptorUi(appDescriptor));
                     }
                     Collections.sort(result, (lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
                             .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()));
@@ -86,9 +86,9 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<AppViewModel>>() {
+                .subscribe(new SingleState<List<AppDescriptorUi>>() {
                     @Override
-                    protected void onSuccess(AppsListView viewState, List<AppViewModel> apps) {
+                    protected void onSuccess(AppsListView viewState, List<AppDescriptorUi> apps) {
                         items = apps;
                         viewState.onAppsLoaded(apps);
                     }

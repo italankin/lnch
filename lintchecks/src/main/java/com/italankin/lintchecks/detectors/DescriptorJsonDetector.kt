@@ -1,0 +1,124 @@
+package com.italankin.lintchecks.detectors
+
+import com.android.tools.lint.client.api.UElementHandler
+import com.android.tools.lint.detector.api.Detector
+import com.android.tools.lint.detector.api.Implementation
+import com.android.tools.lint.detector.api.Issue
+import com.android.tools.lint.detector.api.JavaContext
+import com.android.tools.lint.detector.api.Scope
+import com.android.tools.lint.detector.api.Severity
+import com.android.tools.lint.detector.api.SourceCodeScanner
+import com.intellij.lang.jvm.JvmModifier
+import com.intellij.psi.JavaPsiFacade
+import com.italankin.lintchecks.CATEGORY_LNCH
+import com.italankin.lintchecks.util.psiClass
+import org.jetbrains.uast.UClass
+import org.jetbrains.uast.UElement
+
+class DescriptorJsonDetector : Detector(), SourceCodeScanner {
+
+    companion object {
+        val ISSUE = Issue.create(
+                "DescriptorJsonDetector",
+                "Ensures DescriptorJson implemented correctly",
+                "Ensures DescriptorJson implemented correctly",
+                CATEGORY_LNCH,
+                10,
+                Severity.FATAL,
+                Implementation(DescriptorJsonDetector::class.java, Scope.JAVA_FILE_SCOPE))
+
+        private const val DESCRIPTOR_JSON = "com.italankin.lnch.model.repository.store.json.model.DescriptorJson"
+        private const val FIELD_TYPE = "type"
+        private const val FIELD_PROPERTY_TYPE = "PROPERTY_TYPE"
+        private const val SERIALIZED_NAME = "com.google.gson.annotations.SerializedName"
+        private const val KEEP = "androidx.annotation.Keep"
+    }
+
+    override fun getApplicableUastTypes(): List<Class<out UElement>>? {
+        return listOf(UClass::class.java)
+    }
+
+    override fun createUastHandler(context: JavaContext): UElementHandler? {
+        return object : UElementHandler() {
+            private val psiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(context.psiFile?.project)
+
+            override fun visitClass(node: UClass) {
+                val resolveScope = context.psiFile?.resolveScope ?: return
+                val objectClass = psiFacade.findClass(DESCRIPTOR_JSON, resolveScope) ?: return
+
+                // check if class implements DescriptorJson
+                if (!node.isInheritor(objectClass, true)) {
+                    return
+                }
+
+                // find 'type' field
+                val typeField = node.allFields.find { it.name == FIELD_TYPE }
+                if (typeField == null) {
+                    context.report(ISSUE, node, context.getNameLocation(node),
+                            "${node.name} must declare `$FIELD_TYPE` field")
+                    return
+                }
+
+                // find SerializedName annotation
+                val serializedName = typeField.annotations.find { it.qualifiedName == SERIALIZED_NAME }
+                if (serializedName == null) {
+                    context.report(ISSUE, node, context.getNameLocation(typeField),
+                            "`$FIELD_TYPE` must be annotated with `@SerializedName`")
+                    return
+                }
+
+                // find SerializedName value node
+                val serializedNameValue = serializedName.parameterList.attributes.find {
+                    it.name == "value" || it.name == null
+                }
+                // check if value is PROPERTY_TYPE
+                if (serializedNameValue?.value?.text != FIELD_PROPERTY_TYPE) {
+                    val fix = fix()
+                            .replace()
+                            .text(serializedNameValue?.value?.text)
+                            .with(FIELD_PROPERTY_TYPE)
+                            .build()
+                    context.report(ISSUE, node, context.getLocation(serializedName),
+                            "`@SerializedName` must have a value of `$FIELD_PROPERTY_TYPE`",
+                            fix)
+                }
+
+                // check field type
+                val stringClass = psiFacade.findClass("java.lang.String", resolveScope) ?: return
+                if (typeField.type.psiClass() != stringClass) {
+                    val fix = fix()
+                            .replace()
+                            .text(typeField.type.presentableText)
+                            .with("String")
+                            .build()
+                    context.report(ISSUE, node, context.getLocation(typeField.typeElement!!),
+                            "`$FIELD_TYPE` must be a `String`", fix)
+                }
+                if (!typeField.hasAnnotation(KEEP)) {
+                    context.report(ISSUE, node, context.getLocation(typeField),
+                            "Must be annotated with `@Keep`")
+                }
+
+                // find constructor with no arguments
+                val constructor = node.constructors.find { !it.hasParameters() }
+                if (constructor == null) {
+                    context.report(ISSUE, node, context.getNameLocation(node),
+                            "${node.name} must have an empty constructor")
+                    return
+                }
+
+                // check @Keep presence
+                if (!constructor.hasAnnotation(KEEP)) {
+                    context.report(ISSUE, node, context.getNameLocation(constructor),
+                            "Must be annotated with `@Keep`")
+                }
+
+                // constructor must be public
+                if (!constructor.hasModifier(JvmModifier.PUBLIC)) {
+                    context.report(ISSUE, node, context.getNameLocation(constructor),
+                            "Must be public")
+                }
+            }
+        }
+    }
+}

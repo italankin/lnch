@@ -16,12 +16,12 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.settings.apps.list.adapter.AppsListFilter;
-import com.italankin.lnch.feature.settings.apps.list.adapter.AppsViewModelAdapter;
+import com.italankin.lnch.feature.settings.apps.list.adapter.SettingsAppDescriptorUiAdapter;
+import com.italankin.lnch.feature.settings.apps.list.adapter.SettingsAppsListFilter;
 import com.italankin.lnch.feature.settings.apps.list.dialog.AppSettingsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.list.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -38,8 +38,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsListFragment extends AppFragment implements AppsListView,
-        AppsViewModelAdapter.Listener,
-        AppsListFilter.OnFilterResult {
+        SettingsAppDescriptorUiAdapter.Listener,
+        SettingsAppsListFilter.OnFilterResult {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
@@ -51,9 +51,9 @@ public class AppsListFragment extends AppFragment implements AppsListView,
 
     private LceLayout lce;
     private RecyclerView list;
-    private CompositeAdapter<AppViewModel> adapter;
+    private CompositeAdapter<AppDescriptorUi> adapter;
 
-    private final AppsListFilter filter = new AppsListFilter(this);
+    private final SettingsAppsListFilter filter = new SettingsAppsListFilter(this);
 
     @ProvidePresenter
     AppsListPresenter providePresenter() {
@@ -145,7 +145,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     }
 
     @Override
-    public void onAppsLoaded(List<AppViewModel> apps) {
+    public void onAppsLoaded(List<AppDescriptorUi> apps) {
         adapter.setDataset(apps);
         adapter.notifyDataSetChanged();
         filter.setDataset(apps);
@@ -166,12 +166,12 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     }
 
     @Override
-    public void onVisibilityClick(int position, AppViewModel item) {
+    public void onVisibilityClick(int position, AppDescriptorUi item) {
         presenter.toggleAppVisibility(position, item);
     }
 
     @Override
-    public void onAppClick(int position, AppViewModel item) {
+    public void onAppClick(int position, AppDescriptorUi item) {
         new AppSettingsDialogFragment.Builder()
                 .setApp(item)
                 .setListenerProvider(new AppSettingsDialogListenerProvider())
@@ -180,7 +180,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     }
 
     @Override
-    public void onFilterResult(String query, List<AppViewModel> items) {
+    public void onFilterResult(String query, List<AppDescriptorUi> items) {
         if (items.isEmpty()) {
             String message = TextUtils.isEmpty(query)
                     ? getString(R.string.search_empty)
@@ -198,8 +198,8 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     private void initAdapter() {
         Context context = requireContext();
         Picasso picasso = LauncherApp.daggerService.main().getPicassoFactory().create(context);
-        adapter = new CompositeAdapter.Builder<AppViewModel>(context)
-                .add(new AppsViewModelAdapter(picasso, this))
+        adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
+                .add(new SettingsAppDescriptorUiAdapter(picasso, this))
                 .recyclerView(list)
                 .create();
     }

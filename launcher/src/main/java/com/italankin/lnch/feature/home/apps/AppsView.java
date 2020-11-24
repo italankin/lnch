@@ -8,7 +8,7 @@ import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ interface AppsView extends MvpView {
     void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showAppPopup(int position, AppViewModel item, List<Shortcut> shortcuts);
+    void showAppPopup(int position, AppDescriptorUi item, List<Shortcut> shortcuts);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

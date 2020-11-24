@@ -4,7 +4,7 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.italankin.lnch.model.viewmodel.impl.AppViewModel;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ interface AppsListView extends MvpView {
     void showLoading();
 
     @StateStrategyType(SingleStateStrategy.class)
-    void onAppsLoaded(List<AppViewModel> apps);
+    void onAppsLoaded(List<AppDescriptorUi> apps);
 
     @StateStrategyType(SingleStateStrategy.class)
     void showError(Throwable e);

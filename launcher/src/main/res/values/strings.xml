@@ -94,7 +94,7 @@
     <string name="settings_apps_list_filter_apply">Apply</string>
     <string name="settings_apps_list_filter_reset">Reset</string>
     <string name="settings_apps_list_filter_visible">Visible</string>
-    <string name="settings_apps_list_filter_hidden">Hidden</string>
+    <string name="settings_apps_list_filter_ignored">Hidden</string>
     <string name="settings_apps_sorting">Sorting</string>
     <string name="settings_apps_list_options_save">Save</string>
     <string name="settings_apps_list_options_reset">Reset</string>
