@@ -4,8 +4,8 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchVisibilityAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
     void toggleAppVisibility(int position, AppDescriptorUi item) {
         boolean ignored = !item.isIgnored();
         item.setIgnored(ignored);
-        editor.enqueue(new SetVisibilityAction(item.getDescriptor(), !ignored));
+        editor.enqueue(new SetIgnoreAction(item.getDescriptor().getId(), !ignored));
         getViewState().onItemChanged(position);
     }
 
@@ -51,7 +51,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
             if (descriptor.getId().equals(id)) {
                 item.setSearchVisible(searchVisible);
                 item.setShortcutsSearchVisible(shortcutsSearchVisible);
-                editor.enqueue(new SetSearchVisibilityAction(descriptor, searchVisible, shortcutsSearchVisible));
+                editor.enqueue(new SetSearchVisibilityAction(descriptor.getId(), searchVisible, shortcutsSearchVisible));
                 break;
             }
         }

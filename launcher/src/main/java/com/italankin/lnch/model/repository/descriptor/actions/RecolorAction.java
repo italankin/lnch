@@ -7,18 +7,18 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import java.util.List;
 
 public class RecolorAction implements DescriptorRepository.Editor.Action {
-    private final CustomColorDescriptor item;
+    private final String id;
     private final Integer customColor;
 
-    public RecolorAction(CustomColorDescriptor item, Integer customColor) {
-        this.item = item;
+    public RecolorAction(String id, Integer customColor) {
+        this.id = id;
         this.customColor = customColor;
     }
 
     @Override
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
-            if (this.item.equals(item)) {
+            if (item.getId().equals(id)) {
                 ((CustomColorDescriptor) item).setCustomColor(customColor);
                 break;
             }

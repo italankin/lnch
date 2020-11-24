@@ -4,10 +4,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -17,7 +14,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RecolorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetVisibilityAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
 import com.italankin.lnch.model.repository.notifications.NotificationDot;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
@@ -121,19 +118,19 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
         String s = customLabel.trim().isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction((CustomLabelDescriptor) item.getDescriptor(), s));
+        editor.enqueue(new RenameAction(item.getDescriptor().getId(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
-        editor.enqueue(new RecolorAction((CustomColorDescriptor) item.getDescriptor(), color));
+        editor.enqueue(new RecolorAction(item.getDescriptor().getId(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
     void ignoreItem(int position, IgnorableDescriptorUi item) {
-        editor.enqueue(new SetVisibilityAction((IgnorableDescriptor) item.getDescriptor(), false));
+        editor.enqueue(new SetIgnoreAction(item.getDescriptor().getId(), false));
         item.setIgnored(true);
         getViewState().onItemChanged(position);
     }

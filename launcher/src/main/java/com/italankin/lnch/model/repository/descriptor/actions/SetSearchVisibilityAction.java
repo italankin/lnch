@@ -7,13 +7,12 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import java.util.List;
 
 public class SetSearchVisibilityAction implements DescriptorRepository.Editor.Action {
-
-    private final AppDescriptor descriptor;
+    private final String id;
     private final boolean searchVisible;
     private final boolean shortcutsSearchVisible;
 
-    public SetSearchVisibilityAction(AppDescriptor descriptor, boolean searchVisible, boolean shortcutsSearchVisible) {
-        this.descriptor = descriptor;
+    public SetSearchVisibilityAction(String id, boolean searchVisible, boolean shortcutsSearchVisible) {
+        this.id = id;
         this.searchVisible = searchVisible;
         this.shortcutsSearchVisible = shortcutsSearchVisible;
     }
@@ -21,7 +20,7 @@ public class SetSearchVisibilityAction implements DescriptorRepository.Editor.Ac
     @Override
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
-            if (this.descriptor.equals(item)) {
+            if (item.getId().equals(id)) {
                 AppDescriptor app = (AppDescriptor) item;
                 app.searchVisible = searchVisible;
                 app.shortcutsSearchVisible = shortcutsSearchVisible;

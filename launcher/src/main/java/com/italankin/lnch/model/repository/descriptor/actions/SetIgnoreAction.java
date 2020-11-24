@@ -6,20 +6,20 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 
 import java.util.List;
 
-public class SetVisibilityAction implements DescriptorRepository.Editor.Action {
-    private final IgnorableDescriptor item;
-    private final boolean visible;
+public class SetIgnoreAction implements DescriptorRepository.Editor.Action {
+    private final String id;
+    private final boolean ignored;
 
-    public SetVisibilityAction(IgnorableDescriptor item, boolean visible) {
-        this.item = item;
-        this.visible = visible;
+    public SetIgnoreAction(String id, boolean ignored) {
+        this.id = id;
+        this.ignored = ignored;
     }
 
     @Override
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
-            if (this.item.equals(item)) {
-                ((IgnorableDescriptor) item).setIgnored(!visible);
+            if (item.getId().equals(id)) {
+                ((IgnorableDescriptor) item).setIgnored(!ignored);
                 break;
             }
         }
