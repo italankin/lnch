@@ -2,9 +2,9 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.content.SharedPreferences;
 
-import androidx.annotation.Nullable;
-
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 final class Prefs {
 

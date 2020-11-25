@@ -1,9 +1,7 @@
 package com.italankin.lnch.model.repository.prefs;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +26,8 @@ public class UserPreferences implements Preferences {
     private final Observable<String> updates;
 
     @Inject
-    public UserPreferences(Context context) {
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public UserPreferences(SharedPreferences sharedPreferences) {
+        this.prefs = sharedPreferences;
         this.updates = Observable
                 .<String>create(emitter -> {
                     OnSharedPreferenceChangeListener listener = (sp, key) -> {

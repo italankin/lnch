@@ -161,7 +161,7 @@
     <string name="settings_other_bar_backup_summary">Save apps settings, such as custom colors, names, visibility, positions to a file</string>
     <string name="settings_other_bar_restore">Restore</string>
     <string name="settings_other_bar_restore_summary">Restore settings from previous backup</string>
-    <string name="settings_other_bar_reset">Reset</string>
+    <string name="settings_other_bar_reset">Reset apps settings</string>
     <string name="settings_other_bar_reset_summary">Reset apps settings to their defaults</string>
     <string name="settings_other_bar_restore_success">Settings restored successfully</string>
     <string name="settings_other_bar_backup_success">Settings backed up successfully</string>

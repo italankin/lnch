@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -97,17 +98,7 @@ public interface Preferences {
             SearchTarget.ALL,
             (preferences, key, defaultValue) -> {
                 Set<String> set = preferences.getStringSet(key, null);
-                if (set == null) {
-                    return defaultValue;
-                }
-                Set<SearchTarget> result = new HashSet<>();
-                for (String s : set) {
-                    SearchTarget target = SearchTarget.from(s);
-                    if (target != null) {
-                        result.add(target);
-                    }
-                }
-                return EnumSet.copyOf(result);
+                return set != null ? SearchTarget.fromCollection(set) : defaultValue;
             },
             (preferences, key, newValue) -> {
                 Set<String> value = new HashSet<>(newValue.size());
@@ -428,6 +419,17 @@ public interface Preferences {
                 }
             }
             return null;
+        }
+
+        static EnumSet<SearchTarget> fromCollection(Collection<? extends String> strings) {
+            Set<SearchTarget> result = new HashSet<>();
+            for (String s : strings) {
+                SearchTarget target = SearchTarget.from(s);
+                if (target != null) {
+                    result.add(target);
+                }
+            }
+            return EnumSet.copyOf(result);
         }
 
         private final String key;

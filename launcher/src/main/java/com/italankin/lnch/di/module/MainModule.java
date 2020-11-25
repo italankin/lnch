@@ -1,8 +1,10 @@
 package com.italankin.lnch.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
@@ -55,8 +57,14 @@ public class MainModule {
 
     @Provides
     @Singleton
-    Preferences providePreferences(Context context) {
-        return new UserPreferences(context);
+    Preferences providePreferences(SharedPreferences sharedPreferences) {
+        return new UserPreferences(sharedPreferences);
+    }
+
+    @Provides
+    @Singleton
+    SharedPreferences provideSharedPreferences(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides
@@ -76,14 +84,18 @@ public class MainModule {
     }
 
     @Provides
-    @Singleton
-    DescriptorStore provideDescriptorStore(Context context, PackagesStore packagesStore) {
+    GsonBuilder provideGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
-        return new BackupDescriptorStore(new GsonDescriptorStore(gsonBuilder),
-                packagesStore, context.getFilesDir());
+        return gsonBuilder;
+    }
+
+    @Provides
+    @Singleton
+    DescriptorStore provideDescriptorStore(Context context, GsonBuilder gsonBuilder, PackagesStore packagesStore) {
+        return new BackupDescriptorStore(new GsonDescriptorStore(gsonBuilder), packagesStore, context.getFilesDir());
     }
 
     @Provides
