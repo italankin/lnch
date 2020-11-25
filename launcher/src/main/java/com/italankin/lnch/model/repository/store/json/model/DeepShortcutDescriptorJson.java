@@ -33,7 +33,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     public Integer customColor;
 
     @SerializedName("enabled")
-    public boolean enabled = true;
+    public Boolean enabled;
 
     @Keep
     public DeepShortcutDescriptorJson() {
@@ -46,7 +46,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         this.color = descriptor.color;
         this.customLabel = descriptor.customLabel;
         this.customColor = descriptor.customColor;
-        this.enabled = descriptor.enabled;
+        this.enabled = descriptor.enabled ? null : false;
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         descriptor.color = this.color;
         descriptor.customLabel = this.customLabel;
         descriptor.customColor = this.customColor;
-        descriptor.enabled = this.enabled;
+        descriptor.enabled = this.enabled == null ? true : this.enabled;
         return descriptor;
     }
 }
