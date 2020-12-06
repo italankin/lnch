@@ -36,7 +36,7 @@ public class SearchBar extends FrameLayout {
     private final ImageView buttonGlobalSearch;
     private final View buttonSettings;
 
-    private SearchAdapter searchAdapter;
+    private final SearchAdapter searchAdapter;
 
     private Listener listener;
 
