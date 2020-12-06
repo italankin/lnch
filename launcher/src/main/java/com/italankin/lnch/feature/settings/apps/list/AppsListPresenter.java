@@ -41,7 +41,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
     void toggleAppVisibility(int position, AppDescriptorUi item) {
         boolean ignored = !item.isIgnored();
         item.setIgnored(ignored);
-        editor.enqueue(new SetIgnoreAction(item.getDescriptor().getId(), !ignored));
+        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), !ignored));
         getViewState().onItemChanged(position);
     }
 
@@ -50,7 +50,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
             AppDescriptor descriptor = item.getDescriptor();
             if (descriptor.getId().equals(id)) {
                 item.setSearchFlags(searchFlags);
-                editor.enqueue(new SetSearchFlagsAction(descriptor.getId(), searchFlags));
+                editor.enqueue(new SetSearchFlagsAction(descriptor, searchFlags));
                 break;
             }
         }

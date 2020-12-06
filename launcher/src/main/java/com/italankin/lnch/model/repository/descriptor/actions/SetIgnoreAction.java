@@ -10,8 +10,8 @@ public class SetIgnoreAction implements DescriptorRepository.Editor.Action {
     private final String id;
     private final boolean ignored;
 
-    public SetIgnoreAction(String id, boolean ignored) {
-        this.id = id;
+    public SetIgnoreAction(IgnorableDescriptor descriptor, boolean ignored) {
+        this.id = descriptor.getId();
         this.ignored = ignored;
     }
 

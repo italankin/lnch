@@ -118,19 +118,19 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
         String s = customLabel.trim().isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item.getDescriptor().getId(), s));
+        editor.enqueue(new RenameAction(item.getDescriptor(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
-        editor.enqueue(new RecolorAction(item.getDescriptor().getId(), color));
+        editor.enqueue(new RecolorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }
 
     void ignoreItem(int position, IgnorableDescriptorUi item) {
-        editor.enqueue(new SetIgnoreAction(item.getDescriptor().getId(), false));
+        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), false));
         item.setIgnored(true);
         getViewState().onItemChanged(position);
     }
@@ -144,7 +144,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void removeItem(int position, DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
-        editor.enqueue(new RemoveAction(position));
+        editor.enqueue(new RemoveAction(descriptor));
         if (item instanceof ExpandableDescriptorUi) {
             editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }
@@ -252,10 +252,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    void removeItemImmediate(int position, DescriptorUi item) {
+    void removeItemImmediate(DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
         DescriptorRepository.Editor editor = descriptorRepository.edit();
-        editor.enqueue(new RemoveAction(position));
+        editor.enqueue(new RemoveAction(descriptor));
         if (descriptor instanceof GroupDescriptor) {
             editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
         }

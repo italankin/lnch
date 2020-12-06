@@ -8,18 +8,18 @@ import java.util.List;
 
 public class RecolorAction implements DescriptorRepository.Editor.Action {
     private final String id;
-    private final Integer customColor;
+    private final Integer newColor;
 
-    public RecolorAction(String id, Integer customColor) {
-        this.id = id;
-        this.customColor = customColor;
+    public RecolorAction(CustomColorDescriptor descriptor, Integer newColor) {
+        this.id = descriptor.getId();
+        this.newColor = newColor;
     }
 
     @Override
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
             if (item.getId().equals(id)) {
-                ((CustomColorDescriptor) item).setCustomColor(customColor);
+                ((CustomColorDescriptor) item).setCustomColor(newColor);
                 break;
             }
         }

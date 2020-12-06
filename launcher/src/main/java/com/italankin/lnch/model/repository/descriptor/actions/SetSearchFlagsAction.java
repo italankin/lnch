@@ -10,8 +10,8 @@ public class SetSearchFlagsAction implements DescriptorRepository.Editor.Action 
     private final String id;
     private final int searchFlags;
 
-    public SetSearchFlagsAction(String id, int searchFlags) {
-        this.id = id;
+    public SetSearchFlagsAction(AppDescriptor descriptor, int searchFlags) {
+        this.id = descriptor.getId();
         this.searchFlags = searchFlags;
     }
 

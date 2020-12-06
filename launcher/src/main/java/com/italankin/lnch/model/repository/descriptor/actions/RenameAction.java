@@ -8,18 +8,18 @@ import java.util.List;
 
 public class RenameAction implements DescriptorRepository.Editor.Action {
     private final String id;
-    private final String customLabel;
+    private final String newLabel;
 
-    public RenameAction(String id, String customLabel) {
-        this.id = id;
-        this.customLabel = customLabel;
+    public RenameAction(CustomLabelDescriptor descriptor, String newLabel) {
+        this.id = descriptor.getId();
+        this.newLabel = newLabel;
     }
 
     @Override
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
             if (item.getId().equals(id)) {
-                ((CustomLabelDescriptor) item).setCustomLabel(customLabel);
+                ((CustomLabelDescriptor) item).setCustomLabel(newLabel);
                 break;
             }
         }

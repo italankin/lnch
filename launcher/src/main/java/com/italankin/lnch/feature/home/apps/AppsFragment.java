@@ -558,7 +558,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                                 .setMessage(message)
                                 .setNegativeButton(R.string.cancel, null)
                                 .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
-                                    presenter.removeItemImmediate(position, item);
+                                    presenter.removeItemImmediate(item);
                                 })
                                 .show();
                     })
