@@ -246,15 +246,13 @@ public class AppShortcutsRepository implements ShortcutsRepository {
             for (ShortcutInfo shortcut : shortcuts) {
                 componentNames.add(shortcut.getActivity());
             }
-
             List<AppDescriptor> updated = new ArrayList<>(1);
             for (AppDescriptor descriptor : findAllByPackageName(packageName)) {
-                if (descriptor.componentName == null || componentNames.contains(
-                        ComponentName.unflattenFromString(descriptor.componentName))) {
+                if (descriptor.componentName == null ||
+                        componentNames.contains(ComponentName.unflattenFromString(descriptor.componentName))) {
                     updated.add(descriptor);
                 }
             }
-
             updateCache(updated);
         }
 
