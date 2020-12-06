@@ -79,7 +79,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    PackagesStore providerPackagesStore(Context context) {
+    PackagesStore providePackagesStore(Context context) {
         return new JsonPackagesStore(context.getFilesDir());
     }
 
@@ -149,11 +149,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    WidgetsState provideWidgetsState(Context context) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        if (BuildConfig.DEBUG) {
-            gsonBuilder.setPrettyPrinting();
-        }
+    WidgetsState provideWidgetsState(Context context, GsonBuilder gsonBuilder) {
         return new WidgetsStateImpl(context, gsonBuilder.create());
     }
 

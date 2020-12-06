@@ -2,56 +2,48 @@ package com.italankin.lnch.di.component;
 
 import android.content.Context;
 
-import com.italankin.lnch.di.module.AppModule;
 import com.italankin.lnch.di.module.BackupModule;
 import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.settings.backup.impl.BackupReader;
-import com.italankin.lnch.feature.settings.backup.impl.BackupWriter;
-import com.italankin.lnch.feature.settings.backup.impl.PreferencesBackup;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.prefs.SeparatorState;
-import com.italankin.lnch.model.repository.prefs.WidgetsState;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {MainModule.class, AppModule.class, BackupModule.class})
-public interface MainComponent {
+@Component(modules = {MainModule.class, BackupModule.class})
+public interface MainComponent extends PresenterComponent.Dependencies {
 
-    Context getContext();
+    Preferences preferences();
 
-    Preferences getPreferences();
+    DescriptorRepository descriptorRepository();
 
-    DescriptorRepository getDescriptorRepository();
+    SearchRepository searchRepository();
 
-    SearchRepository getSearchRepository();
+    PicassoFactory picassoFactory();
 
-    PicassoFactory getPicassoFactory();
+    ShortcutsRepository shortcutsRepository();
 
-    ShortcutsRepository getShortcutsRepository();
+    NameNormalizer nameNormalizer();
 
-    SeparatorState getSeparatorState();
+    IntentQueue intentQueue();
 
-    NameNormalizer getNameNormalizer();
+    NotificationsRepository notificationsRepository();
 
-    IntentQueue getIntentQueue();
+    @Component.Builder
+    interface Builder {
 
-    WidgetsState getWidgetsState();
+        @BindsInstance
+        Builder context(Context context);
 
-    NotificationsRepository getNotificationsRepository();
-
-    BackupReader getBackupReader();
-
-    BackupWriter getBackupWriter();
-
-    PreferencesBackup getPreferencesBackup();
+        MainComponent build();
+    }
 }

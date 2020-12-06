@@ -48,7 +48,7 @@ public class SearchBar extends FrameLayout {
         super(context, attrs);
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        picasso = LauncherApp.daggerService.main().getPicassoFactory().create(context);
+        picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -68,7 +68,7 @@ public class SearchBar extends FrameLayout {
             return true;
         });
 
-        SearchRepository searchRepository = LauncherApp.daggerService.main().getSearchRepository();
+        SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
         searchAdapter = new SearchAdapter(picasso, searchRepository, new SearchAdapter.Listener() {
             @Override
             public void onSearchItemClick(int position, Match match) {

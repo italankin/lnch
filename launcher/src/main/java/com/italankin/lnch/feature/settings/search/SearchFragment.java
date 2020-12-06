@@ -30,7 +30,7 @@ public class SearchFragment extends BasePreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = LauncherApp.daggerService.main().getPreferences();
+        preferences = LauncherApp.daggerService.main().preferences();
     }
 
     @Override

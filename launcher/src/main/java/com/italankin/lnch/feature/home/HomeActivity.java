@@ -48,8 +48,8 @@ public class HomeActivity extends AppActivity implements HomeView, AppsFragment.
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
-        preferences = LauncherApp.daggerService.main().getPreferences();
-        intentQueue = LauncherApp.daggerService.main().getIntentQueue();
+        preferences = LauncherApp.daggerService.main().preferences();
+        intentQueue = LauncherApp.daggerService.main().intentQueue();
 
         SupportsOrientationDelegate.attach(this, preferences);
 

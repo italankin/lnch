@@ -61,7 +61,7 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = LauncherApp.daggerService.main().getPreferences();
+        preferences = LauncherApp.daggerService.main().preferences();
         setHasOptionsMenu(true);
     }
 

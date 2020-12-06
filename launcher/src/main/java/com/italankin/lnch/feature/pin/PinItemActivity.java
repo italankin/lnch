@@ -35,7 +35,7 @@ public class PinItemActivity extends Activity {
                             break;
                         }
                         Boolean pinned = LauncherApp.daggerService.main()
-                                .getShortcutsRepository()
+                                .shortcutsRepository()
                                 .pinShortcut(shortcutInfo.getPackage(), shortcutInfo.getId())
                                 .blockingGet();
                         if (pinned) {

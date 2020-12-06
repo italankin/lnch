@@ -66,7 +66,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
         });
         int color = LauncherApp.daggerService
                 .main()
-                .getPreferences()
+                .preferences()
                 .get(Preferences.WALLPAPER_OVERLAY_COLOR);
         pref.setSummary(String.format("#%08x", color));
     }

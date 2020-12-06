@@ -135,9 +135,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        preferences = LauncherApp.daggerService.main().getPreferences();
-        picasso = LauncherApp.daggerService.main().getPicassoFactory().create(requireContext());
-        intentQueue = LauncherApp.daggerService.main().getIntentQueue();
+        preferences = LauncherApp.daggerService.main().preferences();
+        picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
+        intentQueue = LauncherApp.daggerService.main().intentQueue();
         callbacks = (Callbacks) context;
     }
 
@@ -854,7 +854,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             @Override
             public void onSearchItemPinClick(Match match) {
                 searchBarBehavior.hide();
-                NameNormalizer nameNormalizer = LauncherApp.daggerService.main().getNameNormalizer();
+                NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
                 String label = nameNormalizer.normalize(match.getLabel(requireContext()));
                 IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
                         label, match.getColor(requireContext()));

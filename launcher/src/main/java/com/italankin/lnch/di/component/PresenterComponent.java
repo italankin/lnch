@@ -1,12 +1,18 @@
 package com.italankin.lnch.di.component;
 
+import android.content.Context;
+
 import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.home.HomePresenter;
 import com.italankin.lnch.feature.home.apps.AppsPresenter;
 import com.italankin.lnch.feature.settings.apps.list.AppsListPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
+import com.italankin.lnch.feature.settings.backup.impl.BackupReader;
+import com.italankin.lnch.feature.settings.backup.impl.BackupWriter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
 import com.italankin.lnch.feature.widgets.WidgetsPresenter;
+import com.italankin.lnch.model.repository.prefs.SeparatorState;
+import com.italankin.lnch.model.repository.prefs.WidgetsState;
 
 import dagger.Component;
 
@@ -25,4 +31,17 @@ public interface PresenterComponent {
     BackupPresenter backup();
 
     WidgetsPresenter widgets();
+
+    interface Dependencies {
+
+        Context getContext();
+
+        SeparatorState getSeparatorState();
+
+        WidgetsState getWidgetsState();
+
+        BackupReader getBackupReader();
+
+        BackupWriter getBackupWriter();
+    }
 }

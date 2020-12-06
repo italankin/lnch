@@ -45,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+        Preferences preferences = LauncherApp.daggerService.main().preferences();
         SupportsOrientationDelegate.attach(this, preferences);
 
         super.onCreate(savedInstanceState);

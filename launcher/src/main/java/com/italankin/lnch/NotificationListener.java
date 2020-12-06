@@ -21,8 +21,8 @@ public class NotificationListener extends NotificationListenerService {
     @Override
     public void onListenerConnected() {
         Timber.d("onListenerConnected");
-        notificationsRepository = LauncherApp.daggerService.main().getNotificationsRepository();
-        Preferences preferences = LauncherApp.daggerService.main().getPreferences();
+        notificationsRepository = LauncherApp.daggerService.main().notificationsRepository();
+        Preferences preferences = LauncherApp.daggerService.main().preferences();
         Disposable dot = preferences.observe(Preferences.NOTIFICATION_DOT)
                 .subscribeOn(Schedulers.io())
                 .map(Preferences.Value::get)

@@ -71,7 +71,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        picasso = LauncherApp.daggerService.main().getPicassoFactory().create(requireContext());
+        picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
     }
 
     @Override

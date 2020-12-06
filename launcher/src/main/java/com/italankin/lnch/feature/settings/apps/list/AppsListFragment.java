@@ -197,7 +197,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
 
     private void initAdapter() {
         Context context = requireContext();
-        Picasso picasso = LauncherApp.daggerService.main().getPicassoFactory().create(context);
+        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
         adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
                 .add(new SettingsAppDescriptorUiAdapter(picasso, this))
                 .recyclerView(list)
