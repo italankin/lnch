@@ -6,5 +6,8 @@ import java.util.List;
 
 interface DescriptorSorter {
 
+    /**
+     * @return {@code true}, if list was changed
+     */
     boolean sort(List<Descriptor> descriptors);
 }
