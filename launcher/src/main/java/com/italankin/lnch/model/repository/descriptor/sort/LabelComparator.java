@@ -26,7 +26,7 @@ class LabelComparator implements Comparator<Descriptor> {
         } else {
             result = String.CASE_INSENSITIVE_ORDER.compare(rhs, lhs);
         }
-        changed = result != 0;
+        changed = changed || result != 0;
         return result;
     }
 
