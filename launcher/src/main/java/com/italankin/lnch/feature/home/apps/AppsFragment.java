@@ -217,7 +217,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     searchBar.reset();
                     searchBarBehavior.hide();
                 } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
-                    list.smoothScrollToPosition(0);
+                    scrollToTop();
                 }
                 return true;
             }
@@ -266,7 +266,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
         } else {
-            list.smoothScrollToPosition(0);
+            scrollToTop();
         }
         return true;
     }
@@ -1018,6 +1018,14 @@ public class AppsFragment extends AppFragment implements AppsView,
                     lm.setJustifyContent(JustifyContent.FLEX_END);
                     break;
             }
+        }
+    }
+
+    private void scrollToTop() {
+        if (preferences.get(Preferences.SMOOTH_SCROLL_TO_TOP)) {
+            list.smoothScrollToPosition(0);
+        } else {
+            list.scrollToPosition(0);
         }
     }
 

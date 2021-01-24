@@ -25,6 +25,10 @@
         android:title="@string/settings_home_misc_scroll_top" />
     <CheckBoxPreference
         android:defaultValue="true"
+        android:key="smooth_scroll_to_top"
+        android:title="@string/settings_home_misc_smooth_scroll_top" />
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="expand_notifications"
         android:summary="@string/settings_home_misc_expand_status_bar_summary"
         android:title="@string/settings_home_misc_expand_status_bar" />

@@ -148,6 +148,10 @@ public interface Preferences {
             "scroll_to_top",
             true);
 
+    Pref<Boolean> SMOOTH_SCROLL_TO_TOP = Prefs.createBoolean(
+            "smooth_scroll_to_top",
+            true);
+
     Pref<ColorTheme> COLOR_THEME = Prefs.create(
             "color_theme",
             ColorTheme.SYSTEM,
@@ -249,6 +253,7 @@ public interface Preferences {
             APP_LONG_CLICK_ACTION,
             SCREEN_ORIENTATION,
             SCROLL_TO_TOP,
+            SMOOTH_SCROLL_TO_TOP,
             COLOR_THEME,
             ITEM_TEXT_SIZE,
             ITEM_PADDING,
