@@ -9,17 +9,15 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class SearchFragment extends BasePreferenceFragment {
+public class SearchFragment extends BasePreferenceFragment implements CustomFormatDialogFragment.Listener {
 
     private static final String TAG_CUSTOM_SEARCH_ENGINE_FORMAT = "custom_search_engine_format";
 
@@ -66,24 +64,18 @@ public class SearchFragment extends BasePreferenceFragment {
         subscribeForUpdates();
     }
 
+    @Override
+    public void onValueChanged(String newValue) {
+        formatPreference.setSummary(newValue);
+        preferences.set(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT, newValue);
+    }
+
     private void onFormatPreferenceClick() {
         String customSearchEngineFormat = preferences.get(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
         new CustomFormatDialogFragment.Builder()
                 .setCustomFormat(customSearchEngineFormat)
-                .setListenerProvider(new EditFormatListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_CUSTOM_SEARCH_ENGINE_FORMAT);
-    }
-
-    private static class EditFormatListenerProvider implements ListenerFragment<CustomFormatDialogFragment.Listener> {
-        @Override
-        public CustomFormatDialogFragment.Listener get(Fragment parentFragment) {
-            return newValue -> {
-                SearchFragment fragment = (SearchFragment) parentFragment;
-                fragment.formatPreference.setSummary(newValue);
-                fragment.preferences.set(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT, newValue);
-            };
-        }
     }
 
     private void subscribeForUpdates() {

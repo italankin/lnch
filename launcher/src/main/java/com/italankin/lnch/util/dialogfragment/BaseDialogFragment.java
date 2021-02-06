@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDialogFragment<L> extends DialogFragment {
-    protected static final String ARG_PROVIDER = "provider";
-
     @NonNull
     protected Bundle getArgs() {
         Bundle arguments = getArguments();
@@ -41,18 +39,6 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         if (listener.isAssignableFrom(requireActivity().getClass())) {
             return ((L) requireActivity());
         }
-        return getListener();
-    }
-
-    @Deprecated
-    protected L getListener() {
-        Object provider = getArgs().getSerializable(ARG_PROVIDER);
-        if (provider == null) {
-            return null;
-        }
-        if (provider instanceof ListenerFragment) {
-            return ((ListenerFragment<L>) provider).get(getParentFragment());
-        }
         return null;
     }
 
@@ -62,12 +48,6 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         @Override
         public Bundle getArguments() {
             return arguments;
-        }
-
-        @Deprecated
-        public B setListenerProvider(ListenerFragment<L> provider) {
-            arguments.putSerializable(ARG_PROVIDER, provider);
-            return (B) this;
         }
 
         public F build() {

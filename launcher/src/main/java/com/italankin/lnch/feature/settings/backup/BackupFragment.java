@@ -13,14 +13,12 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
-import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-public class BackupFragment extends AppPreferenceFragment implements BackupView {
+public class BackupFragment extends AppPreferenceFragment implements BackupView, SimpleDialogFragment.Listener {
 
     private static final String MIME_TYPE_ANY = "*/*";
 
@@ -111,6 +109,11 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
         showError();
     }
 
+    @Override
+    public void onPositiveButtonClick(String tag) {
+        presenter.resetAppsSettings();
+    }
+
     private void showError() {
         Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
     }
@@ -140,15 +143,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
                 .setMessage(R.string.settings_other_bar_reset_dialog_message)
                 .setPositiveButton(R.string.settings_other_bar_reset_dialog_action)
                 .setNegativeButton(R.string.cancel)
-                .setListenerProvider(new ResetDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_RESET_DIALOG);
-    }
-
-    private static class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
-        @Override
-        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-            return (String tag) -> ((BackupFragment) parentFragment).presenter.resetAppsSettings();
-        }
     }
 }

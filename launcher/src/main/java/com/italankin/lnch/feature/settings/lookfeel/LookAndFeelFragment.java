@@ -13,19 +13,17 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 
-public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView {
+public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, ColorPickerDialogFragment.Listener {
 
-    private static final String TAG_COLOR_OVERLAY = "color_overlay";
+    private static final String TAG_APPS_COLOR_OVERLAY = "apps_color_overlay";
     private static final String TAG_STATUS_COLOR = "status_color";
     private static final String TAG_DOT_COLOR = "dot_color";
 
@@ -100,6 +98,54 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         updateNotificationDotColor();
     }
 
+    @Override
+    public void onColorPicked(@Nullable String tag, int newColor) {
+        if (tag == null) {
+            return;
+        }
+        switch (tag) {
+            case TAG_APPS_COLOR_OVERLAY: {
+                preferences.set(Preferences.APPS_COLOR_OVERLAY, newColor);
+                updateColorOverlay(true);
+                break;
+            }
+            case TAG_STATUS_COLOR: {
+                preferences.set(Preferences.STATUS_BAR_COLOR, newColor);
+                updateStatusBarColor();
+                break;
+            }
+            case TAG_DOT_COLOR: {
+                preferences.set(Preferences.NOTIFICATION_DOT_COLOR, newColor);
+                updateNotificationDotColor();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onColorReset(@Nullable String tag) {
+        if (tag == null) {
+            return;
+        }
+        switch (tag) {
+            case TAG_APPS_COLOR_OVERLAY: {
+                preferences.reset(Preferences.APPS_COLOR_OVERLAY);
+                updateColorOverlay(true);
+                break;
+            }
+            case TAG_STATUS_COLOR: {
+                preferences.reset(Preferences.STATUS_BAR_COLOR);
+                updateStatusBarColor();
+                break;
+            }
+            case TAG_DOT_COLOR: {
+                preferences.reset(Preferences.NOTIFICATION_DOT_COLOR);
+                updateNotificationDotColor();
+                break;
+            }
+        }
+    }
+
     private void updateColorOverlay(Boolean newValue) {
         Preference preference = findPreference(Preferences.APPS_COLOR_OVERLAY);
         if (newValue) {
@@ -117,9 +163,8 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setPreviewVisible(true)
                 .setSelectedColor(preferences.get(Preferences.APPS_COLOR_OVERLAY))
                 .showResetButton(true)
-                .setListenerProvider(new SetAppsColorOverlay())
                 .build()
-                .show(getChildFragmentManager(), TAG_COLOR_OVERLAY);
+                .show(getChildFragmentManager(), TAG_APPS_COLOR_OVERLAY);
     }
 
     private void updateStatusBarColor() {
@@ -140,7 +185,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setPreviewVisible(true)
                 .setSelectedColor(color != null ? color : Color.TRANSPARENT)
                 .showResetButton(true)
-                .setListenerProvider(new SetStatusBarColor())
                 .build()
                 .show(getChildFragmentManager(), TAG_STATUS_COLOR);
     }
@@ -154,7 +198,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setPreviewVisible(true)
                 .setSelectedColor(selectedColor)
                 .showResetButton(true)
-                .setListenerProvider(new NotificationDotColor())
                 .build()
                 .show(getChildFragmentManager(), TAG_DOT_COLOR);
     }
@@ -168,66 +211,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             preference.setSummary(String.format("#%06x", color));
         } else {
             preference.setSummary(null);
-        }
-    }
-
-    private static class SetAppsColorOverlay implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
-            return new ColorPickerDialogFragment.Listener() {
-                @Override
-                public void onColorPicked(String tag, int newColor) {
-                    fragment.preferences.set(Preferences.APPS_COLOR_OVERLAY, newColor);
-                    fragment.updateColorOverlay(true);
-                }
-
-                @Override
-                public void onColorReset(String tag) {
-                    fragment.preferences.reset(Preferences.APPS_COLOR_OVERLAY);
-                    fragment.updateColorOverlay(true);
-                }
-            };
-        }
-    }
-
-    private static class SetStatusBarColor implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
-            return new ColorPickerDialogFragment.Listener() {
-                @Override
-                public void onColorPicked(String tag, int newColor) {
-                    fragment.preferences.set(Preferences.STATUS_BAR_COLOR, newColor);
-                    fragment.updateStatusBarColor();
-                }
-
-                @Override
-                public void onColorReset(String tag) {
-                    fragment.preferences.reset(Preferences.STATUS_BAR_COLOR);
-                    fragment.updateStatusBarColor();
-                }
-            };
-        }
-    }
-
-    private static class NotificationDotColor implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
-            return new ColorPickerDialogFragment.Listener() {
-                @Override
-                public void onColorPicked(String tag, int newColor) {
-                    fragment.preferences.set(Preferences.NOTIFICATION_DOT_COLOR, newColor);
-                    fragment.updateNotificationDotColor();
-                }
-
-                @Override
-                public void onColorReset(String tag) {
-                    fragment.preferences.reset(Preferences.NOTIFICATION_DOT_COLOR);
-                    fragment.updateNotificationDotColor();
-                }
-            };
         }
     }
 

@@ -33,7 +33,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
         return EditTextAlertDialog.builder(requireContext())
                 .setTitle(R.string.settings_search_engine_custom_format_title)
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
                         listener.onValueChanged(editText.getText().toString());
                     }
