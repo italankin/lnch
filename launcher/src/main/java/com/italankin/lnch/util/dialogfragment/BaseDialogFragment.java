@@ -14,7 +14,11 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
     @NonNull
     protected Bundle getArgs() {
         Bundle arguments = getArguments();
-        return arguments == null ? new Bundle() : arguments;
+        if (arguments == null) {
+            arguments = new Bundle();
+            setArguments(arguments);
+        }
+        return arguments;
     }
 
     protected CharSequence getString(String key) {
