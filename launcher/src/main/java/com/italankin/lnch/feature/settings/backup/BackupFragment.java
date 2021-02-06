@@ -148,7 +148,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView 
     private static class ResetDialogListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
         @Override
         public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-            return ((BackupFragment) parentFragment).presenter::resetAppsSettings;
+            return (String tag) -> ((BackupFragment) parentFragment).presenter.resetAppsSettings();
         }
     }
 }

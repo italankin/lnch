@@ -18,18 +18,18 @@ public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragmen
         if (arguments.containsKey(PositiveButtonBuilder.ARG)) {
             CharSequence text = getString(PositiveButtonBuilder.ARG);
             builder.setPositiveButton(text, (dialog, which) -> {
-                Listener listener = getListener();
+                Listener listener = getListener(Listener.class);
                 if (listener != null) {
-                    listener.onPositiveButtonClick();
+                    listener.onPositiveButtonClick(getTag());
                 }
             });
         }
         if (arguments.containsKey(NegativeButtonBuilder.ARG)) {
             CharSequence text = getString(NegativeButtonBuilder.ARG);
             builder.setNegativeButton(text, (dialog, which) -> {
-                Listener listener = getListener();
+                Listener listener = getListener(Listener.class);
                 if (listener != null) {
-                    listener.onNegativeButtonClick();
+                    listener.onNegativeButtonClick(getTag());
                 }
             });
         }
@@ -49,9 +49,9 @@ public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragmen
     }
 
     public interface Listener {
-        void onPositiveButtonClick();
+        void onPositiveButtonClick(String tag);
 
-        default void onNegativeButtonClick() {
+        default void onNegativeButtonClick(String tag) {
         }
     }
 }
