@@ -177,13 +177,13 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
             return new ColorPickerDialogFragment.Listener() {
                 @Override
-                public void onColorPicked(int newColor) {
+                public void onColorPicked(String tag, int newColor) {
                     fragment.preferences.set(Preferences.APPS_COLOR_OVERLAY, newColor);
                     fragment.updateColorOverlay(true);
                 }
 
                 @Override
-                public void onColorReset() {
+                public void onColorReset(String tag) {
                     fragment.preferences.reset(Preferences.APPS_COLOR_OVERLAY);
                     fragment.updateColorOverlay(true);
                 }
@@ -197,13 +197,13 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
             return new ColorPickerDialogFragment.Listener() {
                 @Override
-                public void onColorPicked(int newColor) {
+                public void onColorPicked(String tag, int newColor) {
                     fragment.preferences.set(Preferences.STATUS_BAR_COLOR, newColor);
                     fragment.updateStatusBarColor();
                 }
 
                 @Override
-                public void onColorReset() {
+                public void onColorReset(String tag) {
                     fragment.preferences.reset(Preferences.STATUS_BAR_COLOR);
                     fragment.updateStatusBarColor();
                 }
@@ -217,13 +217,13 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             LookAndFeelFragment fragment = (LookAndFeelFragment) parentFragment;
             return new ColorPickerDialogFragment.Listener() {
                 @Override
-                public void onColorPicked(int newColor) {
+                public void onColorPicked(String tag, int newColor) {
                     fragment.preferences.set(Preferences.NOTIFICATION_DOT_COLOR, newColor);
                     fragment.updateNotificationDotColor();
                 }
 
                 @Override
-                public void onColorReset() {
+                public void onColorReset(String tag) {
                     fragment.preferences.reset(Preferences.NOTIFICATION_DOT_COLOR);
                     fragment.updateNotificationDotColor();
                 }

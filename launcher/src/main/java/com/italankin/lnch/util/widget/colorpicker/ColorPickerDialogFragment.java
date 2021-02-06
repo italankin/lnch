@@ -8,6 +8,7 @@ import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDialogFragment.Listener> {
     private static final String ARG_SELECTED_COLOR = "selected_color";
@@ -31,16 +32,16 @@ public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDia
                 .setPreviewVisible(arguments.getBoolean(ARG_PREVIEW_VISIBLE, true))
                 .setSelectedColor(arguments.getInt(ARG_SELECTED_COLOR))
                 .setOnColorPickedListener(color -> {
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
-                        listener.onColorPicked(color);
+                        listener.onColorPicked(getTag(), color);
                     }
                 });
         if (arguments.getBoolean(ARG_SHOW_RESET, false)) {
             builder.setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                Listener listener = getListener();
+                Listener listener = getListener(Listener.class);
                 if (listener != null) {
-                    listener.onColorReset();
+                    listener.onColorReset(getTag());
                 }
             });
         }
@@ -84,9 +85,9 @@ public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDia
     }
 
     public interface Listener {
-        void onColorPicked(@ColorInt int newColor);
+        void onColorPicked(@Nullable String tag, @ColorInt int newColor);
 
-        default void onColorReset() {
+        default void onColorReset(@Nullable String tag) {
         }
     }
 }
