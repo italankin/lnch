@@ -1,6 +1,5 @@
 package com.italankin.lnch.util.widget.colorpicker;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -9,7 +8,7 @@ class ARGB extends RGB {
 
     @Override
     public void init(ViewGroup root, LayoutInflater inflater) {
-        alpha = addRow(root, inflater, "A", Color.WHITE, 255);
+        alpha = addRow(root, inflater, "A", null, 255);
         super.init(root, inflater);
     }
 

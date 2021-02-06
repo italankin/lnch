@@ -34,10 +34,12 @@ abstract class AbstractColorModelController implements ColorModelController {
     }
 
     protected Row addRow(ViewGroup root, LayoutInflater inflater, CharSequence label,
-            @ColorInt int textColor, int max) {
+            @ColorInt Integer textColor, int max) {
         View rowView = inflater.inflate(R.layout.partial_color_picker_row, root, false);
         TextView labelView = rowView.findViewById(R.id.label);
-        labelView.setTextColor(textColor);
+        if (textColor != null) {
+            labelView.setTextColor(textColor);
+        }
         labelView.setText(label);
         SeekBar seekBarView = rowView.findViewById(R.id.seekbar);
         seekBarView.setMax(max);
