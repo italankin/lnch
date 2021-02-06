@@ -24,8 +24,20 @@ import androidx.appcompat.app.AlertDialog;
 
 public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatDialogFragment.Listener> {
     private static final String ARG_CUSTOM_FORMAT = "custom_format";
+    private static final String KEY_STATE_CUSTOM_FORMAT = "custom_format";
 
     private Button positiveButton;
+    private String customFormat;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            customFormat = savedInstanceState.getString(KEY_STATE_CUSTOM_FORMAT);
+        } else {
+            customFormat = getArgs().getString(ARG_CUSTOM_FORMAT);
+        }
+    }
 
     @NonNull
     @Override
@@ -40,7 +52,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .customizeEditText(editText -> {
-                    editText.setText(getCustomFormat());
+                    editText.setText(customFormat);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
                     editText.setHint(R.string.settings_search_engine_custom_format_edit_hint);
@@ -51,7 +63,8 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
 
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            updateButtonState(s.toString());
+                            customFormat = s.toString();
+                            updateButtonState();
                         }
 
                         @Override
@@ -69,19 +82,20 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_STATE_CUSTOM_FORMAT, customFormat);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         positiveButton = ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE);
-        updateButtonState(getCustomFormat());
+        updateButtonState();
     }
 
-    @Nullable
-    private String getCustomFormat() {
-        return getArgs().getString(ARG_CUSTOM_FORMAT);
-    }
-
-    private void updateButtonState(@Nullable String value) {
-        positiveButton.setEnabled(validate(value));
+    private void updateButtonState() {
+        positiveButton.setEnabled(validate(customFormat));
     }
 
     private static boolean validate(@Nullable String input) {
