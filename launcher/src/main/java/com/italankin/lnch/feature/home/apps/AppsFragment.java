@@ -1025,7 +1025,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (preferences.get(Preferences.SMOOTH_SCROLL_TO_TOP)) {
             list.smoothScrollToPosition(0);
         } else {
-            list.scrollToPosition(0);
+            list.post(() -> list.scrollToPosition(0));
         }
     }
 
