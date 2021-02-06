@@ -14,4 +14,5 @@ lnch is Android launcher, focused on effectiveness.
 
 ## Install
 
-[Google Play](https://play.google.com/store/apps/details?id=com.italankin.lnch)
+* [Google Play](https://play.google.com/store/apps/details?id=com.italankin.lnch)
+* [Latest release](https://github.com/italankin/lnch/releases/latest)
