@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDialogFragment<L> extends DialogFragment {
@@ -28,6 +29,18 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         return getText(res);
     }
 
+    protected L getListener(Class<? extends L> listener) {
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null && listener.isAssignableFrom(parentFragment.getClass())) {
+            return ((L) parentFragment);
+        }
+        if (listener.isAssignableFrom(requireActivity().getClass())) {
+            return ((L) requireActivity());
+        }
+        return getListener();
+    }
+
+    @Deprecated
     protected L getListener() {
         Object provider = getArgs().getSerializable(ARG_PROVIDER);
         if (provider == null) {
@@ -47,6 +60,7 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
             return arguments;
         }
 
+        @Deprecated
         public B setListenerProvider(ListenerFragment<L> provider) {
             arguments.putSerializable(ARG_PROVIDER, provider);
             return (B) this;
