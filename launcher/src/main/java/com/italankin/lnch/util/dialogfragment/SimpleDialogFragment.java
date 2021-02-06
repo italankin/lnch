@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragment.Listener> {
@@ -49,9 +50,9 @@ public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragmen
     }
 
     public interface Listener {
-        void onPositiveButtonClick(String tag);
+        void onPositiveButtonClick(@Nullable String tag);
 
-        default void onNegativeButtonClick(String tag) {
+        default void onNegativeButtonClick(@Nullable String tag) {
         }
     }
 }

@@ -110,8 +110,10 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     }
 
     @Override
-    public void onPositiveButtonClick(String tag) {
-        presenter.resetAppsSettings();
+    public void onPositiveButtonClick(@Nullable String tag) {
+        if (TAG_RESET_DIALOG.equals(tag)) {
+            presenter.resetAppsSettings();
+        }
     }
 
     private void showError() {
