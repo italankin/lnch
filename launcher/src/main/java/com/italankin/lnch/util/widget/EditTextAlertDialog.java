@@ -2,6 +2,8 @@ package com.italankin.lnch.util.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -120,6 +122,19 @@ public final class EditTextAlertDialog {
 
     public interface OnClickListener {
         void onClick(DialogInterface dialog, EditText editText);
+    }
+
+    public static abstract class TextWatcherAdapter implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
     }
 
     private EditTextAlertDialog() {

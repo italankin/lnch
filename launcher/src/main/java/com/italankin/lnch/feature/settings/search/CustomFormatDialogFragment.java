@@ -3,9 +3,7 @@ package com.italankin.lnch.feature.settings.search;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -56,19 +54,11 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
                     editText.setHint(R.string.settings_search_engine_custom_format_edit_hint);
-                    editText.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        }
-
+                    editText.addTextChangedListener(new EditTextAlertDialog.TextWatcherAdapter() {
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
                             customFormat = s.toString();
                             updateButtonState();
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
                         }
                     });
                 })
