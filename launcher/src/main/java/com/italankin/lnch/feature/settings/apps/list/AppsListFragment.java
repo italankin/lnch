@@ -23,7 +23,6 @@ import com.italankin.lnch.feature.settings.apps.list.dialog.FilterFlagsDialogFra
 import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
-import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
@@ -33,12 +32,13 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsListFragment extends AppFragment implements AppsListView,
         SettingsAppDescriptorUiAdapter.Listener,
+        AppSettingsDialogFragment.Listener,
+        FilterFlagsDialogFragment.Listener,
         SettingsAppsListFilter.OnFilterResult {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
@@ -174,7 +174,6 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     public void onAppClick(int position, AppDescriptorUi item) {
         new AppSettingsDialogFragment.Builder()
                 .setApp(item)
-                .setListenerProvider(new AppSettingsDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_APP_SETTINGS);
     }
@@ -193,6 +192,26 @@ public class AppsListFragment extends AppFragment implements AppsListView,
             adapter.notifyDataSetChanged();
             lce.showContent();
         }
+    }
+
+    @Override
+    public void onAppSettingsUpdated(String id, int searchFlags) {
+        presenter.setAppSettings(id, searchFlags);
+    }
+
+    @Override
+    public void onAppSettingsReset(String id) {
+        presenter.resetAppSettings(id);
+    }
+
+    @Override
+    public void onFlagsSet(EnumSet<FilterFlag> newFlags) {
+        filter.setFlags(newFlags);
+    }
+
+    @Override
+    public void onFlagsReset() {
+        filter.resetFlags();
     }
 
     private void initAdapter() {
@@ -215,44 +234,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     private void showFilterDialog() {
         new FilterFlagsDialogFragment.Builder()
                 .setFlags(filter.getFlags())
-                .setListenerProvider(new FilterFlagsDialogListenerProvider())
                 .build()
                 .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
-    }
-
-    private static class FilterFlagsDialogListenerProvider implements ListenerFragment<FilterFlagsDialogFragment.Listener> {
-        @Override
-        public FilterFlagsDialogFragment.Listener get(Fragment parentFragment) {
-            AppsListFragment fragment = (AppsListFragment) parentFragment;
-            return new FilterFlagsDialogFragment.Listener() {
-                @Override
-                public void onFlagsSet(EnumSet<FilterFlag> newFlags) {
-                    fragment.filter.setFlags(newFlags);
-                }
-
-                @Override
-                public void onFlagsReset() {
-                    fragment.filter.resetFlags();
-                }
-            };
-        }
-    }
-
-    private static class AppSettingsDialogListenerProvider implements ListenerFragment<AppSettingsDialogFragment.Listener> {
-        @Override
-        public AppSettingsDialogFragment.Listener get(Fragment parentFragment) {
-            AppsListFragment fragment = (AppsListFragment) parentFragment;
-            return new AppSettingsDialogFragment.Listener() {
-                @Override
-                public void onAppSettingsUpdated(String id, int searchFlags) {
-                    fragment.presenter.setAppSettings(id, searchFlags);
-                }
-
-                @Override
-                public void onAppSettingsReset(String id) {
-                    fragment.presenter.resetAppSettings(id);
-                }
-            };
-        }
     }
 }

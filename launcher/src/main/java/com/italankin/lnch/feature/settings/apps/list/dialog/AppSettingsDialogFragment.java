@@ -38,13 +38,13 @@ public class AppSettingsDialogFragment extends BaseDialogFragment<AppSettingsDia
                 .setMultiChoiceItems(titles, checkedItems, (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.settings_apps_list_options_reset, (dialog, which) -> {
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
                         listener.onAppSettingsReset(getArgs().getString(ARG_ID));
                     }
                 })
                 .setPositiveButton(R.string.settings_apps_list_options_save, (dialog, which) -> {
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
                         int flags = 0;
                         if (checkedItems[ARG_SEARCH_VISIBLE]) {

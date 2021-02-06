@@ -33,14 +33,14 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
                         (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                 .setNegativeButton(R.string.cancel, null)
                 .setNeutralButton(R.string.settings_apps_list_filter_reset, (dialog, which) -> {
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
                         listener.onFlagsReset();
                     }
                 })
                 .setPositiveButton(R.string.settings_apps_list_filter_apply, (dialog, which) -> {
                     EnumSet<FilterFlag> newFlags = getFlags();
-                    Listener listener = getListener();
+                    Listener listener = getListener(Listener.class);
                     if (listener != null) {
                         listener.onFlagsSet(newFlags);
                     }
