@@ -35,8 +35,6 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         }
         if (provider instanceof ListenerFragment) {
             return ((ListenerFragment<L>) provider).get(getParentFragment());
-        } else if (provider instanceof ListenerActivity) {
-            return ((ListenerActivity<L>) provider).get(requireActivity());
         }
         return null;
     }
@@ -50,11 +48,6 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         }
 
         public B setListenerProvider(ListenerFragment<L> provider) {
-            arguments.putSerializable(ARG_PROVIDER, provider);
-            return (B) this;
-        }
-
-        public B setListenerProvider(ListenerActivity<L> provider) {
             arguments.putSerializable(ARG_PROVIDER, provider);
             return (B) this;
         }
