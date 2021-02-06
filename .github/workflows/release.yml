@@ -1,0 +1,52 @@
+name: create release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      OUTPUT_PATH: 'launcher/build/outputs/apk/release'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: set up jdk
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: decode keystore
+      uses: italankin/android-keystore-decode-action@v1
+      with:
+        output_dir: 'launcher/'
+        keystore_name: 'release.keystore'
+        properties_name: 'release.properties'
+        encoded_keystore: ${{ secrets.KEYSTORE_BASE64 }}
+        keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+        key_alias: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+        key_alias_password: ${{ secrets.KEYSTORE_KEY_ALIAS_PASSWORD }}
+
+    - name: make gradlew executable
+      run: chmod +x gradlew
+
+    - name: assemble
+      run: ./gradlew --no-daemon assembleRelease
+
+    - name: current tag
+      id: current_tag
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    
+    - name: rename apk
+      run: mv "$OUTPUT_PATH/launcher-release.apk" "$OUTPUT_PATH/lnch-${{ steps.current_tag.outputs.tag }}.apk"
+
+    - name: release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "${{ env.OUTPUT_PATH }}/*.apk"
+        prerelease: true
+        token: ${{ secrets.GITHUB_TOKEN }}
