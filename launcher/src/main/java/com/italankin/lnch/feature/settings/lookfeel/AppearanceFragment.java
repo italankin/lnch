@@ -25,7 +25,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
-import com.italankin.lnch.util.dialogfragment.ListenerFragment;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
@@ -35,12 +34,12 @@ import com.italankin.lnch.util.widget.pref.ValuePrefView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 
-public class AppearanceFragment extends AppFragment implements BackButtonHandler {
+public class AppearanceFragment extends AppFragment implements BackButtonHandler, ColorPickerDialogFragment.Listener,
+        SimpleDialogFragment.Listener {
 
-    private static final String TAG_OVERLAY_COLOR_PICKER = "overlay_color_picker";
-    private static final String TAG_SHADOW_COLOR_PICKER = "shadow_color_picker";
+    private static final String TAG_OVERLAY_COLOR = "overlay_color";
+    private static final String TAG_SHADOW_COLOR = "shadow_color";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final String TAG_DISCARD_CHANGES = "discard_changes";
 
@@ -49,6 +48,7 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
     private Preferences preferences;
 
     private TextView preview;
+    private View overlay;
 
     private SliderPrefView itemTextSize;
     private ValuePrefView itemFont;
@@ -157,7 +157,6 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
                     .setMessage(R.string.settings_home_laf_appearance_discard_message)
                     .setPositiveButton(R.string.settings_home_laf_appearance_discard_button)
                     .setNegativeButton(R.string.cancel)
-                    .setListenerProvider(new DiscardChangesListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
             return false;
@@ -176,15 +175,41 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
         itemShadowColor = null;
     }
 
-    private static class DiscardChangesListenerProvider implements ListenerFragment<SimpleDialogFragment.Listener> {
-        @Override
-        public SimpleDialogFragment.Listener get(Fragment parentFragment) {
-            return () -> {
-                Callbacks callbacks = ((AppearanceFragment) parentFragment).callbacks;
-                if (callbacks != null) {
-                    callbacks.onAppearanceFinish();
-                }
-            };
+    @Override
+    public void onColorPicked(@Nullable String tag, int newColor) {
+        if (tag == null) {
+            return;
+        }
+        switch (tag) {
+            case TAG_OVERLAY_COLOR: {
+                overlay.setBackgroundColor(newColor);
+                break;
+            }
+            case TAG_PREVIEW_OVERLAY: {
+                preview.setTextColor(newColor);
+                break;
+            }
+            case TAG_SHADOW_COLOR: {
+                itemShadowColor.setValue(newColor);
+                updatePreview();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onColorReset(@Nullable String tag) {
+        if (TAG_SHADOW_COLOR.equals(tag)) {
+            int color = ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault);
+            itemShadowColor.setValue(color);
+            updatePreview();
+        }
+    }
+
+    @Override
+    public void onPositiveButtonClick(String tag) {
+        if (TAG_DISCARD_CHANGES.equals(tag) && callbacks != null) {
+            callbacks.onAppearanceFinish();
         }
     }
 
@@ -208,7 +233,7 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
     }
 
     private void initOverlay(View view) {
-        View overlay = view.findViewById(R.id.overlay);
+        overlay = view.findViewById(R.id.overlay);
         overlay.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         overlay.setOnClickListener(v -> {
             Drawable background = v.getBackground();
@@ -221,22 +246,9 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
-                    .setListenerProvider(new OverlayColorPickerListenerProvider())
                     .build()
-                    .show(getChildFragmentManager(), TAG_OVERLAY_COLOR_PICKER);
+                    .show(getChildFragmentManager(), TAG_OVERLAY_COLOR);
         });
-    }
-
-    private static class OverlayColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment fragment) {
-            return newColor -> {
-                View view = fragment.getView();
-                if (view != null) {
-                    view.findViewById(R.id.overlay).setBackgroundColor(newColor);
-                }
-            };
-        }
     }
 
     private void initPreview(View view) {
@@ -248,18 +260,9 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setSelectedColor(preview.getCurrentTextColor())
-                    .setListenerProvider(new PreviewColorPickerListenerProvider())
                     .build()
                     .show(getChildFragmentManager(), TAG_PREVIEW_OVERLAY);
         });
-    }
-
-    private static class PreviewColorPickerListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            AppearanceFragment fragment = (AppearanceFragment) parentFragment;
-            return fragment.preview::setTextColor;
-        }
     }
 
     private void initTextSize(View view) {
@@ -334,31 +337,9 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(preview.getShadowColor())
                     .showResetButton(true)
-                    .setListenerProvider(new ShadowColorListenerProvider())
                     .build()
-                    .show(getChildFragmentManager(), TAG_SHADOW_COLOR_PICKER);
+                    .show(getChildFragmentManager(), TAG_SHADOW_COLOR);
         });
-    }
-
-    private static class ShadowColorListenerProvider implements ListenerFragment<ColorPickerDialogFragment.Listener> {
-        @Override
-        public ColorPickerDialogFragment.Listener get(Fragment parentFragment) {
-            AppearanceFragment fragment = (AppearanceFragment) parentFragment;
-            return new ColorPickerDialogFragment.Listener() {
-                @Override
-                public void onColorPicked(int newColor) {
-                    fragment.itemShadowColor.setValue(newColor);
-                    fragment.updatePreview();
-                }
-
-                @Override
-                public void onColorReset() {
-                    int color = ResUtils.resolveColor(fragment.requireContext(), R.attr.colorItemShadowDefault);
-                    fragment.itemShadowColor.setValue(color);
-                    fragment.updatePreview();
-                }
-            };
-        }
     }
 
     private void updatePreview() {
