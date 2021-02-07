@@ -11,6 +11,7 @@ jobs:
 
     env:
       OUTPUT_PATH: 'launcher/build/outputs/apk/release'
+      MAPPINGS_OUTPUT_PATH: 'launcher/build/outputs/mapping/release'
 
     steps:
     - uses: actions/checkout@v2
@@ -40,7 +41,7 @@ jobs:
     - name: current tag
       id: current_tag
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-    
+
     - name: rename apk
       run: mv "$OUTPUT_PATH/launcher-release.apk" "$OUTPUT_PATH/lnch-${{ steps.current_tag.outputs.tag }}.apk"
 
@@ -51,3 +52,10 @@ jobs:
         prerelease: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: save mapping.txt
+      uses: actions/upload-artifact@v2
+      with:
+        name: mapping.txt
+        path: ${{ env.MAPPINGS_OUTPUT_PATH }}/mapping.txt
+
