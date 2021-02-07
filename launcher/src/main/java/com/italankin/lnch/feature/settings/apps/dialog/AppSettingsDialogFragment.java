@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.list.dialog;
+package com.italankin.lnch.feature.settings.apps.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;

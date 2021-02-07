@@ -28,7 +28,7 @@
     <PreferenceCategory android:title="@string/settings_category_apps">
         <Preference
             android:icon="@drawable/ic_settings_apps"
-            android:key="@string/pref_key_apps_list"
+            android:key="@string/pref_key_apps_settings"
             android:title="@string/settings_apps_list" />
         <Preference
             android:icon="@drawable/ic_settings_shortcuts"

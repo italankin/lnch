@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.list;
+package com.italankin.lnch.feature.settings.apps;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,11 +16,11 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.settings.apps.list.adapter.SettingsAppDescriptorUiAdapter;
-import com.italankin.lnch.feature.settings.apps.list.adapter.SettingsAppsListFilter;
-import com.italankin.lnch.feature.settings.apps.list.dialog.AppSettingsDialogFragment;
-import com.italankin.lnch.feature.settings.apps.list.dialog.FilterFlagsDialogFragment;
-import com.italankin.lnch.feature.settings.apps.list.model.FilterFlag;
+import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsAdapter;
+import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
+import com.italankin.lnch.feature.settings.apps.dialog.AppSettingsDialogFragment;
+import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
+import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -35,11 +35,11 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppsListFragment extends AppFragment implements AppsListView,
-        SettingsAppDescriptorUiAdapter.Listener,
+public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
+        AppsSettingsAdapter.Listener,
         AppSettingsDialogFragment.Listener,
         FilterFlagsDialogFragment.Listener,
-        SettingsAppsListFilter.OnFilterResult {
+        AppsSettingsFilter.OnFilterResult {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
@@ -47,17 +47,17 @@ public class AppsListFragment extends AppFragment implements AppsListView,
     private static final String TAG_APP_SETTINGS = "app_settings";
 
     @InjectPresenter
-    AppsListPresenter presenter;
+    AppsSettingsPresenter presenter;
 
     private LceLayout lce;
     private RecyclerView list;
     private CompositeAdapter<AppDescriptorUi> adapter;
 
-    private final SettingsAppsListFilter filter = new SettingsAppsListFilter(this);
+    private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
 
     @ProvidePresenter
-    AppsListPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().appsList();
+    AppsSettingsPresenter providePresenter() {
+        return LauncherApp.daggerService.presenters().appsSettings();
     }
 
     @Override
@@ -218,7 +218,7 @@ public class AppsListFragment extends AppFragment implements AppsListView,
         Context context = requireContext();
         Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
         adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
-                .add(new SettingsAppDescriptorUiAdapter(picasso, this))
+                .add(new AppsSettingsAdapter(picasso, this))
                 .recyclerView(list)
                 .create();
     }

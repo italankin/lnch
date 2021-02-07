@@ -4,7 +4,7 @@
     <string name="pref_key_search_settings">search_settings</string>
     <string name="pref_key_wallpaper">wallpaper</string>
     <string name="pref_key_wallpaper_change">wallpaper_change</string>
-    <string name="pref_key_apps_list">apps_list</string>
+    <string name="pref_key_apps_settings">apps_settings</string>
     <string name="pref_key_home_customize">customize</string>
     <string name="pref_key_home_misc">miscellaneous</string>
     <string name="pref_key_home_widgets">widgets</string>

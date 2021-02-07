@@ -67,9 +67,9 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
-        findPreference(R.string.pref_key_apps_list).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_apps_settings).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
-                callbacks.showAppsPreferences();
+                callbacks.showAppsSettings();
             }
             return true;
         });
@@ -137,7 +137,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
 
         void showSearchPreferences();
 
-        void showAppsPreferences();
+        void showAppsSettings();
 
         void showShortcutsPreferences();
 

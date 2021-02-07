@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.list;
+package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -20,7 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class AppsListPresenter extends AppPresenter<AppsListView> {
+public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
 
     private final DescriptorRepository descriptorRepository;
     private final DescriptorRepository.Editor editor;
@@ -28,7 +28,7 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
     private List<AppDescriptorUi> items = Collections.emptyList();
 
     @Inject
-    AppsListPresenter(DescriptorRepository descriptorRepository) {
+    AppsSettingsPresenter(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
         this.editor = descriptorRepository.edit();
     }
@@ -87,13 +87,13 @@ public class AppsListPresenter extends AppPresenter<AppsListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleState<List<AppDescriptorUi>>() {
                     @Override
-                    protected void onSuccess(AppsListView viewState, List<AppDescriptorUi> apps) {
+                    protected void onSuccess(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
                         items = apps;
                         viewState.onAppsLoaded(apps);
                     }
 
                     @Override
-                    protected void onError(AppsListView viewState, Throwable e) {
+                    protected void onError(AppsSettingsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });

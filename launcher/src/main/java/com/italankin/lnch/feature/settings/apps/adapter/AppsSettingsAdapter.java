@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.list.adapter;
+package com.italankin.lnch.feature.settings.apps.adapter;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -13,13 +13,13 @@ import com.squareup.picasso.Picasso;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SettingsAppDescriptorUiAdapter
-        extends BaseAdapterDelegate<SettingsAppDescriptorUiAdapter.ViewHolder, AppDescriptorUi> {
+public class AppsSettingsAdapter
+        extends BaseAdapterDelegate<AppsSettingsAdapter.ViewHolder, AppDescriptorUi> {
 
     private final Picasso picasso;
     private final Listener listener;
 
-    public SettingsAppDescriptorUiAdapter(Picasso picasso, Listener listener) {
+    public AppsSettingsAdapter(Picasso picasso, Listener listener) {
         this.picasso = picasso;
         this.listener = listener;
     }

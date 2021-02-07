@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.apps.list;
+package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
@@ -8,7 +8,7 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.List;
 
-interface AppsListView extends MvpView {
+interface AppsSettingsView extends MvpView {
 
     @StateStrategyType(SingleStateStrategy.class)
     void showLoading();

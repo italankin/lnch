@@ -10,7 +10,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.feature.settings.apps.list.AppsListFragment;
+import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
@@ -95,8 +95,8 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void showAppsPreferences() {
-        showFragment(new AppsListFragment(), R.string.settings_apps_list);
+    public void showAppsSettings() {
+        showFragment(new AppsSettingsFragment(), R.string.settings_apps_list);
     }
 
     @Override
