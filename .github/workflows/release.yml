@@ -49,4 +49,5 @@ jobs:
       with:
         artifacts: "${{ env.OUTPUT_PATH }}/*.apk"
         prerelease: true
+        allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
