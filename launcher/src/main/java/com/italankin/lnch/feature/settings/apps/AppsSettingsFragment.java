@@ -18,7 +18,6 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsAdapter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
-import com.italankin.lnch.feature.settings.apps.dialog.AppSettingsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
@@ -37,14 +36,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
         AppsSettingsAdapter.Listener,
-        AppSettingsDialogFragment.Listener,
         FilterFlagsDialogFragment.Listener,
         AppsSettingsFilter.OnFilterResult {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
     private static final String TAG_FILTER_FLAGS = "filter";
-    private static final String TAG_APP_SETTINGS = "app_settings";
 
     @InjectPresenter
     AppsSettingsPresenter presenter;
@@ -134,12 +131,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.saveChanges();
-    }
-
-    @Override
     public void showLoading() {
         lce.showLoading();
     }
@@ -172,10 +163,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public void onAppClick(int position, AppDescriptorUi item) {
-        new AppSettingsDialogFragment.Builder()
-                .setApp(item)
-                .build()
-                .show(getChildFragmentManager(), TAG_APP_SETTINGS);
+        // TODO
     }
 
     @Override
@@ -192,16 +180,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
             adapter.notifyDataSetChanged();
             lce.showContent();
         }
-    }
-
-    @Override
-    public void onAppSettingsUpdated(String id, int searchFlags) {
-        presenter.setAppSettings(id, searchFlags);
-    }
-
-    @Override
-    public void onAppSettingsReset(String id) {
-        presenter.resetAppSettings(id);
     }
 
     @Override

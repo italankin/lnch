@@ -5,7 +5,6 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.ArrayList;
@@ -23,14 +22,10 @@ import timber.log.Timber;
 public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
 
     private final DescriptorRepository descriptorRepository;
-    private final DescriptorRepository.Editor editor;
-
-    private List<AppDescriptorUi> items = Collections.emptyList();
 
     @Inject
     AppsSettingsPresenter(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
-        this.editor = descriptorRepository.edit();
     }
 
     @Override
@@ -41,27 +36,11 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
     void toggleAppVisibility(int position, AppDescriptorUi item) {
         boolean ignored = !item.isIgnored();
         item.setIgnored(ignored);
-        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), !ignored));
         getViewState().onItemChanged(position);
-    }
 
-    void setAppSettings(String id, int searchFlags) {
-        for (AppDescriptorUi item : items) {
-            AppDescriptor descriptor = item.getDescriptor();
-            if (descriptor.getId().equals(id)) {
-                item.setSearchFlags(searchFlags);
-                editor.enqueue(new SetSearchFlagsAction(descriptor, searchFlags));
-                break;
-            }
-        }
-    }
-
-    void resetAppSettings(String id) {
-        setAppSettings(id, AppDescriptor.SEARCH_DEFAULT_FLAGS);
-    }
-
-    void saveChanges() {
-        editor.commit()
+        descriptorRepository.edit()
+                .enqueue(new SetIgnoreAction(item.getDescriptor(), !ignored))
+                .commit()
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
@@ -88,7 +67,6 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
                 .subscribe(new SingleState<List<AppDescriptorUi>>() {
                     @Override
                     protected void onSuccess(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
-                        items = apps;
                         viewState.onAppsLoaded(apps);
                     }
 
