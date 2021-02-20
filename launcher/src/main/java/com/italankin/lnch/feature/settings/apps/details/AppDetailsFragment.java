@@ -45,6 +45,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private ImageView imageIcon;
     private TextView textPackage;
     private View buttonInfo;
+    private View buttonAppAliases;
 
     private SwitchCompat switchHomeVisibility;
     private SwitchCompat switchSearchVisibility;
@@ -84,6 +85,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         switchHomeVisibility = view.findViewById(R.id.switch_home_visibility);
         switchSearchVisibility = view.findViewById(R.id.switch_search_visibility);
         switchShortcutsVisibility = view.findViewById(R.id.switch_search_shortcuts_visibility);
+        buttonAppAliases = view.findViewById(R.id.app_aliases);
 
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
         presenter.loadDescriptor(descriptorId);
@@ -115,6 +117,12 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         switchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
             presenter.setSearchShortcutsVisible(descriptor, isChecked);
         });
+
+        buttonAppAliases.setOnClickListener(v -> {
+            if (callbacks != null) {
+                callbacks.showAppAliases(descriptor.getId());
+            }
+        });
     }
 
     @Override
@@ -126,6 +134,8 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     }
 
     public interface Callbacks {
+        void showAppAliases(String descriptorId);
+
         void onAppDetailsError();
     }
 }

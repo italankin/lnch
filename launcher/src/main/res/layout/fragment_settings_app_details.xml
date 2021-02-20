@@ -74,7 +74,6 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/icon" />
 
@@ -88,7 +87,6 @@
             android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_home"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@+id/visibility_title"
             app:layout_constraintTop_toBottomOf="@+id/visibility_title" />
 
@@ -102,7 +100,6 @@
             android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switch_home_visibility" />
 
@@ -116,9 +113,40 @@
             android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_search_shortcuts"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switch_search_visibility" />
+
+        <TextView
+            android:id="@+id/other_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="64dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:text="Other"
+            android:textColor="?colorAccent"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/switch_search_shortcuts_visibility" />
+
+        <TextView
+            android:id="@+id/app_aliases"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:paddingStart="64dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:text="@string/settings_app_aliases"
+            android:textColor="?colorText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/other_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

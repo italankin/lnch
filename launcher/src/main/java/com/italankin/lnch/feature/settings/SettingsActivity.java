@@ -12,6 +12,7 @@ import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
+import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
@@ -160,6 +161,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showAppDetails(String descriptorId) {
         showFragment(AppDetailsFragment.newInstance(descriptorId), R.string.settings_app_details);
+    }
+
+    @Override
+    public void showAppAliases(String descriptorId) {
+        showFragment(AppAliasesFragment.newInstance(descriptorId), R.string.settings_app_aliases);
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public Integer customColor;
     public boolean ignored;
     public int searchFlags = SEARCH_DEFAULT_FLAGS;
-    public List<String> aliases = Collections.emptyList();
+    public List<String> aliases = new ArrayList<>();
     private ComponentName componentNameValue;
 
     public AppDescriptor() {
@@ -91,7 +91,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
 
     @Override
     public void setAliases(List<String> aliases) {
-        this.aliases = aliases != null ? aliases : Collections.emptyList();
+        this.aliases = aliases != null ? aliases : new ArrayList<>();
     }
 
     @Override

@@ -104,6 +104,12 @@
     <string name="settings_app_details_visibility_search">Show in search</string>
     <string name="settings_app_details_visibility_search_shortcuts">Show shortcuts in search</string>
 
+    <string name="settings_app_aliases">Search aliases</string>
+    <string name="settings_app_aliases_empty">No aliases</string>
+    <string name="settings_app_aliases_add">Add</string>
+    <string name="settings_app_aliases_title">Add alias</string>
+    <string name="settings_app_aliases_invalid">Invalid alias</string>
+
     <string name="settings_home_widgets">Widgets</string>
     <string name="settings_home_widgets_enable">Enable widgets</string>
     <string name="settings_home_widgets_enable_summary">Add a page with widgets on home screen</string>
