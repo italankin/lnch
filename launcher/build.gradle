@@ -65,6 +65,7 @@ dependencies {
 
     implementation appCompat
     implementation fragment
+    implementation constraintLayout
     implementation recyclerView
     implementation palette
     implementation material

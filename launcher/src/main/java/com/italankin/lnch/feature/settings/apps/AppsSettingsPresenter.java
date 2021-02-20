@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.settings.apps;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
@@ -13,7 +14,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -30,16 +30,12 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
 
     @Override
     protected void onFirstViewAttach() {
-        loadApps();
+        observeApps();
     }
 
-    void toggleAppVisibility(int position, AppDescriptorUi item) {
-        boolean ignored = !item.isIgnored();
-        item.setIgnored(ignored);
-        getViewState().onItemChanged(position);
-
+    void toggleAppVisibility(AppDescriptorUi item) {
         descriptorRepository.edit()
-                .enqueue(new SetIgnoreAction(item.getDescriptor(), !ignored))
+                .enqueue(new SetIgnoreAction(item.getDescriptor(), !item.isIgnored()))
                 .commit()
                 .subscribe(new CompletableState() {
                     @Override
@@ -49,24 +45,26 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
                 });
     }
 
-    void loadApps() {
+    void observeApps() {
         getViewState().showLoading();
-        Single
-                .fromCallable(() -> {
-                    List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
-                    ArrayList<AppDescriptorUi> result = new ArrayList<>(appDescriptors.size());
-                    for (AppDescriptor appDescriptor : appDescriptors) {
-                        result.add(new AppDescriptorUi(appDescriptor));
+        descriptorRepository.observe()
+                .map(descriptors -> {
+                    ArrayList<AppDescriptorUi> list = new ArrayList<>();
+                    for (Descriptor descriptor : descriptors) {
+                        if (descriptor instanceof AppDescriptor) {
+                            list.add(new AppDescriptorUi((AppDescriptor) descriptor));
+                        }
                     }
-                    Collections.sort(result, (lhs, rhs) -> String.CASE_INSENSITIVE_ORDER
-                            .compare(lhs.getVisibleLabel(), rhs.getVisibleLabel()));
-                    return result;
+                    Collections.sort(list, (lhs, rhs) -> {
+                        return String.CASE_INSENSITIVE_ORDER.compare(lhs.getVisibleLabel(), rhs.getVisibleLabel());
+                    });
+                    return list;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<AppDescriptorUi>>() {
+                .subscribe(new State<List<AppDescriptorUi>>() {
                     @Override
-                    protected void onSuccess(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
+                    protected void onNext(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
                         viewState.onAppsLoaded(apps);
                     }
 

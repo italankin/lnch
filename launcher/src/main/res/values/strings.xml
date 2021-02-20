@@ -97,12 +97,12 @@
     <string name="settings_apps_list_filter_visible">Visible</string>
     <string name="settings_apps_list_filter_ignored">Hidden</string>
     <string name="settings_apps_sorting">Sorting</string>
-    <string name="settings_apps_list_options_save">Save</string>
-    <string name="settings_apps_list_options_reset">Reset</string>
-    <string-array name="settings_apps_list_options">
-        <item>Show in search</item>
-        <item>Show shortcuts in search</item>
-    </string-array>
+
+    <string name="settings_app_details">App details</string>
+    <string name="settings_app_details_visibility">Visibility</string>
+    <string name="settings_app_details_visibility_home">Show on home screen</string>
+    <string name="settings_app_details_visibility_search">Show in search</string>
+    <string name="settings_app_details_visibility_search_shortcuts">Show shortcuts in search</string>
 
     <string name="settings_home_widgets">Widgets</string>
     <string name="settings_home_widgets_enable">Enable widgets</string>

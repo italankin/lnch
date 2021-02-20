@@ -52,6 +52,8 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
 
+    private Callbacks callbacks;
+
     @ProvidePresenter
     AppsSettingsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().appsSettings();
@@ -62,6 +64,18 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        callbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        callbacks = null;
     }
 
     @Override
@@ -137,37 +151,35 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public void onAppsLoaded(List<AppDescriptorUi> apps) {
-        adapter.setDataset(apps);
-        adapter.notifyDataSetChanged();
         filter.setDataset(apps);
         lce.showContent();
     }
 
     @Override
-    public void onItemChanged(int position) {
-        adapter.notifyItemChanged(position);
-    }
-
-    @Override
     public void showError(Throwable e) {
         lce.error()
-                .button(v -> presenter.loadApps())
+                .button(v -> presenter.observeApps())
                 .message(e.getMessage())
                 .show();
     }
 
     @Override
     public void onVisibilityClick(int position, AppDescriptorUi item) {
-        presenter.toggleAppVisibility(position, item);
+        presenter.toggleAppVisibility(item);
     }
 
     @Override
     public void onAppClick(int position, AppDescriptorUi item) {
-        // TODO
+        if (callbacks != null) {
+            callbacks.showAppDetails(item.getDescriptor().getId());
+        }
     }
 
     @Override
     public void onFilterResult(String query, List<AppDescriptorUi> items) {
+        if (adapter == null) {
+            return;
+        }
         if (items.isEmpty()) {
             String message = TextUtils.isEmpty(query)
                     ? getString(R.string.search_empty)
@@ -214,5 +226,9 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
                 .setFlags(filter.getFlags())
                 .build()
                 .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
+    }
+
+    public interface Callbacks {
+        void showAppDetails(String descriptorId);
     }
 }

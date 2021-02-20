@@ -5,6 +5,7 @@ ext {
 
     androidxVersion = "1.1.0"
     materialVersion = "1.1.0"
+    constraintLayoutVersion = "2.0.4"
     moxyVersion = "1.5.3"
     daggerVersion = "2.31"
     flexboxVersion = "2.0.1"
@@ -29,6 +30,7 @@ ext {
     gson = "com.google.code.gson:gson:$gsonVersion"
     timber = "com.jakewharton.timber:timber:$timberVersion"
     appCompat = "androidx.appcompat:appcompat:$androidxVersion"
+    constraintLayout =  "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     fragment = "androidx.fragment:fragment:$androidxVersion"
     recyclerView = "androidx.recyclerview:recyclerview:$androidxVersion"
     palette = "androidx.palette:palette:$paletteVersion"

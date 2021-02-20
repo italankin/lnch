@@ -11,6 +11,7 @@ import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
+import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
@@ -34,7 +35,9 @@ public class SettingsActivity extends AppCompatActivity implements
         AppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
-        LookAndFeelFragment.Callbacks {
+        LookAndFeelFragment.Callbacks,
+        AppsSettingsFragment.Callbacks,
+        AppDetailsFragment.Callbacks {
 
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
@@ -152,6 +155,16 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showNotificationsPreferences() {
         showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
+    }
+
+    @Override
+    public void showAppDetails(String descriptorId) {
+        showFragment(AppDetailsFragment.newInstance(descriptorId), R.string.settings_app_details);
+    }
+
+    @Override
+    public void onAppDetailsError() {
+        fragmentManager.popBackStack();
     }
 
     private void updateToolbar() {

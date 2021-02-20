@@ -19,7 +19,7 @@ public class SetIgnoreAction implements DescriptorRepository.Editor.Action {
     public void apply(List<Descriptor> items) {
         for (Descriptor item : items) {
             if (item.getId().equals(id)) {
-                ((IgnorableDescriptor) item).setIgnored(!ignored);
+                ((IgnorableDescriptor) item).setIgnored(ignored);
                 break;
             }
         }

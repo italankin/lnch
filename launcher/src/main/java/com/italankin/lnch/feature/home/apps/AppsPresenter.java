@@ -130,7 +130,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void ignoreItem(int position, IgnorableDescriptorUi item) {
-        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), false));
+        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), true));
         item.setIgnored(true);
         getViewState().onItemChanged(position);
     }

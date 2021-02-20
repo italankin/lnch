@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
+
+import androidx.annotation.Nullable;
 
 public final class PackageUtils {
 
@@ -54,6 +57,24 @@ public final class PackageUtils {
             return null;
         }
         return searchActivity;
+    }
+
+    @Nullable
+    public static CharSequence getPackageLabel(PackageManager packageManager, String packageName) {
+        try {
+            return packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static Drawable getPackageIcon(PackageManager packageManager, String packageName) {
+        try {
+            return packageManager.getApplicationIcon(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     private PackageUtils() {
