@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 
+import java.util.List;
+
 import androidx.annotation.Keep;
 
 public final class AppDescriptorJson implements DescriptorJson {
@@ -41,6 +43,9 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName("search_flags")
     public Integer searchFlags;
 
+    @SerializedName("aliases")
+    public List<String> aliases;
+
     @Keep
     public AppDescriptorJson() {
     }
@@ -55,6 +60,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.customColor = descriptor.customColor;
         this.ignored = descriptor.ignored ? true : null;
         this.searchFlags = descriptor.searchFlags != AppDescriptor.SEARCH_DEFAULT_FLAGS ? descriptor.searchFlags : null;
+        this.aliases = descriptor.aliases.isEmpty() ? null : descriptor.aliases;
     }
 
     @Override
@@ -69,6 +75,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.customColor = this.customColor;
         descriptor.ignored = this.ignored == null ? false : this.ignored;
         descriptor.searchFlags = this.searchFlags != null ? this.searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS;
+        descriptor.aliases = aliases;
         return descriptor;
     }
 }

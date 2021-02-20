@@ -2,16 +2,19 @@ package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.ComponentName;
 
+import com.italankin.lnch.model.descriptor.AliasDescriptor;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor,
-        CustomLabelDescriptor, IgnorableDescriptor {
+        CustomLabelDescriptor, IgnorableDescriptor, AliasDescriptor {
 
     public static final int FLAG_SEARCH_VISIBLE = 0x1;
     public static final int FLAG_SEARCH_SHORTCUTS_VISIBLE = 0x2;
@@ -26,6 +29,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public Integer customColor;
     public boolean ignored;
     public int searchFlags = SEARCH_DEFAULT_FLAGS;
+    public List<String> aliases = Collections.emptyList();
     private ComponentName componentNameValue;
 
     public AppDescriptor() {
@@ -83,6 +87,16 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     @Override
     public void setIgnored(boolean ignored) {
         this.ignored = ignored;
+    }
+
+    @Override
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases != null ? aliases : Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return aliases;
     }
 
     @Override
