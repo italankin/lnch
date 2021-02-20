@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -97,6 +98,16 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
             }
         }
         return result;
+    }
+
+    @Override
+    public <T extends Descriptor> T findById(Class<T> klass, String id) {
+        for (T item : itemsOfType(klass)) {
+            if (item.getId().equals(id)) {
+                return item;
+            }
+        }
+        throw new NoSuchElementException("No descriptor found for id=" + id);
     }
 
     @Override

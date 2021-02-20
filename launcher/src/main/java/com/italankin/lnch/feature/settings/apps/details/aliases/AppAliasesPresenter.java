@@ -7,9 +7,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetAliasesAction;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
@@ -31,16 +29,7 @@ public class AppAliasesPresenter extends AppPresenter<AppAliasesView> {
     }
 
     void loadAliases(String descriptorId) {
-        Single
-                .fromCallable(() -> {
-                    List<AppDescriptor> items = descriptorRepository.itemsOfType(AppDescriptor.class);
-                    for (AppDescriptor item : items) {
-                        if (item.getId().equals(descriptorId)) {
-                            return item;
-                        }
-                    }
-                    throw new NoSuchElementException("No descriptor found for id=" + descriptorId);
-                })
+        Single.fromCallable(() -> descriptorRepository.findById(AppDescriptor.class, descriptorId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleState<AppDescriptor>() {
                     @Override
