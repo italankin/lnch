@@ -83,4 +83,16 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     public String toString() {
         return "Shortcut{" + uri + "}";
     }
+
+    @Override
+    public PinnedShortcutDescriptor copy() {
+        PinnedShortcutDescriptor copy = new PinnedShortcutDescriptor();
+        copy.id = id;
+        copy.uri = uri;
+        copy.label = label;
+        copy.color = color;
+        copy.customLabel = customLabel;
+        copy.customColor = customColor;
+        return copy;
+    }
 }

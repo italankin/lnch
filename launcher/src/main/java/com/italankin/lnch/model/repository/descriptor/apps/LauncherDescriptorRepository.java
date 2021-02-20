@@ -226,8 +226,11 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
             Timber.d("commit: apply actions");
             return Single
                     .fromCallable(() -> {
-                        List<Descriptor> result = new ArrayList<>(items);
-                        Iterator<DescriptorRepository.Editor.Action> iter = actions.iterator();
+                        List<Descriptor> result = new ArrayList<>(items.size());
+                        for (Descriptor item : items) {
+                            result.add(item.copy());
+                        }
+                        Iterator<Action> iter = actions.iterator();
                         while (iter.hasNext()) {
                             iter.next().apply(result);
                             iter.remove();

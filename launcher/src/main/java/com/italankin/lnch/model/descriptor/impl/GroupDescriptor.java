@@ -79,4 +79,15 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
     public String toString() {
         return "Group{" + getVisibleLabel() + '}';
     }
+
+    @Override
+    public GroupDescriptor copy() {
+        GroupDescriptor copy = new GroupDescriptor();
+        copy.id = id;
+        copy.label = label;
+        copy.customLabel = customLabel;
+        copy.color = color;
+        copy.customColor = customColor;
+        return copy;
+    }
 }

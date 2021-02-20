@@ -19,4 +19,6 @@ public interface Descriptor {
 
     @Override
     int hashCode();
+
+    Descriptor copy();
 }

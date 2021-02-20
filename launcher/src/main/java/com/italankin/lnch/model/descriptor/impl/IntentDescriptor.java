@@ -83,4 +83,16 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public String toString() {
         return "Intent{" + intentUri + '}';
     }
+
+    @Override
+    public IntentDescriptor copy() {
+        IntentDescriptor copy = new IntentDescriptor();
+        copy.id = id;
+        copy.intentUri = intentUri;
+        copy.label = label;
+        copy.customLabel = customLabel;
+        copy.color = color;
+        copy.customColor = customColor;
+        return copy;
+    }
 }

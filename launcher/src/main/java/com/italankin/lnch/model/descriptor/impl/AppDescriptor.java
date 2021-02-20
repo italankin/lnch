@@ -132,4 +132,20 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         }
         return componentNameValue;
     }
+
+    @Override
+    public AppDescriptor copy() {
+        AppDescriptor copy = new AppDescriptor(packageName);
+        copy.versionCode = versionCode;
+        copy.componentName = componentName;
+        copy.label = label;
+        copy.customLabel = customLabel;
+        copy.color = color;
+        copy.customColor = customColor;
+        copy.ignored = ignored;
+        copy.searchFlags = searchFlags;
+        copy.aliases = new ArrayList<>(aliases);
+        copy.componentNameValue = componentNameValue;
+        return copy;
+    }
 }

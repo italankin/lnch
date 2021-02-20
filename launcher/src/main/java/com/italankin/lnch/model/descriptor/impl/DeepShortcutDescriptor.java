@@ -85,4 +85,15 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
     public String toString() {
         return "DeepShortcut{" + getId() + "}";
     }
+
+    @Override
+    public DeepShortcutDescriptor copy() {
+        DeepShortcutDescriptor copy = new DeepShortcutDescriptor(packageName, id);
+        copy.label = label;
+        copy.color = color;
+        copy.customLabel = customLabel;
+        copy.customColor = customColor;
+        copy.enabled = enabled;
+        return copy;
+    }
 }
