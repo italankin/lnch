@@ -46,14 +46,14 @@ public class AppsSettingsFilter extends Filter {
     public void setDataset(@NonNull List<AppDescriptorUi> dataset) {
         unfiltered.clear();
         unfiltered.addAll(dataset);
-        filter(constraint);
+        fireFilter();
     }
 
     public void setFlags(Set<FilterFlag> newFlags) {
         if (!flags.equals(newFlags)) {
             flags.clear();
             flags.addAll(newFlags);
-            filter(constraint);
+            fireFilter();
         }
     }
 
@@ -104,6 +104,14 @@ public class AppsSettingsFilter extends Filter {
         if (onFilterResult != null) {
             onFilterResult.onFilterResult(constraint == null ? null : constraint.toString(),
                     (List<AppDescriptorUi>) filterResults.values);
+        }
+    }
+
+    private void fireFilter() {
+        if (!TextUtils.isEmpty(constraint) || !DEFAULT_FLAGS.equals(flags)) {
+            filter(constraint);
+        } else {
+            publishResults(null, of(new ArrayList<>(unfiltered)));
         }
     }
 
