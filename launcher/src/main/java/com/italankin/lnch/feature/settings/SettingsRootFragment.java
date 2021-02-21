@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.settings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 public class SettingsRootFragment extends BasePreferenceFragment {
+
+    private final static String SOURCE_CODE_URL = "https://github.com/italankin/lnch";
 
     private Callbacks callbacks;
 
@@ -111,6 +114,13 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         });
         Preference version = findPreference(R.string.pref_key_version);
         version.setTitle(getString(R.string.settings_version, BuildConfig.VERSION_NAME));
+        Preference sourceCode = findPreference(R.string.pref_key_source_code);
+        sourceCode.setOnPreferenceClickListener(preference -> {
+            Uri uri = Uri.parse(SOURCE_CODE_URL);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(Intent.createChooser(intent, ""));
+            return true;
+        });
     }
 
     @Override

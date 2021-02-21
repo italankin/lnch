@@ -51,6 +51,10 @@
             android:key="@string/pref_key_backups"
             android:title="@string/settings_other_bar" />
         <Preference
+            android:icon="@drawable/ic_github"
+            android:key="@string/pref_key_source_code"
+            android:title="@string/settings_source_code" />
+        <Preference
             android:icon="@drawable/ic_app_info"
             android:key="@string/pref_key_version"
             tools:title="@string/settings_version" />
