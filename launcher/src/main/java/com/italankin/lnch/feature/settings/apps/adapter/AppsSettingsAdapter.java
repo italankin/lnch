@@ -49,6 +49,11 @@ public class AppsSettingsAdapter
     }
 
     @Override
+    public long getItemId(int position, AppDescriptorUi item) {
+        return item.getDescriptor().getId().hashCode();
+    }
+
+    @Override
     public void onBind(ViewHolder holder, int position, AppDescriptorUi item) {
         holder.bind(item);
     }

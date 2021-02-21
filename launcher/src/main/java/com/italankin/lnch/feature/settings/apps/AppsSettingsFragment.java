@@ -210,6 +210,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
         adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
                 .add(new AppsSettingsAdapter(picasso, this))
                 .recyclerView(list)
+                .setHasStableIds(true)
                 .create();
     }
 
