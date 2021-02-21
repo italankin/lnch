@@ -128,7 +128,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="Other"
+            android:text="@string/settings_app_details_other"
             android:textColor="?colorAccent"
             android:textSize="14sp"
             android:textStyle="bold"
