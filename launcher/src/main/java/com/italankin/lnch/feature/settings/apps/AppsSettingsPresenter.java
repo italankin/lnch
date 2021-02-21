@@ -65,7 +65,7 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
                 .subscribe(new State<List<AppDescriptorUi>>() {
                     @Override
                     protected void onNext(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
-                        viewState.onAppsLoaded(apps);
+                        viewState.onAppsUpdated(apps);
                     }
 
                     @Override

@@ -150,7 +150,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     }
 
     @Override
-    public void onAppsLoaded(List<AppDescriptorUi> apps) {
+    public void onAppsUpdated(List<AppDescriptorUi> apps) {
         filter.setDataset(apps);
         lce.showContent();
     }

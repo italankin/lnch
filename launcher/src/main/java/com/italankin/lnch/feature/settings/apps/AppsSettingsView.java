@@ -13,7 +13,7 @@ interface AppsSettingsView extends MvpView {
     void showLoading();
 
     @StateStrategyType(SingleStateStrategy.class)
-    void onAppsLoaded(List<AppDescriptorUi> apps);
+    void onAppsUpdated(List<AppDescriptorUi> apps);
 
     @StateStrategyType(SingleStateStrategy.class)
     void showError(Throwable e);
