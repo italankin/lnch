@@ -110,21 +110,21 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView {
             list.setAdapter(adapter);
         }
         adapter.setDataset(aliases);
-        itemAdd.setEnabled(canAddMore);
+        updateItemAddState(canAddMore);
         updateLceState(aliases.size());
     }
 
     @Override
     public void notifyAliasRemoved(int size, boolean canAddMore) {
         adapter.notifyDataSetChanged();
-        itemAdd.setEnabled(canAddMore);
+        updateItemAddState(canAddMore);
         updateLceState(size);
     }
 
     @Override
     public void notifyAliasAdded(int size, boolean canAddMore) {
         adapter.notifyDataSetChanged();
-        itemAdd.setEnabled(canAddMore);
+        updateItemAddState(canAddMore);
         updateLceState(size);
     }
 
@@ -144,5 +144,10 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView {
         } else {
             lce.showContent();
         }
+    }
+
+    private void updateItemAddState(boolean canAddMore) {
+        itemAdd.setEnabled(canAddMore);
+        itemAdd.getIcon().setAlpha(canAddMore ? 255 : 32);
     }
 }
