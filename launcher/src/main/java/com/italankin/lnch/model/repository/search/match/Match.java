@@ -35,7 +35,23 @@ public interface Match {
      */
     Intent getIntent();
 
+    /**
+     * @return kind of a match, e.g. application, shortcut, web result, etc.
+     */
+    Kind getKind();
+
     Set<Action> availableActions();
+
+    /**
+     * Kind of the object this match represents
+     */
+    enum Kind {
+        APP,
+        SHORTCUT,
+        OTHER,
+        WEB,
+        URL
+    }
 
     enum Action {
         PIN,

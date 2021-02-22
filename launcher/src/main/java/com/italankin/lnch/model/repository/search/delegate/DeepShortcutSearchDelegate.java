@@ -9,6 +9,7 @@ import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -37,15 +38,15 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1
                 || !searchTargets.contains(Preferences.SearchTarget.SHORTCUT)) {
             return Collections.emptyList();
         }
-        List<PartialMatch> result = new ArrayList<>(4);
+        List<Match> result = new ArrayList<>(4);
         for (ShortcutData data : getAllShortcuts()) {
             if (contains(data.shortcut.getShortLabel().toString(), query)) {
-                PartialMatch match = createMatch(data.shortcut, data.descriptor);
+                Match match = createMatch(data.shortcut, data.descriptor);
                 result.add(match);
             }
         }
@@ -82,12 +83,11 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private static PartialMatch createMatch(Shortcut shortcut, Descriptor descriptor) {
-        PartialDescriptorMatch match = new PartialDescriptorMatch(PartialMatch.Type.OTHER);
+    private static Match createMatch(Shortcut shortcut, Descriptor descriptor) {
+        PartialDescriptorMatch match = new PartialDescriptorMatch(descriptor, PartialMatch.Type.OTHER, Match.Kind.SHORTCUT);
         match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
         match.label = shortcut.getShortLabel();
         match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
-        match.descriptor = descriptor;
         return match;
     }
 

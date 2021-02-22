@@ -31,7 +31,6 @@ public class PinnedShortcutSearchDelegate extends AbstractSearchDelegate<PinnedS
             match.color = item.getVisibleColor();
             match.intent = IntentUtils.fromUri(item.uri);
             match.iconRes = R.drawable.ic_shortcut;
-            match.descriptor = item;
         }
         return match;
     }

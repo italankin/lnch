@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.repository.search;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 
 import java.util.EnumSet;
@@ -13,5 +14,5 @@ public interface SearchDelegate {
      * @param searchTargets a set of targets user interested in
      * @return list of found {@link PartialMatch}es
      */
-    List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets);
+    List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets);
 }

@@ -35,7 +35,6 @@ public class IntentSearchDelegate extends AbstractSearchDelegate<IntentDescripto
             match.color = item.getVisibleColor();
             match.intent = IntentUtils.fromUri(item.intentUri, Intent.URI_INTENT_SCHEME);
             match.iconRes = R.drawable.ic_launch_intent;
-            match.descriptor = item;
             match.actions = Collections.emptySet();
         }
         return match;

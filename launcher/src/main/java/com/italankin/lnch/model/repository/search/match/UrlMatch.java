@@ -47,6 +47,11 @@ public class UrlMatch extends PartialMatch {
         return label;
     }
 
+    @Override
+    public Kind getKind() {
+        return Kind.URL;
+    }
+
     @NonNull
     @Override
     public String toString() {

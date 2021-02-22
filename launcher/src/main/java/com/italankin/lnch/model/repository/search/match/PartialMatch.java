@@ -12,6 +12,9 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Base class for a {@link Match} which ranks matches by {@link PartialMatch.Type}
+ */
 public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     public final PartialMatch.Type type;
     public Uri icon;
@@ -62,8 +65,8 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     }
 
     @Override
-    public int compareTo(@NonNull PartialMatch match) {
-        return type.compareTo(match.type);
+    public int compareTo(@NonNull PartialMatch other) {
+        return type.compareTo(other.type);
     }
 
     public enum Type {

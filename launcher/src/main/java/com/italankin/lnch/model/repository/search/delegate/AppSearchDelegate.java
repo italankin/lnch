@@ -7,8 +7,8 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
+import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
-import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 
 import java.util.ArrayList;
@@ -26,14 +26,14 @@ public class AppSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         boolean skipIgnored = !searchTargets.contains(Preferences.SearchTarget.IGNORED);
-        List<PartialMatch> matches = new ArrayList<>(4);
+        List<Match> matches = new ArrayList<>(4);
         for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
             if (descriptor.ignored && skipIgnored || (descriptor.searchFlags & AppDescriptor.FLAG_SEARCH_VISIBLE) == 0) {
                 continue;
             }
-            PartialMatch match = testApp(descriptor, query);
+            Match match = testApp(descriptor, query);
             if (match != null) {
                 matches.add(match);
             }
@@ -41,7 +41,7 @@ public class AppSearchDelegate implements SearchDelegate {
         return matches;
     }
 
-    private PartialMatch testApp(AppDescriptor item, String query) {
+    private Match testApp(AppDescriptor item, String query) {
         PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
         if (match != null) {
             match.color = item.getVisibleColor();
@@ -50,7 +50,6 @@ public class AppSearchDelegate implements SearchDelegate {
                 match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
             }
             match.icon = PackageIconHandler.uriFrom(item.packageName);
-            match.descriptor = item;
         }
         return match;
     }

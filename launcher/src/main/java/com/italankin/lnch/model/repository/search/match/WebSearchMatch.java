@@ -26,4 +26,9 @@ public class WebSearchMatch extends PartialMatch {
     public int getColor(Context context) {
         return ResUtils.resolveColor(context, R.attr.colorText);
     }
+
+    @Override
+    public Kind getKind() {
+        return Kind.WEB;
+    }
 }

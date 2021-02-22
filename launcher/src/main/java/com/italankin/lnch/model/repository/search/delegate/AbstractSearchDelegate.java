@@ -4,7 +4,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
-import com.italankin.lnch.model.repository.search.match.PartialMatch;
+import com.italankin.lnch.model.repository.search.match.Match;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +24,7 @@ public abstract class AbstractSearchDelegate<D extends Descriptor> implements Se
     }
 
     @Override
-    public List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (!isTargetEnabled(searchTargets)) {
             return Collections.emptyList();
         }
@@ -32,11 +32,11 @@ public abstract class AbstractSearchDelegate<D extends Descriptor> implements Se
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
-        List<PartialMatch> results = new ArrayList<>(2);
+        List<Match> results = new ArrayList<>(2);
         for (D item : items) {
-            PartialMatch partialMatch = testTarget(item, query);
-            if (partialMatch != null) {
-                results.add(partialMatch);
+            Match match = testTarget(item, query);
+            if (match != null) {
+                results.add(match);
             }
         }
         return results;
@@ -47,5 +47,5 @@ public abstract class AbstractSearchDelegate<D extends Descriptor> implements Se
     }
 
     @Nullable
-    abstract PartialMatch testTarget(D descriptor, String query);
+    abstract Match testTarget(D descriptor, String query);
 }
