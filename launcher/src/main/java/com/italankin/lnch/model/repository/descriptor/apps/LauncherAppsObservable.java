@@ -16,6 +16,9 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
+/**
+ * Observe changes posted by {@link LauncherApps}
+ */
 class LauncherAppsObservable extends Observable<LauncherAppsObservable.Event> {
     private final LauncherApps launcherApps;
 

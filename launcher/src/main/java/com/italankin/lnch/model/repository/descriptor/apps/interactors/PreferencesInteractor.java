@@ -22,6 +22,9 @@ public class PreferencesInteractor {
         return result;
     }
 
+    /**
+     * An action on {@link AppsData} which can alter items in a different ways e.g. change colors or sort
+     */
     public interface Transform {
         AppsData apply(AppsData appsData, Preferences preferences);
     }

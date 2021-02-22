@@ -18,7 +18,6 @@ import com.italankin.lnch.util.IntentUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +47,9 @@ public class LoadFromFileInteractor {
         this.packageManager = packageManager;
     }
 
+    /**
+     * Load saved descriptor data from disk. Signals empty, if no saved data found or the data is corrupt.
+     */
     public Maybe<AppsData> load(List<LauncherActivityInfo> infoList) {
         return Maybe
                 .create(emitter -> {
@@ -85,6 +87,7 @@ public class LoadFromFileInteractor {
             } else if (item instanceof IntentDescriptor) {
                 visitIntent(env, (IntentDescriptor) item);
             } else {
+                // no special handling needed, just add it to the list
                 env.addItem(item);
             }
         }
@@ -110,7 +113,7 @@ public class LoadFromFileInteractor {
             appDescriptorInteractor.updateItem(app, info);
             env.addItem(app);
         } else {
-            env.addDeleted(app);
+            env.markDeleted(app);
         }
     }
 
@@ -126,7 +129,7 @@ public class LoadFromFileInteractor {
         if (IntentUtils.canHandleIntent(packageManager, intent)) {
             env.addItem(item);
         } else {
-            env.addDeleted(item);
+            env.markDeleted(item);
         }
     }
 
@@ -134,18 +137,20 @@ public class LoadFromFileInteractor {
         if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.intentUri))) {
             env.addItem(item);
         } else {
-            env.addDeleted(item);
+            env.markDeleted(item);
         }
     }
 }
 
 /**
- * Processing environment which holds temporary data
+ * Processing environment object which holds temporary data
  */
 class ProcessingEnv {
     private final List<Descriptor> items = new ArrayList<>(64);
+    /**
+     * Packages data, fetched from {@link android.content.pm.LauncherApps}
+     */
     private final PackagesMap packagesMap;
-    private final Map<String, AppDescriptor> installed = new HashMap<>(64);
     private final Set<Integer> deleted = new HashSet<>(4);
 
     ProcessingEnv(PackagesMap packagesMap) {
@@ -156,19 +161,23 @@ class ProcessingEnv {
         this.items.add(item);
     }
 
+    /**
+     * Add {@link AppDescriptor} to the list of items
+     */
     void addItem(AppDescriptor app) {
         this.items.add(app);
-        this.installed.put(app.packageName, app);
     }
 
-    void addDeleted(Descriptor descriptor) {
+    /**
+     * Add {@link Descriptor} to the list of deleted entries
+     */
+    void markDeleted(Descriptor descriptor) {
         this.deleted.add(descriptor.hashCode());
     }
 
-    AppDescriptor findInstalled(String packageName) {
-        return installed.get(packageName);
-    }
-
+    /**
+     * Fetch a matching {@link LauncherActivityInfo} for a given {@link AppDescriptor}
+     */
     LauncherActivityInfo pollInfo(AppDescriptor app) {
         return packagesMap.poll(app);
     }
@@ -184,8 +193,7 @@ class ProcessingEnv {
 }
 
 /**
- * A map which holds {@link LauncherActivityInfo} groupped by
- * {@link android.content.pm.ApplicationInfo#packageName}
+ * A map which holds {@link LauncherActivityInfo} grouped by {@link android.content.pm.ApplicationInfo#packageName}
  */
 class PackagesMap {
     private final Map<String, List<LauncherActivityInfo>> packages;
@@ -202,6 +210,10 @@ class PackagesMap {
         return packages.values();
     }
 
+    /**
+     * Get matching {@link LauncherActivityInfo} for a given {@link AppDescriptor}.
+     * If {@code null} is returned, the app probably got deleted.
+     */
     LauncherActivityInfo poll(AppDescriptor item) {
         List<LauncherActivityInfo> infos = packages.get(item.packageName);
         if (infos == null || infos.isEmpty()) {

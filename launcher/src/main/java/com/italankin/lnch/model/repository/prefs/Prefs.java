@@ -6,6 +6,9 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
+/**
+ * Factory for {@link com.italankin.lnch.model.repository.prefs.Preferences.Pref}
+ */
 final class Prefs {
 
     static Preferences.Pref<Integer> createInteger(String key, Integer defaultValue) {

@@ -10,8 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
 
-import androidx.palette.graphics.Palette;
-
 import com.italankin.lnch.util.ResUtils;
 
 import java.util.ArrayList;
@@ -19,11 +17,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.palette.graphics.Palette;
+
 final class LauncherActivityInfoUtils {
 
     private static final float[] TMP = new float[3];
 
-    @SuppressWarnings("deprecation")
     static long getVersionCode(PackageManager packageManager, String packageName) {
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
