@@ -2,11 +2,10 @@ package com.italankin.lnch.model.repository.descriptor.actions;
 
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 
 import java.util.List;
 
-public class RenameAction implements DescriptorRepository.Editor.Action {
+public class RenameAction extends BaseAction {
     private final String id;
     private final String newLabel;
 
@@ -17,11 +16,7 @@ public class RenameAction implements DescriptorRepository.Editor.Action {
 
     @Override
     public void apply(List<Descriptor> items) {
-        for (Descriptor item : items) {
-            if (item.getId().equals(id)) {
-                ((CustomLabelDescriptor) item).setCustomLabel(newLabel);
-                break;
-            }
-        }
+        CustomLabelDescriptor descriptor = findById(items, id);
+        descriptor.setCustomLabel(newLabel);
     }
 }
