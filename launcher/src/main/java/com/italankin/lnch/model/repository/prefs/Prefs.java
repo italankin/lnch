@@ -24,11 +24,11 @@ final class Prefs {
     }
 
     static Preferences.RangePref<Float> createFloatRange(String key, Float defaultValue, Float min, Float max) {
-        return new RangePref<>(key, defaultValue, min, max, new FloatUpdater());
+        return new RangePref<>(key, defaultValue, min, max, new FloatRangeUpdater(min, max));
     }
 
     static Preferences.RangePref<Integer> createIntegerRange(String key, Integer defaultValue, Integer min, Integer max) {
-        return new RangePref<>(key, defaultValue, min, max, new IntegerUpdater());
+        return new RangePref<>(key, defaultValue, min, max, new IntegerRangeUpdater(min, max));
     }
 
     static <T> Preferences.Pref<T> create(
@@ -166,6 +166,28 @@ final class Prefs {
         }
     }
 
+    private static class IntegerRangeUpdater extends IntegerUpdater {
+        private final int min;
+        private final int max;
+
+        IntegerRangeUpdater(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public void update(SharedPreferences preferences, String key, Integer newValue) {
+            if (newValue != null) {
+                if (newValue < min) {
+                    newValue = min;
+                } else if (newValue > max) {
+                    newValue = max;
+                }
+            }
+            super.update(preferences, key, newValue);
+        }
+    }
+
     private static class FloatUpdater implements Preferences.Pref.Updater<Float> {
         @Override
         public void update(SharedPreferences preferences, String key, Float newValue) {
@@ -174,6 +196,28 @@ final class Prefs {
             } else {
                 preferences.edit().putFloat(key, newValue).apply();
             }
+        }
+    }
+
+    private static class FloatRangeUpdater extends FloatUpdater {
+        private final float min;
+        private final float max;
+
+        FloatRangeUpdater(float min, float max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public void update(SharedPreferences preferences, String key, Float newValue) {
+            if (newValue != null) {
+                if (newValue < min) {
+                    newValue = min;
+                } else if (newValue > max) {
+                    newValue = max;
+                }
+            }
+            super.update(preferences, key, newValue);
         }
     }
 
