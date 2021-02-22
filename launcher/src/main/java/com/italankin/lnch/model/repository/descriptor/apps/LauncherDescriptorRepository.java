@@ -175,7 +175,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
         return Single
                 .fromCallable(() -> {
-                    List<Descriptor> items = new ArrayList<>(16);
+                    List<Descriptor> items = new ArrayList<>(64);
                     for (LauncherActivityInfo info : infoList) {
                         items.add(appDescriptorInteractor.createItem(info));
                     }
