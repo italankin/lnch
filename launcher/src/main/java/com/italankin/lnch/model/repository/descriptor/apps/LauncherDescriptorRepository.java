@@ -127,7 +127,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void subscribeForUpdates() {
         new LauncherAppsObservable(launcherApps)
-                .debounce(1, TimeUnit.SECONDS)
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .flatMapCompletable(event -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates");
