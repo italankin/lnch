@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Application (each {@link ComponentName} will have its own {@link AppDescriptor})
+ */
 public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor,
         CustomLabelDescriptor, IgnorableDescriptor, AliasDescriptor {
 

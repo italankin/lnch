@@ -22,6 +22,7 @@ public class WebSearchProviderFactory {
         Preferences.SearchEngine searchEngine = preferences.get(Preferences.SEARCH_ENGINE);
         if (searchEngine == Preferences.SearchEngine.CUSTOM) {
             String format = preferences.get(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
+            // assume we have a valid format string
             return new FormattedProvider(format);
         } else {
             WebSearchProvider provider = PROVIDERS.get(searchEngine);

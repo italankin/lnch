@@ -11,8 +11,14 @@ import androidx.annotation.DrawableRes;
 
 public interface Match {
 
+    /**
+     * @return uri of match icon
+     */
     Uri getIcon();
 
+    /**
+     * @return drawable resource of the match icon
+     */
     @DrawableRes
     int getIconResource();
 
@@ -24,6 +30,9 @@ public interface Match {
     @Override
     String toString();
 
+    /**
+     * @return an intent, if present
+     */
     Intent getIntent();
 
     Set<Action> availableActions();

@@ -8,6 +8,9 @@ import java.util.UUID;
 
 import androidx.annotation.ColorInt;
 
+/**
+ * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
+ */
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;

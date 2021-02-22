@@ -6,6 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+/**
+ * App shortcut
+ *
+ * @see android.content.pm.ShortcutInfo
+ */
 public interface Shortcut extends Comparable<Shortcut> {
 
     CharSequence getShortLabel();

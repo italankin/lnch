@@ -20,5 +20,8 @@ public interface Descriptor {
     @Override
     int hashCode();
 
+    /**
+     * @return a deep copy of this descriptor
+     */
     Descriptor copy();
 }

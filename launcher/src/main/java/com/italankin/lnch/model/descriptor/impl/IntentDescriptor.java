@@ -8,6 +8,9 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
+/**
+ * Custom intent descriptor (e.g., search intent)
+ */
 public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;

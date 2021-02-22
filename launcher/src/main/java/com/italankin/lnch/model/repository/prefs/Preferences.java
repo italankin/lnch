@@ -17,6 +17,9 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
+/**
+ * A base interface for interacting with user preferences
+ */
 public interface Preferences {
 
     <T> T get(Pref<T> pref);

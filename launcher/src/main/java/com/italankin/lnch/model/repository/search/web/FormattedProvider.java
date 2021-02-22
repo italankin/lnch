@@ -7,6 +7,7 @@ import com.italankin.lnch.model.repository.search.match.WebSearchMatch;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import timber.log.Timber;
 
 class FormattedProvider implements WebSearchProvider {
     private final String format;
@@ -29,6 +30,7 @@ class FormattedProvider implements WebSearchProvider {
         try {
             return String.format(Locale.ROOT, format, Uri.encode(query));
         } catch (Exception e) {
+            Timber.e("failed to format query=%s:", query);
             return null;
         }
     }

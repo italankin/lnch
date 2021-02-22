@@ -6,6 +6,9 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
+/**
+ * A home screen separator
+ */
 public final class GroupDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;

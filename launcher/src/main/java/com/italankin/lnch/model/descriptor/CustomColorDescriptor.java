@@ -2,6 +2,9 @@ package com.italankin.lnch.model.descriptor;
 
 import androidx.annotation.ColorInt;
 
+/**
+ * A descriptor which can have a custom text color
+ */
 public interface CustomColorDescriptor extends ColorDescriptor {
 
     void setCustomColor(@ColorInt Integer color);

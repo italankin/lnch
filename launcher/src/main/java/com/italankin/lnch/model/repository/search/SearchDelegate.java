@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface SearchDelegate {
 
+    /**
+     * @param query         search query text
+     * @param searchTargets a set of targets user interested in
+     * @return list of found {@link PartialMatch}es
+     */
     List<PartialMatch> search(String query, EnumSet<Preferences.SearchTarget> searchTargets);
-
 }

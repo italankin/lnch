@@ -51,6 +51,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
         }
 
+        // add web results
         if (searchTargets.contains(SearchTarget.WEB)) {
             WebSearchProvider provider = WebSearchProviderFactory.get(preferences);
             WebSearchMatch match = provider.make(constraint.toString(), query);
@@ -59,6 +60,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
+        // recognize URLs
         if (searchTargets.contains(SearchTarget.URL)) {
             if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
                 matches.add(new UrlMatch(query));
