@@ -2,8 +2,7 @@ package com.italankin.lnch.model.repository.descriptor.apps.interactors.transfor
 
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.PreferencesInteractor;
-import com.italankin.lnch.model.repository.descriptor.sort.AscLabelSorter;
-import com.italankin.lnch.model.repository.descriptor.sort.DescLabelSorter;
+import com.italankin.lnch.model.repository.descriptor.sort.DescriptorSorter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class SortTransform implements PreferencesInteractor.Transform {
@@ -12,11 +11,11 @@ public class SortTransform implements PreferencesInteractor.Transform {
     public AppsData apply(AppsData appsData, Preferences preferences) {
         switch (preferences.get(Preferences.APPS_SORT_MODE)) {
             case AZ: {
-                boolean changed = new AscLabelSorter().sort(appsData.items);
+                boolean changed = DescriptorSorter.LABEL_ASC.sort(appsData.items);
                 return appsData.copy(changed);
             }
             case ZA: {
-                boolean changed = new DescLabelSorter().sort(appsData.items);
+                boolean changed = DescriptorSorter.LABEL_DESC.sort(appsData.items);
                 return appsData.copy(changed);
             }
             case MANUAL:
