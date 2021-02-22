@@ -12,49 +12,50 @@ import androidx.annotation.Nullable;
 final class Prefs {
 
     static Preferences.Pref<Integer> createInteger(String key, Integer defaultValue) {
-        return new BasePref<>(key, defaultValue, new IntegerUpdater(key));
+        return new BasePref<>(key, defaultValue, new IntegerUpdater());
     }
 
     static Preferences.Pref<Boolean> createBoolean(String key, Boolean defaultValue) {
-        return new BasePref<>(key, defaultValue, new BooleanUpdater(key));
+        return new BasePref<>(key, defaultValue, new BooleanUpdater());
     }
 
     static Preferences.Pref<String> createString(String key, String defaultValue) {
-        return new BasePref<>(key, defaultValue, new StringUpdater(key));
+        return new BasePref<>(key, defaultValue, new StringUpdater());
     }
 
     static Preferences.RangePref<Float> createFloatRange(String key, Float defaultValue, Float min, Float max) {
-        return new RangePref<>(key, defaultValue, min, max, new FloatUpdater(key));
+        return new RangePref<>(key, defaultValue, min, max, new FloatUpdater());
     }
 
     static Preferences.RangePref<Integer> createIntegerRange(String key, Integer defaultValue, Integer min, Integer max) {
-        return new RangePref<>(key, defaultValue, min, max, new IntegerUpdater(key));
+        return new RangePref<>(key, defaultValue, min, max, new IntegerUpdater());
     }
 
-    static <T> Preferences.Pref<T> create(String key, T defaultValue, Fetcher2<T> fetcher2, Updater2<T> updater2) {
+    static <T> Preferences.Pref<T> create(
+            String prefKey,
+            T defaultValue,
+            Preferences.Pref.Fetcher<T> fetcher,
+            Preferences.Pref.Updater<T> updater
+    ) {
         return new BasePref<T>(
-                key,
-                preferences -> fetcher2.fetch(preferences, key, defaultValue),
-                (preferences, newValue) -> updater2.update(preferences, key, newValue));
-    }
-
-    static <T> Preferences.Pref<T> create(String key, T defaultValue, ValueConverter<T> valueConverter) {
-        return new BasePref<T>(
-                key,
-                preferences -> {
-                    String value = preferences.getString(key, null);
-                    return valueConverter.convert(value, defaultValue);
+                prefKey,
+                (preferences, key) -> {
+                    T value = fetcher.fetch(preferences, key);
+                    return value != null ? value : defaultValue;
                 },
-                new ObjectUpdater<>(key)
+                updater
         );
     }
 
-    interface Fetcher2<T> {
-        T fetch(SharedPreferences preferences, String key, T defaultValue);
-    }
-
-    interface Updater2<T> {
-        void update(SharedPreferences preferences, String key, T newValue);
+    static <T> Preferences.Pref<T> create(String prefKey, T defaultValue, ValueConverter<T> valueConverter) {
+        return new BasePref<T>(
+                prefKey,
+                (preferences, key) -> {
+                    String value = preferences.getString(key, null);
+                    return valueConverter.convert(value, defaultValue);
+                },
+                new ObjectUpdater<>()
+        );
     }
 
     interface ValueConverter<T> {
@@ -132,9 +133,9 @@ final class Prefs {
 
         @SuppressWarnings("unchecked")
         @Override
-        public T fetch(SharedPreferences preferences) {
+        public T fetch(SharedPreferences preferences, String key) {
             Map<String, ?> map = preferences.getAll();
-            Object value = map.get(key);
+            Object value = map.get(this.key);
             return value == null ? defaultValue : (T) value;
         }
     }
@@ -144,14 +145,8 @@ final class Prefs {
     ///////////////////////////////////////////////////////////////////////////
 
     private static class ObjectUpdater<T> implements Preferences.Pref.Updater<T> {
-        private final String key;
-
-        ObjectUpdater(String key) {
-            this.key = key;
-        }
-
         @Override
-        public void update(SharedPreferences preferences, T newValue) {
+        public void update(SharedPreferences preferences, String key, T newValue) {
             if (newValue == null) {
                 preferences.edit().remove(key).apply();
             } else {
@@ -161,14 +156,8 @@ final class Prefs {
     }
 
     private static class IntegerUpdater implements Preferences.Pref.Updater<Integer> {
-        private final String key;
-
-        IntegerUpdater(String key) {
-            this.key = key;
-        }
-
         @Override
-        public void update(SharedPreferences preferences, Integer newValue) {
+        public void update(SharedPreferences preferences, String key, Integer newValue) {
             if (newValue == null) {
                 preferences.edit().remove(key).apply();
             } else {
@@ -178,14 +167,8 @@ final class Prefs {
     }
 
     private static class FloatUpdater implements Preferences.Pref.Updater<Float> {
-        private final String key;
-
-        FloatUpdater(String key) {
-            this.key = key;
-        }
-
         @Override
-        public void update(SharedPreferences preferences, Float newValue) {
+        public void update(SharedPreferences preferences, String key, Float newValue) {
             if (newValue == null) {
                 preferences.edit().remove(key).apply();
             } else {
@@ -195,14 +178,8 @@ final class Prefs {
     }
 
     private static class BooleanUpdater implements Preferences.Pref.Updater<Boolean> {
-        private final String key;
-
-        BooleanUpdater(String key) {
-            this.key = key;
-        }
-
         @Override
-        public void update(SharedPreferences preferences, Boolean newValue) {
+        public void update(SharedPreferences preferences, String key, Boolean newValue) {
             if (newValue == null) {
                 preferences.edit().remove(key).apply();
             } else {
@@ -212,14 +189,8 @@ final class Prefs {
     }
 
     private static class StringUpdater implements Preferences.Pref.Updater<String> {
-        private final String key;
-
-        StringUpdater(String key) {
-            this.key = key;
-        }
-
         @Override
-        public void update(SharedPreferences preferences, String newValue) {
+        public void update(SharedPreferences preferences, String key, String newValue) {
             if (newValue == null) {
                 preferences.edit().remove(key).apply();
             } else {

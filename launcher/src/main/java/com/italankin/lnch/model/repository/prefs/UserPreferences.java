@@ -44,12 +44,12 @@ public class UserPreferences implements Preferences {
 
     @Override
     public <T> T get(Pref<T> pref) {
-        return pref.fetcher().fetch(prefs);
+        return pref.fetcher().fetch(prefs, pref.key());
     }
 
     @Override
     public <T> void set(Pref<T> pref, T newValue) {
-        pref.updater().update(prefs, newValue);
+        pref.updater().update(prefs, pref.key(), newValue);
     }
 
     @Override

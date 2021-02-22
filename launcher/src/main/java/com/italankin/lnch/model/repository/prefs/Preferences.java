@@ -70,7 +70,7 @@ public interface Preferences {
             /**
              * Read preference value from {@link SharedPreferences}
              */
-            T fetch(SharedPreferences preferences);
+            T fetch(SharedPreferences preferences, String key);
         }
 
         /**
@@ -82,7 +82,7 @@ public interface Preferences {
             /**
              * Write preference value to {@link SharedPreferences}
              */
-            void update(SharedPreferences preferences, T newValue);
+            void update(SharedPreferences preferences, String key, T newValue);
         }
     }
 
@@ -143,9 +143,9 @@ public interface Preferences {
     Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
             "search_targets",
             SearchTarget.ALL,
-            (preferences, key, defaultValue) -> {
+            (preferences, key) -> {
                 Set<String> set = preferences.getStringSet(key, null);
-                return set != null ? SearchTarget.fromCollection(set) : defaultValue;
+                return set != null ? SearchTarget.fromCollection(set) : null;
             },
             (preferences, key, newValue) -> {
                 Set<String> value = new HashSet<>(newValue.size());
