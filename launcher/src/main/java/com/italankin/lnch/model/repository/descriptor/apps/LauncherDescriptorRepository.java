@@ -130,7 +130,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .flatMapCompletable(event -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
-                    Timber.e(throwable, "subscribeForUpdates");
+                    Timber.e(throwable, "subscribeForUpdates (launcher apps)");
                     return true;
                 })
                 .subscribe();
@@ -138,6 +138,10 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         preferences.observe(Preferences.APPS_SORT_MODE)
                 .filter(value -> value.get() != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> updater.onErrorComplete())
+                .onErrorComplete(throwable -> {
+                    Timber.e(throwable, "subscribeForUpdates (preferences)");
+                    return true;
+                })
                 .subscribe();
     }
 
