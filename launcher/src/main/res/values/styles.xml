@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppDetails.Title" parent="">
+        <item name="android:paddingStart">64dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">?colorAccent</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppDetails.Switch" parent="">
+        <item name="android:paddingStart">64dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:textColor">?colorText</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppDetails.Button" parent="">
+        <item name="android:paddingStart">64dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:textColor">?colorText</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">?selectableItemBackground</item>
+    </style>
+</resources>

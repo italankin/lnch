@@ -62,92 +62,62 @@
 
         <TextView
             android:id="@+id/visibility_title"
+            style="@style/AppDetails.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:paddingStart="64dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
             android:text="@string/settings_app_details_visibility"
-            android:textColor="?colorAccent"
-            android:textSize="14sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/icon" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_home_visibility"
+            style="@style/AppDetails.Switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="64dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_home"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/visibility_title"
             app:layout_constraintTop_toBottomOf="@+id/visibility_title" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_search_visibility"
+            style="@style/AppDetails.Switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="64dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_search"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switch_home_visibility" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_search_shortcuts_visibility"
+            style="@style/AppDetails.Switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="64dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
             android:text="@string/settings_app_details_visibility_search_shortcuts"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switch_search_visibility" />
 
         <TextView
             android:id="@+id/other_title"
+            style="@style/AppDetails.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:paddingStart="64dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
             android:text="@string/settings_app_details_other"
-            android:textColor="?colorAccent"
-            android:textSize="14sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switch_search_shortcuts_visibility" />
 
         <TextView
             android:id="@+id/app_aliases"
+            style="@style/AppDetails.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:paddingStart="64dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
             android:text="@string/settings_app_aliases"
-            android:textColor="?colorText"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/other_title" />
