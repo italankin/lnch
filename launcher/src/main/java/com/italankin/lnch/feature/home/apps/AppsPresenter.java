@@ -10,10 +10,10 @@ import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RecolorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
 import com.italankin.lnch.model.repository.notifications.NotificationDot;
@@ -124,7 +124,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
-        editor.enqueue(new RecolorAction(item.getDescriptor(), color));
+        editor.enqueue(new SetColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         getViewState().onItemChanged(position);
     }

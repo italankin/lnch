@@ -5,11 +5,11 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.List;
 
-public class RecolorAction extends BaseAction {
+public class SetColorAction extends BaseAction {
     private final String id;
     private final Integer newColor;
 
-    public RecolorAction(CustomColorDescriptor descriptor, Integer newColor) {
+    public SetColorAction(CustomColorDescriptor descriptor, Integer newColor) {
         this.id = descriptor.getId();
         this.newColor = newColor;
     }

@@ -4,8 +4,8 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.actions.RecolorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
 
@@ -60,7 +60,7 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
     void setCustomColor(AppDescriptor descriptor, @Nullable Integer newColor) {
         descriptor.setCustomColor(newColor);
         commitAction(
-                new RecolorAction(descriptor, newColor),
+                new SetColorAction(descriptor, newColor),
                 new CompletableState() {
                     @Override
                     public void onComplete() {
