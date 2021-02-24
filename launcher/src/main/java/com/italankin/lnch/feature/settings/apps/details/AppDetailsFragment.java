@@ -3,9 +3,11 @@ package com.italankin.lnch.feature.settings.apps.details;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,8 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,8 +48,11 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private TextView textName;
     private ImageView imageIcon;
     private TextView textPackage;
+    private TextView textVisibleName;
     private View buttonInfo;
     private View buttonAppAliases;
+    private View buttonRename;
+    private View buttonChangeColor;
 
     private SwitchCompat switchHomeVisibility;
     private SwitchCompat switchSearchVisibility;
@@ -86,6 +93,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         switchSearchVisibility = view.findViewById(R.id.switch_search_visibility);
         switchShortcutsVisibility = view.findViewById(R.id.switch_search_shortcuts_visibility);
         buttonAppAliases = view.findViewById(R.id.app_aliases);
+        buttonRename = view.findViewById(R.id.action_rename);
+        buttonChangeColor = view.findViewById(R.id.action_color);
+        textVisibleName = view.findViewById(R.id.visible_name);
 
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
         presenter.loadDescriptor(descriptorId);
@@ -99,6 +109,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         textName.setText(PackageUtils.getPackageLabel(packageManager, packageName));
         buttonInfo.setOnClickListener(v -> IntentUtils.safeStartAppSettings(requireContext(), packageName, null));
         textPackage.setText(packageName);
+        textVisibleName.setText(descriptor.getVisibleLabel());
 
         switchHomeVisibility.setChecked(!descriptor.ignored);
         switchHomeVisibility.jumpDrawablesToCurrentState();
@@ -118,6 +129,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
             presenter.setSearchShortcutsVisible(descriptor, isChecked);
         });
 
+        buttonRename.setOnClickListener(v -> setCustomLabel(descriptor));
+        buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
+
         buttonAppAliases.setOnClickListener(v -> {
             if (callbacks != null) {
                 callbacks.showAppAliases(descriptor.getId());
@@ -131,6 +145,50 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         if (callbacks != null) {
             callbacks.onAppDetailsError();
         }
+    }
+
+    private void setCustomLabel(AppDescriptor descriptor) {
+        String visibleLabel = descriptor.getVisibleLabel();
+        EditTextAlertDialog.builder(requireContext())
+                .setTitle(visibleLabel)
+                .customizeEditText(editText -> {
+                    editText.setText(visibleLabel);
+                    editText.setSingleLine(true);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                    if (visibleLabel != null) {
+                        editText.setSelection(visibleLabel.length());
+                    }
+                })
+                .setPositiveButton(R.string.ok, (dialog, editText) -> {
+                    String label = editText.getText().toString().trim();
+                    if (!label.equals(visibleLabel)) {
+                        presenter.setCustomLabel(descriptor, label);
+                        textVisibleName.setText(label);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
+                    presenter.setCustomLabel(descriptor, "");
+                    textVisibleName.setText(descriptor.getVisibleLabel());
+                })
+                .show();
+    }
+
+    private void setCustomColor(AppDescriptor descriptor) {
+        int visibleColor = descriptor.getVisibleColor();
+        ColorPickerDialog.builder(requireContext())
+                .setHexVisible(false)
+                .setSelectedColor(visibleColor)
+                .setOnColorPickedListener(color -> {
+                    if (color != visibleColor) {
+                        presenter.setCustomColor(descriptor, color);
+                    }
+                })
+                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
+                    presenter.setCustomColor(descriptor, null);
+                })
+                .show();
     }
 
     public interface Callbacks {

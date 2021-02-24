@@ -4,13 +4,17 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.actions.RecolorAction;
+import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
@@ -39,17 +43,44 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
                 });
     }
 
+    void setCustomLabel(AppDescriptor descriptor, String newValue) {
+        String customLabel = newValue.isEmpty() ? null : newValue;
+        descriptor.setCustomLabel(customLabel);
+        commitAction(
+                new RenameAction(descriptor, customLabel),
+                new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Update package=%s: customLabel=%s", descriptor, customLabel);
+                    }
+                }
+        );
+    }
+
+    void setCustomColor(AppDescriptor descriptor, @Nullable Integer newColor) {
+        descriptor.setCustomColor(newColor);
+        commitAction(
+                new RecolorAction(descriptor, newColor),
+                new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Update package=%s: customColor=%s", descriptor, newColor);
+                    }
+                }
+        );
+    }
+
     void setIgnored(AppDescriptor descriptor, boolean ignored) {
         descriptor.setIgnored(ignored);
-        descriptorRepository.edit()
-                .enqueue(new SetIgnoreAction(descriptor, ignored))
-                .commit()
-                .subscribe(new CompletableState() {
+        commitAction(
+                new SetIgnoreAction(descriptor, ignored),
+                new CompletableState() {
                     @Override
                     public void onComplete() {
                         Timber.d("Update package=%s: ignored=%b", descriptor, ignored);
                     }
-                });
+                }
+        );
     }
 
     void setSearchVisible(AppDescriptor descriptor, boolean visible) {
@@ -58,15 +89,15 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
         } else {
             descriptor.searchFlags &= ~AppDescriptor.FLAG_SEARCH_VISIBLE;
         }
-        descriptorRepository.edit()
-                .enqueue(new SetSearchFlagsAction(descriptor, descriptor.searchFlags))
-                .commit()
-                .subscribe(new CompletableState() {
+        commitAction(
+                new SetSearchFlagsAction(descriptor, descriptor.searchFlags),
+                new CompletableState() {
                     @Override
                     public void onComplete() {
                         Timber.d("Update package=%s: searchFlags=%d", descriptor, descriptor.searchFlags);
                     }
-                });
+                }
+        );
     }
 
     void setSearchShortcutsVisible(AppDescriptor descriptor, boolean visible) {
@@ -75,14 +106,22 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
         } else {
             descriptor.searchFlags &= ~AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
         }
-        descriptorRepository.edit()
-                .enqueue(new SetSearchFlagsAction(descriptor, descriptor.searchFlags))
-                .commit()
-                .subscribe(new CompletableState() {
+        commitAction(
+                new SetSearchFlagsAction(descriptor, descriptor.searchFlags),
+                new CompletableState() {
                     @Override
                     public void onComplete() {
                         Timber.d("Update package=%s: searchFlags=%d", descriptor, descriptor.searchFlags);
                     }
-                });
+                }
+        );
+    }
+
+    private void commitAction(DescriptorRepository.Editor.Action action, CompletableState state) {
+        descriptorRepository.edit()
+                .enqueue(action)
+                .commit()
+                .subscribeOn(Schedulers.io())
+                .subscribe(state);
     }
 }
