@@ -35,7 +35,7 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView {
         return fragment;
     }
 
-    private static final int MAX_ALIAS_LENGTH = 10;
+    private static final int MAX_ALIAS_LENGTH = 255;
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
 
     @InjectPresenter
@@ -88,6 +88,7 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView {
                     .customizeEditText(editText -> {
                         editText.setMaxLines(1);
                         editText.setSingleLine(true);
+                        editText.setHint(getString(R.string.settings_app_aliases_hint, MAX_ALIAS_LENGTH));
                         editText.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
                         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ALIAS_LENGTH)});
                     })

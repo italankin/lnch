@@ -114,6 +114,7 @@
     <string name="settings_app_aliases_add">Add</string>
     <string name="settings_app_aliases_title">Add alias</string>
     <string name="settings_app_aliases_invalid">Invalid alias</string>
+    <string name="settings_app_aliases_hint">Maximum %1$d characters</string>
 
     <string name="settings_home_widgets">Widgets</string>
     <string name="settings_home_widgets_enable">Enable widgets</string>
