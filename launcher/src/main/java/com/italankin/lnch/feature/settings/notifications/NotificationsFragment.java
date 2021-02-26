@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.settings.notifications;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -30,8 +29,7 @@ public class NotificationsFragment extends BasePreferenceFragment {
         super.onViewCreated(view, savedInstanceState);
         CheckBoxPreference notificationDot = findPreference(Preferences.NOTIFICATION_DOT);
         notificationDot.setOnPreferenceClickListener(preference -> {
-            Context context = requireContext();
-            if (NotificationUtils.isNotificationAccessGranted(context)) {
+            if (NotificationUtils.isNotificationAccessGranted(requireContext())) {
                 return false;
             } else {
                 notificationDot.setChecked(false);

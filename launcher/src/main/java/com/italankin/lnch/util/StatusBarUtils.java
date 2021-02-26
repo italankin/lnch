@@ -5,11 +5,7 @@ import android.content.Context;
 
 import java.lang.reflect.Method;
 
-public class StatusBarUtils {
-
-    private StatusBarUtils() {
-        // no instance
-    }
+public final class StatusBarUtils {
 
     @SuppressLint("WrongConstant")
     public static void expandStatusBar(Context context) {
@@ -21,5 +17,9 @@ public class StatusBarUtils {
         } catch (Exception ignored) {
             // nothing to do
         }
+    }
+
+    private StatusBarUtils() {
+        // no instance
     }
 }

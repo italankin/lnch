@@ -13,8 +13,7 @@ import com.squareup.picasso.Picasso;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppsSettingsAdapter
-        extends BaseAdapterDelegate<AppsSettingsAdapter.ViewHolder, AppDescriptorUi> {
+public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter.ViewHolder, AppDescriptorUi> {
 
     private final Picasso picasso;
     private final Listener listener;

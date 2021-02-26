@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 public final class DescriptorUtils {
 
+    @Nullable
     public static String getPackageName(Descriptor descriptor) {
         if (descriptor instanceof PackageDescriptor) {
             return ((PackageDescriptor) descriptor).getPackageName();
@@ -27,6 +28,7 @@ public final class DescriptorUtils {
         return null;
     }
 
+    @Nullable
     public static ComponentName getComponentName(Context context, AppDescriptor descriptor) {
         if (descriptor.componentName != null) {
             ComponentName componentName = descriptor.getComponentName();
