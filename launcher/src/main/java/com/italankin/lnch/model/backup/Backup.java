@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.backup.impl;
+package com.italankin.lnch.model.backup;
 
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;

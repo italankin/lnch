@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.backup.impl;
+package com.italankin.lnch.model.backup;
 
 import java.io.Closeable;
 import java.io.IOException;

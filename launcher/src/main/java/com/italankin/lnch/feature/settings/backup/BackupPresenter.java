@@ -4,8 +4,8 @@ import android.net.Uri;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.feature.settings.backup.impl.BackupReader;
-import com.italankin.lnch.feature.settings.backup.impl.BackupWriter;
+import com.italankin.lnch.model.backup.BackupReader;
+import com.italankin.lnch.model.backup.BackupWriter;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 
 import javax.inject.Inject;

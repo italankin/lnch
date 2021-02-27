@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.GsonBuilder;
-import com.italankin.lnch.feature.settings.backup.impl.BackupReader;
-import com.italankin.lnch.feature.settings.backup.impl.BackupReaderImpl;
-import com.italankin.lnch.feature.settings.backup.impl.BackupWriter;
-import com.italankin.lnch.feature.settings.backup.impl.BackupWriterImpl;
-import com.italankin.lnch.feature.settings.backup.impl.PreferencesBackup;
-import com.italankin.lnch.feature.settings.backup.impl.PreferencesBackupImpl;
+import com.italankin.lnch.model.backup.BackupReader;
+import com.italankin.lnch.model.backup.BackupReaderImpl;
+import com.italankin.lnch.model.backup.BackupWriter;
+import com.italankin.lnch.model.backup.BackupWriterImpl;
+import com.italankin.lnch.model.backup.PreferencesBackup;
+import com.italankin.lnch.model.backup.PreferencesBackupImpl;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 

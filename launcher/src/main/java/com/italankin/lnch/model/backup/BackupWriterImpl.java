@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.backup.impl;
+package com.italankin.lnch.model.backup;
 
 import android.content.ContentResolver;
 import android.content.Context;

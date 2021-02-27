@@ -9,10 +9,10 @@ import com.italankin.lnch.feature.settings.apps.AppsSettingsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
-import com.italankin.lnch.feature.settings.backup.impl.BackupReader;
-import com.italankin.lnch.feature.settings.backup.impl.BackupWriter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
 import com.italankin.lnch.feature.widgets.WidgetsPresenter;
+import com.italankin.lnch.model.backup.BackupReader;
+import com.italankin.lnch.model.backup.BackupWriter;
 import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.WidgetsState;
 

@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.settings.backup.impl;
+package com.italankin.lnch.model.backup;
 
 import android.net.Uri;
 
@@ -7,7 +7,11 @@ import java.io.InputStream;
 
 import io.reactivex.Completable;
 
+/**
+ * A class which reads data from a backup resource
+ */
 public interface BackupReader {
+
     Completable read(Uri uri);
 
     Completable read(InputStreamFactory factory);
