@@ -10,6 +10,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
@@ -37,20 +38,30 @@ public class BackupWriterImpl implements BackupWriter {
 
     @Override
     public Completable write(Uri uri) {
-        return Completable.fromRunnable(() -> {
-            Map<String, Object> preferences = preferencesBackup.read();
-            List<Descriptor> descriptors = descriptorRepository.items();
-            Backup backup = new Backup(descriptors, preferences);
-            Timber.d("create backup:\n%s", backup);
-            try (OutputStreamWriter writer = getWriter(uri)) {
-                gson.toJson(backup, writer);
-            } catch (IOException e) {
-                throw new RuntimeException("Backup failed: " + e.getMessage(), e);
-            }
-        });
+        return write(() -> contentResolver.openOutputStream(uri));
     }
 
-    private OutputStreamWriter getWriter(Uri uri) throws IOException {
-        return new OutputStreamWriter(new GZIPOutputStream(contentResolver.openOutputStream(uri), DefaultBufferSize.VALUE));
+    @Override
+    public Completable write(OutputStreamFactory factory) {
+        return Completable.using(
+                factory::get,
+                outputStream -> {
+                    return Completable.fromRunnable(() -> {
+                        Map<String, Object> preferences = preferencesBackup.read();
+                        List<Descriptor> descriptors = descriptorRepository.items();
+                        Backup backup = new Backup(descriptors, preferences);
+                        Timber.d("create backup:\n%s", backup);
+                        try (OutputStreamWriter writer = getWriter(outputStream)) {
+                            gson.toJson(backup, writer);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Backup failed: " + e.getMessage(), e);
+                        }
+                    });
+                },
+                BackupUtils::closeQuietly);
+    }
+
+    private OutputStreamWriter getWriter(OutputStream outputStream) throws IOException {
+        return new OutputStreamWriter(new GZIPOutputStream(outputStream, BackupUtils.DEFAULT_BUFFER_SIZE));
     }
 }

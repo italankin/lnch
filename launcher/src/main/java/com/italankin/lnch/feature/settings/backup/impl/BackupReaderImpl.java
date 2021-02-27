@@ -44,9 +44,10 @@ public class BackupReaderImpl implements BackupReader {
 
     @Override
     public Completable read(Uri uri) {
-        return Single
-                .fromCallable(() -> {
-                    try (InputStreamReader reader = getReader(uri)) {
+        return Single.using(
+                () -> contentResolver.openInputStream(uri),
+                inputStream -> Single.fromCallable(() -> {
+                    try (InputStreamReader reader = getReader(inputStream)) {
                         return gson.fromJson(reader, Backup.class);
                     } catch (JsonSyntaxException e) {
                         Timber.e(e, "read:");
@@ -54,11 +55,9 @@ public class BackupReaderImpl implements BackupReader {
                     } catch (Exception e) {
                         throw new RuntimeException("Restore failed: " + e.getMessage(), e);
                     }
-                })
-                .flatMapCompletable(backup -> {
-                    Timber.d("restoring from backup\n%s", backup);
-                    return Completable.mergeArray(writeDescriptors(backup.descriptors), writePrefs(backup.preferences));
-                })
+                }),
+                BackupUtils::closeQuietly)
+                .flatMapCompletable(this::applyBackup)
                 .onErrorResumeNext(throwable -> {
                     if (!(throwable instanceof JsonSyntaxException)) {
                         return Completable.error(throwable);
@@ -67,17 +66,41 @@ public class BackupReaderImpl implements BackupReader {
                 });
     }
 
-    private InputStreamReader getReader(Uri uri) throws IOException {
-        return new InputStreamReader(new GZIPInputStream(contentResolver.openInputStream(uri), DefaultBufferSize.VALUE));
+    @Override
+    public Completable read(InputStreamFactory factory) {
+        return Single.using(
+                factory::get,
+                inputStream -> Single.fromCallable(() -> {
+                    try (InputStreamReader reader = getReader(inputStream)) {
+                        return gson.fromJson(reader, Backup.class);
+                    }
+                }),
+                BackupUtils::closeQuietly)
+                .flatMapCompletable(this::applyBackup);
+    }
+
+    private InputStreamReader getReader(InputStream inputStream) throws IOException {
+        return new InputStreamReader(new GZIPInputStream(inputStream, BackupUtils.DEFAULT_BUFFER_SIZE));
+    }
+
+    private Completable applyBackup(Backup backup) {
+        Timber.d("restoring from backup:\n%s", backup);
+        return Completable.mergeArray(writeDescriptors(backup.descriptors), writePrefs(backup.preferences));
     }
 
     private Completable writeDescriptors(List<Descriptor> descriptors) {
+        if (descriptors == null) {
+            return Completable.error(new NullPointerException("descriptors are null"));
+        }
         return descriptorRepository.edit()
                 .enqueue(new ReplaceAction(descriptors))
                 .commit();
     }
 
     private Completable writePrefs(Map<String, ?> map) {
+        if (map == null) {
+            return Completable.error(new NullPointerException("preferences are null"));
+        }
         return Completable.fromRunnable(() -> preferencesBackup.write(map));
     }
 
@@ -86,9 +109,7 @@ public class BackupReaderImpl implements BackupReader {
         try (InputStream in = contentResolver.openInputStream(uri)) {
             descriptors = descriptorStore.read(in);
         }
-        return descriptorRepository.edit()
-                .enqueue(new ReplaceAction(descriptors))
-                .commit();
+        return writeDescriptors(descriptors);
     }
 
     private static final class ReplaceAction implements DescriptorRepository.Editor.Action {

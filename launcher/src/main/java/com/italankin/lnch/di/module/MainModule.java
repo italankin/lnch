@@ -32,7 +32,6 @@ import com.italankin.lnch.model.repository.search.delegate.WebSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.backport.BackportShortcutsRepository;
-import com.italankin.lnch.model.repository.store.BackupDescriptorStore;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
 import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
@@ -96,8 +95,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    DescriptorStore provideDescriptorStore(Context context, GsonBuilder gsonBuilder, PackagesStore packagesStore) {
-        return new BackupDescriptorStore(new GsonDescriptorStore(gsonBuilder), packagesStore, context.getFilesDir());
+    DescriptorStore provideDescriptorStore(GsonBuilder gsonBuilder) {
+        return new GsonDescriptorStore(gsonBuilder);
     }
 
     @Provides
