@@ -100,7 +100,7 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
         return flags;
     }
 
-    public static class Builder extends BaseBuilder<FilterFlagsDialogFragment, Listener, Builder> {
+    public static class Builder extends BaseBuilder<FilterFlagsDialogFragment> {
 
         public Builder setFlags(EnumSet<FilterFlag> flags) {
             arguments.putSerializable(ARG_FLAGS, flags);

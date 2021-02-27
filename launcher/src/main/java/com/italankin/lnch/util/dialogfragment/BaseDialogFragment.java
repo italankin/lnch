@@ -42,7 +42,7 @@ public abstract class BaseDialogFragment<L> extends DialogFragment {
         return null;
     }
 
-    protected static abstract class BaseBuilder<F extends BaseDialogFragment, L, B extends BaseBuilder> implements ArgumentsHolder {
+    protected static abstract class BaseBuilder<F extends BaseDialogFragment> implements ArgumentsHolder {
         protected final Bundle arguments = new Bundle(6);
 
         @Override

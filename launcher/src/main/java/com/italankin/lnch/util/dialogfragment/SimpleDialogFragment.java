@@ -37,7 +37,7 @@ public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragmen
         return builder.create();
     }
 
-    public static class Builder extends BaseBuilder<SimpleDialogFragment, Listener, Builder> implements
+    public static class Builder extends BaseBuilder<SimpleDialogFragment> implements
             TitleBuilder<Builder>,
             MessageBuilder<Builder>,
             PositiveButtonBuilder<Builder>,

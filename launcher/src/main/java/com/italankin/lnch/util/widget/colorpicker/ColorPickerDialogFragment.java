@@ -51,7 +51,7 @@ public class ColorPickerDialogFragment extends BaseDialogFragment<ColorPickerDia
         return builder.build();
     }
 
-    public static class Builder extends BaseBuilder<ColorPickerDialogFragment, Listener, Builder> {
+    public static class Builder extends BaseBuilder<ColorPickerDialogFragment> {
 
         public Builder setSelectedColor(@ColorInt int color) {
             arguments.putInt(ARG_SELECTED_COLOR, color);

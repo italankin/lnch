@@ -100,7 +100,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
         return matcher.matches();
     }
 
-    public static class Builder extends BaseBuilder<CustomFormatDialogFragment, Listener, Builder> {
+    public static class Builder extends BaseBuilder<CustomFormatDialogFragment> {
 
         Builder setCustomFormat(String format) {
             getArguments().putString(ARG_CUSTOM_FORMAT, format);
