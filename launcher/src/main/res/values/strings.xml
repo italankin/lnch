@@ -79,6 +79,7 @@
     <string name="intent_factory_intent_error_action">"Either action or package name must be set"</string>
     <string name="intent_factory_extras_menu_add">Add extra</string>
     <string name="intent_factory_extras_menu_save">Save</string>
+    <string name="intent_factory_extras_empty">No Intent extras added</string>
     <string name="intent_factory_extras_dialog_title">Add extra</string>
     <string name="intent_factory_extras_dialog_add">Add</string>
     <string name="intent_factory_extras_error_key">Key must not be empty</string>

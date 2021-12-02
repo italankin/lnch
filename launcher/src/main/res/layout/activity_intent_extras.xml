@@ -19,12 +19,19 @@
         app:navigationIcon="@drawable/ic_close"
         tools:title="Intent extras" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
+    <com.italankin.lnch.util.widget.LceLayout
+        android:id="@+id/lce"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_intent_extra" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_intent_extra" />
+
+    </com.italankin.lnch.util.widget.LceLayout>
 
 </LinearLayout>

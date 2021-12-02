@@ -15,6 +15,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +48,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
 
     private final List<IntentExtra> intentExtras = new ArrayList<>();
 
+    private LceLayout lce;
     private IntentExtrasAdapter adapter;
 
     @Override
@@ -65,6 +67,8 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
             finish();
         });
 
+        lce = findViewById(R.id.lce);
+
         Bundle bundle = getIntent().getBundleExtra(EXTRA_EXTRAS);
         if (bundle != null) {
             IntentExtra.putAllFrom(bundle, intentExtras);
@@ -73,6 +77,8 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
         RecyclerView list = findViewById(R.id.list);
         adapter = new IntentExtrasAdapter(intentExtras, this);
         list.setAdapter(adapter);
+
+        updateLceState();
     }
 
     @Override
@@ -84,7 +90,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_intent_extras_add) {
-            showAddDialog(null, null);
+            showAddDialog();
             return true;
         } else if (item.getItemId() == R.id.action_intent_extras_save) {
             finishWithResult();
@@ -102,6 +108,21 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
     public void onDeleteClick(int position) {
         intentExtras.remove(position);
         adapter.notifyItemRemoved(position);
+        updateLceState();
+    }
+
+    private void updateLceState() {
+        if (intentExtras.isEmpty()) {
+            lce.empty()
+                    .message(R.string.intent_factory_extras_empty)
+                    .show();
+        } else {
+            lce.showContent();
+        }
+    }
+
+    private void showAddDialog() {
+        showAddDialog(null, null);
     }
 
     private void showAddDialog(@Nullable Integer position, @Nullable IntentExtra extra) {
@@ -143,6 +164,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
                         } else {
                             intentExtras.add(new IntentExtra(type, key, converted));
                             adapter.notifyItemInserted(intentExtras.size() - 1);
+                            updateLceState();
                         }
                     } catch (Exception e) {
                         String text = getString(R.string.intent_factory_extras_error_value, e.toString());
