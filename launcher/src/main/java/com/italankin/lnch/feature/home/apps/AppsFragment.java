@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +49,8 @@ import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.home.widget.SearchBar;
+import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
+import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -101,6 +104,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         PinnedShortcutDescriptorUiAdapter.Listener {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
+    private static final int REQUEST_CODE_CREATE_INTENT = 0;
+    private static final int REQUEST_CODE_EDIT_INTENT = 1;
 
     @InjectPresenter
     AppsPresenter presenter;
@@ -230,6 +235,28 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE_CREATE_INTENT && resultCode == Activity.RESULT_OK) {
+            IntentFactoryResult result = IntentFactoryActivity.getResultExtra(data);
+            if (result == null) {
+                return;
+            }
+            NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
+            String label = nameNormalizer.normalize(result.label);
+            IntentDescriptor intentDescriptor = new IntentDescriptor(result.intent, label);
+            presenter.addIntent(intentDescriptor);
+        } else if (requestCode == REQUEST_CODE_EDIT_INTENT && resultCode == Activity.RESULT_OK) {
+            IntentFactoryResult result = IntentFactoryActivity.getResultExtra(data);
+            if (result == null || result.descriptorId == null) {
+                return;
+            }
+            NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
+            String label = nameNormalizer.normalize(result.label);
+            presenter.editIntent(result.descriptorId, result.intent, label);
+        }
     }
 
     @Override
@@ -429,6 +456,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             searchBar.hideSoftKeyboard();
             editModePanel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
+                    .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
                         if (editModePanel != null && editModePanel.isShown()) {
                             presenter.stopCustomize();
@@ -467,6 +495,18 @@ public class AppsFragment extends AppFragment implements AppsView,
                     .setOnClickListener(v -> setItemColor(position, (CustomColorDescriptorUi) item))
             );
         }
+        if (item instanceof IntentDescriptorUi) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                    .setLabel(R.string.customize_item_edit_intent)
+                    .setIcon(R.drawable.ic_action_intent_edit)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setOnClickListener(v -> {
+                        IntentDescriptor descriptor = ((IntentDescriptorUi) item).getDescriptor();
+                        Intent intent = IntentFactoryActivity.editIntent(context, descriptor);
+                        startActivityForResult(intent, REQUEST_CODE_EDIT_INTENT);
+                    })
+            );
+        }
         if (item instanceof VisibleDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_add_group)
@@ -486,6 +526,18 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         View view = list.findViewForAdapterPosition(position);
         showPopupWindow(popup, view);
+    }
+
+    private void showEditModeAddPopup(View anchor) {
+        Context context = requireContext();
+        ActionPopupWindow popup = new ActionPopupWindow(context, picasso)
+                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                        .setLabel(R.string.edit_add_intent)
+                        .setOnClickListener(v -> {
+                            Intent intent = new Intent(context, IntentFactoryActivity.class);
+                            startActivityForResult(intent, REQUEST_CODE_CREATE_INTENT);
+                        }));
+        showPopupWindow(popup, anchor);
     }
 
     private void setItemCustomLabel(int position, CustomLabelDescriptorUi item) {

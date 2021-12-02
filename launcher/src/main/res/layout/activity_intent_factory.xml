@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="?colorPrimary"
+        android:elevation="4dp"
+        android:theme="?toolbarOverlayTheme"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/ic_close"
+        tools:title="Intent Factory" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_intent_title"
+                style="@style/AppDetails.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/intent_factory_intent_title" />
+
+            <TextView
+                android:id="@+id/intent_title"
+                style="@style/AppDetails.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/intent_factory_default_title" />
+
+            <TextView
+                android:id="@+id/title_intent_action"
+                style="@style/AppDetails.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/intent_factory_intent_action" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_action"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_action_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_action"
+                    app:layout_constraintEnd_toStartOf="@id/intent_action_select"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_action"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toStartOf="@id/intent_action_select"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_action_title"
+                    tools:text="android.intent.action.VIEW" />
+
+                <ImageView
+                    android:id="@+id/intent_action_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_intent_select_action"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/title_intent_component"
+                style="@style/AppDetails.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/intent_factory_intent_component" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_package"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_package_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_package"
+                    app:layout_constraintEnd_toStartOf="@id/intent_component_select"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_package"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toStartOf="@id/intent_component_select"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_package_title"
+                    tools:text="com.example.app" />
+
+                <ImageView
+                    android:id="@+id/intent_component_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_intent_select_action"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_class"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_class_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_class"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_class"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_class_title"
+                    tools:text="com.example.app.ExampleComponent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/title_intent_properties"
+                style="@style/AppDetails.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/intent_factory_intent_properties" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_flags"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_flags_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_flags"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_flags"
+                    style="@style/AppDetails.Container.Value"
+                    android:ellipsize="none"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    android:singleLine="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_flags_title"
+                    tools:text="FLAG_ACTIVITY_NEW_TASK, FLAG_ACTIVITY_CLEAR_TASK" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_data"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_data_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_data"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_data"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_data_title"
+                    tools:text="https://google.com" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_type"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_type_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_type"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_type"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_type_title"
+                    tools:text="text/plain" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_intent_extras"
+                style="@style/AppDetails.Container">
+
+                <TextView
+                    android:id="@+id/intent_extras_title"
+                    style="@style/AppDetails.Container.Title"
+                    android:text="@string/intent_factory_intent_extras"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/intent_extras"
+                    style="@style/AppDetails.Container.Value"
+                    android:hint="@string/intent_factory_intent_hint_empty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/intent_extras_title" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

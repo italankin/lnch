@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.home.apps;
 
+import android.content.Intent;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
@@ -32,6 +34,7 @@ import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 import com.italankin.lnch.util.ListUtils;
@@ -140,6 +143,17 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor.enqueue(new AddAction(position, item));
         items.add(position, new GroupDescriptorUi(item));
         getViewState().onItemInserted(position);
+    }
+
+    void addIntent(IntentDescriptor item) {
+        editor.enqueue(new AddAction(item));
+        int position = items.size();
+        items.add(new IntentDescriptorUi(item));
+        getViewState().onItemInserted(position);
+    }
+
+    void editIntent(String id, Intent intent, String label) {
+        editor.enqueue(new EditIntentAction(id, intent, label));
     }
 
     void removeItem(int position, DescriptorUi item) {
@@ -446,5 +460,29 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             }
         }
         return -1;
+    }
+
+    private static class EditIntentAction implements DescriptorRepository.Editor.Action {
+
+        private final String id;
+        private final Intent intent;
+        private final String label;
+
+        EditIntentAction(String id, Intent intent, String label) {
+            this.id = id;
+            this.intent = intent;
+            this.label = label;
+        }
+
+        @Override
+        public void apply(List<Descriptor> items) {
+            for (Descriptor item : items) {
+                if (item.getId().equals(id)) {
+                    IntentDescriptor descriptor = (IntentDescriptor) item;
+                    descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME);
+                    descriptor.setCustomLabel(label);
+                }
+            }
+        }
     }
 }

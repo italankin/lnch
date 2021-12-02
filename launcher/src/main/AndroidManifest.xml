@@ -79,6 +79,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".feature.intentfactory.IntentFactoryActivity"
+            android:label="@string/intent_factory_title"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".feature.intentfactory.extras.IntentExtrasActivity"
+            android:label="@string/intent_factory_extras"
+            android:theme="@style/AppTheme" />
+
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">

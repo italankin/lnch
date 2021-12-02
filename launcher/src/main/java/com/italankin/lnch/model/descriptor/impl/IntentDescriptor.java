@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.Intent;
+import android.graphics.Color;
 
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
@@ -21,6 +22,10 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public Integer customColor;
 
     public IntentDescriptor() {
+    }
+
+    public IntentDescriptor(Intent intent, String label) {
+        this(intent, label, Color.WHITE);
     }
 
     public IntentDescriptor(Intent intent, String label, int color) {

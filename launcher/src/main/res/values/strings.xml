@@ -47,11 +47,44 @@
     <string name="customize_item_rename">Rename</string>
     <string name="customize_item_color">Color</string>
     <string name="customize_item_add_group">Add separator</string>
+    <string name="customize_item_edit_intent">Edit Intent</string>
     <string name="customize_item_delete">Delete</string>
     <string name="customize_action_reset">Reset</string>
 
     <string name="popup_app_info">App info</string>
     <string name="popup_app_uninstall">Uninstall</string>
+
+    <string name="edit_add_intent">Intent</string>
+
+    <string name="intent_factory_title">Intent editor</string>
+    <string name="intent_factory_extras">Intent extras</string>
+    <string name="intent_factory_extras_format">%1$d extras</string>
+    <string name="intent_factory_commit">Commit changes</string>
+    <string name="intent_factory_test">Test Intent</string>
+    <string name="intent_factory_clear">Clear</string>
+    <string name="intent_factory_intent_title">Title</string>
+    <string name="intent_factory_default_title">New Intent</string>
+    <string name="intent_factory_intent_properties">Properties</string>
+    <string name="intent_factory_intent_component">Component</string>
+    <string name="intent_factory_intent_extras">Extras</string>
+    <string name="intent_factory_intent_action">Action</string>
+    <string name="intent_factory_intent_hint_empty">&lt;empty&gt;</string>
+    <string name="intent_factory_intent_package">Package name</string>
+    <string name="intent_factory_intent_class">Class name</string>
+    <string name="intent_factory_intent_data">Data</string>
+    <string name="intent_factory_intent_type">Type</string>
+    <string name="intent_factory_intent_flags">Flags</string>
+    <string name="intent_factory_intent_error_title">Title must not be empty</string>
+    <string name="intent_factory_intent_error_test">Could not launch Intent</string>
+    <string name="intent_factory_intent_error_action">"Either action or package name must be set"</string>
+    <string name="intent_factory_extras_menu_add">Add extra</string>
+    <string name="intent_factory_extras_menu_save">Save</string>
+    <string name="intent_factory_extras_dialog_title">Add extra</string>
+    <string name="intent_factory_extras_dialog_add">Add</string>
+    <string name="intent_factory_extras_error_key">Key must not be empty</string>
+    <string name="intent_factory_extras_error_value">Cannot add extra:\n%1$s</string>
+    <string name="intent_factory_extras_key">Key</string>
+    <string name="intent_factory_extras_value">Value</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_system">System settings</string>

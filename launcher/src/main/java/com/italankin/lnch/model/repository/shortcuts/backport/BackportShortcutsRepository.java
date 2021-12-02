@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -109,7 +108,7 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
                 }
                 String label = nameNormalizer.normalize(sb.getShortLabel());
                 Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
-                IntentDescriptor descriptor = new IntentDescriptor(intent, label, Color.WHITE);
+                IntentDescriptor descriptor = new IntentDescriptor(intent, label);
                 return descriptorRepository.edit()
                         .enqueue(new AddAction(descriptor))
                         .commit()

@@ -26,6 +26,7 @@ public class EditModePanel extends LinearLayout {
     private final TextView message;
     private final View undo;
     private final View save;
+    private final View add;
 
     private CoordinatorLayout parent;
     private boolean dismissed = false;
@@ -45,6 +46,7 @@ public class EditModePanel extends LinearLayout {
         message = findViewById(R.id.message);
         undo = findViewById(R.id.undo);
         save = findViewById(R.id.save);
+        add = findViewById(R.id.add);
     }
 
     public EditModePanel setMessage(CharSequence text) {
@@ -54,6 +56,12 @@ public class EditModePanel extends LinearLayout {
 
     public EditModePanel setMessage(@StringRes int text) {
         message.setText(text);
+        return this;
+    }
+
+    public EditModePanel setOnAddActionClickListener(OnClickListener listener) {
+        add.setOnClickListener(listener);
+        add.setVisibility(listener == null ? GONE : VISIBLE);
         return this;
     }
 
