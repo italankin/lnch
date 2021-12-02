@@ -9,6 +9,8 @@ android {
         targetSdkVersion rootProject.targetSdk
         versionCode 8
         versionName "1.5.1"
+
+        buildConfigField("boolean", "SAMSUNG_ANR_FIX", "false")
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
