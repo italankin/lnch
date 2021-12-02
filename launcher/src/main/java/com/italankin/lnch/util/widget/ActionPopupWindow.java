@@ -124,7 +124,9 @@ public class ActionPopupWindow extends BasePopupWindow {
                 drawable.setTint(item.iconDrawableTint);
             }
             iconView.setImageDrawable(drawable);
+            iconView.setVisibility(View.VISIBLE);
         } else if (item.iconUri != null) {
+            iconView.setVisibility(View.VISIBLE);
             ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
                     .resizeDimen(R.dimen.popup_shortcut_icon_size, R.dimen.popup_shortcut_icon_size)
                     .centerInside()
