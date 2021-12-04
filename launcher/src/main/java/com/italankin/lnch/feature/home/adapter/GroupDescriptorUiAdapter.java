@@ -29,13 +29,13 @@ public class GroupDescriptorUiAdapter
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
         itemView.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onGroupClick(pos, getItem(pos));
             }
         });
         itemView.setOnLongClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onGroupLongClick(pos, getItem(pos));
             }

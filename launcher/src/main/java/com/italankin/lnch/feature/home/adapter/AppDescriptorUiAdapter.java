@@ -35,13 +35,13 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
         itemView.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onAppClick(pos, getItem(pos));
             }
         });
         itemView.setOnLongClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onAppLongClick(pos, getItem(pos));
                 return true;

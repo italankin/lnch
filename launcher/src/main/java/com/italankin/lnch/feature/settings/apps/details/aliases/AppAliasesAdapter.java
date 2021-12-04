@@ -35,7 +35,7 @@ class AppAliasesAdapter extends RecyclerView.Adapter<AppAliasesAdapter.Holder> {
                 .inflate(R.layout.item_settings_app_alias, parent, false);
         Holder holder = new Holder(view);
         holder.delete.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION && listener != null) {
                 listener.onDeleteClick(pos);
             }

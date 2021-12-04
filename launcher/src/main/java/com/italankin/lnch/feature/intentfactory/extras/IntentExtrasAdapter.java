@@ -29,13 +29,13 @@ class IntentExtrasAdapter extends RecyclerView.Adapter<IntentExtrasAdapter.ViewH
                 .inflate(R.layout.item_intent_extra, parent, false);
         ViewHolder holder = new ViewHolder(view);
         holder.itemView.setOnClickListener(v -> {
-            int position = holder.getAdapterPosition();
+            int position = holder.getBindingAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 listener.onItemClick(position, dataset.get(position));
             }
         });
         holder.viewDelete.setOnClickListener(v -> {
-            int position = holder.getAdapterPosition();
+            int position = holder.getBindingAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 listener.onDeleteClick(position);
             }

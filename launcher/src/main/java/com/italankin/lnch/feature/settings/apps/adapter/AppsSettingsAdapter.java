@@ -33,13 +33,13 @@ public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
         holder.visibility.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onVisibilityClick(pos, getItem(pos));
             }
         });
         holder.itemView.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onAppClick(pos, getItem(pos));
             }

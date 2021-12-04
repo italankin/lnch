@@ -40,7 +40,7 @@ public class ComponentNameAdapter extends RecyclerView.Adapter<ComponentNameAdap
                 .inflate(R.layout.item_intent_component, parent, false);
         ViewHolder holder = new ViewHolder(view);
         holder.itemView.setOnClickListener(v -> {
-            int position = holder.getAdapterPosition();
+            int position = holder.getBindingAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 listener.onItemClick(dataset.get(position));
             }
