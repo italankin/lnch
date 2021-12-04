@@ -454,15 +454,17 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchBarBehavior.setEnabled(!value);
         if (value) {
             searchBar.hideSoftKeyboard();
-            editModePanel = new EditModePanel(requireContext())
+            EditModePanel panel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
-                    .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
-                        if (editModePanel != null && editModePanel.isShown()) {
+                        if (this.editModePanel != null && this.editModePanel.isShown()) {
                             presenter.stopCustomize();
                         }
-                    })
-                    .show(coordinator);
+                    });
+            if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
+                panel.setOnAddActionClickListener(this::showEditModeAddPopup);
+            }
+            editModePanel = panel.show(coordinator);
         } else if (editModePanel != null) {
             editModePanel.dismiss();
             editModePanel = null;
@@ -495,7 +497,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     .setOnClickListener(v -> setItemColor(position, (CustomColorDescriptorUi) item))
             );
         }
-        if (item instanceof IntentDescriptorUi) {
+        if (item instanceof IntentDescriptorUi && preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_edit_intent)
                     .setIcon(R.drawable.ic_action_intent_edit)
@@ -529,6 +531,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showEditModeAddPopup(View anchor) {
+        if (!preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
+            return;
+        }
         Context context = requireContext();
         ActionPopupWindow popup = new ActionPopupWindow(context, picasso)
                 .addShortcut(new ActionPopupWindow.ItemBuilder(context)

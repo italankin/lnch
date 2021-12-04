@@ -377,6 +377,13 @@ public interface Preferences {
             "notification_dot_ongoing",
             false);
 
+    /**
+     * Creating and editing intents via {@link com.italankin.lnch.feature.intentfactory.IntentFactoryActivity}
+     */
+    Pref<Boolean> EXPERIMENTAL_INTENT_FACTORY = Prefs.createBoolean(
+            "experimental_intent_factory",
+            false);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -414,7 +421,8 @@ public interface Preferences {
             SHORTCUTS_SORT_MODE,
             NOTIFICATION_DOT,
             NOTIFICATION_DOT_COLOR,
-            NOTIFICATION_DOT_ONGOING
+            NOTIFICATION_DOT_ONGOING,
+            EXPERIMENTAL_INTENT_FACTORY
     );
 
     ///////////////////////////////////////////////////////////////////////////

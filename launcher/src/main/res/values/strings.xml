@@ -124,6 +124,8 @@
 
     <string name="settings_home_misc_experimental">Experimental</string>
     <string name="settings_home_misc_experimental_summary">Features, which are not quite ready for production use</string>
+    <string name="settings_home_misc_experimental_intent_factory">Intent Editor</string>
+    <string name="settings_home_misc_experimental_intent_factory_summary">Create and edit custom Intents</string>
 
     <string name="settings_home_laf">Look and feel</string>
 
