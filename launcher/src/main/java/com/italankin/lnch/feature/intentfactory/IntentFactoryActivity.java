@@ -19,6 +19,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.intentfactory.actions.IntentAction;
+import com.italankin.lnch.feature.intentfactory.category.IntentCategory;
 import com.italankin.lnch.feature.intentfactory.extras.IntentExtrasActivity;
 import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -28,6 +29,8 @@ import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,6 +69,7 @@ public class IntentFactoryActivity extends AppCompatActivity {
     private TextView textData;
     private TextView textType;
     private TextView textFlags;
+    private TextView textCategory;
     private TextView textExtras;
 
     private Intent result = new Intent();
@@ -141,6 +145,11 @@ public class IntentFactoryActivity extends AppCompatActivity {
             });
         });
 
+        textFlags = findViewById(R.id.intent_flags);
+        findViewById(R.id.container_intent_flags).setOnClickListener(v -> {
+            showFlagsEdit();
+        });
+
         textType = findViewById(R.id.intent_type);
         findViewById(R.id.container_intent_type).setOnClickListener(v -> {
             showEdit(textType, R.string.intent_factory_intent_type, value -> {
@@ -152,9 +161,9 @@ public class IntentFactoryActivity extends AppCompatActivity {
             });
         });
 
-        textFlags = findViewById(R.id.intent_flags);
-        findViewById(R.id.container_intent_flags).setOnClickListener(v -> {
-            showFlagsEdit();
+        textCategory = findViewById(R.id.intent_category);
+        findViewById(R.id.container_intent_category).setOnClickListener(v -> {
+            showCategoryEdit();
         });
 
         textExtras = findViewById(R.id.intent_extras);
@@ -301,6 +310,50 @@ public class IntentFactoryActivity extends AppCompatActivity {
                     }
                     textFlags.setText(IntentFlag.flagsToString(newFlags));
                     result.setFlags(newFlags);
+                })
+                .show();
+    }
+
+    private void showCategoryEdit() {
+        IntentCategory[] allCategories = IntentCategory.getAll();
+        CharSequence[] items = new CharSequence[allCategories.length];
+        boolean[] checked = new boolean[allCategories.length];
+        Set<String> resultCategories = result.getCategories();
+        for (int i = 0; i < allCategories.length; i++) {
+            IntentCategory category = allCategories[i];
+            items[i] = category.name;
+            checked[i] = resultCategories != null && resultCategories.contains(category.value);
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.intent_factory_intent_category)
+                .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> {
+                    checked[which] = isChecked;
+                })
+                .setNeutralButton(R.string.intent_factory_clear, (dialog, which) -> {
+                    if (result.getCategories() == null) {
+                        return;
+                    }
+                    HashSet<String> categories = new HashSet<>(result.getCategories());
+                    for (String s : categories) {
+                        result.removeCategory(s);
+                    }
+                    textCategory.setText(null);
+                })
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    StringBuilder title = new StringBuilder();
+                    for (int i = 0; i < allCategories.length; i++) {
+                        IntentCategory category = allCategories[i];
+                        if (checked[i]) {
+                            result.addCategory(category.value);
+                            if (title.length() > 0) {
+                                title.append(", ");
+                            }
+                            title.append(category.name);
+                        } else {
+                            result.removeCategory(category.value);
+                        }
+                    }
+                    textCategory.setText(title.toString());
                 })
                 .show();
     }

@@ -73,6 +73,7 @@
     <string name="intent_factory_intent_class">Class name</string>
     <string name="intent_factory_intent_data">Data</string>
     <string name="intent_factory_intent_type">Type</string>
+    <string name="intent_factory_intent_category">Category</string>
     <string name="intent_factory_intent_flags">Flags</string>
     <string name="intent_factory_intent_error_title">Title must not be empty</string>
     <string name="intent_factory_intent_error_test">Could not launch Intent</string>
