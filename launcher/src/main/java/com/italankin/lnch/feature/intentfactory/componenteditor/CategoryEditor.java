@@ -13,19 +13,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class CategoryEditor extends AbstractIntentEditor {
 
+    private TextView textCategory;
+
     public CategoryEditor(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
     protected void bind() {
-        TextView textCategory = activity.findViewById(R.id.intent_category);
+        textCategory = activity.findViewById(R.id.intent_category);
         activity.findViewById(R.id.container_intent_category).setOnClickListener(v -> {
-            showCategoryEdit(textCategory);
+            showCategoryEdit();
         });
+    }
 
+    @Override
+    public void update() {
         Set<String> categories = result.getCategories();
         if (categories == null) {
+            textCategory.setText(null);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -40,7 +46,7 @@ public class CategoryEditor extends AbstractIntentEditor {
         textCategory.setText(sb.toString());
     }
 
-    private void showCategoryEdit(TextView textCategory) {
+    private void showCategoryEdit() {
         IntentCategory[] allCategories = IntentCategory.getAll();
         CharSequence[] items = new CharSequence[allCategories.length];
         boolean[] checked = new boolean[allCategories.length];
@@ -66,20 +72,15 @@ public class CategoryEditor extends AbstractIntentEditor {
                     textCategory.setText(null);
                 })
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    StringBuilder title = new StringBuilder();
                     for (int i = 0; i < allCategories.length; i++) {
                         IntentCategory category = allCategories[i];
                         if (checked[i]) {
                             result.addCategory(category.value);
-                            if (title.length() > 0) {
-                                title.append(", ");
-                            }
-                            title.append(category.name);
                         } else {
                             result.removeCategory(category.value);
                         }
                     }
-                    textCategory.setText(title.toString());
+                    update();
                 })
                 .show();
     }

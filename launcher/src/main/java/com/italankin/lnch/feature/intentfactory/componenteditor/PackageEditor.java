@@ -4,39 +4,53 @@ import android.content.ComponentName;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorActivity;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class PackageEditor extends AbstractIntentEditor {
+public class PackageEditor extends AbstractIntentEditor implements ActivityResultCallback<ComponentName> {
+
+    private final ActivityResultLauncher<Object> selectComponentLauncher;
+    private TextView textPackage;
 
     public PackageEditor(AppCompatActivity activity) {
         super(activity);
+        selectComponentLauncher = activity.registerForActivityResult(
+                new ComponentSelectorActivity.Contract(), this);
     }
 
     @Override
     public void bind() {
-        TextView textPackage = activity.findViewById(R.id.intent_package);
+        textPackage = activity.findViewById(R.id.intent_package);
         activity.findViewById(R.id.container_intent_package).setOnClickListener(v -> {
             showEdit(textPackage, R.string.intent_factory_intent_package, value -> {
                 ComponentName cn = result.getComponent();
                 if (cn == null && value == null) {
                     result.setComponent(null);
-                    result.setPackage(null);
                 } else {
                     String packageName = value != null ? value : "";
                     String className = cn != null ? cn.getClassName() : "";
                     result.setClassName(packageName, className);
-                    result.setPackage(packageName);
                 }
+                update();
             });
         });
         activity.findViewById(R.id.intent_component_select).setOnClickListener(v -> {
-            // TODO
+            selectComponentLauncher.launch(null);
         });
+    }
 
+    @Override
+    public void update() {
         ComponentName cn = result.getComponent();
-        if (cn != null) {
-            textPackage.setText(cn.getPackageName());
-        }
+        textPackage.setText(cn != null ? cn.getPackageName() : null);
+    }
+
+    @Override
+    public void onActivityResult(ComponentName componentName) {
+        result.setComponent(componentName);
+        host.requestUpdate();
     }
 }

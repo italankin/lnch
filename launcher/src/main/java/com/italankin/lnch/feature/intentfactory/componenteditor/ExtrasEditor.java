@@ -28,8 +28,17 @@ public class ExtrasEditor extends AbstractIntentEditor implements ActivityResult
         activity.findViewById(R.id.container_intent_extras).setOnClickListener(v -> {
             editExtrasLauncher.launch(result);
         });
+    }
 
-        updateText();
+    @Override
+    public void update() {
+        Bundle extras = result.getExtras();
+        int size = extras != null ? extras.size() : 0;
+        if (size > 0) {
+            textExtras.setText(activity.getString(R.string.intent_factory_extras_format, size));
+        } else {
+            textExtras.setText(null);
+        }
     }
 
     @Override
@@ -38,16 +47,6 @@ public class ExtrasEditor extends AbstractIntentEditor implements ActivityResult
             return;
         }
         result.replaceExtras(extras);
-        updateText();
-    }
-
-    private void updateText() {
-        Bundle extras = result.getExtras();
-        int size = extras != null ? extras.size() : 0;
-        if (size > 0) {
-            textExtras.setText(activity.getString(R.string.intent_factory_extras_format, size));
-        } else {
-            textExtras.setText(null);
-        }
+        update();
     }
 }

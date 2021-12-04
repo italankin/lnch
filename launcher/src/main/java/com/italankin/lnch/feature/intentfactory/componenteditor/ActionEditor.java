@@ -10,20 +10,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ActionEditor extends AbstractIntentEditor {
 
+    private TextView textAction;
+
     public ActionEditor(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
     public void bind() {
-        TextView textAction = activity.findViewById(R.id.intent_action);
+        textAction = activity.findViewById(R.id.intent_action);
         activity.findViewById(R.id.container_intent_action).setOnClickListener(v -> {
             showEdit(textAction, R.string.intent_factory_intent_action, result::setAction);
         });
         activity.findViewById(R.id.intent_action_select).setOnClickListener(v -> {
             showActionEdit(textAction);
         });
+    }
 
+    @Override
+    public void update() {
         textAction.setText(result.getAction());
     }
 

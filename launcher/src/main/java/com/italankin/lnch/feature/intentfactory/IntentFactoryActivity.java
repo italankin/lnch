@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.intentfactory;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -41,7 +42,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class IntentFactoryActivity extends AppCompatActivity {
+public class IntentFactoryActivity extends AppCompatActivity implements IntentEditor.Host {
 
     public static Intent editIntent(Context context, IntentDescriptor descriptor) {
         Intent intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
@@ -127,6 +128,13 @@ public class IntentFactoryActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void requestUpdate() {
+        for (IntentEditor editor : intentEditors) {
+            editor.update();
+        }
     }
 
     private void showTitleEdit() {

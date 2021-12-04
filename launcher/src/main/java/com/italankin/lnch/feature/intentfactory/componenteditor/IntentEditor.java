@@ -5,4 +5,11 @@ import android.content.Intent;
 public interface IntentEditor {
 
     void bind(Intent result);
+
+    void update();
+
+    interface Host {
+
+        void requestUpdate();
+    }
 }

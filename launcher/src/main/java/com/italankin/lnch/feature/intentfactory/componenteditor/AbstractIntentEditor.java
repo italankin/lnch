@@ -15,16 +15,19 @@ import androidx.appcompat.app.AppCompatActivity;
 abstract class AbstractIntentEditor implements IntentEditor {
 
     protected final AppCompatActivity activity;
+    protected final Host host;
     protected Intent result;
 
     public AbstractIntentEditor(AppCompatActivity activity) {
         this.activity = activity;
+        this.host = (Host) activity;
     }
 
     @Override
     public final void bind(Intent result) {
         this.result = result;
         bind();
+        update();
     }
 
     protected abstract void bind();

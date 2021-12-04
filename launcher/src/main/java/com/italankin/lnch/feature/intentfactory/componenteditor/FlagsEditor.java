@@ -12,21 +12,26 @@ import static com.italankin.lnch.feature.intentfactory.flags.IntentFlag.getAll;
 
 public class FlagsEditor extends AbstractIntentEditor {
 
+    private TextView textFlags;
+
     public FlagsEditor(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
     protected void bind() {
-        TextView textFlags = activity.findViewById(R.id.intent_flags);
+        textFlags = activity.findViewById(R.id.intent_flags);
         activity.findViewById(R.id.container_intent_flags).setOnClickListener(v -> {
-            showFlagsEdit(textFlags);
+            showFlagsEdit();
         });
+    }
 
+    @Override
+    public void update() {
         textFlags.setText(flagsToString(result.getFlags()));
     }
 
-    private void showFlagsEdit(TextView textFlags) {
+    private void showFlagsEdit() {
         IntentFlag[] allFlags = getAll();
         CharSequence[] items = new CharSequence[allFlags.length];
         boolean[] checked = new boolean[allFlags.length];
@@ -47,8 +52,8 @@ public class FlagsEditor extends AbstractIntentEditor {
                         IntentFlag flag = allFlags[i];
                         newFlags |= checked[i] ? flag.value : 0;
                     }
-                    textFlags.setText(flagsToString(newFlags));
                     result.setFlags(newFlags);
+                    update();
                 })
                 .show();
     }

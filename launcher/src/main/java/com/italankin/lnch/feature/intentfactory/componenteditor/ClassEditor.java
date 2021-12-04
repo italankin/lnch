@@ -9,13 +9,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ClassEditor extends AbstractIntentEditor {
 
+    private TextView textClass;
+
     public ClassEditor(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
     protected void bind() {
-        TextView textClass = activity.findViewById(R.id.intent_class);
+        textClass = activity.findViewById(R.id.intent_class);
         activity.findViewById(R.id.container_intent_class).setOnClickListener(v -> {
             showEdit(textClass, R.string.intent_factory_intent_class, value -> {
                 ComponentName cn = result.getComponent();
@@ -28,5 +30,11 @@ public class ClassEditor extends AbstractIntentEditor {
                 }
             });
         });
+    }
+
+    @Override
+    public void update() {
+        ComponentName cn = result.getComponent();
+        textClass.setText(cn != null ? cn.getClassName() : null);
     }
 }
