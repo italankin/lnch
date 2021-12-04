@@ -76,13 +76,13 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
-        findPreference(R.string.pref_key_misc_shortcuts).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_shortcuts).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showShortcutsPreferences();
             }
             return true;
         });
-        findPreference(R.string.pref_key_misc_notifications).setOnPreferenceClickListener(preference -> {
+        findPreference(R.string.pref_key_notifications).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showNotificationsPreferences();
             }

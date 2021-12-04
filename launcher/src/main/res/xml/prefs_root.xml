@@ -32,11 +32,11 @@
             android:title="@string/settings_apps_list" />
         <Preference
             android:icon="@drawable/ic_settings_shortcuts"
-            android:key="@string/pref_key_misc_shortcuts"
+            android:key="@string/pref_key_shortcuts"
             android:title="@string/settings_home_misc_shortcuts" />
         <Preference
             android:icon="@drawable/ic_settings_notifications"
-            android:key="@string/pref_key_misc_notifications"
+            android:key="@string/pref_key_notifications"
             android:title="@string/settings_home_misc_notifications" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_search">
