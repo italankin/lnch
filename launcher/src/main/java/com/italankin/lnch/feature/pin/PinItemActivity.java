@@ -1,18 +1,19 @@
 package com.italankin.lnch.feature.pin;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.widget.Toast;
 
 import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import timber.log.Timber;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class PinItemActivity extends Activity {
@@ -24,8 +25,8 @@ public class PinItemActivity extends Activity {
             finish();
             return;
         }
-        Parcelable extra = getIntent().getParcelableExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST);
-        PinItemRequest request = extra instanceof PinItemRequest ? (PinItemRequest) extra : null;
+        LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        PinItemRequest request = launcherApps.getPinItemRequest(getIntent());
         if (request != null) {
             switch (request.getRequestType()) {
                 case PinItemRequest.REQUEST_TYPE_SHORTCUT:
@@ -37,11 +38,11 @@ public class PinItemActivity extends Activity {
                         Boolean pinned = LauncherApp.daggerService.main()
                                 .shortcutsRepository()
                                 .pinShortcut(shortcutInfo.getPackage(), shortcutInfo.getId())
+                                .onErrorReturnItem(false)
                                 .blockingGet();
                         if (pinned) {
-                            Timber.d("Shortcut '%s' pinned", shortcutInfo);
-                        } else {
-                            Timber.d("Shortcut '%s' already pinned", shortcutInfo);
+                            String text = getString(R.string.deep_shortcut_pinned, shortcutInfo.getShortLabel());
+                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
                         }
                     }
                     break;
