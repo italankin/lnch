@@ -14,6 +14,7 @@ import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
+import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
@@ -38,7 +39,8 @@ public class SettingsActivity extends AppCompatActivity implements
         WallpaperOverlayFragment.Callbacks,
         LookAndFeelFragment.Callbacks,
         AppsSettingsFragment.Callbacks,
-        AppDetailsFragment.Callbacks {
+        AppDetailsFragment.Callbacks,
+        MiscFragment.Callbacks {
 
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
@@ -171,6 +173,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void onAppDetailsError() {
         fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void showExperimentalPreferences() {
+        showFragment(new ExperimentalSettingsFragment(), R.string.settings_home_misc_experimental);
     }
 
     private void updateToolbar() {

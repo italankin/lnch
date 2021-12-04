@@ -32,4 +32,8 @@
         android:key="expand_notifications"
         android:summary="@string/settings_home_misc_expand_status_bar_summary"
         android:title="@string/settings_home_misc_expand_status_bar" />
+    <Preference
+        android:key="@string/pref_key_misc_experimental"
+        android:summary="@string/settings_home_misc_experimental_summary"
+        android:title="@string/settings_home_misc_experimental" />
 </PreferenceScreen>
