@@ -168,8 +168,9 @@ public class IntentFactoryActivity extends AppCompatActivity {
             return false;
         }
         String action = result.getAction();
-        String packageName = result.getPackage();
-        if ((action == null || action.isEmpty()) && (packageName == null || packageName.isEmpty())) {
+        ComponentName cn = result.getComponent();
+        if ((action == null || action.isEmpty()) &&
+                (cn == null || cn.getPackageName().isEmpty() || cn.getClassName().isEmpty())) {
             Toast.makeText(this, R.string.intent_factory_intent_error_action, Toast.LENGTH_SHORT).show();
             return false;
         }
