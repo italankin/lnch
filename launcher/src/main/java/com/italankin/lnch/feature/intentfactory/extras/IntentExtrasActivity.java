@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.intentfactory.extras;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -29,19 +31,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class IntentExtrasActivity extends AppCompatActivity implements IntentExtrasAdapter.Listener {
-
-    public static Intent intentFromExtras(Context context, Intent intent) {
-        return new Intent(context, IntentExtrasActivity.class)
-                .putExtra(EXTRA_EXTRAS, intent.getExtras());
-    }
-
-    @Nullable
-    public static Bundle getResultExtras(@Nullable Intent data) {
-        if (data == null) {
-            return null;
-        }
-        return data.getBundleExtra(EXTRA_RESULT);
-    }
 
     private static final String EXTRA_EXTRAS = "extras";
     private static final String EXTRA_RESULT = "result";
@@ -182,5 +171,27 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
         Intent data = new Intent().putExtra(EXTRA_RESULT, bundle);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    public static class Contract extends ActivityResultContract<Intent, Bundle> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Intent input) {
+            return new Intent(context, IntentExtrasActivity.class)
+                    .putExtra(EXTRA_EXTRAS, input.getExtras());
+        }
+
+        @Nullable
+        @Override
+        public Bundle parseResult(int resultCode, @Nullable Intent intent) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (intent == null) {
+                    return null;
+                }
+                return intent.getBundleExtra(EXTRA_RESULT);
+            }
+            return null;
+        }
     }
 }

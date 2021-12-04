@@ -33,19 +33,6 @@ public class IntentFlag {
         return FLAGS;
     }
 
-    public static String flagsToString(int flags) {
-        StringBuilder sb = new StringBuilder();
-        for (IntentFlag flag : getAll()) {
-            if ((flags & flag.value) == flag.value) {
-                if (sb.length() > 0) {
-                    sb.append(", ");
-                }
-                sb.append(flag.name);
-            }
-        }
-        return sb.toString();
-    }
-
     public final String name;
     public final int value;
 
