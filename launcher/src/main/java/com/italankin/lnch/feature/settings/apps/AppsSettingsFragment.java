@@ -22,6 +22,7 @@ import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
         AppsSettingsAdapter.Listener,
         FilterFlagsDialogFragment.Listener,
-        AppsSettingsFilter.OnFilterResult {
+        ListFilter.OnFilterResult<AppDescriptorUi> {
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
