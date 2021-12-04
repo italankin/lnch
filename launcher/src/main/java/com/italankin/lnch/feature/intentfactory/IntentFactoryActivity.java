@@ -269,9 +269,11 @@ public class IntentFactoryActivity extends AppCompatActivity {
                 .setItems(items, (dialog, which) -> {
                     IntentAction action = IntentAction.getAll()[which];
                     textAction.setText(action.value);
+                    result.setAction(action.value);
                 })
                 .setNeutralButton(R.string.intent_factory_clear, (dialog, which) -> {
                     textAction.setText(null);
+                    result.setAction(null);
                 })
                 .show();
     }
