@@ -30,7 +30,7 @@ public final class IntentUtils {
         try {
             context.startActivity(intent, null);
             return true;
-        } catch (ActivityNotFoundException e) {
+        } catch (Exception e) {
             Timber.w(e, "safeStartActivity:");
             return false;
         }
