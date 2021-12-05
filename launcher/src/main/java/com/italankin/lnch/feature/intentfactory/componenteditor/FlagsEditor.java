@@ -46,6 +46,10 @@ public class FlagsEditor extends AbstractIntentEditor {
                 .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> {
                     checked[which] = isChecked;
                 })
+                .setNeutralButton(R.string.intent_factory_clear, (dialog, which) -> {
+                    result.setFlags(IntentFlag.DEFAULT_FLAGS);
+                    update();
+                })
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
                     int newFlags = 0;
                     for (int i = 0; i < allFlags.length; i++) {
