@@ -27,7 +27,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
     private boolean visible = true;
 
     public IntentDescriptorUi(IntentDescriptor descriptor) {
-        this.intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
+        this.intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
         this.descriptor = descriptor;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;

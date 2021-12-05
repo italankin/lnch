@@ -479,7 +479,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             for (Descriptor item : items) {
                 if (item.getId().equals(id)) {
                     IntentDescriptor descriptor = (IntentDescriptor) item;
-                    descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME);
+                    descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
                     descriptor.setCustomLabel(label);
                 }
             }

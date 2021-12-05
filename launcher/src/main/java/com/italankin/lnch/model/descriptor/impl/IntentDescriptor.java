@@ -14,6 +14,8 @@ import java.util.UUID;
  */
 public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
+    public static final String EXTRA_CUSTOM_INTENT = "com.italankin.lnch.extra.CUSTOM_INTENT";
+
     public String id;
     public String intentUri;
     public String label;
@@ -30,7 +32,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
 
     public IntentDescriptor(Intent intent, String label, int color) {
         this.id = "intent/" + UUID.randomUUID().toString();
-        this.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME);
+        this.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
         this.label = label;
         this.color = color;
     }

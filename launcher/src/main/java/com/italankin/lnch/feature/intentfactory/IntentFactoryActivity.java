@@ -76,7 +76,8 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
             new ExtrasEditor(this)
     );
 
-    private Intent result = new Intent();
+    // intents without an action will always have ACTION_VIEW as a default anyway
+    private Intent result = new Intent(Intent.ACTION_VIEW);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,8 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         } else {
             intent.putExtra(EXTRA_INTENT, result);
         }
+        result.putExtra(IntentDescriptor.EXTRA_CUSTOM_INTENT, true);
+
         if (intent.hasExtra(EXTRA_LABEL)) {
             textTitle.setText(getIntent().getStringExtra(EXTRA_LABEL));
         }

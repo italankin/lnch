@@ -792,9 +792,11 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         Context context = requireContext();
+        boolean isCustom = intent.getBooleanExtra(IntentDescriptor.EXTRA_CUSTOM_INTENT, false);
         if (preferences.get(Preferences.SEARCH_USE_CUSTOM_TABS)
                 && Intent.ACTION_VIEW.equals(intent.getAction())
-                && intent.getData() != null) {
+                && intent.getData() != null
+                && !isCustom) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                     .setToolbarColor(ResUtils.resolveColor(context, R.attr.colorPrimary))
                     .addDefaultShareMenuItem()
@@ -806,7 +808,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && !isCustom &&
                 LauncherIntents.ACTION_START_SHORTCUT.equals(intent.getAction())) {
             String packageName = intent.getStringExtra(LauncherIntents.EXTRA_PACKAGE_NAME);
             String shortcutId = intent.getStringExtra(LauncherIntents.EXTRA_SHORTCUT_ID);
