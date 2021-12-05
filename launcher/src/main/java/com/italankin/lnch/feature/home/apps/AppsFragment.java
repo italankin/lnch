@@ -280,7 +280,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         } else {
             scrollToTop();
         }
-        return true;
+        return false;
     }
 
     ///////////////////////////////////////////////////////////////////////////
