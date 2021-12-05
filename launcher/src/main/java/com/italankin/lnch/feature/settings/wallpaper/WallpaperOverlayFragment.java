@@ -143,8 +143,7 @@ public class WallpaperOverlayFragment extends AppFragment {
         });
 
         Context context = requireContext();
-        int padding = ResUtils.px2dp(context, preferences.get(Preferences.ITEM_PADDING));
-        ViewUtils.setPadding(itemPreview, padding);
+        ViewUtils.setPaddingDp(itemPreview, preferences.get(Preferences.ITEM_PADDING));
         itemPreview.setTextSize(preferences.get(Preferences.ITEM_TEXT_SIZE));
         Integer shadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
         if (shadowColor == null) {

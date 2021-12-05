@@ -65,8 +65,7 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
     }
 
     protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
-        int padding = ResUtils.px2dp(label.getContext(), itemPrefs.itemPadding);
-        ViewUtils.setPadding(label, padding);
+        ViewUtils.setPaddingDp(label, itemPrefs.itemPadding);
         label.setTextSize(itemPrefs.itemTextSize);
         int shadowColor = itemPrefs.itemShadowColor != null
                 ? itemPrefs.itemShadowColor

@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.util.HashMap;
@@ -331,8 +330,7 @@ public class LceLayout extends FrameLayout {
             super(inflater.getContext());
             setGravity(Gravity.CENTER);
             setOrientation(VERTICAL);
-            int p = ResUtils.px2dp(inflater.getContext(), 32);
-            ViewUtils.setPadding(this, p);
+            ViewUtils.setPaddingDp(this, 32);
             inflater.inflate(R.layout.state_view, this, true);
             text = findViewById(R.id.text);
             button = findViewById(R.id.button);
@@ -366,5 +364,4 @@ public class LceLayout extends FrameLayout {
             layout.showLayer(layer);
         }
     }
-
 }

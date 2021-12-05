@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
@@ -12,6 +13,11 @@ public final class ViewUtils {
 
     public static void setPadding(View view, @Px int value) {
         view.setPaddingRelative(value, value, value, value);
+    }
+
+    public static void setPaddingDp(View view, @Dimension(unit = Dimension.DP) int value) {
+        int pxValue = ResUtils.px2dp(view.getContext(), value);
+        view.setPaddingRelative(pxValue, pxValue, pxValue, pxValue);
     }
 
     public static void setPaddingDimen(View view, @DimenRes int res) {

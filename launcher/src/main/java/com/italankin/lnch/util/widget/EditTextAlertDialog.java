@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.util.ArrayList;
@@ -93,8 +92,7 @@ public final class EditTextAlertDialog {
         public AlertDialog build() {
             LinearLayout layout = new LinearLayout(builder.getContext());
             layout.setOrientation(LinearLayout.VERTICAL);
-            int p = ResUtils.px2dp(builder.getContext(), 16);
-            ViewUtils.setPadding(layout, p);
+            ViewUtils.setPaddingDp(layout, 16);
             layout.addView(editText, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             if (customizeRootActions != null) {

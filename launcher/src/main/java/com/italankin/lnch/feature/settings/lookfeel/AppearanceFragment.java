@@ -349,8 +349,7 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
         int shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
         preview.setTypeface(font.typeface());
-        int p = ResUtils.px2dp(requireContext(), padding);
-        ViewUtils.setPadding(preview, p);
+        ViewUtils.setPaddingDp(preview, padding);
         preview.setTextSize(textSize);
         preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);
     }

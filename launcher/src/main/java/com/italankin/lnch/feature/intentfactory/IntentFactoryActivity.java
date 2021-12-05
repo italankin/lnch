@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
@@ -30,6 +29,7 @@ import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 import java.io.PrintWriter;
@@ -199,8 +199,7 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
                 e.printStackTrace(pw);
             }
             TextView tv = new TextView(this);
-            int p = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-            tv.setPadding(p, p, p, p);
+            ViewUtils.setPaddingDp(tv, 8);
             tv.setTextIsSelectable(true);
             tv.setMovementMethod(ScrollingMovementMethod.getInstance());
             tv.setTextSize(11);
