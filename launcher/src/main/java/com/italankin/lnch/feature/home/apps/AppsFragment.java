@@ -89,6 +89,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -798,8 +799,10 @@ public class AppsFragment extends AppFragment implements AppsView,
                 && intent.getData() != null
                 && !isCustom) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setToolbarColor(ResUtils.resolveColor(context, R.attr.colorPrimary))
-                    .addDefaultShareMenuItem()
+                    .setDefaultColorSchemeParams(new CustomTabColorSchemeParams.Builder()
+                            .setToolbarColor(ResUtils.resolveColor(context, R.attr.colorPrimary))
+                            .build())
+                    .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                     .setShowTitle(true)
                     .build();
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
