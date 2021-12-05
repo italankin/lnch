@@ -36,7 +36,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
         String uri = target.toUri(0);
 
-        String label = name != null ? name : context.getString(R.string.pinned_shortcut_label);
+        String label = name != null ? name : context.getString(R.string.pinned_shortcut_default_label);
         NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
         PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri,
                 nameNormalizer.normalize(label),

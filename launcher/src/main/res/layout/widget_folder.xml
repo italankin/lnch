@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/folder_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/folder_bg"
+    android:clickable="true"
+    android:elevation="8dp"
+    android:focusable="true"
+    android:minWidth="224dp"
+    android:orientation="vertical"
+    android:outlineProvider="background"
+    tools:ignore="UselessParent"
+    tools:minHeight="92dp">
+
+    <TextView
+        android:id="@+id/folder_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textColor="?colorText"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:minHeight="48dp"
+        tools:text="Group Title" />
+
+    <com.italankin.lnch.util.widget.LceLayout
+        android:id="@+id/folder_lce"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/folder_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_app" />
+
+    </com.italankin.lnch.util.widget.LceLayout>
+
+</LinearLayout>
+

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.home.HomePresenter;
 import com.italankin.lnch.feature.home.apps.AppsPresenter;
+import com.italankin.lnch.feature.home.apps.folder.FolderPresenter;
 import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorPresenter;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsPresenter;
@@ -26,6 +27,8 @@ public interface PresenterComponent {
     HomePresenter home();
 
     AppsPresenter apps();
+
+    FolderPresenter folder();
 
     AppsSettingsPresenter appsSettings();
 

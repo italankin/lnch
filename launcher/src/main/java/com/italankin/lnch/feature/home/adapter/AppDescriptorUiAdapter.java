@@ -20,9 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiAdapter.ViewHolder, AppDescriptorUi> {
 
     private final Listener listener;
+    private final boolean ignoreVisibility;
 
     public AppDescriptorUiAdapter(Listener listener) {
+        this(listener, false);
+    }
+
+    public AppDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
         this.listener = listener;
+        this.ignoreVisibility = ignoreVisibility;
     }
 
     @Override
@@ -59,7 +65,7 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof AppDescriptorUi && ((AppDescriptorUi) item).isVisible();
+        return item instanceof AppDescriptorUi && (ignoreVisibility || ((AppDescriptorUi) item).isVisible());
     }
 
     public interface Listener {

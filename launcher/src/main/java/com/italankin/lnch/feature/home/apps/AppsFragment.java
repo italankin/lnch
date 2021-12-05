@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -40,6 +41,7 @@ import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.NotVisibleDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -52,6 +54,7 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -225,6 +228,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         switch (action) {
             case Intent.ACTION_MAIN: {
                 dismissPopup();
+                dismissFolder();
                 if (searchBarBehavior.isShown()) {
                     searchBar.reset();
                     searchBarBehavior.hide();
@@ -234,6 +238,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 return true;
             }
             case LauncherIntents.ACTION_EDIT_MODE: {
+                dismissFolder();
                 if (!editMode) {
                     animateOnResume = false;
                     presenter.startCustomize();
@@ -277,10 +282,12 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
-        } else {
-            scrollToTop();
         }
-        return false;
+        if (dismissFolder()) {
+            return true;
+        }
+        scrollToTop();
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -363,7 +370,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            presenter.toggleExpandableItemState(position, item);
+            showFolder(position, item.getDescriptor());
         }
     }
 
@@ -430,6 +437,19 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
+    private void showFolder(int position, GroupDescriptor descriptor) {
+        Point point = null;
+        View view = list.findViewForAdapterPosition(position);
+        if (view != null) {
+            int[] loc = new int[2];
+            view.getLocationInWindow(loc);
+            point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
+        }
+
+        FolderFragment.newInstance(descriptor, point)
+                .show(getParentFragmentManager(), android.R.id.content);
+    }
+
     private void setEditMode(boolean value) {
         if (editMode == value) {
             return;
@@ -441,14 +461,12 @@ public class AppsFragment extends AppFragment implements AppsView,
             searchBar.hideSoftKeyboard();
             EditModePanel panel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
+                    .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
                         if (this.editModePanel != null && this.editModePanel.isShown()) {
                             presenter.stopCustomize();
                         }
                     });
-            if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
-                panel.setOnAddActionClickListener(this::showEditModeAddPopup);
-            }
             editModePanel = panel.show(coordinator);
         } else if (editModePanel != null) {
             editModePanel.dismiss();
@@ -495,12 +513,11 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         if (item instanceof VisibleDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setLabel(R.string.customize_item_add_group)
-                    .setIcon(R.drawable.ic_action_add_group)
+                    .setLabel(R.string.customize_item_add_to_folder)
+                    .setIcon(R.drawable.ic_action_add_to_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> {
-                        presenter.addGroup(position, getString(R.string.new_group_label),
-                                ResUtils.resolveColor(requireContext(), R.attr.colorGroupTitleDefault));
+                        presenter.showGroupSelect((VisibleDescriptorUi) item);
                     })
             );
         }
@@ -515,16 +532,22 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showEditModeAddPopup(View anchor) {
-        if (!preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
-            return;
-        }
         Context context = requireContext();
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso)
-                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                        .setLabel(R.string.edit_add_intent)
-                        .setOnClickListener(v -> {
-                            createIntentLauncher.launch(null);
-                        }));
+        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
+        popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                .setLabel(R.string.edit_add_folder)
+                .setOnClickListener(v -> {
+                    String label = getString(R.string.new_folder_default_label);
+                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorGroupTitleDefault);
+                    presenter.addGroup(label, color);
+                }));
+        if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                    .setLabel(R.string.edit_add_intent)
+                    .setOnClickListener(v -> {
+                        createIntentLauncher.launch(null);
+                    }));
+        }
         showPopupWindow(popup, anchor);
     }
 
@@ -786,6 +809,27 @@ public class AppsFragment extends AppFragment implements AppsView,
         showPopupWindow(popup, view);
     }
 
+    @Override
+    public void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> descriptors) {
+        if (descriptors.isEmpty()) {
+            showError(R.string.folder_select_no_folders);
+            return;
+        }
+        CharSequence[] items = new CharSequence[descriptors.size()];
+        for (int i = 0; i < descriptors.size(); i++) {
+            items[i] = descriptors.get(i).getVisibleLabel();
+        }
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.customize_item_select_folder)
+                .setItems(items, (dialog, which) -> {
+                    GroupDescriptor selected = descriptors.get(which);
+                    presenter.addToGroup(selected.getId(), item);
+                    String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
+                    Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Handle intents
     ///////////////////////////////////////////////////////////////////////////
@@ -867,6 +911,13 @@ public class AppsFragment extends AppFragment implements AppsView,
             popupWindow.dismiss();
             popupWindow = null;
             return true;
+        }
+        return false;
+    }
+
+    private boolean dismissFolder() {
+        if (!getParentFragmentManager().isStateSaved()) {
+            return FolderFragment.dismiss(getParentFragmentManager());
         }
         return false;
     }

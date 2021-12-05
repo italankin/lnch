@@ -4,10 +4,12 @@ import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * A home screen separator
+ * A home screen folder
  */
 public final class GroupDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
@@ -16,6 +18,7 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
     public String customLabel;
     public int color;
     public Integer customColor;
+    public final List<String> items = new ArrayList<>(4);
 
     public GroupDescriptor() {
     }
@@ -91,6 +94,7 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
         copy.customLabel = customLabel;
         copy.color = color;
         copy.customColor = customColor;
+        copy.items.addAll(items);
         return copy;
     }
 }

@@ -37,6 +37,13 @@ public final class IntentUtils {
     }
 
     public static boolean safeStartMainActivity(Context context, @Nullable ComponentName componentName,
+            @Nullable View boundsView) {
+        Rect bounds = ViewUtils.getViewBounds(boundsView);
+        Bundle opts = IntentUtils.getActivityLaunchOptions(boundsView, bounds);
+        return IntentUtils.safeStartMainActivity(context, componentName, bounds, opts);
+    }
+
+    public static boolean safeStartMainActivity(Context context, @Nullable ComponentName componentName,
             @Nullable Rect bounds, @Nullable Bundle opts) {
         if (componentName == null) {
             return false;

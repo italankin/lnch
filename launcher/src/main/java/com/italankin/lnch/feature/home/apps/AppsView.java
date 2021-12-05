@@ -7,7 +7,9 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
+import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.List;
@@ -31,6 +33,9 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showAppPopup(int position, AppDescriptorUi item, List<Shortcut> shortcuts);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> groups);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

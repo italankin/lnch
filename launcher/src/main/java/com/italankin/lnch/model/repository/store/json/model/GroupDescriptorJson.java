@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 
+import java.util.List;
+
 import androidx.annotation.Keep;
 
 public final class GroupDescriptorJson implements DescriptorJson {
@@ -29,6 +31,9 @@ public final class GroupDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("items")
+    public List<String> items;
+
     @Keep
     public GroupDescriptorJson() {
     }
@@ -39,6 +44,7 @@ public final class GroupDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.items = descriptor.items;
     }
 
     @Override
@@ -49,6 +55,9 @@ public final class GroupDescriptorJson implements DescriptorJson {
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
+        if (items != null) {
+            descriptor.items.addAll(items);
+        }
         return descriptor;
     }
 }

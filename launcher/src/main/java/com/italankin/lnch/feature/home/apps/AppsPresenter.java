@@ -139,11 +139,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemChanged(position);
     }
 
-    void addGroup(int position, String label, @ColorInt int color) {
+    void addGroup(String label, @ColorInt int color) {
         GroupDescriptor item = new GroupDescriptor(label, color);
-        editor.enqueue(new AddAction(position, item));
-        items.add(position, new GroupDescriptorUi(item));
-        getViewState().onItemInserted(position);
+        editor.enqueue(new AddAction(item));
+        items.add(new GroupDescriptorUi(item));
+        getViewState().onItemInserted(items.size() - 1);
+    }
+
+    void addToGroup(String groupId, VisibleDescriptorUi item) {
+        editor.enqueue(new AddToGroupAction(groupId, item.getDescriptor()));
     }
 
     void addIntent(IntentDescriptor item) {
@@ -187,6 +191,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor = null;
         getViewState().onChangesDiscarded();
         update();
+    }
+
+    void showGroupSelect(VisibleDescriptorUi item) {
+        List<GroupDescriptor> groups = new ArrayList<>(4);
+        for (DescriptorUi descriptor : items) {
+            if (descriptor instanceof GroupDescriptorUi) {
+                groups.add(((GroupDescriptorUi) descriptor).getDescriptor());
+            }
+        }
+        getViewState().showSelectFolderDialog(item, groups);
     }
 
     void stopCustomize() {
@@ -490,6 +504,26 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     IntentDescriptor descriptor = (IntentDescriptor) item;
                     descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
                     descriptor.setCustomLabel(label);
+                }
+            }
+        }
+    }
+
+    private static class AddToGroupAction implements DescriptorRepository.Editor.Action {
+
+        private final String groupId;
+        private final Descriptor item;
+
+        private AddToGroupAction(String groupId, Descriptor item) {
+            this.groupId = groupId;
+            this.item = item;
+        }
+
+        @Override
+        public void apply(List<Descriptor> items) {
+            for (Descriptor descriptor : items) {
+                if (descriptor instanceof GroupDescriptor && descriptor.getId().equals(groupId)) {
+                    ((GroupDescriptor) descriptor).items.add(item.getId());
                 }
             }
         }

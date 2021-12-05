@@ -103,6 +103,9 @@ public class HomeActivity extends AppActivity implements HomeView, AppsFragment.
             handled = ((BackButtonHandler) fragment).onBackPressed();
         }
         if (!handled) {
+            if (getSupportFragmentManager().popBackStackImmediate()) {
+                return;
+            }
             int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
             if (currentItem != appsPosition) {
                 pager.setCurrentItem(appsPosition, true);

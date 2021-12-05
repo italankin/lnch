@@ -21,6 +21,9 @@
     <!-- background color of the popup actions container -->
     <attr name="colorPopupActionsBackground" format="color|reference" />
 
+    <!-- background color of folder popup-->
+    <attr name="colorFolderBackground" format="color|reference" />
+
     <!-- default item shadow -->
     <attr name="colorItemShadowDefault" format="color|reference" />
 
