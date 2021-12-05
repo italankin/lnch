@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IntentFlag {
+    public static final int DEFAULT_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK;
+
     private static IntentFlag[] FLAGS;
 
     public static IntentFlag[] getAll() {

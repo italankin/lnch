@@ -26,6 +26,7 @@ import com.italankin.lnch.feature.intentfactory.componenteditor.FlagsEditor;
 import com.italankin.lnch.feature.intentfactory.componenteditor.IntentEditor;
 import com.italankin.lnch.feature.intentfactory.componenteditor.PackageEditor;
 import com.italankin.lnch.feature.intentfactory.componenteditor.TypeEditor;
+import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
@@ -77,7 +78,8 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
     );
 
     // intents without an action will always have ACTION_VIEW as a default anyway
-    private Intent result = new Intent(Intent.ACTION_VIEW);
+    private Intent result = new Intent(Intent.ACTION_VIEW)
+            .setFlags(IntentFlag.DEFAULT_FLAGS);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
