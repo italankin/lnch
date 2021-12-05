@@ -14,7 +14,6 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RunnableAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
@@ -22,13 +21,11 @@ import com.italankin.lnch.model.repository.notifications.NotificationDot;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
-import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.ExpandableDescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
@@ -67,7 +64,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private final ShortcutsRepository shortcutsRepository;
     private final NotificationsRepository notificationsRepository;
     private final Preferences preferences;
-    private final SeparatorState separatorState;
     /**
      * View commands will dispatch this instance on every state restore, so any changes
      * made to this list will be visible to new views.
@@ -77,12 +73,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @Inject
     AppsPresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
-            NotificationsRepository notificationsRepository, Preferences preferences, SeparatorState separatorState) {
+            NotificationsRepository notificationsRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.notificationsRepository = notificationsRepository;
         this.preferences = preferences;
-        this.separatorState = separatorState;
     }
 
     @Override
@@ -96,21 +91,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void toggleExpandableItemState(int position, ExpandableDescriptorUi item) {
-        setItemExpanded(items, position, !item.isExpanded(), true);
-    }
-
     void startCustomize() {
         if (editor != null) {
             throw new IllegalStateException("Editor is not null!");
         }
         editor = descriptorRepository.edit();
-        for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorUi item = items.get(i);
-            if (item instanceof ExpandableDescriptorUi) {
-                setItemExpanded(items, i, true, true);
-            }
-        }
         getViewState().onStartCustomize();
     }
 
@@ -172,9 +157,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     void removeItem(int position, DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
         editor.enqueue(new RemoveAction(descriptor));
-        if (item instanceof ExpandableDescriptorUi) {
-            editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
-        }
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
@@ -293,9 +275,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         Descriptor descriptor = item.getDescriptor();
         DescriptorRepository.Editor editor = descriptorRepository.edit();
         editor.enqueue(new RemoveAction(descriptor));
-        if (descriptor instanceof GroupDescriptor) {
-            editor.enqueue(new RunnableAction(() -> separatorState.remove(descriptor.getId())));
-        }
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
@@ -363,8 +342,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private Observable<Update> observeApps() {
         Observable<List<DescriptorUi>> observeApps = descriptorRepository.observe()
-                .map(DescriptorUiFactory::createItems)
-                .doOnNext(this::restoreGroupsState);
+                .map(DescriptorUiFactory::createItems);
         return Observable.combineLatest(observeApps, observeNotifications(), this::concatNotifications)
                 .scan(Update.EMPTY, this::calculateUpdates)
                 .skip(1); // skip empty update
@@ -412,17 +390,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .distinctUntilChanged();
     }
 
-    private void restoreGroupsState(List<DescriptorUi> items) {
-        for (int i = 0, size = items.size(); i < size; i++) {
-            DescriptorUi item = items.get(i);
-            if (item instanceof ExpandableDescriptorUi) {
-                ExpandableDescriptorUi expandable = (ExpandableDescriptorUi) item;
-                String id = expandable.getDescriptor().getId();
-                setItemExpanded(items, i, separatorState.isExpanded(id), false);
-            }
-        }
-    }
-
     private Update calculateUpdates(Update previous, List<DescriptorUi> newItems) {
         DescriptorUiDiffCallback callback = new DescriptorUiDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
@@ -444,45 +411,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             }
         }
         return result;
-    }
-
-    private void setItemExpanded(List<DescriptorUi> items, int position, boolean expanded, boolean notify) {
-        ExpandableDescriptorUi item = (ExpandableDescriptorUi) items.get(position);
-        if (expanded == item.isExpanded()) {
-            return;
-        }
-        int startIndex = position + 1;
-        int endIndex = findNextExpandableItemIndex(items, startIndex);
-        if (endIndex < 0) {
-            endIndex = items.size();
-        }
-        int count = endIndex - startIndex;
-        if (count <= 0) {
-            return;
-        }
-        item.setExpanded(expanded);
-        separatorState.setExpanded(item.getDescriptor().getId(), expanded);
-        for (int i = startIndex; i < endIndex; i++) {
-            VisibleDescriptorUi visibleItem = (VisibleDescriptorUi) items.get(i);
-            visibleItem.setVisible(expanded);
-        }
-        if (!notify) {
-            return;
-        }
-        if (expanded) {
-            getViewState().onItemsInserted(startIndex, count);
-        } else {
-            getViewState().onItemsRemoved(startIndex, count);
-        }
-    }
-
-    private static int findNextExpandableItemIndex(List<DescriptorUi> items, int startPosition) {
-        for (int i = startPosition; i < items.size(); i++) {
-            if (items.get(i) instanceof ExpandableDescriptorUi) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     private static class EditIntentAction implements DescriptorRepository.Editor.Action {

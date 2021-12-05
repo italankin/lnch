@@ -15,7 +15,6 @@ import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
 import com.italankin.lnch.feature.widgets.WidgetsPresenter;
 import com.italankin.lnch.model.backup.BackupReader;
 import com.italankin.lnch.model.backup.BackupWriter;
-import com.italankin.lnch.model.repository.prefs.SeparatorState;
 import com.italankin.lnch.model.repository.prefs.WidgetsState;
 
 import dagger.Component;
@@ -47,8 +46,6 @@ public interface PresenterComponent {
     interface Dependencies {
 
         Context getContext();
-
-        SeparatorState getSeparatorState();
 
         WidgetsState getWidgetsState();
 

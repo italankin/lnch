@@ -15,8 +15,6 @@ import com.italankin.lnch.model.repository.descriptor.apps.LauncherDescriptorRep
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepositoryImpl;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.prefs.SeparatorState;
-import com.italankin.lnch.model.repository.prefs.SeparatorStateImpl;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.prefs.WidgetsState;
 import com.italankin.lnch.model.repository.prefs.WidgetsStateImpl;
@@ -132,12 +130,6 @@ public class MainModule {
         } else {
             return new BackportShortcutsRepository(context, descriptorRepository, nameNormalizer);
         }
-    }
-
-    @Provides
-    @Singleton
-    SeparatorState provideSeparatorState(Context context) {
-        return new SeparatorStateImpl(context);
     }
 
     @Provides
