@@ -10,7 +10,6 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.ui.VisibleDescriptorUi;
-import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.List;
 
@@ -30,9 +29,6 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showError(Throwable e);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void showAppPopup(int position, AppDescriptorUi item, List<Shortcut> shortcuts);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> groups);
@@ -56,9 +52,6 @@ interface AppsView extends MvpView {
     void onShortcutAlreadyPinnedError(Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void startShortcut(int position, Shortcut shortcut);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsSwap(int from, int to);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -72,10 +65,4 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemsRemoved(int startIndex, int count);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onShortcutNotFound();
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onShortcutDisabled(CharSequence disabledMessage);
 }

@@ -18,4 +18,10 @@ interface FolderView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onError(Throwable error);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutPinned(Shortcut shortcut);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShortcutAlreadyPinnedError(Shortcut shortcut);
 }

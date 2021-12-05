@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-public class HomeActivity extends AppActivity implements HomeView, AppsFragment.Callbacks {
+public class HomeActivity extends AppActivity implements HomeView {
 
     @InjectPresenter
     HomePresenter presenter;

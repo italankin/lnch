@@ -20,22 +20,20 @@ import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
 import com.italankin.lnch.model.repository.notifications.NotificationDot;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.prefs.Preferences.ShortcutsSortMode;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 import com.italankin.lnch.util.ListUtils;
-import com.italankin.lnch.util.NumberUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -207,22 +205,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor = null;
     }
 
-    void showAppPopup(int position, AppDescriptorUi item) {
-        List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
-        getViewState().showAppPopup(position, item, processShortcuts(shortcuts));
-    }
-
-    void updateShortcuts(AppDescriptor descriptor) {
-        shortcutsRepository.loadShortcuts(descriptor)
-                .subscribeOn(Schedulers.io())
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("Shortcuts updated for id=%s", descriptor.getId());
-                    }
-                });
-    }
-
     void pinShortcut(Shortcut shortcut) {
         shortcutsRepository.pinShortcut(shortcut)
                 .subscribeOn(Schedulers.io())
@@ -258,20 +240,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    void startShortcut(int position, DeepShortcutDescriptorUi item) {
-        Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
-        if (shortcut != null) {
-            if (shortcut.isEnabled()) {
-                getViewState().startShortcut(position, shortcut);
-            } else {
-                getViewState().onShortcutDisabled(shortcut.getDisabledMessage());
-            }
-        } else {
-            getViewState().onShortcutNotFound();
-        }
-    }
-
-    void removeItemImmediate(DescriptorUi item) {
+    void removeItemImmediate(RemovableDescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
         DescriptorRepository.Editor editor = descriptorRepository.edit();
         editor.enqueue(new RemoveAction(descriptor));
@@ -394,23 +363,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         DescriptorUiDiffCallback callback = new DescriptorUiDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
         return new Update(newItems, diffResult);
-    }
-
-    private List<Shortcut> processShortcuts(List<Shortcut> shortcuts) {
-        if (preferences.get(Preferences.SHORTCUTS_SORT_MODE) == ShortcutsSortMode.REVERSED) {
-            shortcuts = ListUtils.reversedCopy(shortcuts);
-        }
-        int max = NumberUtils.parseInt(preferences.get(Preferences.MAX_DYNAMIC_SHORTCUTS), -1);
-        if (max < 0 || shortcuts.size() <= max) {
-            return shortcuts;
-        }
-        List<Shortcut> result = new ArrayList<>(shortcuts.size());
-        for (Shortcut shortcut : shortcuts) {
-            if (!shortcut.isDynamic() || max-- > 0) {
-                result.add(shortcut);
-            }
-        }
-        return result;
     }
 
     private static class EditIntentAction implements DescriptorRepository.Editor.Action {

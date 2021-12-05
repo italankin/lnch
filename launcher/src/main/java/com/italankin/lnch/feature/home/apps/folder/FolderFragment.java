@@ -1,7 +1,7 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
-import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,31 +19,52 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.PopupDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PopupDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
-import com.italankin.lnch.util.DescriptorUtils;
-import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,6 +98,13 @@ public class FolderFragment extends AppFragment implements FolderView,
 
     private RecyclerView list;
     private int backstackId = -1;
+    private AppClickDelegate appClickDelegate;
+    private PopupDelegate popupDelegate;
+    private ErrorDelegate errorDelegate;
+    private ShortcutStarterDelegate shortcutStarterDelegate;
+    private PinnedShortcutClickDelegate pinnedShortcutClickDelegate;
+    private DeepShortcutClickDelegate deepShortcutClickDelegate;
+    private IntentClickDelegate intentClickDelegate;
 
     public static boolean dismiss(FragmentManager fragmentManager) {
         if (fragmentManager.findFragmentByTag(TAG) != null) {
@@ -126,6 +154,10 @@ public class FolderFragment extends AppFragment implements FolderView,
         presenter.loadFolder(descriptorId);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // View state
+    ///////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onShowFolder(GroupDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
         Context context = requireContext();
@@ -161,61 +193,139 @@ public class FolderFragment extends AppFragment implements FolderView,
             lce.showContent();
         }
 
+        initDelegates(context);
+
         animateAppearance(folderView);
+    }
+
+    private void initDelegates(Context context) {
+        ShortcutsRepository shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+        Preferences preferences = LauncherApp.daggerService.main().preferences();
+
+        popupDelegate = new PopupDelegateImpl(list);
+        errorDelegate = new ErrorDelegateImpl(context) {
+            @Override
+            public void showError(CharSequence message) {
+                super.showError(message);
+                dismiss();
+            }
+        };
+        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        ItemPopupDelegate itemPopupDelegate = new ItemPopupDelegateImpl(context, picasso, popupDelegate) {
+            @Override
+            protected void removeItemImmediate(RemovableDescriptorUi item) {
+                presenter.removeItemImmediate(item);
+                dismiss();
+            }
+        };
+        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate) {
+            @Override
+            public void startCustomize() {
+                startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
+                dismiss();
+            }
+        };
+        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
+        deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate,
+                itemPopupDelegate, shortcutsRepository);
+        SearchIntentStarterDelegate searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context,
+                preferences, errorDelegate) {
+            @Override
+            protected void startCustomize() {
+                startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
+                dismiss();
+            }
+        };
+        intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
+        appClickDelegate = new AppClickDelegateImpl(context, picasso, errorDelegate, popupDelegate,
+                shortcutStarterDelegate, preferences, shortcutsRepository) {
+            @Override
+            protected void pinShortcut(Shortcut shortcut) {
+                presenter.pinShortcut(shortcut);
+            }
+        };
     }
 
     @Override
     public void onError(Throwable error) {
-        showError(error.getMessage());
+        errorDelegate.showError(error.getMessage());
     }
 
     @Override
+    public void onShortcutPinned(Shortcut shortcut) {
+        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onShortcutAlreadyPinnedError(Shortcut shortcut) {
+        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Clicks
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
     public void onAppClick(int position, AppDescriptorUi item) {
-        ComponentName componentName = DescriptorUtils.getComponentName(requireContext(), item.getDescriptor());
-        if (componentName != null) {
-            View boundsView = findViewByPosition(position);
-            if (IntentUtils.safeStartMainActivity(requireContext(), componentName, boundsView)) {
-                dismiss();
-                return;
-            }
-        }
-        showError(R.string.error);
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        appClickDelegate.onAppClick(item, view);
+        dismiss();
     }
 
     @Override
     public void onAppLongClick(int position, AppDescriptorUi item) {
-        // TODO
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        appClickDelegate.onAppLongClick(item, view);
     }
 
     @Override
     public void onDeepShortcutClick(int position, DeepShortcutDescriptorUi item) {
-        // TODO
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        deepShortcutClickDelegate.onDeepShortcutClick(item, view);
+        dismiss();
     }
 
     @Override
     public void onDeepShortcutLongClick(int position, DeepShortcutDescriptorUi item) {
-        // TODO
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        deepShortcutClickDelegate.onDeepShortcutLongClick(item, view);
     }
 
     @Override
     public void onIntentClick(int position, IntentDescriptorUi item) {
-        // TODO
+        intentClickDelegate.onIntentClick(item);
+        dismiss();
     }
 
     @Override
     public void onIntentLongClick(int position, IntentDescriptorUi item) {
-        // TODO
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        intentClickDelegate.onIntentLongClick(item, view);
     }
 
     @Override
     public void onPinnedShortcutClick(int position, PinnedShortcutDescriptorUi item) {
-        // TODO
+        pinnedShortcutClickDelegate.onPinnedShortcutClick(item);
+        dismiss();
     }
 
     @Override
     public void onPinnedShortcutLongClick(int position, PinnedShortcutDescriptorUi item) {
-        // TODO
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        View view = holder != null ? holder.itemView : null;
+        pinnedShortcutClickDelegate.onPinnedShortcutLongClick(item, view);
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Other
+    ///////////////////////////////////////////////////////////////////////////
 
     public void show(FragmentManager fragmentManager, @IdRes int containerId) {
         backstackId = fragmentManager.beginTransaction()
@@ -231,21 +341,6 @@ public class FolderFragment extends AppFragment implements FolderView,
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
         }
-    }
-
-    @Nullable
-    private View findViewByPosition(int position) {
-        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
-        return holder != null ? holder.itemView : null;
-    }
-
-    private void showError(@StringRes int message) {
-        showError(getString(message));
-    }
-
-    private void showError(CharSequence message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-        dismiss();
     }
 
     private void animateAppearance(View folderView) {

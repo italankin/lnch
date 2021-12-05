@@ -13,14 +13,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -31,7 +29,6 @@ import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
-import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
@@ -41,6 +38,24 @@ import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.NotVisibleDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.PopupDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PopupDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
@@ -61,6 +76,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -90,10 +106,7 @@ import java.util.List;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabColorSchemeParams;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -123,7 +136,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     private SearchBar searchBar;
     private CoordinatorLayout coordinator;
 
-    private PopupWindow popupWindow;
     private SearchBarBehavior searchBarBehavior;
 
     private ItemTouchHelper touchHelper;
@@ -132,7 +144,15 @@ public class AppsFragment extends AppFragment implements AppsView,
     private boolean animateOnResume;
     private boolean editMode;
 
-    private Callbacks callbacks;
+    private AppClickDelegate appClickDelegate;
+    private PopupDelegate popupDelegate;
+    private ErrorDelegate errorDelegate;
+    private ShortcutStarterDelegate shortcutStarterDelegate;
+    private ItemPopupDelegate itemPopupDelegate;
+    private PinnedShortcutClickDelegate pinnedShortcutClickDelegate;
+    private DeepShortcutClickDelegate deepShortcutClickDelegate;
+    private IntentClickDelegate intentClickDelegate;
+    private SearchIntentStarterDelegate searchIntentStarterDelegate;
 
     private final ActivityResultLauncher<Void> createIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.CreateContract(),
@@ -153,7 +173,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         preferences = LauncherApp.daggerService.main().preferences();
         picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
-        callbacks = (Callbacks) context;
     }
 
     @Override
@@ -176,12 +195,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void onPause() {
         super.onPause();
         searchBarBehavior.hide();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     public void onRestart() {
@@ -210,7 +223,45 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         registerWindowInsets(view);
 
+        initDelegates(requireContext());
+
         intentQueue.registerOnIntentAction(this);
+    }
+
+    private void initDelegates(Context context) {
+        ShortcutsRepository shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+
+        popupDelegate = new PopupDelegateImpl(list);
+        errorDelegate = new ErrorDelegateImpl(context);
+        itemPopupDelegate = new ItemPopupDelegateImpl(context, picasso, popupDelegate) {
+            @Override
+            protected void removeItemImmediate(RemovableDescriptorUi item) {
+                presenter.removeItemImmediate(item);
+            }
+        };
+        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate) {
+            @Override
+            public void startCustomize() {
+                presenter.startCustomize();
+            }
+        };
+        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
+        deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate,
+                itemPopupDelegate, shortcutsRepository);
+        searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context, preferences, errorDelegate) {
+            @Override
+            protected void startCustomize() {
+                presenter.startCustomize();
+            }
+        };
+        intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
+        appClickDelegate = new AppClickDelegateImpl(context, picasso, errorDelegate, popupDelegate,
+                shortcutStarterDelegate, preferences, shortcutsRepository) {
+            @Override
+            protected void pinShortcut(Shortcut shortcut) {
+                presenter.pinShortcut(shortcut);
+            }
+        };
     }
 
     @Override
@@ -227,7 +278,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         switch (action) {
             case Intent.ACTION_MAIN: {
-                dismissPopup();
+                popupDelegate.dismissPopup();
                 dismissFolder();
                 if (searchBarBehavior.isShown()) {
                     searchBar.reset();
@@ -273,7 +324,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public boolean onBackPressed() {
-        if (dismissPopup()) {
+        if (popupDelegate.dismissPopup()) {
             return true;
         }
         if (editMode) {
@@ -294,18 +345,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Start
     ///////////////////////////////////////////////////////////////////////////
 
-    private void startApp(int position, AppDescriptorUi item) {
-        searchBarBehavior.hide();
-        ComponentName componentName = DescriptorUtils.getComponentName(requireContext(), item.getDescriptor());
-        if (componentName != null) {
-            View view = list.findViewForAdapterPosition(position);
-            if (startAppActivity(componentName, view)) {
-                return;
-            }
-        }
-        showError(R.string.error);
-    }
-
     private boolean startAppActivity(ComponentName componentName, View view) {
         Rect bounds = ViewUtils.getViewBounds(view);
         Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
@@ -320,20 +359,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         startAppActivity(SettingsActivity.getComponentName(requireContext()), view);
     }
 
-    private void startAppUninstall(AppDescriptorUi item) {
-        Intent intent = PackageUtils.getUninstallIntent(item.packageName);
-        if (!IntentUtils.safeStartActivity(requireContext(), intent)) {
-            showError(R.string.error);
-        }
-    }
-
-    private void startShortcut(PinnedShortcutDescriptorUi item) {
-        Intent intent = IntentUtils.fromUri(item.uri);
-        if (!IntentUtils.safeStartActivity(requireContext(), intent)) {
-            showError(R.string.error);
-        }
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // Adapter callbacks
     ///////////////////////////////////////////////////////////////////////////
@@ -343,7 +368,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            startApp(position, item);
+            View view = list.findViewForAdapterPosition(position);
+            appClickDelegate.onAppClick(item, view);
         }
     }
 
@@ -352,16 +378,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             startDrag(position);
         } else {
-            switch (preferences.get(Preferences.APP_LONG_CLICK_ACTION)) {
-                case INFO:
-                    View view = list.findViewForAdapterPosition(position);
-                    startAppSettings(item.packageName, view);
-                    break;
-                case POPUP:
-                default:
-                    presenter.showAppPopup(position, item);
-                    break;
-            }
+            View view = list.findViewForAdapterPosition(position);
+            appClickDelegate.onAppLongClick(item, view);
         }
     }
 
@@ -379,7 +397,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             startDrag(position);
         } else {
-            showItemPopup(position, item);
+            View anchor = list.findViewForAdapterPosition(position);
+            itemPopupDelegate.showItemPopup(item, anchor);
         }
     }
 
@@ -388,7 +407,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            startShortcut(item);
+            pinnedShortcutClickDelegate.onPinnedShortcutClick(item);
         }
     }
 
@@ -397,7 +416,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             startDrag(position);
         } else {
-            showItemPopup(position, item);
+            View view = list.findViewForAdapterPosition(position);
+            pinnedShortcutClickDelegate.onPinnedShortcutLongClick(item, view);
         }
     }
 
@@ -406,7 +426,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            presenter.startShortcut(position, item);
+            View view = list.findViewForAdapterPosition(position);
+            deepShortcutClickDelegate.onDeepShortcutClick(item, view);
         }
     }
 
@@ -415,7 +436,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             startDrag(position);
         } else {
-            showItemPopup(position, item);
+            View view = list.findViewForAdapterPosition(position);
+            deepShortcutClickDelegate.onDeepShortcutLongClick(item, view);
         }
     }
 
@@ -424,7 +446,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
-            handleSearchIntent(item.intent);
+            intentClickDelegate.onIntentClick(item);
         }
     }
 
@@ -433,7 +455,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (editMode) {
             startDrag(position);
         } else {
-            showItemPopup(position, item);
+            View view = list.findViewForAdapterPosition(position);
+            intentClickDelegate.onIntentLongClick(item, view);
         }
     }
 
@@ -458,6 +481,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!value);
         if (value) {
+            dismissFolder();
+            popupDelegate.dismissPopup();
             searchBar.hideSoftKeyboard();
             EditModePanel panel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
@@ -528,7 +553,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             );
         }
         View view = list.findViewForAdapterPosition(position);
-        showPopupWindow(popup, view);
+        popupDelegate.showPopupWindow(popup, view);
     }
 
     private void showEditModeAddPopup(View anchor) {
@@ -548,7 +573,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                         createIntentLauncher.launch(null);
                     }));
         }
-        showPopupWindow(popup, anchor);
+        popupDelegate.showPopupWindow(popup, anchor);
     }
 
     private void onNewIntentCreated(@Nullable IntentFactoryResult result) {
@@ -614,42 +639,6 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .show();
     }
 
-    private void showItemPopup(int position, DescriptorUi item) {
-        Context context = requireContext();
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (item instanceof DeepShortcutDescriptorUi) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setIcon(R.drawable.ic_app_info)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setLabel(R.string.popup_app_info)
-                    .setOnClickListener(v -> {
-                        startAppSettings(((DeepShortcutDescriptorUi) item).packageName, v);
-                    })
-            );
-        }
-        if (item instanceof RemovableDescriptorUi) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setIcon(R.drawable.ic_action_delete)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setLabel(R.string.customize_item_delete)
-                    .setOnClickListener(v -> {
-                        String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
-                        String message = getString(R.string.popup_delete_message, visibleLabel);
-                        new AlertDialog.Builder(requireContext())
-                                .setTitle(R.string.popup_delete_title)
-                                .setMessage(message)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
-                                    presenter.removeItemImmediate(item);
-                                })
-                                .show();
-                    })
-            );
-        }
-        View view = list.findViewForAdapterPosition(position);
-        showPopupWindow(popup, view);
-    }
-
     @Override
     public void showProgress() {
         lce.showLoading();
@@ -693,23 +682,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void startShortcut(int position, Shortcut shortcut) {
-        if (handleCustomizeShortcut(shortcut.getPackageName(), shortcut.getId())) {
-            return;
-        }
-        if (!shortcut.isEnabled()) {
-            onShortcutDisabled(shortcut.getDisabledMessage());
-            return;
-        }
-        View view = list.findViewForAdapterPosition(position);
-        Rect bounds = ViewUtils.getViewBounds(view);
-        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
-        if (!shortcut.start(bounds, opts)) {
-            showError(R.string.error);
-        }
-    }
-
-    @Override
     public void onItemsSwap(int from, int to) {
         adapter.notifyItemMoved(from, to);
     }
@@ -737,19 +709,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onShortcutNotFound() {
-        showError(R.string.error_shortcut_not_found);
-    }
-
-    @Override
-    public void onShortcutDisabled(CharSequence disabledMessage) {
-        CharSequence message = TextUtils.isEmpty(disabledMessage)
-                ? getText(R.string.error_shortcut_disabled)
-                : disabledMessage;
-        showErrorToast(message);
-    }
-
-    @Override
     public void onReceiveUpdateError(Throwable e) {
         lce.error()
                 .button(v -> presenter.reloadApps())
@@ -758,61 +717,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showAppPopup(int position, AppDescriptorUi item, List<Shortcut> shortcuts) {
-        Context context = requireContext();
-        boolean uninstallAvailable = !PackageUtils.isSystem(context.getPackageManager(), item.packageName);
-        ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(context)
-                .setLabel(R.string.popup_app_info)
-                .setIcon(R.drawable.ic_app_info)
-                .setOnClickListener(v -> startAppSettings(item.packageName, v));
-        ActionPopupWindow.ItemBuilder uninstallItem = new ActionPopupWindow.ItemBuilder(context)
-                .setLabel(R.string.popup_app_uninstall)
-                .setIcon(R.drawable.ic_action_delete)
-                .setOnClickListener(v -> startAppUninstall(item));
-
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (shortcuts.isEmpty()) {
-            popup.addShortcut(infoItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            if (uninstallAvailable) {
-                popup.addShortcut(uninstallItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            }
-        } else {
-            popup.addAction(infoItem);
-            if (uninstallAvailable) {
-                popup.addAction(uninstallItem);
-            }
-            for (Shortcut shortcut : shortcuts) {
-                popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                        .setLabel(shortcut.getShortLabel())
-                        .setIcon(shortcut.getIconUri())
-                        .setEnabled(shortcut.isEnabled())
-                        .setOnClickListener(v -> {
-                            if (handleCustomizeShortcut(shortcut.getPackageName(), shortcut.getId())) {
-                                return;
-                            }
-                            if (!shortcut.isEnabled()) {
-                                onShortcutDisabled(shortcut.getDisabledMessage());
-                            } else {
-                                Rect bounds = ViewUtils.getViewBounds(v);
-                                Bundle opts = IntentUtils.getActivityLaunchOptions(v, bounds);
-                                if (!shortcut.start(bounds, opts)) {
-                                    showError(R.string.error);
-                                    presenter.updateShortcuts(item.getDescriptor());
-                                }
-                            }
-                        })
-                        .setOnPinClickListener(v -> presenter.pinShortcut(shortcut))
-                );
-            }
-        }
-        View view = list.findViewForAdapterPosition(position);
-        showPopupWindow(popup, view);
-    }
-
-    @Override
     public void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> descriptors) {
         if (descriptors.isEmpty()) {
-            showError(R.string.folder_select_no_folders);
+            errorDelegate.showError(R.string.folder_select_no_folders);
             return;
         }
         CharSequence[] items = new CharSequence[descriptors.size()];
@@ -831,89 +738,17 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Handle intents
-    ///////////////////////////////////////////////////////////////////////////
-
-    private void handleSearchIntent(Intent intent) {
-        if (intent == null) {
-            return;
-        }
-        Context context = requireContext();
-        boolean isCustom = intent.getBooleanExtra(IntentDescriptor.EXTRA_CUSTOM_INTENT, false);
-        if (preferences.get(Preferences.SEARCH_USE_CUSTOM_TABS)
-                && Intent.ACTION_VIEW.equals(intent.getAction())
-                && intent.getData() != null
-                && !isCustom) {
-            CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setDefaultColorSchemeParams(new CustomTabColorSchemeParams.Builder()
-                            .setToolbarColor(ResUtils.resolveColor(context, R.attr.colorPrimary))
-                            .build())
-                    .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-                    .setShowTitle(true)
-                    .build();
-            customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (IntentUtils.canHandleIntent(context, customTabsIntent.intent)) {
-                customTabsIntent.launchUrl(context, intent.getData());
-            }
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && !isCustom &&
-                LauncherIntents.ACTION_START_SHORTCUT.equals(intent.getAction())) {
-            String packageName = intent.getStringExtra(LauncherIntents.EXTRA_PACKAGE_NAME);
-            String shortcutId = intent.getStringExtra(LauncherIntents.EXTRA_SHORTCUT_ID);
-            if (!handleCustomizeShortcut(packageName, shortcutId)) {
-                // start deep shortcut
-                if (callbacks != null) {
-                    callbacks.sendBroadcast(intent);
-                }
-            }
-            return;
-        }
-        if (!IntentUtils.safeStartActivity(context, intent)) {
-            showError(R.string.error);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // Errors
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
     public void showError(Throwable e) {
-        showErrorToast(getString(R.string.error));
-    }
-
-    private void showErrorToast(CharSequence message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showError(@StringRes int message) {
-        showErrorToast(getText(message));
+        errorDelegate.showError(getString(R.string.error));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Popup
     ///////////////////////////////////////////////////////////////////////////
-
-    private void showPopupWindow(ActionPopupWindow popup, @Nullable View anchor) {
-        if (anchor == null) {
-            return;
-        }
-        dismissPopup();
-        list.suppressLayout(true);
-        popup.setOnDismissListener(() -> list.suppressLayout(false));
-        popup.showAtAnchor(anchor, lce);
-        popupWindow = popup;
-    }
-
-    private boolean dismissPopup() {
-        if (popupWindow != null && popupWindow.isShowing()) {
-            popupWindow.dismiss();
-            popupWindow = null;
-            return true;
-        }
-        return false;
-    }
 
     private boolean dismissFolder() {
         if (!getParentFragmentManager().isStateSaved()) {
@@ -956,7 +791,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         SearchBar.Listener listener = new SearchBar.Listener() {
             @Override
             public void handleIntent(Intent intent) {
-                handleSearchIntent(intent);
+                searchIntentStarterDelegate.handleSearchIntent(intent);
             }
 
             @Override
@@ -1011,7 +846,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 if (IntentUtils.safeStartActivity(requireContext(), intent)) {
                     searchBarBehavior.hide();
                 } else {
-                    showError(R.string.error);
+                    errorDelegate.showError(R.string.error);
                 }
             }, v -> {
                 return IntentUtils.safeStartAppSettings(requireContext(), searchActivity.getPackageName(), v);
@@ -1025,7 +860,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private void startDrag(int position) {
         if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {
-            showError(R.string.error_manual_sorting_required);
+            errorDelegate.showError(R.string.error_manual_sorting_required);
             return;
         }
         RecyclerView.LayoutManager layoutManager = list.getLayoutManager();
@@ -1037,15 +872,6 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         touchHelper.startDrag(list.getChildViewHolder(view));
-    }
-
-    private boolean handleCustomizeShortcut(String packageName, String shortcutId) {
-        if (requireContext().getPackageName().equals(packageName)
-                && LauncherShortcuts.ID_SHORTCUT_CUSTOMIZE.equals(shortcutId)) {
-            presenter.startCustomize();
-            return true;
-        }
-        return false;
     }
 
     private void animateListAppearance() {
@@ -1152,10 +978,5 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (insets != null) {
             list.setBottomInset(insets.getStableInsetBottom());
         }
-    }
-
-    public interface Callbacks {
-
-        void sendBroadcast(Intent intent);
     }
 }
