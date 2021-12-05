@@ -1,6 +1,5 @@
 package com.italankin.lnch.util.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -62,7 +61,18 @@ public class ActionPopupWindow extends BasePopupWindow {
         return this;
     }
 
-    @SuppressLint("RtlHardcoded")
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showAtAnchor(View anchorView, View parent) {
+        populateItems();
+        super.showAtAnchor(anchorView, parent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void showAtAnchor(View anchorView, Rect bounds) {
         populateItems();
         super.showAtAnchor(anchorView, bounds);

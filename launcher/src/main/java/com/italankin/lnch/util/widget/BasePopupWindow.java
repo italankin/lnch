@@ -32,7 +32,7 @@ public abstract class BasePopupWindow extends PopupWindow {
     private static final float MAX_WIDTH_FACTOR = 0.66f;
     private static final float MAX_HEIGHT_FACTOR = 0.8f;
 
-    private ViewGroup contentView;
+    private final ViewGroup contentView;
 
     private final int arrowSize;
 
@@ -76,6 +76,26 @@ public abstract class BasePopupWindow extends PopupWindow {
 
     protected abstract void onCreateView(ViewGroup parent);
 
+    /**
+     * Show popup. This method must be used instead of {@link #showAsDropDown(View)},
+     * {@link #showAsDropDown(View, int, int)} and {@link #showAsDropDown(View, int, int, int)}
+     *
+     * @param anchorView a view this popup will be attached to
+     * @param parent     a view to calculate visible display frame
+     */
+    public void showAtAnchor(View anchorView, View parent) {
+        Rect bounds = new Rect();
+        parent.getWindowVisibleDisplayFrame(bounds);
+        showAtAnchor(anchorView, bounds);
+    }
+
+    /**
+     * Show popup. This method must be used instead of {@link #showAsDropDown(View)},
+     * {@link #showAsDropDown(View, int, int)} and {@link #showAsDropDown(View, int, int, int)}
+     *
+     * @param anchorView a view this popup will be attached to
+     * @param bounds     visible display frame which popup should not leave
+     */
     @SuppressLint("RtlHardcoded")
     public void showAtAnchor(View anchorView, Rect bounds) {
         int maxWidth = (int) (bounds.width() * MAX_WIDTH_FACTOR);
@@ -130,10 +150,34 @@ public abstract class BasePopupWindow extends PopupWindow {
         }
 
         setWidth(contentWidth);
-        showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
+        super.showAsDropDown(anchorView, xOffset, yOffset, Gravity.TOP | Gravity.LEFT);
     }
 
     protected abstract boolean isDarkArrow();
+
+    @Deprecated
+    @Override
+    public final void showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
+        throw new UnsupportedOperationException("Use #showAtAnchor(View, Rect) or #showAtAnchor(View, View)");
+    }
+
+    @Deprecated
+    @Override
+    public final void showAsDropDown(View anchor, int xoff, int yoff) {
+        throw new UnsupportedOperationException("Use #showAtAnchor(View, Rect) or #showAtAnchor(View, View)");
+    }
+
+    @Deprecated
+    @Override
+    public final void showAsDropDown(View anchor) {
+        throw new UnsupportedOperationException("Use #showAtAnchor(View, Rect) or #showAtAnchor(View, View)");
+    }
+
+    @Deprecated
+    @Override
+    public final void showAtLocation(View parent, int gravity, int x, int y) {
+        throw new UnsupportedOperationException("Use #showAtAnchor(View, Rect) or #showAtAnchor(View, View)");
+    }
 
     private static class ArrowDrawable extends Drawable {
 

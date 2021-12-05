@@ -242,8 +242,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     }
 
     private void showActionsPopup(int appWidgetId, AppWidgetHostView widgetView) {
-        Rect bounds = new Rect();
-        widgetsList.getWindowVisibleDisplayFrame(bounds);
         Context context = requireContext();
         popupWindow = new ActionPopupWindow(context, picasso)
                 .addShortcut(new ActionPopupWindow.ItemBuilder(context)
@@ -256,7 +254,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                         .setOnClickListener(v -> showRemoveConfirmDialog(appWidgetId))
                         .setIconDrawableTintAttr(R.attr.colorAccent)
                         .setIcon(R.drawable.ic_action_delete));
-        popupWindow.showAtAnchor(widgetView, bounds);
+        popupWindow.showAtAnchor(widgetView, widgetsList);
     }
 
     private void showRemoveConfirmDialog(int appWidgetId) {

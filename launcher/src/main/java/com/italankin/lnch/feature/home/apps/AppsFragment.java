@@ -856,9 +856,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         dismissPopup();
         list.suppressLayout(true);
         popup.setOnDismissListener(() -> list.suppressLayout(false));
-        Rect bounds = new Rect();
-        lce.getWindowVisibleDisplayFrame(bounds);
-        popup.showAtAnchor(anchor, bounds);
+        popup.showAtAnchor(anchor, lce);
         popupWindow = popup;
     }
 
