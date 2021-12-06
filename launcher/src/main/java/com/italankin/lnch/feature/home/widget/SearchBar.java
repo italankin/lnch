@@ -63,6 +63,7 @@ public class SearchBar extends FrameLayout {
         buttonGlobalSearch = findViewById(R.id.search_global);
         buttonSettings = findViewById(R.id.search_settings);
 
+        searchEditText.setDropDownBackgroundResource(R.drawable.search_dropdown_bg);
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 onFireSearch(null);

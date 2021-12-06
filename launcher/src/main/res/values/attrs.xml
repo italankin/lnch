@@ -30,6 +30,9 @@
     <!-- background color of the search bar -->
     <attr name="colorSearchBarBackground" format="color|reference" />
 
+    <!-- background color of the search bar dropdown -->
+    <attr name="colorSearchBarDropdownBackground" format="color|reference" />
+
     <!-- background color for edit panel (home customization) -->
     <attr name="colorEditPanelBackground" format="color|reference" />
 
