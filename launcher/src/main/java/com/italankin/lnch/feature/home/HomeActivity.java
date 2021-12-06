@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.home;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -209,7 +210,7 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     private List<Class<? extends Fragment>> getPages() {
-        if (preferences.get(Preferences.ENABLE_WIDGETS)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS)) {
             WidgetsPosition position = preferences.get(Preferences.WIDGETS_POSITION);
             switch (position) {
                 case RIGHT:
