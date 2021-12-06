@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.settings.backup;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -24,11 +27,22 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     private static final String TAG_RESET_DIALOG = "reset_dialog";
 
-    private static final int REQUEST_CODE_OPEN_DOCUMENT = 1;
-    private static final int REQUEST_CODE_CREATE_DOCUMENT = 2;
-
     @InjectPresenter
     BackupPresenter presenter;
+
+    private final ActivityResultLauncher<Void> restoreLauncher = registerForActivityResult(
+            new OpenDocumentContract(), result -> {
+                if (result != null) {
+                    presenter.onRestoreSettings(result);
+                }
+            });
+
+    private final ActivityResultLauncher<Void> backupLauncher = registerForActivityResult(
+            new CreateDocumentContract(), result -> {
+                if (result != null) {
+                    presenter.onBackupSettings(result);
+                }
+            });
 
     @ProvidePresenter
     BackupPresenter providePresenter() {
@@ -55,28 +69,6 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
             showResetDialog();
             return true;
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Uri uri = data != null ? data.getData() : null;
-        if (uri == null) {
-            return;
-        }
-        switch (requestCode) {
-            case REQUEST_CODE_CREATE_DOCUMENT: {
-                if (resultCode == Activity.RESULT_OK) {
-                    presenter.onBackupSettings(uri);
-                }
-                break;
-            }
-            case REQUEST_CODE_OPEN_DOCUMENT: {
-                if (resultCode == Activity.RESULT_OK) {
-                    presenter.onRestoreSettings(uri);
-                }
-                break;
-            }
-        }
     }
 
     @Override
@@ -121,22 +113,19 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     }
 
     private void restoreSettings() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType(MIME_TYPE_ANY);
         try {
-            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+            restoreLauncher.launch(null);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
         }
     }
 
     private void backupSettings() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(MIME_TYPE_ANY);
-        intent.putExtra(Intent.EXTRA_TITLE, BackupFileNameProvider.generateFileName());
-        startActivityForResult(intent, REQUEST_CODE_CREATE_DOCUMENT);
+        try {
+            backupLauncher.launch(null);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showResetDialog() {
@@ -147,5 +136,38 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
                 .setNegativeButton(R.string.cancel)
                 .build()
                 .show(getChildFragmentManager(), TAG_RESET_DIALOG);
+    }
+
+    private static class OpenDocumentContract extends ActivityResultContract<Void, Uri> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Void input) {
+            return new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType(MIME_TYPE_ANY);
+        }
+
+        @Override
+        public Uri parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == Activity.RESULT_OK && intent != null ? intent.getData() : null;
+        }
+    }
+
+    private static class CreateDocumentContract extends ActivityResultContract<Void, Uri> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Void input) {
+            return new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType(MIME_TYPE_ANY)
+                    .putExtra(Intent.EXTRA_TITLE, BackupFileNameProvider.generateFileName());
+        }
+
+        @Override
+        public Uri parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == Activity.RESULT_OK && intent != null ? intent.getData() : null;
+        }
     }
 }
