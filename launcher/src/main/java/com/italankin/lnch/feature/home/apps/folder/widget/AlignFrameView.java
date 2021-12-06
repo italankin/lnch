@@ -61,8 +61,6 @@ public class AlignFrameView extends ViewGroup {
         View child = getChildAt(0);
         int childMeasuredWidth = child.getMeasuredWidth();
         int childMeasuredHeight = child.getMeasuredHeight();
-        int anchorXOffset = 0;
-        int anchorYOffset = 0;
         if (anchorX < 0 || anchorY < 0) {
             Gravity.apply(Gravity.CENTER, childMeasuredWidth, childMeasuredHeight, container, out);
         } else {
@@ -75,7 +73,6 @@ public class AlignFrameView extends ViewGroup {
                 if (out.left < container.left) {
                     int dx = container.left - out.left;
                     out.offset(dx, 0);
-                    anchorXOffset = dx;
                 }
                 if (out.top < container.top) {
                     int dy = container.top - out.top;
@@ -84,18 +81,15 @@ public class AlignFrameView extends ViewGroup {
                 if (out.right > container.right) {
                     int dx = container.right - out.right;
                     out.offset(dx, 0);
-                    anchorXOffset = dx;
                 }
                 if (out.bottom > container.bottom) {
                     int dy = container.bottom - out.bottom;
                     out.offset(0, dy);
-                    anchorYOffset = -dy;
                 }
             }
+            child.setPivotX(anchorX - out.left);
+            child.setPivotY(anchorY - out.top);
         }
         child.layout(out.left, out.top, out.right, out.bottom);
-
-        child.setPivotX(anchorXOffset == 0 ? out.centerX() : Math.min(out.centerX(), anchorXOffset));
-        child.setPivotY(anchorYOffset);
     }
 }
