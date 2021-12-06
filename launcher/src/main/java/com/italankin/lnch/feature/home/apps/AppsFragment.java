@@ -730,9 +730,14 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .setTitle(R.string.customize_item_select_folder)
                 .setItems(items, (dialog, which) -> {
                     GroupDescriptor selected = descriptors.get(which);
-                    presenter.addToGroup(selected.getId(), item);
-                    String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
-                    Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+                    if (selected.items.contains(item.getDescriptor().getId())) {
+                        String text = getString(R.string.folder_select_item_in_folder, selected.getVisibleLabel());
+                        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+                    } else {
+                        presenter.addToGroup(selected.getId(), item);
+                        String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
+                        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .show();
     }
