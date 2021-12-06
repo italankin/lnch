@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
@@ -118,7 +119,14 @@ public class ActionPopupWindow extends BasePopupWindow {
             imageView.setAlpha(DISABLED_ALPHA);
             imageView.setEnabled(false);
         }
-        imageView.setOnLongClickListener(item.onLongClickListener);
+        if (item.onLongClickListener != null) {
+            imageView.setOnLongClickListener(item.onLongClickListener);
+        } else {
+            imageView.setOnLongClickListener(v -> {
+                Toast.makeText(item.context, item.label, Toast.LENGTH_SHORT).show();
+                return true;
+            });
+        }
         actionContainer.addView(imageView);
     }
 
