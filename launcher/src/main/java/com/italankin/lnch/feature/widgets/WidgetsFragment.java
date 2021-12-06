@@ -38,7 +38,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
@@ -242,24 +241,14 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                         .setIcon(R.drawable.ic_app_info))
                 .addShortcut(new ActionPopupWindow.ItemBuilder(context)
                         .setLabel(R.string.widgets_remove)
-                        .setOnClickListener(v -> showRemoveConfirmDialog(appWidgetId))
+                        .setOnClickListener(v -> {
+                            widgetItemsState.removeWidgetById(appWidgetId);
+                            appWidgetHost.deleteAppWidgetId(appWidgetId);
+                            updateWidgets();
+                        })
                         .setIconDrawableTintAttr(R.attr.colorAccent)
                         .setIcon(R.drawable.ic_action_delete));
         popupWindow.showAtAnchor(widgetView, widgetsList);
-    }
-
-    private void showRemoveConfirmDialog(int appWidgetId) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.widgets_remove_dialog_title)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.widgets_remove_dialog_action, (dialog, which) -> {
-                    widgetItemsState.removeWidgetById(appWidgetId);
-                    updateWidgets();
-                    appWidgetHost.deleteAppWidgetId(appWidgetId);
-                    updateWidgets();
-                })
-                .create()
-                .show();
     }
 
     private void showAppInfo(AppWidgetHostView widgetView) {
