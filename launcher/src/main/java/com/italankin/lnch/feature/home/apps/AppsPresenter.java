@@ -148,9 +148,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void addIntent(IntentDescriptor item) {
         editor.enqueue(new AddAction(item));
-        int position = items.size();
         items.add(new IntentDescriptorUi(item));
-        getViewState().onItemInserted(position);
+        getViewState().onItemInserted(items.size() - 1);
     }
 
     void editIntent(String id, Intent intent, String label) {

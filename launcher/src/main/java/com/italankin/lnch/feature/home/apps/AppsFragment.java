@@ -698,6 +698,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onItemInserted(int position) {
         adapter.notifyItemInserted(position);
+        list.scrollToPosition(position);
     }
 
     @Override
