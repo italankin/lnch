@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 public class AlignFrameView extends ViewGroup {
 
-    private static final float MAX_WIDTH_FACTOR = .8f;
+    private static final float MAX_WIDTH_FACTOR = .85f;
 
     private final Rect container = new Rect();
     private final Rect out = new Rect();
