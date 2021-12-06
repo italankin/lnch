@@ -204,7 +204,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
 
     private boolean checkScrollableRecursively(ViewGroup viewGroup) {
         if (viewGroup instanceof AdapterView) {
-            return true;
+            return viewGroup.canScrollVertically(1) || viewGroup.canScrollVertically(-1);
         } else {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
