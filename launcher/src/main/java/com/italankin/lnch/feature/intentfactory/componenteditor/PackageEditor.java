@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class PackageEditor extends AbstractIntentEditor implements ActivityResultCallback<ComponentName> {
 
-    private final ActivityResultLauncher<Object> selectComponentLauncher;
+    private final ActivityResultLauncher<Void> selectComponentLauncher;
     private TextView textPackage;
 
     public PackageEditor(AppCompatActivity activity) {

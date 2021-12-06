@@ -123,11 +123,11 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
         filter.setDataset(componentNames);
     }
 
-    public static class Contract extends ActivityResultContract<Object, ComponentName> {
+    public static class Contract extends ActivityResultContract<Void, ComponentName> {
 
         @NonNull
         @Override
-        public Intent createIntent(@NonNull Context context, Object input) {
+        public Intent createIntent(@NonNull Context context, Void input) {
             return new Intent(context, ComponentSelectorActivity.class);
         }
 
