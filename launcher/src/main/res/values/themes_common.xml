@@ -9,4 +9,9 @@
     <style name="AppTheme.Overlay" parent="ThemeOverlay.AppCompat.DayNight">
         <item name="android:textColorSecondary">?colorText</item>
     </style>
+
+    <style name="AppTheme.WidgetGallery">
+        <item name="android:windowBackground">@drawable/window_background</item>
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
 </resources>

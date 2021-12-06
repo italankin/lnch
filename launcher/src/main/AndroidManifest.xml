@@ -94,6 +94,11 @@
             android:label="@string/intent_component_selector_title"
             android:theme="@style/AppTheme" />
 
+        <activity
+            android:name=".feature.widgets.gallery.WidgetGalleryActivity"
+            android:label="@string/widgets_gallery_title"
+            android:theme="@style/AppTheme.WidgetGallery" />
+
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">

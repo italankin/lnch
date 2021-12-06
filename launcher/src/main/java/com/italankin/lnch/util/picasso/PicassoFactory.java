@@ -29,6 +29,9 @@ public class PicassoFactory {
         builder.addRequestHandler(new PackageIconHandler(context));
         builder.addRequestHandler(new PackageResourceHandler(context));
         builder.addRequestHandler(new ActivityIconHandler(context));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.addRequestHandler(new WidgetPreviewHandler(context));
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             builder.addRequestHandler(new ShortcutIconHandler(context));
         }

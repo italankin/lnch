@@ -24,13 +24,13 @@ import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
+import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -40,6 +40,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetsFragment extends AppFragment implements WidgetsView {
@@ -67,31 +68,29 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     private WidgetCompositeAdapter adapter;
     private final WidgetItemsState widgetItemsState = new WidgetItemsState();
 
-    private final ActivityResultLauncher<Integer> pickWidgetLauncher = registerForActivityResult(
-            new PickWidgetContract(),
-            appWidgetId -> {
-                if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                    AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-                    configureWidget(appWidgetId, info);
+    private final ActivityResultLauncher<Integer> addWidgetLauncher = registerForActivityResult(
+            new WidgetGalleryActivity.Contract(),
+            info -> {
+                if (info != null) {
+                    configureWidget(info);
                 } else {
                     cancelAddNewWidget(newAppWidgetId);
                 }
             });
 
-    private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher =
-            registerForActivityResult(
-                    new ConfigureWidgetContract(),
-                    appWidgetId -> {
-                        if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-                            addWidget(appWidgetId, info, false);
-                            presenter.addWidget(appWidgetId);
-                            newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-                            updateWidgets();
-                        } else {
-                            cancelAddNewWidget(newAppWidgetId);
-                        }
-                    });
+    private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher = registerForActivityResult(
+            new ConfigureWidgetContract(),
+            configured -> {
+                if (configured) {
+                    AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
+                    addWidget(newAppWidgetId, info, false);
+                    presenter.addWidget(newAppWidgetId);
+                    newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+                    updateWidgets();
+                } else {
+                    cancelAddNewWidget(newAppWidgetId);
+                }
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,20 +169,21 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
 
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
-        pickWidgetLauncher.launch(newAppWidgetId);
+        addWidgetLauncher.launch(newAppWidgetId);
     }
 
-    private void configureWidget(int appWidgetId, AppWidgetProviderInfo info) {
+    private void configureWidget(AppWidgetProviderInfo info) {
         if (info.configure != null) {
             try {
-                configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidgetId, info.configure));
+                configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
             } catch (Exception e) {
-                cancelAddNewWidget(appWidgetId);
+                Timber.e(e, "configureWidget: %s", e.getMessage());
+                cancelAddNewWidget(newAppWidgetId);
                 Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
             }
         } else {
-            addWidget(appWidgetId, info, false);
-            presenter.addWidget(appWidgetId);
+            addWidget(newAppWidgetId, info, false);
+            presenter.addWidget(newAppWidgetId);
             newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
             updateWidgets();
         }
@@ -272,26 +272,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         adapter.notifyDataSetChanged();
     }
 
-    private static class PickWidgetContract extends ActivityResultContract<Integer, Integer> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull Context context, Integer newAppWidgetId) {
-            return new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId)
-                    .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, new ArrayList<>())
-                    .putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, new ArrayList<>());
-        }
-
-        @Override
-        public Integer parseResult(int resultCode, @Nullable Intent intent) {
-            return resultCode == Activity.RESULT_OK && intent != null ?
-                    intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-                    : AppWidgetManager.INVALID_APPWIDGET_ID;
-        }
-    }
-
-    private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Integer> {
+    private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Boolean> {
 
         @NonNull
         @Override
@@ -302,10 +283,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         }
 
         @Override
-        public Integer parseResult(int resultCode, @Nullable Intent intent) {
-            return resultCode == Activity.RESULT_OK && intent != null ?
-                    intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-                    : AppWidgetManager.INVALID_APPWIDGET_ID;
+        public Boolean parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == Activity.RESULT_OK;
         }
 
         static class Input {

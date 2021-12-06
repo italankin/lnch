@@ -17,6 +17,7 @@
     <string name="widgets_app_info">App info</string>
     <string name="widgets_remove_dialog_title">Remove widget?</string>
     <string name="widgets_remove_dialog_action">Remove</string>
+    <string name="widgets_gallery_title">Widget Gallery</string>
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
