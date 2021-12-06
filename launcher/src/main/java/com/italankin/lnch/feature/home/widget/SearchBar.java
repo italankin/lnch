@@ -3,9 +3,10 @@ package com.italankin.lnch.feature.home.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
@@ -34,10 +35,11 @@ public class SearchBar extends FrameLayout {
 
     private final AutoCompleteTextView searchEditText;
     private final ImageView buttonGlobalSearch;
-    private final View buttonSettings;
+    private final ImageView buttonSettings;
 
     private final SearchAdapter searchAdapter;
 
+    private SettingsState settingsState = SettingsState.SETTINGS;
     private Listener listener;
 
     public SearchBar(@NonNull Context context) {
@@ -66,6 +68,21 @@ public class SearchBar extends FrameLayout {
                 onFireSearch(null);
             }
             return true;
+        });
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int length = s.length();
+                setSettingsState(length == 0 ? SettingsState.SETTINGS : SettingsState.CLEAR_QUERY);
+            }
         });
 
         SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
@@ -121,8 +138,22 @@ public class SearchBar extends FrameLayout {
     }
 
     public void setupSettings(OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
-        buttonSettings.setOnClickListener(onClickListener);
-        buttonSettings.setOnLongClickListener(onLongClickListener);
+        buttonSettings.setOnClickListener(v -> {
+            if (settingsState == SettingsState.SETTINGS) {
+                onClickListener.onClick(v);
+            } else {
+                searchEditText.setText("");
+            }
+        });
+        buttonSettings.setOnLongClickListener(v -> {
+            if (settingsState == SettingsState.SETTINGS) {
+                return onLongClickListener.onLongClick(v);
+            } else if (listener != null) {
+                listener.onSearchDismissed();
+                return true;
+            }
+            return false;
+        });
     }
 
     public void setSearchBarSizeDimen(@DimenRes int size) {
@@ -159,6 +190,17 @@ public class SearchBar extends FrameLayout {
         inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
     }
 
+    private void setSettingsState(SettingsState state) {
+        if (settingsState != state) {
+            settingsState = state;
+            if (settingsState == SettingsState.SETTINGS) {
+                buttonSettings.setImageResource(R.drawable.ic_settings);
+            } else {
+                buttonSettings.setImageResource(R.drawable.ic_search_bar_clear);
+            }
+        }
+    }
+
     private void onFireSearch(Match match) {
         if (listener == null) {
             return;
@@ -182,10 +224,17 @@ public class SearchBar extends FrameLayout {
         listener.onSearchFired();
     }
 
+    private enum SettingsState {
+        SETTINGS,
+        CLEAR_QUERY
+    }
+
     public interface Listener {
         void handleIntent(Intent intent);
 
         void onSearchFired();
+
+        void onSearchDismissed();
 
         void onSearchItemPinClick(Match match);
 

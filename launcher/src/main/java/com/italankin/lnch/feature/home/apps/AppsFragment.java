@@ -805,6 +805,11 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
 
             @Override
+            public void onSearchDismissed() {
+                searchBarBehavior.hide();
+            }
+
+            @Override
             public void onSearchItemPinClick(Match match) {
                 searchBarBehavior.hide();
                 NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
