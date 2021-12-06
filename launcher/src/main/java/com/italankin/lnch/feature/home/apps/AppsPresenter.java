@@ -154,6 +154,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void editIntent(String id, Intent intent, String label) {
         editor.enqueue(new EditIntentAction(id, intent, label));
+        for (int i = 0; i < items.size(); i++) {
+            DescriptorUi item = items.get(i);
+            if (item.getDescriptor().getId().equals(id)) {
+                IntentDescriptorUi ui = (IntentDescriptorUi) item;
+                ui.setCustomLabel(label);
+                getViewState().onItemChanged(i);
+                break;
+            }
+        }
     }
 
     void removeItem(int position, DescriptorUi item) {
