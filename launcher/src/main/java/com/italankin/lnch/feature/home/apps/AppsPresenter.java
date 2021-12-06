@@ -49,6 +49,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -308,7 +309,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         Timber.e(e, "updateShortcuts");
                     }
                 });
