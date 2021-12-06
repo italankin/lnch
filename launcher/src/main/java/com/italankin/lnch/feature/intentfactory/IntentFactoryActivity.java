@@ -37,6 +37,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -44,14 +45,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public class IntentFactoryActivity extends AppCompatActivity implements IntentEditor.Host {
-
-    public static Intent editIntent(Context context, IntentDescriptor descriptor) {
-        Intent intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
-        return new Intent(context, IntentFactoryActivity.class)
-                .putExtra(EXTRA_INTENT, intent)
-                .putExtra(EXTRA_DESCRIPTOR_ID, descriptor.getId())
-                .putExtra(EXTRA_LABEL, descriptor.getVisibleLabel());
-    }
 
     @Nullable
     public static IntentFactoryResult getResultExtra(@Nullable Intent data) {
@@ -214,5 +207,35 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
 
     private static String getTrimmed(TextView textView) {
         return textView.getText().toString().trim();
+    }
+
+    public static class EditContract extends ActivityResultContract<IntentDescriptor, IntentFactoryResult> {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, IntentDescriptor descriptor) {
+            Intent intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
+            return new Intent(context, IntentFactoryActivity.class)
+                    .putExtra(EXTRA_INTENT, intent)
+                    .putExtra(EXTRA_DESCRIPTOR_ID, descriptor.getId())
+                    .putExtra(EXTRA_LABEL, descriptor.getVisibleLabel());
+        }
+
+        @Override
+        public IntentFactoryResult parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == RESULT_OK && intent != null ? intent.getParcelableExtra(EXTRA_RESULT) : null;
+        }
+    }
+
+    public static class CreateContract extends ActivityResultContract<Void, IntentFactoryResult> {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Void input) {
+            return new Intent(context, IntentFactoryActivity.class);
+        }
+
+        @Override
+        public IntentFactoryResult parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == RESULT_OK && intent != null ? intent.getParcelableExtra(EXTRA_RESULT) : null;
+        }
     }
 }
