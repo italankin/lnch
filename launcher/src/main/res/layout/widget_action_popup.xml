@@ -21,6 +21,8 @@
             android:divider="@drawable/popup_action_divider"
             android:gravity="end"
             android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:showDividers="middle"
             tools:minHeight="48dp" />
 
