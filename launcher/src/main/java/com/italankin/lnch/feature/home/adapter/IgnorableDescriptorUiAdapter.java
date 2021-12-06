@@ -5,14 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.widget.StubView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class NotVisibleDescriptorUiAdapter
-        extends HomeAdapterDelegate<NotVisibleDescriptorUiAdapter.ViewHolder, VisibleDescriptorUi> {
+public class IgnorableDescriptorUiAdapter
+        extends HomeAdapterDelegate<IgnorableDescriptorUiAdapter.ViewHolder, IgnorableDescriptorUi> {
 
     @NonNull
     @Override
@@ -22,7 +22,7 @@ public class NotVisibleDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof VisibleDescriptorUi && !((VisibleDescriptorUi) item).isVisible();
+        return item instanceof IgnorableDescriptorUi && ((IgnorableDescriptorUi) item).isIgnored();
     }
 
     @Override
@@ -36,13 +36,13 @@ public class NotVisibleDescriptorUiAdapter
         throw new UnsupportedOperationException();
     }
 
-    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<VisibleDescriptorUi> {
+    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<IgnorableDescriptorUi> {
         ViewHolder(View itemView) {
             super(itemView);
         }
 
         @Override
-        void bind(VisibleDescriptorUi item) {
+        void bind(IgnorableDescriptorUi item) {
             // empty
         }
 

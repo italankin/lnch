@@ -51,6 +51,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
@@ -217,6 +218,12 @@ public class FolderFragment extends AppFragment implements FolderView,
                 presenter.removeItemImmediate(item);
                 dismiss();
             }
+
+            @Override
+            protected void removeFromFolder(InFolderDescriptorUi item) {
+                presenter.removeFromFolder(item);
+                dismiss(); // TODO just update list
+            }
         };
         shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate) {
             @Override
@@ -242,6 +249,12 @@ public class FolderFragment extends AppFragment implements FolderView,
             @Override
             protected void pinShortcut(Shortcut shortcut) {
                 presenter.pinShortcut(shortcut);
+            }
+
+            @Override
+            protected void removeFromFolder(AppDescriptorUi item) {
+                presenter.removeFromFolder(item);
+                dismiss(); // TODO just update list
             }
         };
     }

@@ -6,6 +6,7 @@ import android.view.View;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.util.IntentUtils;
@@ -28,6 +29,10 @@ public abstract class ItemPopupDelegateImpl implements ItemPopupDelegate {
     }
 
     protected abstract void removeItemImmediate(RemovableDescriptorUi item);
+
+    protected void removeFromFolder(InFolderDescriptorUi item) {
+        // no-op
+    }
 
     @Override
     public void showItemPopup(DescriptorUi item, @Nullable View anchor) {
@@ -59,6 +64,16 @@ public abstract class ItemPopupDelegateImpl implements ItemPopupDelegate {
                                     removeItemImmediate((RemovableDescriptorUi) item);
                                 })
                                 .show();
+                    })
+            );
+        }
+        if (item instanceof InFolderDescriptorUi && ((InFolderDescriptorUi) item).getFolderId() != null) {
+            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                    .setIcon(R.drawable.ic_action_delete)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setLabel(R.string.customize_item_remove_from_folder)
+                    .setOnClickListener(v -> {
+                        removeFromFolder(((InFolderDescriptorUi) item));
                     })
             );
         }

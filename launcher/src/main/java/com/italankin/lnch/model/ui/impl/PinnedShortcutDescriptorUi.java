@@ -4,8 +4,8 @@ import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
         RemovableDescriptorUi,
-        VisibleDescriptorUi {
+        InFolderDescriptorUi {
 
     public final String uri;
     private final PinnedShortcutDescriptor descriptor;
@@ -21,7 +21,7 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
-    private boolean visible = true;
+    private String folderId;
 
     public PinnedShortcutDescriptorUi(PinnedShortcutDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -68,13 +68,13 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
     }
 
     @Override
-    public boolean isVisible() {
-        return visible;
+    public String getFolderId() {
+        return folderId;
     }
 
     @Override
@@ -91,8 +91,7 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
             return false;
         }
         PinnedShortcutDescriptorUi that = (PinnedShortcutDescriptorUi) another;
-        return this.descriptor.equals(that.descriptor)
-                && this.visible == that.visible;
+        return this.descriptor.equals(that.descriptor);
     }
 
     @Override
@@ -106,7 +105,6 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
         PinnedShortcutDescriptorUi that = (PinnedShortcutDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
-                && Objects.equals(this.customColor, that.customColor)
-                && this.visible == that.visible;
+                && Objects.equals(this.customColor, that.customColor);
     }
 }

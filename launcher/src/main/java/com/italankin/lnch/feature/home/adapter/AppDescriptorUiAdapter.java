@@ -65,7 +65,7 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof AppDescriptorUi && (ignoreVisibility || ((AppDescriptorUi) item).isVisible());
+        return item instanceof AppDescriptorUi && (ignoreVisibility || !((AppDescriptorUi) item).isIgnored());
     }
 
     public interface Listener {

@@ -26,8 +26,8 @@ import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
@@ -129,7 +129,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemInserted(items.size() - 1);
     }
 
-    void addToGroup(String groupId, VisibleDescriptorUi item) {
+    void addToGroup(String groupId, InFolderDescriptorUi item) {
         editor.enqueue(new AddToGroupAction(groupId, item.getDescriptor()));
     }
 
@@ -173,7 +173,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void showGroupSelect(VisibleDescriptorUi item) {
+    void showGroupSelect(InFolderDescriptorUi item) {
         List<GroupDescriptor> groups = new ArrayList<>(4);
         for (DescriptorUi descriptor : items) {
             if (descriptor instanceof GroupDescriptorUi) {

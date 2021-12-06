@@ -35,8 +35,8 @@ import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.GroupDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
+import com.italankin.lnch.feature.home.adapter.IgnorableDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.NotVisibleDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
@@ -81,8 +81,8 @@ import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
@@ -536,13 +536,13 @@ public class AppsFragment extends AppFragment implements AppsView,
                     })
             );
         }
-        if (item instanceof VisibleDescriptorUi) {
+        if (item instanceof InFolderDescriptorUi) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
                     .setLabel(R.string.customize_item_add_to_folder)
                     .setIcon(R.drawable.ic_action_add_to_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> {
-                        presenter.showGroupSelect((VisibleDescriptorUi) item);
+                        presenter.showGroupSelect((InFolderDescriptorUi) item);
                     })
             );
         }
@@ -717,7 +717,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> descriptors) {
+    public void showSelectFolderDialog(InFolderDescriptorUi item, List<GroupDescriptor> descriptors) {
         if (descriptors.isEmpty()) {
             errorDelegate.showError(R.string.folder_select_no_folders);
             return;
@@ -925,7 +925,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(getContext())
                     .add(new AppDescriptorUiAdapter(this))
-                    .add(new NotVisibleDescriptorUiAdapter())
+                    .add(new IgnorableDescriptorUiAdapter())
                     .add(new GroupDescriptorUiAdapter(this))
                     .add(new PinnedShortcutDescriptorUiAdapter(this))
                     .add(new IntentDescriptorUiAdapter(this))

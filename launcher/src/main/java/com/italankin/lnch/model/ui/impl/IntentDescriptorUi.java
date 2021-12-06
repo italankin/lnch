@@ -6,8 +6,8 @@ import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
 import com.italankin.lnch.util.IntentUtils;
 
 import java.util.Objects;
@@ -16,7 +16,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
         RemovableDescriptorUi,
-        VisibleDescriptorUi {
+        InFolderDescriptorUi {
 
     public final Intent intent;
     private final IntentDescriptor descriptor;
@@ -24,7 +24,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
-    private boolean visible = true;
+    private String folderId;
 
     public IntentDescriptorUi(IntentDescriptor descriptor) {
         this.intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
@@ -71,13 +71,13 @@ public final class IntentDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
     }
 
     @Override
-    public boolean isVisible() {
-        return visible;
+    public String getFolderId() {
+        return folderId;
     }
 
     @Override
@@ -94,8 +94,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
             return false;
         }
         IntentDescriptorUi that = (IntentDescriptorUi) another;
-        return this.descriptor.equals(that.descriptor)
-                && this.visible == that.visible;
+        return this.descriptor.equals(that.descriptor);
     }
 
     @Override
@@ -109,7 +108,6 @@ public final class IntentDescriptorUi implements DescriptorUi,
         IntentDescriptorUi that = (IntentDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
-                && Objects.equals(this.customColor, that.customColor)
-                && this.visible == that.visible;
+                && Objects.equals(this.customColor, that.customColor);
     }
 }

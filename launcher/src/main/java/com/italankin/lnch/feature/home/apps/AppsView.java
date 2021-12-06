@@ -9,7 +9,7 @@ import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ interface AppsView extends MvpView {
     void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showSelectFolderDialog(VisibleDescriptorUi item, List<GroupDescriptor> groups);
+    void showSelectFolderDialog(InFolderDescriptorUi item, List<GroupDescriptor> groups);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

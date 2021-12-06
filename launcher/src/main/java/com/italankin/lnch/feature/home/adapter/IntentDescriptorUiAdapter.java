@@ -46,7 +46,7 @@ public class IntentDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof IntentDescriptorUi && ((IntentDescriptorUi) item).isVisible();
+        return item instanceof IntentDescriptorUi;
     }
 
     public interface Listener {

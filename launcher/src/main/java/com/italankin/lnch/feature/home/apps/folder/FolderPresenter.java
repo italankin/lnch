@@ -12,6 +12,7 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -52,9 +54,11 @@ public class FolderPresenter extends AppPresenter<FolderView> {
                 .zipWith(descriptorsById(), (group, descriptorsById) -> {
                     List<DescriptorUi> items = new ArrayList<>(4);
                     for (String id : group.items) {
-                        Descriptor item = descriptorsById.get(id);
-                        if (item != null) {
-                            items.add(DescriptorUiFactory.createItem(item));
+                        Descriptor descriptor = descriptorsById.get(id);
+                        if (descriptor != null) {
+                            DescriptorUi item = DescriptorUiFactory.createItem(descriptor);
+                            ((InFolderDescriptorUi) item).setFolderId(group.id);
+                            items.add(item);
                         }
                     }
                     Collections.sort(items, new AscLabelComparator());
@@ -109,6 +113,26 @@ public class FolderPresenter extends AppPresenter<FolderView> {
                 });
     }
 
+    void removeFromFolder(InFolderDescriptorUi item) {
+        Single
+                .fromCallable(() -> {
+                    return descriptorRepository.findById(GroupDescriptor.class, item.getFolderId());
+                })
+                .flatMapCompletable(group -> {
+                    return descriptorRepository.edit()
+                            .enqueue(new RemoveFromFolderAction(group.id, item.getDescriptor().getId()))
+                            .commit();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.e(e, "removeFromFolder: %s", e.getMessage());
+                    }
+                });
+    }
+
     private Single<Map<String, Descriptor>> descriptorsById() {
         return Single.fromCallable(() -> {
             List<Descriptor> items = descriptorRepository.items();
@@ -142,6 +166,26 @@ public class FolderPresenter extends AppPresenter<FolderView> {
             } else {
                 // should not happen
                 return lhs.getDescriptor().getId().compareTo(rhs.getDescriptor().getId());
+            }
+        }
+    }
+
+    private static class RemoveFromFolderAction implements DescriptorRepository.Editor.Action {
+        private final String groupId;
+        private final String itemId;
+
+        RemoveFromFolderAction(String groupId, String itemId) {
+            this.groupId = groupId;
+            this.itemId = itemId;
+        }
+
+        @Override
+        public void apply(List<Descriptor> items) {
+            for (Descriptor item : items) {
+                if (item.getId().equals(groupId)) {
+                    ((GroupDescriptor) item).items.remove(itemId);
+                    break;
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.model.ui.VisibleDescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public final class AppDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
         IgnorableDescriptorUi,
-        VisibleDescriptorUi,
+        InFolderDescriptorUi,
         BadgeDescriptorUi {
 
     public static final Object PAYLOAD_BADGE = new Object();
@@ -25,7 +25,7 @@ public final class AppDescriptorUi implements DescriptorUi,
     private final int color;
     private final String label;
     private boolean ignored;
-    private boolean visible;
+    private String folderId;
     private String customLabel;
     private Integer customColor;
     private boolean badgeVisible;
@@ -37,7 +37,6 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.componentName = descriptor.componentName;
         this.label = descriptor.label;
         this.ignored = descriptor.ignored;
-        this.visible = !descriptor.ignored;
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
@@ -50,7 +49,7 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.componentName = item.componentName;
         this.label = item.label;
         this.ignored = item.ignored;
-        this.visible = item.visible;
+        this.folderId = item.folderId;
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
@@ -94,8 +93,8 @@ public final class AppDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public boolean isVisible() {
-        return !ignored && visible;
+    public String getFolderId() {
+        return folderId;
     }
 
     public void setSearchFlags(int searchFlags) {
@@ -107,8 +106,8 @@ public final class AppDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
     }
 
     @Override
@@ -146,7 +145,6 @@ public final class AppDescriptorUi implements DescriptorUi,
         }
         AppDescriptorUi that = (AppDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
-                && this.visible == that.visible
                 && this.ignored == that.ignored;
     }
 
@@ -160,7 +158,6 @@ public final class AppDescriptorUi implements DescriptorUi,
                 && Objects.equals(this.customLabel, that.customLabel)
                 && Objects.equals(this.customColor, that.customColor)
                 && this.ignored == that.ignored
-                && this.visible == that.visible
                 && this.badgeVisible == that.badgeVisible;
     }
 

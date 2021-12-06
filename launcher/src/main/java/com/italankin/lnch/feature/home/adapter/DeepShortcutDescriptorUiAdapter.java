@@ -48,7 +48,7 @@ public class DeepShortcutDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof DeepShortcutDescriptorUi && ((DeepShortcutDescriptorUi) item).isVisible();
+        return item instanceof DeepShortcutDescriptorUi;
     }
 
     public interface Listener {

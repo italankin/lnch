@@ -46,7 +46,7 @@ public class PinnedShortcutDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof PinnedShortcutDescriptorUi && ((PinnedShortcutDescriptorUi) item).isVisible();
+        return item instanceof PinnedShortcutDescriptorUi;
     }
 
     public interface Listener {

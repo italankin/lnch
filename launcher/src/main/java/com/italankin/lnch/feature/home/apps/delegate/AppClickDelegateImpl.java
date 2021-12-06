@@ -51,6 +51,10 @@ public abstract class AppClickDelegateImpl implements AppClickDelegate {
 
     protected abstract void pinShortcut(Shortcut shortcut);
 
+    protected void removeFromFolder(AppDescriptorUi item) {
+        // no-op
+    }
+
     @Override
     public void onAppClick(AppDescriptorUi item, @Nullable View itemView) {
         ComponentName componentName = DescriptorUtils.getComponentName(context, item.getDescriptor());
@@ -91,14 +95,26 @@ public abstract class AppClickDelegateImpl implements AppClickDelegate {
                         errorDelegate.showError(R.string.error);
                     }
                 });
+        ActionPopupWindow.ItemBuilder removeFromFolderItem = new ActionPopupWindow.ItemBuilder(context)
+                .setIcon(R.drawable.ic_action_remove_from_folder)
+                .setLabel(R.string.customize_item_remove_from_folder)
+                .setOnClickListener(v -> {
+                    removeFromFolder(item);
+                });
 
         ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
         if (shortcuts.isEmpty()) {
+            if (item.getFolderId() != null) {
+                popup.addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
+            }
             popup.addShortcut(infoItem.setIconDrawableTintAttr(R.attr.colorAccent));
             if (uninstallAvailable) {
                 popup.addShortcut(uninstallItem.setIconDrawableTintAttr(R.attr.colorAccent));
             }
         } else {
+            if (item.getFolderId() != null) {
+                popup.addAction(removeFromFolderItem);
+            }
             popup.addAction(infoItem);
             if (uninstallAvailable) {
                 popup.addAction(uninstallItem);
