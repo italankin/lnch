@@ -72,6 +72,7 @@ dependencies {
     implementation fragment
     implementation constraintLayout
     implementation recyclerView
+    implementation scrollingPagerIndicator
     implementation palette
     implementation material
     implementation preference

@@ -384,6 +384,13 @@ public interface Preferences {
             "experimental_intent_factory",
             false);
 
+    /**
+     * Creating and editing intents via {@link com.italankin.lnch.feature.intentfactory.IntentFactoryActivity}
+     */
+    Pref<Boolean> HOME_PAGER_INDICATOR = Prefs.createBoolean(
+            "home_pager_indicator",
+            true);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -422,7 +429,8 @@ public interface Preferences {
             NOTIFICATION_DOT,
             NOTIFICATION_DOT_COLOR,
             NOTIFICATION_DOT_ONGOING,
-            EXPERIMENTAL_INTENT_FACTORY
+            EXPERIMENTAL_INTENT_FACTORY,
+            HOME_PAGER_INDICATOR
     );
 
     ///////////////////////////////////////////////////////////////////////////

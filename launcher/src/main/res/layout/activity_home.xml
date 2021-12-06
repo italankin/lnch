@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -18,5 +19,21 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false" />
+
+    <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
+        android:id="@+id/pager_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:alpha="0"
+        android:visibility="gone"
+        app:spi_dotColor="#4fff"
+        app:spi_dotSelectedColor="#fff"
+        app:spi_dotSelectedSize="12dp"
+        app:spi_dotSize="6dp"
+        app:spi_dotSpacing="10dp"
+        tools:alpha="1"
+        tools:layout_marginBottom="56dp"
+        tools:visibility="visible" />
 
 </FrameLayout>

@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -20,9 +21,11 @@ import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.feature.home.util.PagerIndicatorAnimator;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
+import com.italankin.lnch.util.ResUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +34,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator;
 
 public class HomeActivity extends AppActivity implements HomeView {
 
@@ -42,6 +46,7 @@ public class HomeActivity extends AppActivity implements HomeView {
 
     private View root;
     private ViewPager pager;
+    private ScrollingPagerIndicator pagerIndicator;
     private HomePagerAdapter pagerAdapter;
 
     @ProvidePresenter
@@ -62,6 +67,7 @@ public class HomeActivity extends AppActivity implements HomeView {
         setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
         pager = findViewById(R.id.pager);
+        pagerIndicator = findViewById(R.id.pager_indicator);
         setupRoot();
         setupPager();
 
@@ -128,6 +134,27 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     @Override
+    public void onHomePagerIndicatorVisibilityChanged(boolean visible) {
+        updatePagerIndicatorState(visible);
+    }
+
+    private void updatePagerIndicatorState() {
+        updatePagerIndicatorState(preferences.get(Preferences.HOME_PAGER_INDICATOR));
+    }
+
+    private void updatePagerIndicatorState(boolean visible) {
+        boolean pages = pagerAdapter.getCount() > 1;
+        if (visible && pages) {
+            pagerIndicator.setVisibility(View.VISIBLE);
+            pagerIndicator.setAlpha(0);
+            pagerIndicator.attachToPager(pager);
+        } else {
+            pagerIndicator.detachFromPager();
+            pagerIndicator.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onWidgetPreferencesUpdated() {
         updateAdapter();
     }
@@ -145,6 +172,12 @@ public class HomeActivity extends AppActivity implements HomeView {
             Integer statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
             foreground.setColor(statusBarColor);
             root.setForeground(foreground);
+
+            MarginLayoutParams layoutParams = (MarginLayoutParams) pagerIndicator.getLayoutParams();
+            layoutParams.bottomMargin = insets.getStableInsetBottom() + ResUtils.px2dp(this, 16);
+            pagerIndicator.requestLayout();
+            pagerIndicator.invalidate();
+
             return insets;
         });
         window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
@@ -154,14 +187,20 @@ public class HomeActivity extends AppActivity implements HomeView {
     private void setupPager() {
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
         updateAdapter();
+        pager.addOnPageChangeListener(new PagerIndicatorAnimator(pagerIndicator));
     }
 
     private void updateAdapter() {
+        if (pagerIndicator.getVisibility() == View.VISIBLE) {
+            // detach pager indicator, because it does not handle adapter changes correctly
+            pagerIndicator.detachFromPager();
+        }
         List<Class<? extends Fragment>> pages = getPages();
         pagerAdapter.setPages(pages);
         pager.setAdapter(pagerAdapter);
         int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
         pager.setCurrentItem(appsPosition, false);
+        updatePagerIndicatorState();
     }
 
     private void setupRoot() {
