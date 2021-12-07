@@ -9,12 +9,10 @@ import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> {
 
     private static final int KEY_WIDGET_ADAPTER = 2 << 5;
@@ -39,26 +37,6 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        WidgetAdapterItem item = getItem(position);
-        if (item instanceof AppWidget) {
-            getWidgetAdapterDelegate().onBind(holder, position, ((AppWidget) item));
-        } else {
-            super.onBindViewHolder(holder, position);
-        }
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        WidgetAdapterItem item = getItem(position);
-        if (item instanceof AppWidget) {
-            getWidgetAdapterDelegate().onBind(holder, position, ((AppWidget) item), payloads);
-        } else {
-            super.onBindViewHolder(holder, position, payloads);
-        }
-    }
-
-    @Override
     public int getItemViewType(int position) {
         WidgetAdapterItem item = getItem(position);
         if (item instanceof AppWidget) {
@@ -67,28 +45,19 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
         return super.getItemViewType(position);
     }
 
+    @NonNull
     @Override
-    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
-        int viewType = holder.getItemViewType();
-        if ((FLAG_WIDGET_TYPE & viewType) != FLAG_WIDGET_TYPE) {
-            super.onViewRecycled(holder);
+    protected AdapterDelegate getDelegate(int position) {
+        WidgetAdapterItem item = getItem(position);
+        if (item instanceof AppWidget) {
+            return getWidgetAdapterDelegate();
         } else {
-            getWidgetAdapterDelegate().onRecycled(holder);
+            return super.getDelegate(position);
         }
     }
 
-    @Override
-    public boolean onFailedToRecycleView(@NonNull RecyclerView.ViewHolder holder) {
-        int viewType = holder.getItemViewType();
-        if ((FLAG_WIDGET_TYPE & viewType) != FLAG_WIDGET_TYPE) {
-            return super.onFailedToRecycleView(holder);
-        } else {
-            return getWidgetAdapterDelegate().onFailedToRecycle(holder);
-        }
-    }
-
-    private AbstractWidgetAdapter<? super RecyclerView.ViewHolder> getWidgetAdapterDelegate() {
-        return (AbstractWidgetAdapter<? super RecyclerView.ViewHolder>) delegates.get(KEY_WIDGET_ADAPTER);
+    private AbstractWidgetAdapter<?> getWidgetAdapterDelegate() {
+        return (AbstractWidgetAdapter<?>) delegates.get(KEY_WIDGET_ADAPTER);
     }
 
     public static class Builder extends BaseBuilder<WidgetAdapterItem, Builder> {
