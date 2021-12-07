@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -23,6 +21,7 @@ import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.PagerIndicatorAnimator;
+import com.italankin.lnch.feature.home.util.SamsungAnrFix;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
@@ -75,7 +74,7 @@ public class HomeActivity extends AppActivity implements HomeView {
         intentQueue.post(getIntent());
 
         if (BuildConfig.SAMSUNG_ANR_FIX) {
-            samsungAnrFix();
+            SamsungAnrFix.post(this);
         }
     }
 
@@ -241,25 +240,5 @@ public class HomeActivity extends AppActivity implements HomeView {
 
     private boolean isWidgetsEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS);
-    }
-
-    private void samsungAnrFix() {
-        class SamsungRunnable implements Runnable {
-            private static final long MAX_HANDLING_TIME = 1000L;
-            private final long start = System.currentTimeMillis();
-
-            @Override
-            public void run() {
-                long now = System.currentTimeMillis();
-                if (now - start > MAX_HANDLING_TIME) {
-                    Intent restartIntent = new Intent(HomeActivity.this, HomeActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(restartIntent);
-                    Toast.makeText(HomeActivity.this, "Restarting", Toast.LENGTH_LONG).show();
-                    System.exit(0);
-                }
-            }
-        }
-        new Handler().post(new SamsungRunnable());
     }
 }
