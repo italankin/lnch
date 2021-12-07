@@ -86,10 +86,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                         cancelAddNewWidget(newAppWidgetId);
                         return;
                     }
-                    addWidget(newAppWidgetId, info, false);
-                    presenter.addWidget(newAppWidgetId);
-                    newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-                    updateWidgets();
+                    addWidget(info);
                 } else {
                     cancelAddNewWidget(newAppWidgetId);
                 }
@@ -185,11 +182,15 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
                 Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
             }
         } else {
-            addWidget(newAppWidgetId, info, false);
-            presenter.addWidget(newAppWidgetId);
-            newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-            updateWidgets();
+            addWidget(info);
         }
+    }
+
+    private void addWidget(AppWidgetProviderInfo info) {
+        addWidget(newAppWidgetId, info, false);
+        presenter.addWidget(newAppWidgetId);
+        newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+        updateWidgets();
     }
 
     private void addWidget(int appWidgetId, AppWidgetProviderInfo info, boolean restored) {
