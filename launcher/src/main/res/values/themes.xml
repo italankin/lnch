@@ -15,10 +15,11 @@
         <item name="colorGroupTitleDefault">?colorText</item>
         <item name="colorPopupBackground">?colorPrimary</item>
         <item name="colorPopupActionsBackground">#a0a0a0</item>
-        <item name="colorFolderBackground">#f0f0f0f0</item>
+        <item name="colorFolderBackground">#e8f0f0f0</item>
+        <item name="colorFolderTitleBackground">#e8a0a0a0</item>
         <item name="colorItemShadowDefault">#60000000</item>
         <item name="colorSearchBarBackground">#1000</item>
-        <item name="colorSearchBarDropdownBackground">#f0f0f0f0</item>
+        <item name="colorSearchBarDropdownBackground">#e8f0f0f0</item>
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
 
         <item name="toolbarOverlayTheme">@style/AppTheme.Overlay</item>

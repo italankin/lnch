@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?colorPrimaryDark"
+        android:background="?colorFolderTitleBackground"
         android:textColor="?colorText"
         android:textSize="18sp"
         android:textStyle="bold"
