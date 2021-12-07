@@ -80,6 +80,21 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (isWidgetsEnabled()) {
+            int currentItem = pager.getCurrentItem();
+            if (currentItem == -1 || currentItem == pagerAdapter.indexOfFragment(AppsFragment.class)) {
+                return;
+            }
+            AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+            if (appsFragment != null) {
+                appsFragment.setAnimateOnResume(false);
+            }
+        }
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         AppsFragment appsFragment = pagerAdapter.getAppsFragment();
@@ -210,7 +225,7 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     private List<Class<? extends Fragment>> getPages() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS)) {
+        if (isWidgetsEnabled()) {
             WidgetsPosition position = preferences.get(Preferences.WIDGETS_POSITION);
             switch (position) {
                 case RIGHT:
@@ -222,6 +237,10 @@ public class HomeActivity extends AppActivity implements HomeView {
         } else {
             return Collections.singletonList(AppsFragment.class);
         }
+    }
+
+    private boolean isWidgetsEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS);
     }
 
     private void samsungAnrFix() {

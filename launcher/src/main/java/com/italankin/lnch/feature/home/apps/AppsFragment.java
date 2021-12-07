@@ -197,6 +197,10 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchBarBehavior.hide();
     }
 
+    public void setAnimateOnResume(boolean animateOnResume) {
+        this.animateOnResume = false;
+    }
+
     public void onRestart() {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
