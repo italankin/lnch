@@ -174,10 +174,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void showGroupSelect(InFolderDescriptorUi item) {
-        List<GroupDescriptor> groups = new ArrayList<>(4);
+        List<GroupDescriptorUi> groups = new ArrayList<>(4);
         for (DescriptorUi descriptor : items) {
             if (descriptor instanceof GroupDescriptorUi) {
-                groups.add(((GroupDescriptorUi) descriptor).getDescriptor());
+                groups.add((GroupDescriptorUi) descriptor);
             }
         }
         getViewState().showSelectFolderDialog(item, groups);

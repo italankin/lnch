@@ -721,7 +721,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showSelectFolderDialog(InFolderDescriptorUi item, List<GroupDescriptor> descriptors) {
+    public void showSelectFolderDialog(InFolderDescriptorUi item, List<GroupDescriptorUi> descriptors) {
         if (descriptors.isEmpty()) {
             errorDelegate.showError(R.string.folder_select_no_folders);
             return;
@@ -733,12 +733,12 @@ public class AppsFragment extends AppFragment implements AppsView,
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.customize_item_select_folder)
                 .setItems(items, (dialog, which) -> {
-                    GroupDescriptor selected = descriptors.get(which);
-                    if (selected.items.contains(item.getDescriptor().getId())) {
+                    GroupDescriptorUi selected = descriptors.get(which);
+                    if (selected.getDescriptor().items.contains(item.getDescriptor().getId())) {
                         String text = getString(R.string.folder_select_item_in_folder, selected.getVisibleLabel());
                         Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
                     } else {
-                        presenter.addToGroup(selected.getId(), item);
+                        presenter.addToGroup(selected.getDescriptor().getId(), item);
                         String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
                         Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
                     }
