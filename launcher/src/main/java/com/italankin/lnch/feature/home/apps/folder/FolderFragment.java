@@ -222,7 +222,7 @@ public class FolderFragment extends AppFragment implements FolderView,
             @Override
             protected void removeFromFolder(InFolderDescriptorUi item) {
                 presenter.removeFromFolder(item);
-                dismiss(); // TODO just update list
+                dismiss();
             }
         };
         shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate) {
@@ -254,7 +254,7 @@ public class FolderFragment extends AppFragment implements FolderView,
             @Override
             protected void removeFromFolder(AppDescriptorUi item) {
                 presenter.removeFromFolder(item);
-                dismiss(); // TODO just update list
+                dismiss();
             }
         };
     }
