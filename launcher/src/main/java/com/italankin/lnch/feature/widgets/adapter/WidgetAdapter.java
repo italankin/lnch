@@ -5,7 +5,6 @@ import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetViewHolder> {
 
@@ -34,15 +33,13 @@ public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetVie
         });
     }
 
-    static class WidgetViewHolder extends RecyclerView.ViewHolder {
+    static class WidgetViewHolder extends AbstractWidgetAdapter.ViewHolder {
 
         final LauncherAppWidgetHostView hostView;
 
         WidgetViewHolder(@NonNull LauncherAppWidgetHostView itemView) {
             super(itemView);
             this.hostView = itemView;
-            // do not recycle view holders, because the same widget id might be bound to different widgets
-            setIsRecyclable(false);
         }
     }
 
