@@ -82,6 +82,10 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             configured -> {
                 if (configured) {
                     AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
+                    if (info == null) {
+                        cancelAddNewWidget(newAppWidgetId);
+                        return;
+                    }
                     addWidget(newAppWidgetId, info, false);
                     presenter.addWidget(newAppWidgetId);
                     newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
