@@ -198,7 +198,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     public void setAnimateOnResume(boolean animateOnResume) {
-        this.animateOnResume = false;
+        this.animateOnResume = animateOnResume;
     }
 
     public void onRestart() {
