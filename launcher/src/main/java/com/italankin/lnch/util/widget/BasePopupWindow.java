@@ -122,7 +122,7 @@ public abstract class BasePopupWindow extends PopupWindow {
         }
 
         int anchorHeight = anchorView.getMeasuredHeight();
-        int additionalVerticalOffset = (anchorView.getPaddingTop() + anchorView.getPaddingTop()) / 2;
+        int additionalVerticalOffset = anchorView.getPaddingTop();
         int yOffset = -additionalVerticalOffset;
 
         int arrowCenter;

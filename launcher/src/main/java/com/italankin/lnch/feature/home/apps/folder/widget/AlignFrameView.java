@@ -68,7 +68,6 @@ public class AlignFrameView extends ViewGroup {
         if (anchorX < 0 || anchorY < 0) {
             Gravity.apply(Gravity.CENTER, childMeasuredWidth, childMeasuredHeight, container, out);
         } else {
-            out.setEmpty();
             out.left = anchorX - childMeasuredWidth / 2;
             out.top = anchorY;
             out.right = anchorX + childMeasuredWidth / 2;
