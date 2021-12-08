@@ -7,6 +7,8 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherApps;
+import android.content.pm.LauncherApps.PinItemRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
@@ -42,8 +45,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends AppFragment implements WidgetsView {
+public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQueue.OnIntentAction {
 
+    private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
 
     @InjectPresenter
@@ -55,6 +59,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     }
 
     private Picasso picasso;
+    private IntentQueue intentQueue;
 
     private RecyclerView widgetsList;
 
@@ -96,6 +101,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
+        intentQueue = LauncherApp.daggerService.main().intentQueue();
     }
 
     @Override
@@ -103,6 +109,31 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
         super.onAttach(context);
         appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
+    }
+
+    @Override
+    public boolean onIntent(Intent intent) {
+        if (!ACTION_PIN_APPWIDGET.equals(intent.getAction())) {
+            return false;
+        }
+        Context context = requireContext();
+        LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        PinItemRequest request = launcherApps.getPinItemRequest(intent);
+        if (request == null || request.getRequestType() != PinItemRequest.REQUEST_TYPE_APPWIDGET || !request.isValid()) {
+            return false;
+        }
+        AppWidgetProviderInfo info = request.getAppWidgetProviderInfo(context);
+        if (info != null) {
+            newAppWidgetId = appWidgetHost.allocateAppWidgetId();
+            Bundle options = new Bundle();
+            options.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId);
+            if (request.accept(options)) {
+                addWidget(info);
+            } else {
+                cancelAddNewWidget(newAppWidgetId);
+            }
+        }
+        return true;
     }
 
     @Nullable
@@ -133,6 +164,12 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        intentQueue.unregisterOnIntentAction(this);
+    }
+
+    @Override
     public void onBindWidgets(List<Integer> appWidgetIds) {
         widgetItemsState.clearWidgets();
         for (int appWidgetId : appWidgetIds) {
@@ -145,6 +182,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView {
             }
         }
         updateWidgets();
+
+        intentQueue.registerOnIntentAction(this);
     }
 
     @Override

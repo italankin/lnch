@@ -27,28 +27,21 @@ public class PinItemActivity extends Activity {
         }
         LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
         PinItemRequest request = launcherApps.getPinItemRequest(getIntent());
-        if (request != null) {
-            switch (request.getRequestType()) {
-                case PinItemRequest.REQUEST_TYPE_SHORTCUT:
-                    if (request.isValid() && request.accept()) {
-                        ShortcutInfo shortcutInfo = request.getShortcutInfo();
-                        if (shortcutInfo == null) {
-                            break;
-                        }
-                        Boolean pinned = LauncherApp.daggerService.main()
-                                .shortcutsRepository()
-                                .pinShortcut(shortcutInfo.getPackage(), shortcutInfo.getId())
-                                .onErrorReturnItem(false)
-                                .blockingGet();
-                        if (pinned) {
-                            String text = getString(R.string.deep_shortcut_pinned, shortcutInfo.getShortLabel());
-                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    break;
-                case PinItemRequest.REQUEST_TYPE_APPWIDGET:
-                    // TODO
-                    break;
+        if (request != null && request.getRequestType() == PinItemRequest.REQUEST_TYPE_SHORTCUT &&
+                request.isValid() && request.accept()) {
+            ShortcutInfo shortcutInfo = request.getShortcutInfo();
+            if (shortcutInfo == null) {
+                finish();
+                return;
+            }
+            Boolean pinned = LauncherApp.daggerService.main()
+                    .shortcutsRepository()
+                    .pinShortcut(shortcutInfo.getPackage(), shortcutInfo.getId())
+                    .onErrorReturnItem(false)
+                    .blockingGet();
+            if (pinned) {
+                String text = getString(R.string.deep_shortcut_pinned, shortcutInfo.getShortLabel());
+                Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
             }
         }
         finish();
