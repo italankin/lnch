@@ -3,13 +3,13 @@ package com.italankin.lnch.model.ui.util;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
-import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 
@@ -30,8 +30,8 @@ public final class DescriptorUiFactory {
         if (descriptor instanceof AppDescriptor) {
             return new AppDescriptorUi((AppDescriptor) descriptor);
         }
-        if (descriptor instanceof GroupDescriptor) {
-            return new GroupDescriptorUi((GroupDescriptor) descriptor);
+        if (descriptor instanceof FolderDescriptor) {
+            return new FolderDescriptorUi((FolderDescriptor) descriptor);
         }
         if (descriptor instanceof PinnedShortcutDescriptor) {
             return new PinnedShortcutDescriptorUi((PinnedShortcutDescriptor) descriptor);

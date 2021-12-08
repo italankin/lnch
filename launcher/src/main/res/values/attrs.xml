@@ -13,7 +13,7 @@
     <attr name="colorIconTint" format="color|reference" />
 
     <!-- default group title color -->
-    <attr name="colorGroupTitleDefault" format="color|reference" />
+    <attr name="colorFolderTitleDefault" format="color|reference" />
 
     <!-- background color of the popup -->
     <attr name="colorPopupBackground" format="color|reference" />

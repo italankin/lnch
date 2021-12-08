@@ -2,15 +2,16 @@ package com.italankin.lnch.model.repository.store.json.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 
 import java.util.List;
 
 import androidx.annotation.Keep;
 
-public final class GroupDescriptorJson implements DescriptorJson {
+public final class FolderDescriptorJson implements DescriptorJson {
 
-    public static final String TYPE = "group";
+    public static final String TYPE = "folder";
+    public static final String OLD_TYPE = "group";
 
     @Keep
     @SerializedName(PROPERTY_TYPE)
@@ -35,10 +36,10 @@ public final class GroupDescriptorJson implements DescriptorJson {
     public List<String> items;
 
     @Keep
-    public GroupDescriptorJson() {
+    public FolderDescriptorJson() {
     }
 
-    public GroupDescriptorJson(GroupDescriptor descriptor) {
+    public FolderDescriptorJson(FolderDescriptor descriptor) {
         this.id = descriptor.id;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
@@ -49,7 +50,7 @@ public final class GroupDescriptorJson implements DescriptorJson {
 
     @Override
     public Descriptor toDescriptor() {
-        GroupDescriptor descriptor = new GroupDescriptor();
+        FolderDescriptor descriptor = new FolderDescriptor();
         descriptor.id = this.id;
         descriptor.label = this.label;
         descriptor.customLabel = this.customLabel;

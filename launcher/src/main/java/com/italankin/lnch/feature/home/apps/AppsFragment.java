@@ -33,7 +33,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.GroupDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.FolderDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IgnorableDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
@@ -69,7 +69,7 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -85,7 +85,7 @@ import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
-import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.DescriptorUtils;
@@ -117,7 +117,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
         AppDescriptorUiAdapter.Listener,
-        GroupDescriptorUiAdapter.Listener,
+        FolderDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
@@ -388,7 +388,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onGroupClick(int position, GroupDescriptorUi item) {
+    public void onFolderClick(int position, FolderDescriptorUi item) {
         if (editMode) {
             showCustomizePopup(position, item);
         } else {
@@ -397,7 +397,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onGroupLongClick(int position, GroupDescriptorUi item) {
+    public void onFolderLongClick(int position, FolderDescriptorUi item) {
         if (editMode) {
             startDrag(position);
         } else {
@@ -464,7 +464,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
-    private void showFolder(int position, GroupDescriptor descriptor) {
+    private void showFolder(int position, FolderDescriptor descriptor) {
         Point point = null;
         View view = list.findViewForAdapterPosition(position);
         if (view != null) {
@@ -546,7 +546,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     .setIcon(R.drawable.ic_action_add_to_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> {
-                        presenter.showGroupSelect((InFolderDescriptorUi) item);
+                        presenter.selectFolder((InFolderDescriptorUi) item);
                     })
             );
         }
@@ -567,8 +567,8 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .setLabel(R.string.edit_add_folder)
                 .setOnClickListener(v -> {
                     String label = getString(R.string.new_folder_default_label);
-                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorGroupTitleDefault);
-                    presenter.addGroup(label, color);
+                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
+                    presenter.addFolder(label, color);
                 }));
         if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
@@ -721,24 +721,24 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showSelectFolderDialog(InFolderDescriptorUi item, List<GroupDescriptorUi> descriptors) {
-        if (descriptors.isEmpty()) {
+    public void showSelectFolderDialog(InFolderDescriptorUi item, List<FolderDescriptorUi> folders) {
+        if (folders.isEmpty()) {
             errorDelegate.showError(R.string.folder_select_no_folders);
             return;
         }
-        CharSequence[] items = new CharSequence[descriptors.size()];
-        for (int i = 0; i < descriptors.size(); i++) {
-            items[i] = descriptors.get(i).getVisibleLabel();
+        CharSequence[] items = new CharSequence[folders.size()];
+        for (int i = 0; i < folders.size(); i++) {
+            items[i] = folders.get(i).getVisibleLabel();
         }
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.customize_item_select_folder)
                 .setItems(items, (dialog, which) -> {
-                    GroupDescriptorUi selected = descriptors.get(which);
+                    FolderDescriptorUi selected = folders.get(which);
                     if (selected.getDescriptor().items.contains(item.getDescriptor().getId())) {
                         String text = getString(R.string.folder_select_item_in_folder, selected.getVisibleLabel());
                         Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
                     } else {
-                        presenter.addToGroup(selected.getDescriptor().getId(), item);
+                        presenter.addToFolder(selected.getDescriptor().getId(), item);
                         String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
                         Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
                     }
@@ -940,7 +940,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             adapter = new HomeAdapter.Builder(getContext())
                     .add(new AppDescriptorUiAdapter(this))
                     .add(new IgnorableDescriptorUiAdapter())
-                    .add(new GroupDescriptorUiAdapter(this))
+                    .add(new FolderDescriptorUiAdapter(this))
                     .add(new PinnedShortcutDescriptorUiAdapter(this))
                     .add(new IntentDescriptorUiAdapter(this))
                     .add(new DeepShortcutDescriptorUiAdapter(this))

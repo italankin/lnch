@@ -4,24 +4,24 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class GroupDescriptorUiAdapter
-        extends HomeAdapterDelegate<GroupDescriptorUiAdapter.ViewHolder, GroupDescriptorUi> {
+public class FolderDescriptorUiAdapter
+        extends HomeAdapterDelegate<FolderDescriptorUiAdapter.ViewHolder, FolderDescriptorUi> {
 
     private final Listener listener;
 
-    public GroupDescriptorUiAdapter(Listener listener) {
+    public FolderDescriptorUiAdapter(Listener listener) {
         this.listener = listener;
     }
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.item_group;
+        return R.layout.item_folder;
     }
 
     @NonNull
@@ -31,13 +31,13 @@ public class GroupDescriptorUiAdapter
         itemView.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                listener.onGroupClick(pos, getItem(pos));
+                listener.onFolderClick(pos, getItem(pos));
             }
         });
         itemView.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                listener.onGroupLongClick(pos, getItem(pos));
+                listener.onFolderLongClick(pos, getItem(pos));
             }
             return true;
         });
@@ -46,16 +46,16 @@ public class GroupDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item) {
-        return item instanceof GroupDescriptorUi;
+        return item instanceof FolderDescriptorUi;
     }
 
     public interface Listener {
-        void onGroupClick(int position, GroupDescriptorUi item);
+        void onFolderClick(int position, FolderDescriptorUi item);
 
-        void onGroupLongClick(int position, GroupDescriptorUi item);
+        void onFolderLongClick(int position, FolderDescriptorUi item);
     }
 
-    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<GroupDescriptorUi> {
+    static class ViewHolder extends HomeAdapterDelegate.ViewHolder<FolderDescriptorUi> {
         final TextView label;
 
         ViewHolder(View itemView) {
@@ -64,7 +64,7 @@ public class GroupDescriptorUiAdapter
         }
 
         @Override
-        void bind(GroupDescriptorUi item) {
+        void bind(FolderDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
         }

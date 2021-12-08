@@ -13,7 +13,7 @@
         <item name="colorTextSecondary">#888</item>
         <item name="colorIconTint">#fff</item>
         <item name="colorDivider">#17ffffff</item>
-        <item name="colorGroupTitleDefault">?colorText</item>
+        <item name="colorFolderTitleDefault">?colorText</item>
         <item name="colorPopupBackground">?colorPrimary</item>
         <item name="colorPopupActionsBackground">#424242</item>
         <item name="colorFolderBackground">#e8101010</item>

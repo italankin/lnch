@@ -25,7 +25,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         tools:minHeight="48dp"
-        tools:text="Group Title" />
+        tools:text="Folder Title" />
 
     <com.italankin.lnch.util.widget.LceLayout
         android:id="@+id/folder_lce"

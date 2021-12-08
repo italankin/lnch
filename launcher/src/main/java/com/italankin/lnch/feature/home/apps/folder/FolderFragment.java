@@ -46,7 +46,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -78,7 +78,7 @@ public class FolderFragment extends AppFragment implements FolderView,
         DeepShortcutDescriptorUiAdapter.Listener {
 
     public static FolderFragment newInstance(
-            GroupDescriptor descriptor,
+            FolderDescriptor descriptor,
             @Nullable Point anchor) {
         FolderFragment fragment = new FolderFragment();
         Bundle args = new Bundle();
@@ -160,7 +160,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onShowFolder(GroupDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
+    public void onShowFolder(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
         Context context = requireContext();
 
         AlignFrameView root = (AlignFrameView) requireView();

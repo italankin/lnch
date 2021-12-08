@@ -4,7 +4,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -49,20 +49,20 @@ public class FolderPresenter extends AppPresenter<FolderView> {
     void loadFolder(String descriptorId) {
         Single
                 .fromCallable(() -> {
-                    return descriptorRepository.findById(GroupDescriptor.class, descriptorId);
+                    return descriptorRepository.findById(FolderDescriptor.class, descriptorId);
                 })
-                .zipWith(descriptorsById(), (group, descriptorsById) -> {
+                .zipWith(descriptorsById(), (folder, descriptorsById) -> {
                     List<DescriptorUi> items = new ArrayList<>(4);
-                    for (String id : group.items) {
+                    for (String id : folder.items) {
                         Descriptor descriptor = descriptorsById.get(id);
                         if (descriptor != null) {
                             DescriptorUi item = DescriptorUiFactory.createItem(descriptor);
-                            ((InFolderDescriptorUi) item).setFolderId(group.id);
+                            ((InFolderDescriptorUi) item).setFolderId(folder.id);
                             items.add(item);
                         }
                     }
                     Collections.sort(items, new AscLabelComparator());
-                    return new FolderState(group, items, new UserPrefs(preferences));
+                    return new FolderState(folder, items, new UserPrefs(preferences));
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleState<FolderState>() {
@@ -116,11 +116,11 @@ public class FolderPresenter extends AppPresenter<FolderView> {
     void removeFromFolder(InFolderDescriptorUi item) {
         Single
                 .fromCallable(() -> {
-                    return descriptorRepository.findById(GroupDescriptor.class, item.getFolderId());
+                    return descriptorRepository.findById(FolderDescriptor.class, item.getFolderId());
                 })
-                .flatMapCompletable(group -> {
+                .flatMapCompletable(folder -> {
                     return descriptorRepository.edit()
-                            .enqueue(new RemoveFromFolderAction(group.id, item.getDescriptor().getId()))
+                            .enqueue(new RemoveFromFolderAction(folder.id, item.getDescriptor().getId()))
                             .commit();
                 })
                 .subscribeOn(Schedulers.io())
@@ -145,11 +145,11 @@ public class FolderPresenter extends AppPresenter<FolderView> {
     }
 
     private static class FolderState {
-        final GroupDescriptor descriptor;
+        final FolderDescriptor descriptor;
         final List<DescriptorUi> items;
         final UserPrefs userPrefs;
 
-        FolderState(GroupDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
+        FolderState(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
             this.descriptor = descriptor;
             this.items = items;
             this.userPrefs = userPrefs;
@@ -171,19 +171,19 @@ public class FolderPresenter extends AppPresenter<FolderView> {
     }
 
     private static class RemoveFromFolderAction implements DescriptorRepository.Editor.Action {
-        private final String groupId;
+        private final String folderId;
         private final String itemId;
 
-        RemoveFromFolderAction(String groupId, String itemId) {
-            this.groupId = groupId;
+        RemoveFromFolderAction(String folderId, String itemId) {
+            this.folderId = folderId;
             this.itemId = itemId;
         }
 
         @Override
         public void apply(List<Descriptor> items) {
             for (Descriptor item : items) {
-                if (item.getId().equals(groupId)) {
-                    ((GroupDescriptor) item).items.remove(itemId);
+                if (item.getId().equals(folderId)) {
+                    ((FolderDescriptor) item).items.remove(itemId);
                     break;
                 }
             }

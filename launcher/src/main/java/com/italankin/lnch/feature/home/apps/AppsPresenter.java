@@ -8,7 +8,7 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
@@ -29,7 +29,7 @@ import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.model.ui.impl.GroupDescriptorUi;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
@@ -122,15 +122,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemChanged(position);
     }
 
-    void addGroup(String label, @ColorInt int color) {
-        GroupDescriptor item = new GroupDescriptor(label, color);
+    void addFolder(String label, @ColorInt int color) {
+        FolderDescriptor item = new FolderDescriptor(label, color);
         editor.enqueue(new AddAction(item));
-        items.add(new GroupDescriptorUi(item));
+        items.add(new FolderDescriptorUi(item));
         getViewState().onItemInserted(items.size() - 1);
     }
 
-    void addToGroup(String groupId, InFolderDescriptorUi item) {
-        editor.enqueue(new AddToGroupAction(groupId, item.getDescriptor()));
+    void addToFolder(String folderId, InFolderDescriptorUi item) {
+        editor.enqueue(new AddToFolderAction(folderId, item.getDescriptor()));
     }
 
     void addIntent(IntentDescriptor item) {
@@ -173,14 +173,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void showGroupSelect(InFolderDescriptorUi item) {
-        List<GroupDescriptorUi> groups = new ArrayList<>(4);
+    void selectFolder(InFolderDescriptorUi item) {
+        List<FolderDescriptorUi> folders = new ArrayList<>(4);
         for (DescriptorUi descriptor : items) {
-            if (descriptor instanceof GroupDescriptorUi) {
-                groups.add((GroupDescriptorUi) descriptor);
+            if (descriptor instanceof FolderDescriptorUi) {
+                folders.add((FolderDescriptorUi) descriptor);
             }
         }
-        getViewState().showSelectFolderDialog(item, groups);
+        getViewState().showSelectFolderDialog(item, folders);
     }
 
     void stopCustomize() {
@@ -389,21 +389,21 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    private static class AddToGroupAction implements DescriptorRepository.Editor.Action {
+    private static class AddToFolderAction implements DescriptorRepository.Editor.Action {
 
-        private final String groupId;
+        private final String folderId;
         private final Descriptor item;
 
-        private AddToGroupAction(String groupId, Descriptor item) {
-            this.groupId = groupId;
+        private AddToFolderAction(String folderId, Descriptor item) {
+            this.folderId = folderId;
             this.item = item;
         }
 
         @Override
         public void apply(List<Descriptor> items) {
             for (Descriptor descriptor : items) {
-                if (descriptor instanceof GroupDescriptor && descriptor.getId().equals(groupId)) {
-                    ((GroupDescriptor) descriptor).items.add(item.getId());
+                if (descriptor instanceof FolderDescriptor && descriptor.getId().equals(folderId)) {
+                    ((FolderDescriptor) descriptor).items.add(item.getId());
                 }
             }
         }

@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.ui.impl;
 
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -9,20 +9,20 @@ import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 
 import java.util.Objects;
 
-public final class GroupDescriptorUi implements DescriptorUi,
+public final class FolderDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         CustomLabelDescriptorUi,
         RemovableDescriptorUi,
         ExpandableDescriptorUi {
 
-    private final GroupDescriptor descriptor;
+    private final FolderDescriptor descriptor;
     private final String label;
     private final int color;
     private String customLabel;
     private Integer customColor;
     private boolean expanded = true;
 
-    public GroupDescriptorUi(GroupDescriptor descriptor) {
+    public FolderDescriptorUi(FolderDescriptor descriptor) {
         this.descriptor = descriptor;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
@@ -31,7 +31,7 @@ public final class GroupDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public GroupDescriptor getDescriptor() {
+    public FolderDescriptor getDescriptor() {
         return descriptor;
     }
 
@@ -88,7 +88,7 @@ public final class GroupDescriptorUi implements DescriptorUi,
         if (this.getClass() != another.getClass()) {
             return false;
         }
-        GroupDescriptorUi that = (GroupDescriptorUi) another;
+        FolderDescriptorUi that = (FolderDescriptorUi) another;
         return this.descriptor.equals(that.descriptor);
     }
 
@@ -100,7 +100,7 @@ public final class GroupDescriptorUi implements DescriptorUi,
         if (this.getClass() != another.getClass()) {
             return false;
         }
-        GroupDescriptorUi that = (GroupDescriptorUi) another;
+        FolderDescriptorUi that = (FolderDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
                 && Objects.equals(this.customColor, that.customColor)

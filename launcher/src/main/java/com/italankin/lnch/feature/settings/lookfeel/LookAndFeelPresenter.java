@@ -4,7 +4,7 @@ import com.arellomobile.mvp.MvpView;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.GroupDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
@@ -61,7 +61,7 @@ public class LookAndFeelPresenter extends AppPresenter<MvpView> {
         @Override
         public void apply(List<Descriptor> items) {
             for (Descriptor item : items) {
-                if (item instanceof GroupDescriptor) {
+                if (item instanceof FolderDescriptor) {
                     continue;
                 }
                 if (item instanceof CustomColorDescriptor) {

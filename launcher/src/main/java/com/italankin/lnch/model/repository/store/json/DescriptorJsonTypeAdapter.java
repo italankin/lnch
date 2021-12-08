@@ -12,7 +12,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.DeepShortcutDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.DescriptorJson;
-import com.italankin.lnch.model.repository.store.json.model.GroupDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
 
@@ -29,7 +29,8 @@ public class DescriptorJsonTypeAdapter implements JsonDeserializer<Descriptor>, 
 
     static {
         MAPPING.put(AppDescriptorJson.TYPE, AppDescriptorJson.class);
-        MAPPING.put(GroupDescriptorJson.TYPE, GroupDescriptorJson.class);
+        MAPPING.put(FolderDescriptorJson.TYPE, FolderDescriptorJson.class);
+        MAPPING.put(FolderDescriptorJson.OLD_TYPE, FolderDescriptorJson.class);
         MAPPING.put(PinnedShortcutDescriptorJson.TYPE, PinnedShortcutDescriptorJson.class);
         MAPPING.put(DeepShortcutDescriptorJson.TYPE, DeepShortcutDescriptorJson.class);
         MAPPING.put(IntentDescriptorJson.TYPE, IntentDescriptorJson.class);

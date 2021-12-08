@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * A home screen folder
  */
-public final class GroupDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;
     public String label;
@@ -20,11 +20,11 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
     public Integer customColor;
     public final List<String> items = new ArrayList<>(4);
 
-    public GroupDescriptor() {
+    public FolderDescriptor() {
     }
 
-    public GroupDescriptor(String label, int color) {
-        this.id = "group/" + UUID.randomUUID().toString();
+    public FolderDescriptor(String label, int color) {
+        this.id = "folder/" + UUID.randomUUID().toString();
         this.label = label;
         this.color = color;
     }
@@ -74,21 +74,21 @@ public final class GroupDescriptor implements Descriptor, CustomColorDescriptor,
         if (this == obj) {
             return true;
         }
-        if (obj.getClass() != GroupDescriptor.class) {
+        if (obj.getClass() != FolderDescriptor.class) {
             return false;
         }
-        GroupDescriptor that = (GroupDescriptor) obj;
+        FolderDescriptor that = (FolderDescriptor) obj;
         return this.id.equals(that.id);
     }
 
     @Override
     public String toString() {
-        return "Group{" + getVisibleLabel() + '}';
+        return "Folder{" + getVisibleLabel() + '}';
     }
 
     @Override
-    public GroupDescriptor copy() {
-        GroupDescriptor copy = new GroupDescriptor();
+    public FolderDescriptor copy() {
+        FolderDescriptor copy = new FolderDescriptor();
         copy.id = id;
         copy.label = label;
         copy.customLabel = customLabel;
