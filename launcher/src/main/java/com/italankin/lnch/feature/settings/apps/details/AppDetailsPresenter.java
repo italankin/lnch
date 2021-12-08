@@ -8,6 +8,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
+import com.italankin.lnch.model.repository.descriptor.actions.ShortcutsVisibilityAction;
 
 import javax.inject.Inject;
 
@@ -98,6 +99,18 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
                     }
                 }
         );
+    }
+
+    void setShortcutsVisible(AppDescriptor descriptor, boolean showShortcuts) {
+        descriptor.showShortcuts = showShortcuts;
+        commitAction(
+                new ShortcutsVisibilityAction(descriptor, showShortcuts),
+                new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Update package=%s: showShortcuts=%b", descriptor, descriptor.showShortcuts);
+                    }
+                });
     }
 
     void setSearchShortcutsVisible(AppDescriptor descriptor, boolean visible) {

@@ -43,6 +43,9 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName("search_flags")
     public Integer searchFlags;
 
+    @SerializedName("show_shortcuts")
+    public boolean showShortcuts = true;
+
     @SerializedName("aliases")
     public List<String> aliases;
 
@@ -60,6 +63,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.customColor = descriptor.customColor;
         this.ignored = descriptor.ignored ? true : null;
         this.searchFlags = descriptor.searchFlags != AppDescriptor.SEARCH_DEFAULT_FLAGS ? descriptor.searchFlags : null;
+        this.showShortcuts = descriptor.showShortcuts;
         this.aliases = descriptor.aliases.isEmpty() ? null : descriptor.aliases;
     }
 
@@ -75,6 +79,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.customColor = this.customColor;
         descriptor.ignored = this.ignored == null ? false : this.ignored;
         descriptor.searchFlags = this.searchFlags != null ? this.searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS;
+        descriptor.showShortcuts = this.showShortcuts;
         descriptor.setAliases(aliases);
         return descriptor;
     }

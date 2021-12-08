@@ -57,6 +57,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private SwitchCompat switchHomeVisibility;
     private SwitchCompat switchSearchVisibility;
     private SwitchCompat switchShortcutsVisibility;
+    private SwitchCompat switchSearchShortcutsVisibility;
 
     private Callbacks callbacks;
 
@@ -91,7 +92,8 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         buttonInfo = view.findViewById(R.id.button_info);
         switchHomeVisibility = view.findViewById(R.id.switch_home_visibility);
         switchSearchVisibility = view.findViewById(R.id.switch_search_visibility);
-        switchShortcutsVisibility = view.findViewById(R.id.switch_search_shortcuts_visibility);
+        switchShortcutsVisibility = view.findViewById(R.id.switch_shortcuts_visibility);
+        switchSearchShortcutsVisibility = view.findViewById(R.id.switch_search_shortcuts_visibility);
         buttonAppAliases = view.findViewById(R.id.app_aliases);
         buttonRename = view.findViewById(R.id.action_rename);
         buttonChangeColor = view.findViewById(R.id.action_color);
@@ -123,9 +125,17 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
             presenter.setSearchVisible(descriptor, isChecked);
         });
 
-        switchShortcutsVisibility.setChecked((descriptor.searchFlags & FLAG_SEARCH_SHORTCUTS_VISIBLE) == FLAG_SEARCH_SHORTCUTS_VISIBLE);
+        switchShortcutsVisibility.setChecked(descriptor.showShortcuts);
         switchShortcutsVisibility.jumpDrawablesToCurrentState();
         switchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            presenter.setShortcutsVisible(descriptor, isChecked);
+        });
+
+        switchSearchShortcutsVisibility.setChecked(
+                (descriptor.searchFlags & FLAG_SEARCH_SHORTCUTS_VISIBLE) == FLAG_SEARCH_SHORTCUTS_VISIBLE
+        );
+        switchSearchShortcutsVisibility.jumpDrawablesToCurrentState();
+        switchSearchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
             presenter.setSearchShortcutsVisible(descriptor, isChecked);
         });
 

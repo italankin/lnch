@@ -154,6 +154,7 @@
     <string name="settings_app_details_visibility">Visibility</string>
     <string name="settings_app_details_visibility_home">Show on home screen</string>
     <string name="settings_app_details_visibility_search">Show in search</string>
+    <string name="settings_app_details_visibility_shortcuts">Show shortcuts in popup</string>
     <string name="settings_app_details_visibility_search_shortcuts">Show shortcuts in search</string>
     <string name="settings_app_details_other">Other</string>
     <string name="settings_app_details_actions">Actions</string>

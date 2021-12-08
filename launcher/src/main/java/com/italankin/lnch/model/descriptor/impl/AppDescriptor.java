@@ -32,6 +32,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public Integer customColor;
     public boolean ignored;
     public int searchFlags = SEARCH_DEFAULT_FLAGS;
+    public boolean showShortcuts = true;
     public List<String> aliases = new ArrayList<>();
     private ComponentName componentNameValue;
 
@@ -147,6 +148,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         copy.customColor = customColor;
         copy.ignored = ignored;
         copy.searchFlags = searchFlags;
+        copy.showShortcuts = showShortcuts;
         copy.aliases = new ArrayList<>(aliases);
         copy.componentNameValue = componentNameValue;
         return copy;

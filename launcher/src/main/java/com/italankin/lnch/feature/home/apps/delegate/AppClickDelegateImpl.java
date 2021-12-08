@@ -19,6 +19,7 @@ import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -74,8 +75,12 @@ public abstract class AppClickDelegateImpl implements AppClickDelegate {
                 break;
             case POPUP:
             default:
-                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
-                showAppPopup(item, processShortcuts(shortcuts), itemView);
+                if (item.getDescriptor().showShortcuts) {
+                    List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
+                    showAppPopup(item, processShortcuts(shortcuts), itemView);
+                } else {
+                    showAppPopup(item, Collections.emptyList(), itemView);
+                }
                 break;
         }
     }
