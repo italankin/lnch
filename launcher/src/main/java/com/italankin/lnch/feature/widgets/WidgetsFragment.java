@@ -151,9 +151,12 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
                     showActionsPopup(appWidgetId, hostView);
                     return true;
                 }))
-                .add(new AddWidgetAdapter(v -> {
-                    startAddNewWidget();
-                }))
+                .add(new AddWidgetAdapter(
+                        v -> startAddNewWidget(),
+                        v -> {
+                            Toast.makeText(requireContext(), R.string.widgets_add, Toast.LENGTH_SHORT).show();
+                            return true;
+                        }))
                 .add(new NoWidgetsAdapter())
                 .recyclerView(widgetsList)
                 .create();

@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AddWidgetAdapter extends BaseAdapterDelegate<AddWidgetAdapter.AddWidgetViewHolder, AddWidgetItem> {
 
     private final View.OnClickListener onClickListener;
+    private final View.OnLongClickListener onLongClickListener;
 
-    public AddWidgetAdapter(View.OnClickListener onClickListener) {
+    public AddWidgetAdapter(View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
         this.onClickListener = onClickListener;
+        this.onLongClickListener = onLongClickListener;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class AddWidgetAdapter extends BaseAdapterDelegate<AddWidgetAdapter.AddWi
     protected AddWidgetViewHolder createViewHolder(View itemView) {
         AddWidgetViewHolder viewHolder = new AddWidgetViewHolder(itemView);
         viewHolder.addWidget.setOnClickListener(onClickListener);
+        viewHolder.addWidget.setOnLongClickListener(onLongClickListener);
         return viewHolder;
     }
 

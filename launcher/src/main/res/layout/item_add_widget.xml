@@ -10,7 +10,7 @@
         android:id="@+id/add_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:background="?selectableItemBackgroundBorderless"
         android:padding="16dp"
         android:src="@drawable/ic_add_widget"
         tools:ignore="ContentDescription" />
