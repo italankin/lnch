@@ -42,6 +42,10 @@ public class AlignFrameView extends ViewGroup {
         setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),
                 getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));
 
+        if (childCount == 0) {
+            return;
+        }
+
         int maxWidth = (int) ((getMeasuredWidth() - getPaddingLeft() - getPaddingRight()) * MAX_WIDTH_FACTOR);
         int maxHeight = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
         int widthSpec = MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST);
