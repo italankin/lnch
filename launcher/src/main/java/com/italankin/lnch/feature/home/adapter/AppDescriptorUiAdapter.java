@@ -68,6 +68,12 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
         return item instanceof AppDescriptorUi && (ignoreVisibility || !((AppDescriptorUi) item).isIgnored());
     }
 
+    @Override
+    public boolean onFailedToRecycle(ViewHolder holder) {
+        holder.notificationDot.cancelAnimation();
+        return true;
+    }
+
     public interface Listener {
         void onAppClick(int position, AppDescriptorUi item);
 

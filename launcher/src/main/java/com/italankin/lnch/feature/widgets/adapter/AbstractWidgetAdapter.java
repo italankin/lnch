@@ -38,7 +38,7 @@ public abstract class AbstractWidgetAdapter<VH extends AbstractWidgetAdapter.Vie
     }
 
     @Override
-    public boolean onFailedToRecycle(RecyclerView.ViewHolder holder) {
+    public boolean onFailedToRecycle(VH holder) {
         return false;
     }
 

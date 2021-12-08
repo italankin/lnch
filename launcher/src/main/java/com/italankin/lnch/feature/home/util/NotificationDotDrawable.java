@@ -79,6 +79,18 @@ public class NotificationDotDrawable extends Drawable {
         }
     }
 
+    public void cancelAnimation() {
+        if (animator != null) {
+            animator.cancel();
+            if (visible) {
+                scale = 1f;
+            } else {
+                scale = 0f;
+            }
+            invalidateSelf();
+        }
+    }
+
     @Override
     public void draw(@NonNull Canvas canvas) {
         int rad = (int) (radius * scale);

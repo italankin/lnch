@@ -66,7 +66,7 @@ public interface AdapterDelegate<VH extends RecyclerView.ViewHolder, T> {
      * @return true if the View should be recycled, false otherwise
      * @see RecyclerView.Adapter#onFailedToRecycleView(RecyclerView.ViewHolder)
      */
-    boolean onFailedToRecycle(RecyclerView.ViewHolder holder);
+    boolean onFailedToRecycle(VH holder);
 
     /**
      * Check if {@code item} at {@code position} can be managed by this delegate.

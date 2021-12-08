@@ -59,7 +59,7 @@ public abstract class BaseAdapterDelegate<VH extends RecyclerView.ViewHolder, T>
     }
 
     @Override
-    public boolean onFailedToRecycle(RecyclerView.ViewHolder holder) {
+    public boolean onFailedToRecycle(VH holder) {
         return false;
     }
 
