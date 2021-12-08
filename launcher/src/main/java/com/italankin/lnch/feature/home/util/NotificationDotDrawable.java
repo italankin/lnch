@@ -91,11 +91,13 @@ public class NotificationDotDrawable extends Drawable {
     @Override
     public void setAlpha(int alpha) {
         paint.setAlpha(alpha);
+        invalidateSelf();
     }
 
     @Override
     public void setColorFilter(@Nullable ColorFilter colorFilter) {
         paint.setColorFilter(colorFilter);
+        invalidateSelf();
     }
 
     @Override
