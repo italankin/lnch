@@ -88,6 +88,14 @@ public class FolderFragment extends AppFragment implements FolderView,
         return fragment;
     }
 
+    public static boolean dismiss(FragmentManager fragmentManager) {
+        if (fragmentManager.findFragmentByTag(TAG) != null) {
+            fragmentManager.popBackStack(FolderFragment.BACKSTACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            return true;
+        }
+        return false;
+    }
+
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
     private static final String ARG_ANCHOR = "anchor";
     private static final String STATE_BACKSTACK_ID = "backstack_id";
@@ -98,7 +106,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     FolderPresenter presenter;
 
     private RecyclerView list;
-    private int backstackId = -1;
+
     private AppClickDelegate appClickDelegate;
     private PopupDelegate popupDelegate;
     private ErrorDelegate errorDelegate;
@@ -107,13 +115,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     private DeepShortcutClickDelegate deepShortcutClickDelegate;
     private IntentClickDelegate intentClickDelegate;
 
-    public static boolean dismiss(FragmentManager fragmentManager) {
-        if (fragmentManager.findFragmentByTag(TAG) != null) {
-            fragmentManager.popBackStack(FolderFragment.BACKSTACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            return true;
-        }
-        return false;
-    }
+    private int backstackId = -1;
 
     @ProvidePresenter
     FolderPresenter providePresenter() {
@@ -141,9 +143,11 @@ public class FolderFragment extends AppFragment implements FolderView,
         frame.setLayoutParams(new LayoutParams(MATCH_PARENT, MATCH_PARENT));
         Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
         frame.setAnchorPoint(anchor.x, anchor.y);
-        WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-        int p8 = ResUtils.px2dp(requireContext(), 8);
-        frame.setPadding(p8, p8 + insets.getStableInsetTop(), p8, p8 + insets.getStableInsetBottom());
+        frame.post(() -> {
+            WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
+            int p8 = ResUtils.px2dp(requireContext(), 8);
+            frame.setPadding(p8, p8 + insets.getStableInsetTop(), p8, p8 + insets.getStableInsetBottom());
+        });
         frame.setClipChildren(false);
         return frame;
     }
