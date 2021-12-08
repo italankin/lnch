@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
@@ -57,7 +56,6 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
@@ -68,8 +66,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class FolderFragment extends AppFragment implements FolderView,
         AppDescriptorUiAdapter.Listener,
@@ -106,6 +102,10 @@ public class FolderFragment extends AppFragment implements FolderView,
     FolderPresenter presenter;
 
     private RecyclerView list;
+    private AlignFrameView alignFrameView;
+    private View container;
+    private LceLayout lce;
+    private TextView title;
 
     private AppClickDelegate appClickDelegate;
     private PopupDelegate popupDelegate;
@@ -139,22 +139,27 @@ public class FolderFragment extends AppFragment implements FolderView,
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AlignFrameView frame = new AlignFrameView(requireContext());
-        frame.setLayoutParams(new LayoutParams(MATCH_PARENT, MATCH_PARENT));
-        Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
-        frame.setAnchorPoint(anchor.x, anchor.y);
-        frame.post(() -> {
-            WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-            int p8 = ResUtils.px2dp(requireContext(), 8);
-            frame.setPadding(p8, p8 + insets.getStableInsetTop(), p8, p8 + insets.getStableInsetBottom());
-        });
-        frame.setClipChildren(false);
-        return frame;
+        return LayoutInflater.from(requireContext()).inflate(R.layout.fragment_folder, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        view.setOnClickListener(v -> dismiss());
+        alignFrameView = view.findViewById(R.id.folder_frame);
+        container = view.findViewById(R.id.folder_container);
+        lce = view.findViewById(R.id.folder_lce);
+        list = view.findViewById(R.id.folder_list);
+        title = view.findViewById(R.id.folder_title);
+
+        Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
+        alignFrameView.setAnchorPoint(anchor.x, anchor.y);
+        alignFrameView.post(() -> {
+            WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
+            alignFrameView.setPaddingRelative(0, insets.getStableInsetTop(), 0, insets.getStableInsetBottom());
+        });
+        alignFrameView.setOnClickListener(v -> dismiss());
+
+        container.setClipToOutline(true);
+
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
         presenter.loadFolder(descriptorId);
     }
@@ -167,17 +172,8 @@ public class FolderFragment extends AppFragment implements FolderView,
     public void onShowFolder(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
         Context context = requireContext();
 
-        AlignFrameView root = (AlignFrameView) requireView();
-        View folderView = LayoutInflater.from(context)
-                .inflate(R.layout.widget_folder, root, false);
-        root.addView(folderView);
-        folderView.setClipToOutline(true);
-
-        TextView title = folderView.findViewById(R.id.folder_title);
         title.setText(descriptor.getVisibleLabel());
 
-        list = folderView.findViewById(R.id.folder_list);
-        LceLayout lce = folderView.findViewById(R.id.folder_lce);
         if (items.isEmpty()) {
             lce.empty()
                     .message(R.string.folder_empty)
@@ -200,7 +196,7 @@ public class FolderFragment extends AppFragment implements FolderView,
 
         initDelegates(context);
 
-        animateAppearance(folderView);
+        animatePopupAppearance();
     }
 
     private void initDelegates(Context context) {
@@ -360,12 +356,15 @@ public class FolderFragment extends AppFragment implements FolderView,
         }
     }
 
-    private void animateAppearance(View folderView) {
-        folderView.setScaleX(0.4f);
-        folderView.setScaleY(0.4f);
-        folderView.setAlpha(0);
+    private void animatePopupAppearance() {
+        container.setScaleX(0.4f);
+        container.setScaleY(0.4f);
+        container.setAlpha(0);
 
-        folderView.animate()
+        container.animate()
+                .withStartAction(() -> {
+                    container.setVisibility(View.VISIBLE);
+                })
                 .scaleX(1)
                 .scaleY(1)
                 .alpha(1)
