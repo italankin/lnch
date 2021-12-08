@@ -17,6 +17,8 @@ public class SetColorAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         CustomColorDescriptor descriptor = findById(items, id);
-        descriptor.setCustomColor(newColor);
+        if (descriptor != null) {
+            descriptor.setCustomColor(newColor);
+        }
     }
 }

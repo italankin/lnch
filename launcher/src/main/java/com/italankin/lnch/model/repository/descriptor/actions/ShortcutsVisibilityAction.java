@@ -17,6 +17,8 @@ public class ShortcutsVisibilityAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         AppDescriptor descriptor = findById(items, id);
-        descriptor.showShortcuts = showShortcuts;
+        if (descriptor != null) {
+            descriptor.showShortcuts = showShortcuts;
+        }
     }
 }

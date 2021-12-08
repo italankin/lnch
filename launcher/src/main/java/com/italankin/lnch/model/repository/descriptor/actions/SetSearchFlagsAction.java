@@ -17,6 +17,8 @@ public class SetSearchFlagsAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         AppDescriptor descriptor = findById(items, id);
-        descriptor.searchFlags = searchFlags;
+        if (descriptor != null) {
+            descriptor.searchFlags = searchFlags;
+        }
     }
 }

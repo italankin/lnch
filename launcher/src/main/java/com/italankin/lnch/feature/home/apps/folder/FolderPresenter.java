@@ -6,6 +6,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -170,7 +171,7 @@ public class FolderPresenter extends AppPresenter<FolderView> {
         }
     }
 
-    private static class RemoveFromFolderAction implements DescriptorRepository.Editor.Action {
+    private static class RemoveFromFolderAction extends BaseAction {
         private final String folderId;
         private final String itemId;
 
@@ -181,11 +182,9 @@ public class FolderPresenter extends AppPresenter<FolderView> {
 
         @Override
         public void apply(List<Descriptor> items) {
-            for (Descriptor item : items) {
-                if (item.getId().equals(folderId)) {
-                    ((FolderDescriptor) item).items.remove(itemId);
-                    break;
-                }
+            FolderDescriptor descriptor = findById(items, folderId);
+            if (descriptor != null) {
+                descriptor.items.remove(itemId);
             }
         }
     }

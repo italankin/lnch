@@ -12,6 +12,7 @@ import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
+import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
@@ -365,7 +366,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         return new Update(newItems, diffResult);
     }
 
-    private static class EditIntentAction implements DescriptorRepository.Editor.Action {
+    private static class EditIntentAction extends BaseAction {
 
         private final String id;
         private final Intent intent;
@@ -379,17 +380,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
         @Override
         public void apply(List<Descriptor> items) {
-            for (Descriptor item : items) {
-                if (item.getId().equals(id)) {
-                    IntentDescriptor descriptor = (IntentDescriptor) item;
-                    descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
-                    descriptor.setCustomLabel(label);
-                }
+            IntentDescriptor descriptor = findById(items, id);
+            if (descriptor != null) {
+                descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
+                descriptor.setCustomLabel(label);
             }
         }
     }
 
-    private static class AddToFolderAction implements DescriptorRepository.Editor.Action {
+    private static class AddToFolderAction extends BaseAction {
 
         private final String folderId;
         private final Descriptor item;
@@ -401,10 +400,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
         @Override
         public void apply(List<Descriptor> items) {
-            for (Descriptor descriptor : items) {
-                if (descriptor instanceof FolderDescriptor && descriptor.getId().equals(folderId)) {
-                    ((FolderDescriptor) descriptor).items.add(item.getId());
-                }
+            FolderDescriptor descriptor = findById(items, folderId);
+            if (descriptor != null) {
+                descriptor.items.add(item.getId());
             }
         }
     }

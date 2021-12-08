@@ -17,6 +17,8 @@ public class SetAliasesAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         AppDescriptor descriptor = findById(items, id);
-        descriptor.setAliases(aliases);
+        if (descriptor != null) {
+            descriptor.setAliases(aliases);
+        }
     }
 }

@@ -17,6 +17,8 @@ public class RenameAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         CustomLabelDescriptor descriptor = findById(items, id);
-        descriptor.setCustomLabel(newLabel);
+        if (descriptor != null) {
+            descriptor.setCustomLabel(newLabel);
+        }
     }
 }

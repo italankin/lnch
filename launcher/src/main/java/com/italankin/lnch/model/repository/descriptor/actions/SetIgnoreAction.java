@@ -17,6 +17,8 @@ public class SetIgnoreAction extends BaseAction {
     @Override
     public void apply(List<Descriptor> items) {
         IgnorableDescriptor descriptor = findById(items, id);
-        descriptor.setIgnored(ignored);
+        if (descriptor != null) {
+            descriptor.setIgnored(ignored);
+        }
     }
 }
