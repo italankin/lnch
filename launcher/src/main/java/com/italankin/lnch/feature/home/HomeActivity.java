@@ -189,7 +189,7 @@ public class HomeActivity extends AppActivity implements HomeView {
             root.setForeground(foreground);
 
             MarginLayoutParams layoutParams = (MarginLayoutParams) pagerIndicator.getLayoutParams();
-            layoutParams.bottomMargin = insets.getStableInsetBottom() + ResUtils.px2dp(this, 16);
+            layoutParams.bottomMargin = insets.getStableInsetBottom() + ResUtils.px2dp(this, 22);
             pagerIndicator.requestLayout();
             pagerIndicator.invalidate();
 
