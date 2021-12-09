@@ -20,4 +20,10 @@
         <attr name="tpv_title" format="string" />
         <attr name="tpv_icon" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="ArrowLayout">
+        <attr name="al_colorArrowUp" format="color|reference" />
+        <attr name="al_colorArrowDown" format="color|reference" />
+        <attr name="al_arrowSize" format="dimension|reference" />
+    </declare-styleable>
 </resources>
