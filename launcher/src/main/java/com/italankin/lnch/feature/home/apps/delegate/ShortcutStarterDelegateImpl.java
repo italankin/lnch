@@ -14,17 +14,18 @@ import com.italankin.lnch.util.ViewUtils;
 
 import androidx.annotation.Nullable;
 
-public abstract class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
+public class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
 
     private final Context context;
     private final ErrorDelegate errorDelegate;
+    private final CustomizeDelegate customizeDelegate;
 
-    public ShortcutStarterDelegateImpl(Context context, ErrorDelegate errorDelegate) {
+    public ShortcutStarterDelegateImpl(Context context, ErrorDelegate errorDelegate,
+            CustomizeDelegate customizeDelegate) {
         this.context = context;
         this.errorDelegate = errorDelegate;
+        this.customizeDelegate = customizeDelegate;
     }
-
-    protected abstract void startCustomize();
 
     @Override
     public void startShortcut(@Nullable Shortcut shortcut, @Nullable View view) {
@@ -56,7 +57,7 @@ public abstract class ShortcutStarterDelegateImpl implements ShortcutStarterDele
     private boolean handleCustomizeShortcut(String packageName, String shortcutId) {
         if (context.getPackageName().equals(packageName)
                 && LauncherShortcuts.ID_SHORTCUT_CUSTOMIZE.equals(shortcutId)) {
-            startCustomize();
+            customizeDelegate.startCustomize();
             return true;
         }
         return false;

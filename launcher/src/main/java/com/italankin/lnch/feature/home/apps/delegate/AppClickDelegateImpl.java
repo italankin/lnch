@@ -2,58 +2,31 @@ package com.italankin.lnch.feature.home.apps.delegate;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.ListUtils;
-import com.italankin.lnch.util.NumberUtils;
-import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.widget.ActionPopupWindow;
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import androidx.annotation.Nullable;
 
-public abstract class AppClickDelegateImpl implements AppClickDelegate {
+public class AppClickDelegateImpl implements AppClickDelegate {
 
     private final Context context;
-    private final Picasso picasso;
     private final ErrorDelegate errorDelegate;
-    private final PopupDelegate popupDelegate;
-    private final ShortcutStarterDelegate shortcutStarterDelegate;
+    private final ItemPopupDelegate itemPopupDelegate;
     private final Preferences preferences;
-    private final ShortcutsRepository shortcutsRepository;
 
     public AppClickDelegateImpl(Context context,
-            Picasso picasso,
-            ErrorDelegate errorDelegate,
-            PopupDelegate popupDelegate,
-            ShortcutStarterDelegate shortcutStarterDelegate,
             Preferences preferences,
-            ShortcutsRepository shortcutsRepository) {
+            ErrorDelegate errorDelegate,
+            ItemPopupDelegate itemPopupDelegate) {
         this.context = context;
-        this.picasso = picasso;
         this.errorDelegate = errorDelegate;
-        this.popupDelegate = popupDelegate;
-        this.shortcutStarterDelegate = shortcutStarterDelegate;
+        this.itemPopupDelegate = itemPopupDelegate;
         this.preferences = preferences;
-        this.shortcutsRepository = shortcutsRepository;
-    }
-
-    protected abstract void pinShortcut(Shortcut shortcut);
-
-    protected void removeFromFolder(AppDescriptorUi item) {
-        // no-op
     }
 
     @Override
@@ -75,84 +48,8 @@ public abstract class AppClickDelegateImpl implements AppClickDelegate {
                 break;
             case POPUP:
             default:
-                if (item.getDescriptor().showShortcuts) {
-                    List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
-                    showAppPopup(item, processShortcuts(shortcuts), itemView);
-                } else {
-                    showAppPopup(item, Collections.emptyList(), itemView);
-                }
+                itemPopupDelegate.showItemPopup(item, itemView);
                 break;
         }
-    }
-
-    private void showAppPopup(AppDescriptorUi item, List<Shortcut> shortcuts, View view) {
-        boolean uninstallAvailable = !PackageUtils.isSystem(context.getPackageManager(), item.packageName);
-        ActionPopupWindow.ItemBuilder infoItem = new ActionPopupWindow.ItemBuilder(context)
-                .setLabel(R.string.popup_app_info)
-                .setIcon(R.drawable.ic_app_info)
-                .setOnClickListener(v -> IntentUtils.safeStartAppSettings(context, item.packageName, v));
-        ActionPopupWindow.ItemBuilder uninstallItem = new ActionPopupWindow.ItemBuilder(context)
-                .setLabel(R.string.popup_app_uninstall)
-                .setIcon(R.drawable.ic_action_delete)
-                .setOnClickListener(v -> {
-                    Intent intent = PackageUtils.getUninstallIntent(item.packageName);
-                    if (!IntentUtils.safeStartActivity(context, intent)) {
-                        errorDelegate.showError(R.string.error);
-                    }
-                });
-        ActionPopupWindow.ItemBuilder removeFromFolderItem = new ActionPopupWindow.ItemBuilder(context)
-                .setIcon(R.drawable.ic_action_remove_from_folder)
-                .setLabel(R.string.customize_item_remove_from_folder)
-                .setOnClickListener(v -> {
-                    removeFromFolder(item);
-                });
-
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (shortcuts.isEmpty()) {
-            if (item.getFolderId() != null) {
-                popup.addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            }
-            popup.addShortcut(infoItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            if (uninstallAvailable) {
-                popup.addShortcut(uninstallItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            }
-        } else {
-            if (item.getFolderId() != null) {
-                popup.addAction(removeFromFolderItem);
-            }
-            popup.addAction(infoItem);
-            if (uninstallAvailable) {
-                popup.addAction(uninstallItem);
-            }
-            for (Shortcut shortcut : shortcuts) {
-                popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                        .setLabel(shortcut.getShortLabel())
-                        .setIcon(shortcut.getIconUri())
-                        .setEnabled(shortcut.isEnabled())
-                        .setOnClickListener(v -> {
-                            shortcutStarterDelegate.startShortcut(shortcut, v);
-                        })
-                        .setOnPinClickListener(v -> pinShortcut(shortcut))
-                );
-            }
-        }
-        popupDelegate.showPopupWindow(popup, view);
-    }
-
-    private List<Shortcut> processShortcuts(List<Shortcut> shortcuts) {
-        if (preferences.get(Preferences.SHORTCUTS_SORT_MODE) == Preferences.ShortcutsSortMode.REVERSED) {
-            shortcuts = ListUtils.reversedCopy(shortcuts);
-        }
-        int max = NumberUtils.parseInt(preferences.get(Preferences.MAX_DYNAMIC_SHORTCUTS), -1);
-        if (max < 0 || shortcuts.size() <= max) {
-            return shortcuts;
-        }
-        List<Shortcut> result = new ArrayList<>(shortcuts.size());
-        for (Shortcut shortcut : shortcuts) {
-            if (!shortcut.isDynamic() || max-- > 0) {
-                result.add(shortcut);
-            }
-        }
-        return result;
     }
 }

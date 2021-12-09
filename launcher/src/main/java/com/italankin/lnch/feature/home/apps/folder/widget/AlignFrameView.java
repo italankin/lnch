@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 public class AlignFrameView extends ViewGroup {
 
     private static final float MAX_WIDTH_FACTOR = .85f;
+    private static final float MAX_HEIGHT_FACTOR = .85f;
 
     private final Rect container = new Rect();
     private final Rect out = new Rect();
@@ -47,7 +48,7 @@ public class AlignFrameView extends ViewGroup {
         }
 
         int maxWidth = (int) ((getMeasuredWidth() - getPaddingLeft() - getPaddingRight()) * MAX_WIDTH_FACTOR);
-        int maxHeight = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
+        int maxHeight = (int) ((getMeasuredHeight() - getPaddingTop() - getPaddingBottom()) * MAX_HEIGHT_FACTOR);
         int widthSpec = MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST);
         int heightSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST);
         measureChildren(widthSpec, heightSpec);

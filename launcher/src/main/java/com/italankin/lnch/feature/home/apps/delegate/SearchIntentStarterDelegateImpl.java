@@ -15,19 +15,20 @@ import com.italankin.lnch.util.ResUtils;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-public abstract class SearchIntentStarterDelegateImpl implements SearchIntentStarterDelegate {
+public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDelegate {
 
     private final Context context;
     private final Preferences preferences;
     private final ErrorDelegate errorDelegate;
+    private final CustomizeDelegate customizeDelegate;
 
-    public SearchIntentStarterDelegateImpl(Context context, Preferences preferences, ErrorDelegate errorDelegate) {
+    public SearchIntentStarterDelegateImpl(Context context, Preferences preferences, ErrorDelegate errorDelegate,
+            CustomizeDelegate customizeDelegate) {
         this.context = context;
         this.preferences = preferences;
         this.errorDelegate = errorDelegate;
+        this.customizeDelegate = customizeDelegate;
     }
-
-    protected abstract void startCustomize();
 
     @Override
     public void handleSearchIntent(Intent intent) {
@@ -70,7 +71,7 @@ public abstract class SearchIntentStarterDelegateImpl implements SearchIntentSta
     private boolean handleCustomizeShortcut(String packageName, String shortcutId) {
         if (context.getPackageName().equals(packageName)
                 && LauncherShortcuts.ID_SHORTCUT_CUSTOMIZE.equals(shortcutId)) {
-            startCustomize();
+            customizeDelegate.startCustomize();
             return true;
         }
         return false;

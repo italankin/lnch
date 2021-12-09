@@ -40,6 +40,7 @@ import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
@@ -47,7 +48,6 @@ import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.PopupDelegate;
@@ -60,6 +60,7 @@ import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.util.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
@@ -122,6 +123,8 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
+    private static final String REQUEST_KEY_APPS = "apps";
+
     @InjectPresenter
     AppsPresenter presenter;
 
@@ -147,7 +150,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     private AppClickDelegate appClickDelegate;
     private PopupDelegate popupDelegate;
     private ErrorDelegate errorDelegate;
-    private ShortcutStarterDelegate shortcutStarterDelegate;
     private ItemPopupDelegate itemPopupDelegate;
     private PinnedShortcutClickDelegate pinnedShortcutClickDelegate;
     private DeepShortcutClickDelegate deepShortcutClickDelegate;
@@ -173,6 +175,10 @@ public class AppsFragment extends AppFragment implements AppsView,
         preferences = LauncherApp.daggerService.main().preferences();
         picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
+
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_APPS, this, (requestKey, result) -> {
+            // TODO
+        });
     }
 
     @Override
@@ -237,35 +243,29 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         popupDelegate = new PopupDelegateImpl(list);
         errorDelegate = new ErrorDelegateImpl(context);
-        itemPopupDelegate = new ItemPopupDelegateImpl(context, picasso, popupDelegate) {
-            @Override
-            protected void removeItemImmediate(RemovableDescriptorUi item) {
-                presenter.removeItemImmediate(item);
+        itemPopupDelegate = (item, anchor) -> {
+            Rect bounds = ViewUtils.getViewBounds(anchor);
+            if (bounds != null) {
+                bounds.inset(anchor.getPaddingLeft(), anchor.getPaddingBottom());
             }
+            DescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
+                    .show(getParentFragmentManager());
         };
-        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate) {
+        CustomizeDelegate customizeDelegate = new CustomizeDelegate(requireContext()) {
             @Override
             public void startCustomize() {
                 presenter.startCustomize();
             }
         };
+        ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
+                customizeDelegate);
         pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
-        deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate,
-                itemPopupDelegate, shortcutsRepository);
-        searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context, preferences, errorDelegate) {
-            @Override
-            protected void startCustomize() {
-                presenter.startCustomize();
-            }
-        };
+        deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate, itemPopupDelegate,
+                shortcutsRepository);
+        searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context, preferences, errorDelegate,
+                customizeDelegate);
         intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
-        appClickDelegate = new AppClickDelegateImpl(context, picasso, errorDelegate, popupDelegate,
-                shortcutStarterDelegate, preferences, shortcutsRepository) {
-            @Override
-            protected void pinShortcut(Shortcut shortcut) {
-                presenter.pinShortcut(shortcut);
-            }
-        };
+        appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate);
     }
 
     @Override
