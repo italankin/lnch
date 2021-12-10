@@ -42,8 +42,8 @@ import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -177,7 +177,8 @@ public class FolderFragment extends AppFragment implements FolderView,
         alignFrameView.setAnchorPoint(anchor.x, anchor.y);
         alignFrameView.post(() -> {
             WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-            alignFrameView.setPaddingRelative(0, insets.getStableInsetTop(), 0, insets.getStableInsetBottom());
+            alignFrameView.setPaddingRelative(alignFrameView.getPaddingStart(), insets.getStableInsetTop(),
+                    alignFrameView.getPaddingEnd(), insets.getStableInsetBottom());
         });
         alignFrameView.setOnClickListener(v -> dismiss());
 
