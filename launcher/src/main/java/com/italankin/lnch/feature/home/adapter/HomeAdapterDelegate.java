@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
+public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
         extends BaseAdapterDelegate<VH, T> {
 
     private UserPrefs.ItemPrefs itemPrefs;
@@ -75,20 +75,20 @@ abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>,
         label.setTypeface(itemPrefs.itemFont.typeface());
     }
 
-    abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
+    public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
         UserPrefs.ItemPrefs itemPrefs;
 
-        ViewHolder(View itemView) {
+        protected ViewHolder(View itemView) {
             super(itemView);
         }
 
-        abstract void bind(T item);
+        protected abstract void bind(T item);
 
         protected void bind(T item, List<Object> payloads) {
             bind(item);
         }
 
         @Nullable
-        abstract TextView getLabel();
+        protected abstract TextView getLabel();
     }
 }

@@ -64,14 +64,14 @@ public class PinnedShortcutDescriptorUiAdapter
         }
 
         @Override
-        void bind(PinnedShortcutDescriptorUi item) {
+        protected void bind(PinnedShortcutDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
         }
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return label;
         }
     }

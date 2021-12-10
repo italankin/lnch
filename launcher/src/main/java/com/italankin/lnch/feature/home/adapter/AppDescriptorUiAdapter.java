@@ -97,7 +97,7 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
         }
 
         @Override
-        void bind(AppDescriptorUi item) {
+        protected void bind(AppDescriptorUi item) {
             bindItem(item);
             notificationDot.setBadgeVisible(item.isBadgeVisible(), false);
         }
@@ -110,7 +110,7 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return label;
         }
 

@@ -64,14 +64,14 @@ public class IntentDescriptorUiAdapter
         }
 
         @Override
-        void bind(IntentDescriptorUi item) {
+        protected void bind(IntentDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
         }
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return label;
         }
     }

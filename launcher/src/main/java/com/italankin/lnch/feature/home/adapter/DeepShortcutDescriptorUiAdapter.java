@@ -66,7 +66,7 @@ public class DeepShortcutDescriptorUiAdapter
         }
 
         @Override
-        void bind(DeepShortcutDescriptorUi item) {
+        protected void bind(DeepShortcutDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
             label.setAlpha(item.enabled ? 1 : DISABLED_ALPHA);
@@ -74,7 +74,7 @@ public class DeepShortcutDescriptorUiAdapter
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return label;
         }
     }

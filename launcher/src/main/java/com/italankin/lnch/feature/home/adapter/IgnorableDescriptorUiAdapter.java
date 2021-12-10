@@ -42,13 +42,13 @@ public class IgnorableDescriptorUiAdapter
         }
 
         @Override
-        void bind(IgnorableDescriptorUi item) {
+        protected void bind(IgnorableDescriptorUi item) {
             // empty
         }
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return null;
         }
     }

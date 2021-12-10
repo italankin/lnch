@@ -64,14 +64,14 @@ public class FolderDescriptorUiAdapter
         }
 
         @Override
-        void bind(FolderDescriptorUi item) {
+        protected void bind(FolderDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
         }
 
         @Nullable
         @Override
-        TextView getLabel() {
+        protected TextView getLabel() {
             return label;
         }
     }
