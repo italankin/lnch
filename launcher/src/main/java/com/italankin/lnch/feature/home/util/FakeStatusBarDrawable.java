@@ -31,11 +31,13 @@ public class FakeStatusBarDrawable extends Drawable {
     @Override
     public void setAlpha(int alpha) {
         drawable.setAlpha(alpha);
+        invalidateSelf();
     }
 
     @Override
     public void setColorFilter(@Nullable ColorFilter colorFilter) {
         drawable.setColorFilter(colorFilter);
+        invalidateSelf();
     }
 
     @Override
@@ -51,5 +53,6 @@ public class FakeStatusBarDrawable extends Drawable {
 
     public void setColor(@ColorInt Integer color) {
         drawable.setColor(color != null ? color : defaultColor);
+        invalidateSelf();
     }
 }
