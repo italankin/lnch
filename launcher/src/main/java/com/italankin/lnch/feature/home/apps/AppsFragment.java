@@ -109,11 +109,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsFragment extends AppFragment implements AppsView,
         BackButtonHandler,
+        FragmentResultListener,
         IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -176,9 +178,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
 
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_APPS, this, (requestKey, result) -> {
-            // TODO
-        });
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_APPS, this, this);
     }
 
     @Override
@@ -244,19 +244,11 @@ public class AppsFragment extends AppFragment implements AppsView,
         popupDelegate = new PopupDelegateImpl(list);
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
-            Rect bounds = ViewUtils.getViewBounds(anchor);
-            if (bounds != null) {
-                bounds.inset(anchor.getPaddingLeft(), anchor.getPaddingBottom());
-            }
+            Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
             DescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
                     .show(getParentFragmentManager());
         };
-        CustomizeDelegate customizeDelegate = new CustomizeDelegate(requireContext()) {
-            @Override
-            public void startCustomize() {
-                presenter.startCustomize();
-            }
-        };
+        CustomizeDelegate customizeDelegate = presenter::startCustomize;
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
                 customizeDelegate);
         pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
@@ -302,6 +294,37 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
         }
         return false;
+    }
+
+    @Override
+    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+        if (!REQUEST_KEY_APPS.equals(requestKey)) {
+            return;
+        }
+        String key = result.getString(FragmentResults.RESULT);
+        switch (key) {
+            case FragmentResults.Customize.KEY: {
+                presenter.startCustomize();
+                break;
+            }
+            case FragmentResults.PinShortcut.KEY: {
+                String packageName = result.getString(FragmentResults.PinShortcut.PACKAGE_NAME);
+                String shortcutId = result.getString(FragmentResults.PinShortcut.SHORTCUT_ID);
+                presenter.pinShortcut(packageName, shortcutId);
+                break;
+            }
+            case FragmentResults.RemoveItem.KEY: {
+                String descriptorId = result.getString(FragmentResults.RemoveItem.DESCRIPTOR_ID);
+                presenter.removeItemImmediate(descriptorId);
+                break;
+            }
+            case FragmentResults.RemoveFromFolder.KEY: {
+                String descriptorId = result.getString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID);
+                String folderId = result.getString(FragmentResults.RemoveFromFolder.FOLDER_ID);
+                presenter.removeFromFolder(descriptorId, folderId);
+                break;
+            }
+        }
     }
 
     @Override
@@ -473,7 +496,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
         }
 
-        FolderFragment.newInstance(descriptor, point)
+        FolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
                 .show(getParentFragmentManager(), android.R.id.content);
     }
 

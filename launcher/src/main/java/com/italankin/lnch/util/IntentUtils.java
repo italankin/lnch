@@ -1,7 +1,6 @@
 package com.italankin.lnch.util;
 
 import android.app.ActivityOptions;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

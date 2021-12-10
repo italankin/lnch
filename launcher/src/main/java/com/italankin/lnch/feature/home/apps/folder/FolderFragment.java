@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.home.apps.folder;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
@@ -51,6 +53,7 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
+import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
@@ -59,9 +62,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FolderFragment extends AppFragment implements FolderView,
+        FragmentResultListener,
         AppDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -69,11 +74,13 @@ public class FolderFragment extends AppFragment implements FolderView,
 
     public static FolderFragment newInstance(
             FolderDescriptor descriptor,
+            String requestKey,
             @Nullable Point anchor) {
         FolderFragment fragment = new FolderFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_DESCRIPTOR_ID, descriptor.getId());
+        args.putString(ARG_REQUEST_KEY, requestKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,6 +95,8 @@ public class FolderFragment extends AppFragment implements FolderView,
 
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
     private static final String ARG_ANCHOR = "anchor";
+    private static final String ARG_REQUEST_KEY = "request_key";
+
     private static final String STATE_BACKSTACK_ID = "backstack_id";
     private static final String FOLDER_REQUEST_KEY = "folder";
     private static final String BACKSTACK_NAME = "folder";
@@ -121,16 +130,33 @@ public class FolderFragment extends AppFragment implements FolderView,
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
         }
-        getParentFragmentManager().setFragmentResultListener(FOLDER_REQUEST_KEY, this, (requestKey, result) -> {
-            // TODO
-            dismiss();
-        });
+        getParentFragmentManager().setFragmentResultListener(FOLDER_REQUEST_KEY, this, this);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_BACKSTACK_ID, backstackId);
+    }
+
+    @Override
+    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+        if (!FOLDER_REQUEST_KEY.equals(requestKey)) {
+            return;
+        }
+        String resultKey = result.getString(FragmentResults.RESULT);
+        switch (resultKey) {
+            case FragmentResults.PinShortcut.KEY:
+                sendResult(result);
+                return;
+            case FragmentResults.OnActionHandled.KEY:
+                dismiss();
+                return;
+            default: {
+                sendResult(result);
+                dismiss();
+            }
+        }
     }
 
     @Nullable
@@ -208,15 +234,15 @@ public class FolderFragment extends AppFragment implements FolderView,
             }
         };
         ItemPopupDelegate itemPopupDelegate = (item, anchor) -> {
-            DescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, anchor)
+            Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
+            DescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
                     .show(getParentFragmentManager());
         };
-        CustomizeDelegate customizeDelegate = new CustomizeDelegate(requireContext()) {
-            @Override
-            public void startCustomize() {
-                super.startCustomize();
-                dismiss();
-            }
+        CustomizeDelegate customizeDelegate = () -> {
+            Bundle result = new Bundle();
+            result.putString(FragmentResults.RESULT, FragmentResults.Customize.KEY);
+            sendResult(result);
+            dismiss();
         };
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
                 customizeDelegate);
@@ -324,6 +350,11 @@ public class FolderFragment extends AppFragment implements FolderView,
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
         }
+    }
+
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     private void animatePopupAppearance() {

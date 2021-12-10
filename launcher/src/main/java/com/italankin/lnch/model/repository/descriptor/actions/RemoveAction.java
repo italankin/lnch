@@ -9,8 +9,8 @@ import java.util.List;
 public class RemoveAction implements DescriptorRepository.Editor.Action {
     private final String id;
 
-    public RemoveAction(Descriptor descriptor) {
-        this.id = descriptor.getId();
+    public RemoveAction(String id) {
+        this.id = id;
     }
 
     @Override

@@ -59,6 +59,18 @@ public final class ViewUtils {
         return new Rect(pos[0], pos[1], pos[0] + view.getWidth(), pos[1] + view.getHeight());
     }
 
+    public static Rect getViewBoundsInsetPadding(@Nullable View view) {
+        if (view == null) {
+            return null;
+        }
+        int[] pos = new int[2];
+        view.getLocationOnScreen(pos);
+        Rect rect = new Rect(pos[0], pos[1], pos[0] + view.getWidth(), pos[1] + view.getHeight());
+        rect.inset(Math.max(view.getPaddingLeft(), view.getPaddingRight()),
+                Math.max(view.getPaddingTop(), view.getPaddingBottom()));
+        return rect;
+    }
+
     private static class OneTimeListener implements ViewTreeObserver.OnGlobalLayoutListener {
         private final View view;
         private final ViewTreeObserver.OnGlobalLayoutListener delegate;

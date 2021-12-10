@@ -28,7 +28,6 @@ import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
@@ -48,6 +47,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -155,7 +155,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void removeItem(int position, DescriptorUi item) {
         Descriptor descriptor = item.getDescriptor();
-        editor.enqueue(new RemoveAction(descriptor));
+        editor.enqueue(new RemoveAction(descriptor.getId()));
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
@@ -206,6 +206,13 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor = null;
     }
 
+    void pinShortcut(String packageName, String shortcutId) {
+        Shortcut shortcut = shortcutsRepository.getShortcut(packageName, shortcutId);
+        if (shortcut != null) {
+            pinShortcut(shortcut);
+        }
+    }
+
     void pinShortcut(Shortcut shortcut) {
         shortcutsRepository.pinShortcut(shortcut)
                 .subscribeOn(Schedulers.io())
@@ -227,6 +234,26 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
+    void removeFromFolder(String descriptorId, String folderId) {
+        Single
+                .fromCallable(() -> {
+                    return descriptorRepository.findById(FolderDescriptor.class, folderId);
+                })
+                .flatMapCompletable(folder -> {
+                    return descriptorRepository.edit()
+                            .enqueue(new RemoveFromFolderAction(folder.id, descriptorId))
+                            .commit();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.e(e, "removeFromFolder: %s", e.getMessage());
+                    }
+                });
+    }
+
     void pinIntent(IntentDescriptor descriptor) {
         descriptorRepository.edit()
                 .enqueue(new AddAction(descriptor))
@@ -241,16 +268,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    void removeItemImmediate(RemovableDescriptorUi item) {
-        Descriptor descriptor = item.getDescriptor();
+    void removeItemImmediate(String descriptorId) {
         DescriptorRepository.Editor editor = descriptorRepository.edit();
-        editor.enqueue(new RemoveAction(descriptor));
+        editor.enqueue(new RemoveAction(descriptorId));
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
-                        Timber.d("Item removed: %s", descriptor);
+                        Timber.d("Item removed: descriptorId=%s", descriptorId);
                     }
                 });
     }
@@ -403,6 +429,24 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             FolderDescriptor descriptor = findById(items, folderId);
             if (descriptor != null) {
                 descriptor.items.add(item.getId());
+            }
+        }
+    }
+
+    private static class RemoveFromFolderAction extends BaseAction {
+        private final String folderId;
+        private final String itemId;
+
+        RemoveFromFolderAction(String folderId, String itemId) {
+            this.folderId = folderId;
+            this.itemId = itemId;
+        }
+
+        @Override
+        public void apply(List<Descriptor> items) {
+            FolderDescriptor descriptor = findById(items, folderId);
+            if (descriptor != null) {
+                descriptor.items.remove(itemId);
             }
         }
     }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
@@ -22,6 +23,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -121,12 +123,11 @@ public class DescriptorPopupFragment extends PopupFragment {
 
         Context context = requireContext();
         errorDelegate = new ErrorDelegateImpl(context);
-        CustomizeDelegate customizeDelegate = new CustomizeDelegate(requireContext()) {
-            @Override
-            public void startCustomize() {
-                super.startCustomize();
-                dismissWithResult(new Bundle());
-            }
+        CustomizeDelegate customizeDelegate = () -> {
+            Bundle result = new Bundle();
+            result.putString(FragmentResults.RESULT, FragmentResults.Customize.KEY);
+            sendResult(result);
+            dismiss();
         };
         shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate, customizeDelegate);
 
@@ -160,13 +161,13 @@ public class DescriptorPopupFragment extends PopupFragment {
                 .setLabel(R.string.popup_app_info)
                 .setIcon(R.drawable.ic_app_info)
                 .setOnClickListener(v -> {
-                    startAppSettings(context, item.getDescriptor(), v);
+                    startAppSettings(item.getDescriptor(), v);
                 });
         ItemBuilder uninstallItem = new ItemBuilder()
                 .setLabel(R.string.popup_app_uninstall)
                 .setIcon(R.drawable.ic_action_delete)
                 .setOnClickListener(v -> {
-                    startUninstall(item, context);
+                    startUninstall(item);
                 });
         ItemBuilder removeFromFolderItem = new ItemBuilder()
                 .setIcon(R.drawable.ic_action_remove_from_folder)
@@ -216,7 +217,8 @@ public class DescriptorPopupFragment extends PopupFragment {
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
-                        startAppSettings(context, ((DeepShortcutDescriptorUi) item).getDescriptor(), v);
+                        DeepShortcutDescriptor descriptor = ((DeepShortcutDescriptorUi) item).getDescriptor();
+                        startAppSettings(descriptor, v);
                     })
             );
         }
@@ -256,42 +258,62 @@ public class DescriptorPopupFragment extends PopupFragment {
 
     private void startShortcut(Shortcut shortcut, View v) {
         shortcutStarterDelegate.startShortcut(shortcut, v);
-        dismissWithResult(new Bundle());
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
+        sendResult(result);
+        dismiss();
     }
 
-    private void startUninstall(AppDescriptorUi item, Context context) {
+    private void startUninstall(AppDescriptorUi item) {
         Intent intent = PackageUtils.getUninstallIntent(item.packageName);
-        if (IntentUtils.safeStartActivity(context, intent)) {
-            dismissWithResult(new Bundle());
+        if (IntentUtils.safeStartActivity(requireContext(), intent)) {
+            Bundle result = new Bundle();
+            result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
+            sendResult(result);
+            dismiss();
         } else {
             errorDelegate.showError(R.string.error);
         }
     }
 
-    private void startAppSettings(Context context, PackageDescriptor item, View v) {
+    private void startAppSettings(PackageDescriptor item, View v) {
         String packageName = item.getPackageName();
-        IntentUtils.safeStartAppSettings(context, packageName, v);
-        dismissWithResult(new Bundle());
+        IntentUtils.safeStartAppSettings(requireContext(), packageName, v);
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
+        sendResult(result);
+        dismiss();
     }
 
     private void removeItemImmediate(RemovableDescriptorUi item) {
-        // TODO
-        dismissWithResult(new Bundle());
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.RemoveItem.KEY);
+        result.putString(FragmentResults.RemoveItem.DESCRIPTOR_ID, item.getDescriptor().getId());
+        sendResult(result);
+        dismiss();
     }
 
     private void removeFromFolder(InFolderDescriptorUi item) {
-        // TODO
-        dismissWithResult(new Bundle());
-    }
-
-    private void dismissWithResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
+        result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
+        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, item.getFolderId());
+        sendResult(result);
         dismiss();
     }
 
     private void pinShortcut(Shortcut shortcut) {
-        // TODO
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.PinShortcut.KEY);
+        result.putString(FragmentResults.PinShortcut.PACKAGE_NAME, shortcut.getPackageName());
+        result.putString(FragmentResults.PinShortcut.SHORTCUT_ID, shortcut.getId());
+        sendResult(result);
+        dismiss();
+    }
+
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -336,10 +358,7 @@ public class DescriptorPopupFragment extends PopupFragment {
                     .into(imageView));
         }
         if (item.onClickListener != null) {
-            imageView.setOnClickListener(v -> {
-                item.onClickListener.onClick(v);
-                dismiss(); // TODO
-            });
+            imageView.setOnClickListener(item.onClickListener);
         }
         if (!item.enabled) {
             imageView.setAlpha(DISABLED_ALPHA);
@@ -377,10 +396,7 @@ public class DescriptorPopupFragment extends PopupFragment {
                     .into(iconView));
         }
         if (item.onClickListener != null) {
-            view.setOnClickListener(v -> {
-                item.onClickListener.onClick(v);
-                dismiss(); // TODO
-            });
+            view.setOnClickListener(item.onClickListener);
         }
         view.setOnLongClickListener(item.onLongClickListener);
         if (!item.enabled) {
@@ -390,10 +406,7 @@ public class DescriptorPopupFragment extends PopupFragment {
         }
         if (item.onPinClickListener != null && item.enabled) {
             pinIconView.setVisibility(View.VISIBLE);
-            pinIconView.setOnClickListener(v -> {
-                item.onPinClickListener.onClick(v);
-                dismiss(); // TODO
-            });
+            pinIconView.setOnClickListener(item.onPinClickListener);
         }
         shortcutsContainer.addView(view);
     }

@@ -36,14 +36,11 @@ import timber.log.Timber;
 public class FolderPresenter extends AppPresenter<FolderView> {
 
     private final DescriptorRepository descriptorRepository;
-    private final ShortcutsRepository shortcutsRepository;
     private final Preferences preferences;
 
     @Inject
-    FolderPresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
-            Preferences preferences) {
+    FolderPresenter(DescriptorRepository descriptorRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
-        this.shortcutsRepository = shortcutsRepository;
         this.preferences = preferences;
     }
 
@@ -75,61 +72,6 @@ public class FolderPresenter extends AppPresenter<FolderView> {
                     @Override
                     protected void onError(FolderView viewState, Throwable e) {
                         viewState.onError(e);
-                    }
-                });
-    }
-
-    void pinShortcut(Shortcut shortcut) {
-        shortcutsRepository.pinShortcut(shortcut)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<Boolean>() {
-                    @Override
-                    protected void onSuccess(FolderView viewState, Boolean pinned) {
-                        if (pinned) {
-                            viewState.onShortcutPinned(shortcut);
-                        } else {
-                            viewState.onShortcutAlreadyPinnedError(shortcut);
-                        }
-                    }
-
-                    @Override
-                    protected void onError(FolderView viewState, Throwable e) {
-                        viewState.onError(e);
-                    }
-                });
-    }
-
-    void removeItemImmediate(RemovableDescriptorUi item) {
-        Descriptor descriptor = item.getDescriptor();
-        DescriptorRepository.Editor editor = descriptorRepository.edit();
-        editor.enqueue(new RemoveAction(descriptor));
-        editor.commit()
-                .subscribeOn(Schedulers.io())
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("Item removed: %s", descriptor);
-                    }
-                });
-    }
-
-    void removeFromFolder(InFolderDescriptorUi item) {
-        Single
-                .fromCallable(() -> {
-                    return descriptorRepository.findById(FolderDescriptor.class, item.getFolderId());
-                })
-                .flatMapCompletable(folder -> {
-                    return descriptorRepository.edit()
-                            .enqueue(new RemoveFromFolderAction(folder.id, item.getDescriptor().getId()))
-                            .commit();
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Timber.e(e, "removeFromFolder: %s", e.getMessage());
                     }
                 });
     }
@@ -167,24 +109,6 @@ public class FolderPresenter extends AppPresenter<FolderView> {
             } else {
                 // should not happen
                 return lhs.getDescriptor().getId().compareTo(rhs.getDescriptor().getId());
-            }
-        }
-    }
-
-    private static class RemoveFromFolderAction extends BaseAction {
-        private final String folderId;
-        private final String itemId;
-
-        RemoveFromFolderAction(String folderId, String itemId) {
-            this.folderId = folderId;
-            this.itemId = itemId;
-        }
-
-        @Override
-        public void apply(List<Descriptor> items) {
-            FolderDescriptor descriptor = findById(items, folderId);
-            if (descriptor != null) {
-                descriptor.items.remove(itemId);
             }
         }
     }
