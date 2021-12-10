@@ -1,6 +1,9 @@
 package com.italankin.lnch.feature.home.apps.folder.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -8,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class AlignFrameView extends ViewGroup {
+
+    private static final boolean DEBUG = false;
 
     private static final float MAX_WIDTH_FACTOR = .85f;
     private static final float MAX_HEIGHT_FACTOR = .85f;
@@ -24,6 +29,7 @@ public class AlignFrameView extends ViewGroup {
 
     public AlignFrameView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setWillNotDraw(!DEBUG);
     }
 
     public void setAnchorPoint(int x, int y) {
@@ -95,5 +101,18 @@ public class AlignFrameView extends ViewGroup {
             child.setPivotY(anchorY - out.top);
         }
         child.layout(out.left, out.top, out.right, out.bottom);
+    }
+
+    @Override
+    public void onDrawForeground(Canvas canvas) {
+        super.onDrawForeground(canvas);
+        if (DEBUG) {
+            Paint p = new Paint();
+            int alpha = 0x40ffffff;
+            p.setColor(alpha & Color.RED);
+            canvas.drawRect(container, p);
+            p.setColor(alpha & Color.GREEN);
+            canvas.drawRect(out, p);
+        }
     }
 }
