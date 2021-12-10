@@ -28,7 +28,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
-        this.items = descriptor.items;
+        this.items = new ArrayList<>(descriptor.items);
     }
 
     @Override
