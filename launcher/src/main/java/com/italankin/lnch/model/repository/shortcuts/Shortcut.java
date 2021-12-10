@@ -40,6 +40,8 @@ public interface Shortcut extends Comparable<Shortcut> {
         }
         if (this.isDynamic()) {
             return 1;
+        } else if (that.isDynamic()) {
+            return -1;
         }
         return Integer.compare(this.getRank(), that.getRank());
     }
