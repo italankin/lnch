@@ -7,12 +7,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -24,20 +27,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetGalleryActivity extends AppCompatActivity implements
-        WidgetPreviewAdapter.Listener {
+        WidgetPreviewAdapter.Listener,
+        ListFilter.OnFilterResult<WidgetPreview> {
 
     private static final String EXTRA_APP_WIDGET_ID = "app_widget_id";
 
     private static final String EXTRA_RESULT = "result";
 
     private AppWidgetManager appWidgetManager;
-    private RecyclerView widgetsList;
+    private LceLayout lce;
+    private final WidgetFilter filter = new WidgetFilter(this);
     private int appWidgetId;
 
     private final ActivityResultLauncher<Input> bindWidgetLauncher = registerForActivityResult(
@@ -48,9 +54,11 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
                 finish();
             }
     );
+    private CompositeAdapter<WidgetPreview> adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(this);
         Preferences preferences = LauncherApp.daggerService.main().preferences();
         SupportsOrientationDelegate.attach(this, preferences);
         super.onCreate(savedInstanceState);
@@ -75,10 +83,38 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
             finish();
         });
 
-        widgetsList = findViewById(R.id.list);
+        lce = findViewById(R.id.lce);
+        RecyclerView widgetsList = findViewById(R.id.list);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         widgetsList.setLayoutManager(layoutManager);
+        adapter = new CompositeAdapter.Builder<WidgetPreview>(this)
+                .add(new WidgetPreviewAdapter(picasso, this))
+                .setHasStableIds(true)
+                .create();
+        widgetsList.setAdapter(adapter);
+
         populate();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.widget_gallery, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setQueryHint(getString(R.string.widgets_gallery_hint_search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filter.filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter.filter(newText);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -91,22 +127,29 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onFilterResult(String query, List<WidgetPreview> items) {
+        if (items.isEmpty()) {
+            lce.empty()
+                    .message(R.string.widgets_gallery_search_empty)
+                    .show();
+        } else {
+            adapter.setDataset(items);
+            adapter.notifyDataSetChanged();
+            lce.showContent();
+        }
+    }
+
     private void populate() {
-        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(this);
         PackageManager packageManager = getPackageManager();
 
         List<AppWidgetProviderInfo> providers = appWidgetManager.getInstalledProviders();
-        List<WidgetGalleryItem> items = new ArrayList<>(providers.size());
+        List<WidgetPreview> items = new ArrayList<>(providers.size());
         for (AppWidgetProviderInfo info : providers) {
             items.add(new WidgetPreview(packageManager, info));
         }
 
-        CompositeAdapter<WidgetGalleryItem> adapter = new CompositeAdapter.Builder<WidgetGalleryItem>(this)
-                .add(new WidgetPreviewAdapter(picasso, this))
-                .dataset(items)
-                .setHasStableIds(true)
-                .create();
-        widgetsList.setAdapter(adapter);
+        filter.setDataset(items);
     }
 
     public static class Contract extends ActivityResultContract<Integer, AppWidgetProviderInfo> {

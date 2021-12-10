@@ -17,6 +17,8 @@
     <string name="widgets_remove">Remove widget</string>
     <string name="widgets_app_info">App info</string>
     <string name="widgets_gallery_title">Widget Gallery</string>
+    <string name="widgets_gallery_hint_search">Filter by app</string>
+    <string name="widgets_gallery_search_empty">Nothing found</string>
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
