@@ -43,7 +43,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.util.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;

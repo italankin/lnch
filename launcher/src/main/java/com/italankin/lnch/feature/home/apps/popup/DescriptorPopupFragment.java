@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.util;
+package com.italankin.lnch.feature.home.apps.popup;
 
 import android.content.Context;
 import android.content.Intent;

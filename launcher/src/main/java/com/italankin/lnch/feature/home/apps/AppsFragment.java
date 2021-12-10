@@ -60,7 +60,7 @@ import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.util.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
