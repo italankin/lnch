@@ -17,6 +17,9 @@ interface FolderView extends MvpView {
     void onShowFolder(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onFolderUpdated(List<DescriptorUi> items);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onError(Throwable error);
 
     @StateStrategyType(OneExecutionStateStrategy.class)

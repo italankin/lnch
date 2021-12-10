@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
+    android:clipToPadding="false"
     android:padding="8dp">
 
     <LinearLayout
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/folder_bg"
         android:clickable="true"
-        android:elevation="16dp"
+        android:elevation="@dimen/popup_window_elevation"
         android:focusable="true"
         android:minWidth="224dp"
         android:orientation="vertical"
@@ -36,19 +37,12 @@
             tools:minHeight="48dp"
             tools:text="Folder Title" />
 
-        <com.italankin.lnch.util.widget.LceLayout
-            android:id="@+id/folder_lce"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/folder_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/folder_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:itemCount="4"
-                tools:listitem="@layout/item_app" />
-
-        </com.italankin.lnch.util.widget.LceLayout>
+            android:layout_height="wrap_content"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_app" />
 
     </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -41,6 +42,7 @@ import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate
 import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -54,7 +56,6 @@ import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class FolderFragment extends AppFragment implements FolderView,
         FolderFragment fragment = new FolderFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ANCHOR, anchor);
-        args.putString(ARG_DESCRIPTOR_ID, descriptor.getId());
+        args.putString(ARG_FOLDER_ID, descriptor.getId());
         args.putString(ARG_REQUEST_KEY, requestKey);
         fragment.setArguments(args);
         return fragment;
@@ -93,7 +94,7 @@ public class FolderFragment extends AppFragment implements FolderView,
         return false;
     }
 
-    private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
+    private static final String ARG_FOLDER_ID = "folder_id";
     private static final String ARG_ANCHOR = "anchor";
     private static final String ARG_REQUEST_KEY = "request_key";
 
@@ -108,8 +109,9 @@ public class FolderFragment extends AppFragment implements FolderView,
     private RecyclerView list;
     private AlignFrameView alignFrameView;
     private View container;
-    private LceLayout lce;
     private TextView title;
+
+    private HomeAdapter adapter;
 
     private AppClickDelegate appClickDelegate;
     private ErrorDelegate errorDelegate;
@@ -117,6 +119,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     private DeepShortcutClickDelegate deepShortcutClickDelegate;
     private IntentClickDelegate intentClickDelegate;
 
+    private String folderId;
     private int backstackId = -1;
 
     @ProvidePresenter
@@ -127,6 +130,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        folderId = requireArguments().getString(ARG_FOLDER_ID);
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
         }
@@ -152,6 +156,11 @@ public class FolderFragment extends AppFragment implements FolderView,
             case FragmentResults.OnActionHandled.KEY:
                 dismiss();
                 return;
+            case FragmentResults.RemoveFromFolder.KEY: {
+                String descriptorId = result.getString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID);
+                presenter.removeFromFolder(descriptorId, folderId);
+                break;
+            }
             default: {
                 sendResult(result);
                 dismiss();
@@ -169,7 +178,7 @@ public class FolderFragment extends AppFragment implements FolderView,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         alignFrameView = view.findViewById(R.id.folder_frame);
         container = view.findViewById(R.id.folder_container);
-        lce = view.findViewById(R.id.folder_lce);
+        container.setClipToOutline(true);
         list = view.findViewById(R.id.folder_list);
         title = view.findViewById(R.id.folder_title);
 
@@ -182,10 +191,20 @@ public class FolderFragment extends AppFragment implements FolderView,
         });
         alignFrameView.setOnClickListener(v -> dismiss());
 
-        container.setClipToOutline(true);
+        adapter = new HomeAdapter.Builder(requireContext())
+                .add(new AppDescriptorUiAdapter(this, true))
+                .add(new PinnedShortcutDescriptorUiAdapter(this))
+                .add(new IntentDescriptorUiAdapter(this))
+                .add(new DeepShortcutDescriptorUiAdapter(this))
+                .add(new EmptyFolderDescriptorUiAdapter())
+                .setHasStableIds(true)
+                .create();
+        list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
+        list.setAdapter(adapter);
 
-        String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
-        presenter.loadFolder(descriptorId);
+        initDelegates(requireContext());
+
+        presenter.loadFolder(folderId);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -194,33 +213,18 @@ public class FolderFragment extends AppFragment implements FolderView,
 
     @Override
     public void onShowFolder(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
-        Context context = requireContext();
-
         title.setText(descriptor.getVisibleLabel());
+        adapter.updateUserPrefs(userPrefs);
 
-        if (items.isEmpty()) {
-            lce.empty()
-                    .message(R.string.folder_empty)
-                    .show();
-        } else {
-            list.setLayoutManager(new FlexboxLayoutManager(context, FlexDirection.ROW));
-            HomeAdapter adapter = new HomeAdapter.Builder(context)
-                    .add(new AppDescriptorUiAdapter(this, true))
-                    .add(new PinnedShortcutDescriptorUiAdapter(this))
-                    .add(new IntentDescriptorUiAdapter(this))
-                    .add(new DeepShortcutDescriptorUiAdapter(this))
-                    .setHasStableIds(true)
-                    .create();
-            adapter.updateUserPrefs(userPrefs);
-            adapter.setDataset(items);
-            list.setAdapter(adapter);
-
-            lce.showContent();
-        }
-
-        initDelegates(context);
+        onFolderUpdated(items);
 
         animatePopupAppearance();
+    }
+
+    @Override
+    public void onFolderUpdated(List<DescriptorUi> items) {
+        adapter.setDataset(items);
+        adapter.notifyDataSetChanged();
     }
 
     private void initDelegates(Context context) {
@@ -372,6 +376,9 @@ public class FolderFragment extends AppFragment implements FolderView,
                 .alpha(1)
                 .setInterpolator(new DecelerateInterpolator())
                 .setDuration(150)
+                .withEndAction(() -> {
+                    alignFrameView.setLayoutTransition(new LayoutTransition());
+                })
                 .start();
     }
 }

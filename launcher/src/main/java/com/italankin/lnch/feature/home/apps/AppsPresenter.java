@@ -14,6 +14,7 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
+import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
@@ -429,24 +430,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             FolderDescriptor descriptor = findById(items, folderId);
             if (descriptor != null) {
                 descriptor.items.add(item.getId());
-            }
-        }
-    }
-
-    private static class RemoveFromFolderAction extends BaseAction {
-        private final String folderId;
-        private final String itemId;
-
-        RemoveFromFolderAction(String folderId, String itemId) {
-            this.folderId = folderId;
-            this.itemId = itemId;
-        }
-
-        @Override
-        public void apply(List<Descriptor> items) {
-            FolderDescriptor descriptor = findById(items, folderId);
-            if (descriptor != null) {
-                descriptor.items.remove(itemId);
             }
         }
     }
