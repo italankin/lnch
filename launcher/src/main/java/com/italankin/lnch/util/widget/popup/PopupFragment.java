@@ -48,7 +48,8 @@ public abstract class PopupFragment extends Fragment {
         root.setAnchor(anchor);
         root.post(() -> {
             WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-            root.setPaddingRelative(0, insets.getStableInsetTop(), 0, insets.getStableInsetBottom());
+            root.setPaddingRelative(root.getPaddingStart(), insets.getStableInsetTop(),
+                    root.getPaddingEnd(), insets.getStableInsetBottom());
         });
         root.setOnClickListener(v -> dismiss());
     }
