@@ -191,44 +191,37 @@ public class DescriptorPopupFragment extends PopupFragment {
                 });
 
         List<Shortcut> shortcuts = getShortcuts(item);
-        if (shortcuts.isEmpty()) {
-            if (item.getFolderId() != null) {
+        if (item.getFolderId() != null) {
+            if (shortcuts.isEmpty()) {
                 addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            }
-            addShortcut(infoItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            if (uninstallAvailable) {
-                addShortcut(uninstallItem.setIconDrawableTintAttr(R.attr.colorAccent));
-            }
-        } else {
-            if (item.getFolderId() != null) {
+            } else {
                 addAction(removeFromFolderItem);
             }
-            addAction(infoItem);
-            if (uninstallAvailable) {
-                addAction(uninstallItem);
-            }
-            for (Shortcut shortcut : shortcuts) {
-                addShortcut(new ItemBuilder()
-                        .setLabel(shortcut.getShortLabel())
-                        .setIcon(shortcut.getIconUri())
-                        .setEnabled(shortcut.isEnabled())
-                        .setOnClickListener(v -> {
-                            startShortcut(shortcut, v);
-                        })
-                        .setOnPinClickListener(v -> {
-                            pinShortcut(shortcut);
-                        })
-                );
-            }
+        }
+        addAction(infoItem);
+        if (uninstallAvailable) {
+            addAction(uninstallItem);
+        }
+        for (Shortcut shortcut : shortcuts) {
+            addShortcut(new ItemBuilder()
+                    .setLabel(shortcut.getShortLabel())
+                    .setIcon(shortcut.getIconUri())
+                    .setEnabled(shortcut.isEnabled())
+                    .setOnClickListener(v -> {
+                        startShortcut(shortcut, v);
+                    })
+                    .setOnPinClickListener(v -> {
+                        pinShortcut(shortcut);
+                    })
+            );
         }
     }
 
     private void showItemPopup(DescriptorUi item) {
         Context context = requireContext();
         if (item instanceof DeepShortcutDescriptorUi) {
-            addShortcut(new ItemBuilder()
+            addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_app_info)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
                         DeepShortcutDescriptor descriptor = ((DeepShortcutDescriptorUi) item).getDescriptor();
@@ -237,9 +230,8 @@ public class DescriptorPopupFragment extends PopupFragment {
             );
         }
         if (item instanceof RemovableDescriptorUi) {
-            addShortcut(new ItemBuilder()
+            addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_delete)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.customize_item_delete)
                     .setOnClickListener(v -> {
                         String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
@@ -257,7 +249,7 @@ public class DescriptorPopupFragment extends PopupFragment {
         }
         if (item instanceof InFolderDescriptorUi && ((InFolderDescriptorUi) item).getFolderId() != null) {
             addShortcut(new ItemBuilder()
-                    .setIcon(R.drawable.ic_action_delete)
+                    .setIcon(R.drawable.ic_action_remove_from_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.customize_item_remove_from_folder)
                     .setOnClickListener(v -> {
@@ -343,13 +335,19 @@ public class DescriptorPopupFragment extends PopupFragment {
     }
 
     private void populateItems() {
-        for (ItemBuilder action : actions) {
-            addActionInternal(action);
+        if (shortcuts.isEmpty()) {
+            for (ItemBuilder action : actions) {
+                addShortcutInternal(action.setIconDrawableTintAttr(R.attr.colorAccent));
+            }
+        } else {
+            for (ItemBuilder action : actions) {
+                addActionInternal(action);
+            }
+            for (ItemBuilder shortcut : shortcuts) {
+                addShortcutInternal(shortcut);
+            }
         }
-        for (ItemBuilder shortcut : shortcuts) {
-            addShortcutInternal(shortcut);
-        }
-        if (actions.isEmpty()) {
+        if (actionsContainer.getChildCount() == 0) {
             containerRoot.setArrowColors(ResUtils.resolveColor(requireContext(), R.attr.colorPopupBackground));
         }
         actions.clear();
