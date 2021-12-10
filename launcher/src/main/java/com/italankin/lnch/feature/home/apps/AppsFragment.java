@@ -594,6 +594,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         Context context = requireContext();
         ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
         popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                .setIcon(R.drawable.ic_action_add_new_folder)
                 .setLabel(R.string.edit_add_folder)
                 .setOnClickListener(v -> {
                     String label = getString(R.string.new_folder_default_label);
@@ -602,6 +603,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 }));
         if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
             popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
+                    .setIcon(R.drawable.ic_action_intent_edit)
                     .setLabel(R.string.edit_add_intent)
                     .setOnClickListener(v -> {
                         createIntentLauncher.launch(null);
