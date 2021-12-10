@@ -23,7 +23,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:layout_constraintBottom_toBottomOf="@id/widget_preview"
-        app:layout_constraintEnd_toEndOf="@id/widget_preview"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:src="@tools:sample/avatars" />
 
     <TextView
