@@ -71,8 +71,8 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    public void onDrawForeground(Canvas canvas) {
+        super.onDrawForeground(canvas);
         arrowDrawable.draw(canvas);
     }
 
