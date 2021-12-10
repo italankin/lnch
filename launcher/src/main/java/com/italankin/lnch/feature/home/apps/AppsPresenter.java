@@ -187,6 +187,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void stopCustomize() {
         if (editor.isEmpty()) {
+            editor = null;
+            getViewState().onChangesDiscarded();
             update();
             return;
         }
