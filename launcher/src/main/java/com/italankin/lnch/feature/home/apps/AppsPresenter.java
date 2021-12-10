@@ -131,8 +131,24 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemInserted(items.size() - 1);
     }
 
-    void addToFolder(String folderId, InFolderDescriptorUi item) {
-        editor.enqueue(new AddToFolderAction(folderId, item.getDescriptor()));
+    void addToFolder(String folderId, String descriptorId) {
+        FolderDescriptorUi folder = null;
+        for (DescriptorUi item : items) {
+            if (item.getDescriptor().getId().equals(folderId)) {
+                folder = (FolderDescriptorUi) item;
+                break;
+            }
+        }
+        if (folder == null) {
+            return;
+        }
+        if (folder.items.contains(descriptorId)) {
+            getViewState().onFolderUpdated(folder, false);
+            return;
+        }
+        editor.enqueue(new AddToFolderAction(folderId, descriptorId));
+        folder.items.add(descriptorId);
+        getViewState().onFolderUpdated(folder, true);
     }
 
     void addIntent(IntentDescriptor item) {
@@ -175,14 +191,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void selectFolder(InFolderDescriptorUi item) {
+    void selectFolder(int position, InFolderDescriptorUi item) {
         List<FolderDescriptorUi> folders = new ArrayList<>(4);
         for (DescriptorUi descriptor : items) {
             if (descriptor instanceof FolderDescriptorUi) {
                 folders.add((FolderDescriptorUi) descriptor);
             }
         }
-        getViewState().showSelectFolderDialog(item, folders);
+        getViewState().showSelectFolderDialog(position, item, folders);
     }
 
     void stopCustomize() {
@@ -420,18 +436,18 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private static class AddToFolderAction extends BaseAction {
 
         private final String folderId;
-        private final Descriptor item;
+        private final String descriptorId;
 
-        private AddToFolderAction(String folderId, Descriptor item) {
+        private AddToFolderAction(String folderId, String descriptorId) {
             this.folderId = folderId;
-            this.item = item;
+            this.descriptorId = descriptorId;
         }
 
         @Override
         public void apply(List<Descriptor> items) {
             FolderDescriptor descriptor = findById(items, folderId);
             if (descriptor != null) {
-                descriptor.items.add(item.getId());
+                descriptor.items.add(descriptorId);
             }
         }
     }

@@ -57,10 +57,11 @@ import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
+import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.SwapItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
@@ -324,6 +325,12 @@ public class AppsFragment extends AppFragment implements AppsView,
                 presenter.removeFromFolder(descriptorId, folderId);
                 break;
             }
+            case FragmentResults.SelectFolder.KEY: {
+                String folderId = result.getString(FragmentResults.SelectFolder.FOLDER_ID);
+                String descriptorId = result.getString(FragmentResults.SelectFolder.DESCRIPTOR_ID);
+                presenter.addToFolder(folderId, descriptorId);
+                break;
+            }
         }
     }
 
@@ -569,7 +576,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     .setIcon(R.drawable.ic_action_add_to_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setOnClickListener(v -> {
-                        presenter.selectFolder((InFolderDescriptorUi) item);
+                        presenter.selectFolder(position, (InFolderDescriptorUi) item);
                     })
             );
         }
@@ -744,29 +751,26 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showSelectFolderDialog(InFolderDescriptorUi item, List<FolderDescriptorUi> folders) {
+    public void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders) {
         if (folders.isEmpty()) {
             errorDelegate.showError(R.string.folder_select_no_folders);
             return;
         }
-        CharSequence[] items = new CharSequence[folders.size()];
-        for (int i = 0; i < folders.size(); i++) {
-            items[i] = folders.get(i).getVisibleLabel();
+        View view = list.findViewForAdapterPosition(position);
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, item, folders, bounds)
+                .show(getParentFragmentManager());
+    }
+
+    @Override
+    public void onFolderUpdated(FolderDescriptorUi item, boolean added) {
+        String text;
+        if (added) {
+            text = getString(R.string.folder_select_selected, item.getVisibleLabel());
+        } else {
+            text = getString(R.string.folder_select_already_in_folder, item.getVisibleLabel());
         }
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.customize_item_select_folder)
-                .setItems(items, (dialog, which) -> {
-                    FolderDescriptorUi selected = folders.get(which);
-                    if (selected.getDescriptor().items.contains(item.getDescriptor().getId())) {
-                        String text = getString(R.string.folder_select_item_in_folder, selected.getVisibleLabel());
-                        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
-                    } else {
-                        presenter.addToFolder(selected.getDescriptor().getId(), item);
-                        String text = getString(R.string.folder_select_selected, selected.getVisibleLabel());
-                        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .show();
+        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     ///////////////////////////////////////////////////////////////////////////

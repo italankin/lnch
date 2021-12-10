@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
 
 import com.italankin.lnch.R;
 
@@ -20,14 +21,15 @@ public abstract class PopupFragment extends Fragment {
 
     protected static final String ARG_ANCHOR = "anchor";
 
-    private static final String BACKSTACK_NAME = "popup";
-    private static final String TAG = "popup";
-
     protected PopupFrameView root;
     protected ArrowLayout containerRoot;
-    protected ViewGroup itemsContainer;
+    protected LinearLayout itemsContainer;
 
     private int backstackId;
+
+    protected abstract String getPopupBackstackName();
+
+    protected abstract String getPopupTag();
 
     @CallSuper
     @Override
@@ -57,8 +59,8 @@ public abstract class PopupFragment extends Fragment {
     public void show(FragmentManager fragmentManager) {
         backstackId = fragmentManager.beginTransaction()
                 .setCustomAnimations(0, 0, 0, R.animator.fragment_folder_out)
-                .add(android.R.id.content, this, TAG)
-                .addToBackStack(BACKSTACK_NAME)
+                .add(android.R.id.content, this, getPopupTag())
+                .addToBackStack(getPopupBackstackName())
                 .commit();
     }
 
@@ -70,7 +72,7 @@ public abstract class PopupFragment extends Fragment {
         }
     }
 
-    protected void show() {
+    protected void showPopup() {
         containerRoot.setScaleX(0.4f);
         containerRoot.setScaleY(0.4f);
         containerRoot.setAlpha(0);

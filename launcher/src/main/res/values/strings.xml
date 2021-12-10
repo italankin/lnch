@@ -54,9 +54,8 @@
     <string name="customize_item_select_folder">Select folder</string>
 
     <string name="folder_empty">Folder is empty</string>
-    <string name="folder_select">Select folder</string>
     <string name="folder_select_selected">Added to %1$s</string>
-    <string name="folder_select_item_in_folder">Already in %1$s</string>
+    <string name="folder_select_already_in_folder">Already in %1$s</string>
     <string name="folder_select_no_folders">No folders created</string>
 
     <string name="popup_app_info">App info</string>

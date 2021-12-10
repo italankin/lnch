@@ -4,23 +4,23 @@ import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.ExpandableDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class FolderDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         CustomLabelDescriptorUi,
-        RemovableDescriptorUi,
-        ExpandableDescriptorUi {
+        RemovableDescriptorUi {
 
     private final FolderDescriptor descriptor;
     private final String label;
     private final int color;
     private String customLabel;
     private Integer customColor;
-    private boolean expanded = true;
+    public List<String> items;
 
     public FolderDescriptorUi(FolderDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -28,6 +28,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.items = descriptor.items;
     }
 
     @Override
@@ -66,16 +67,6 @@ public final class FolderDescriptorUi implements DescriptorUi,
     }
 
     @Override
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-    }
-
-    @Override
-    public boolean isExpanded() {
-        return expanded;
-    }
-
-    @Override
     public String toString() {
         return descriptor.toString();
     }
@@ -103,7 +94,6 @@ public final class FolderDescriptorUi implements DescriptorUi,
         FolderDescriptorUi that = (FolderDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
-                && Objects.equals(this.customColor, that.customColor)
-                && this.expanded == that.expanded;
+                && Objects.equals(this.customColor, that.customColor);
     }
 }

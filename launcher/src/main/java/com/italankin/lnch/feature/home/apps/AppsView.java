@@ -31,7 +31,10 @@ interface AppsView extends MvpView {
     void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showSelectFolderDialog(InFolderDescriptorUi item, List<FolderDescriptorUi> folders);
+    void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onFolderUpdated(FolderDescriptorUi item, boolean added);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

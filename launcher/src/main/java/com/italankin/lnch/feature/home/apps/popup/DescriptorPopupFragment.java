@@ -85,6 +85,10 @@ public class DescriptorPopupFragment extends PopupFragment {
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
     private static final String ARG_FOLDER_ID = "folder_id";
     private static final String ARG_REQUEST_KEY = "request_key";
+
+    private static final String BACKSTACK_NAME = "descriptor_popup";
+    private static final String TAG = "descriptor_popup";
+
     private static final float DISABLED_ALPHA = 0.33f;
 
     private Picasso picasso;
@@ -106,6 +110,16 @@ public class DescriptorPopupFragment extends PopupFragment {
         picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
         preferences = LauncherApp.daggerService.main().preferences();
         shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+    }
+
+    @Override
+    protected String getPopupBackstackName() {
+        return BACKSTACK_NAME;
+    }
+
+    @Override
+    protected String getPopupTag() {
+        return TAG;
     }
 
     @Override
@@ -151,7 +165,7 @@ public class DescriptorPopupFragment extends PopupFragment {
             showItemPopup(item);
         }
         populateItems();
-        show();
+        showPopup();
     }
 
     private void showAppPopup(AppDescriptorUi item) {

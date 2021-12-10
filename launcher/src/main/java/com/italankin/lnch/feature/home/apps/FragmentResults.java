@@ -14,6 +14,12 @@ public final class FragmentResults {
         public static final String FOLDER_ID = "folder_Id";
     }
 
+    public static final class SelectFolder {
+        public static final String KEY = "select_folder";
+        public static final String DESCRIPTOR_ID = "descriptor_Id";
+        public static final String FOLDER_ID = "folder_Id";
+    }
+
     public static final class RemoveItem {
         public static final String KEY = "remove_item";
         public static final String DESCRIPTOR_ID = "descriptor_Id";
