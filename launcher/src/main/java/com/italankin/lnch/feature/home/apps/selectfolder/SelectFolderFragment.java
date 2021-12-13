@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home.apps.selectfolder;
 
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,8 +18,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 
 public class SelectFolderFragment extends PopupFragment {
 
@@ -30,7 +33,7 @@ public class SelectFolderFragment extends PopupFragment {
         Bundle args = new Bundle();
         ArrayList<Folder> f = new ArrayList<>(folders.size());
         for (FolderDescriptorUi folder : folders) {
-            f.add(new Folder(folder.getDescriptor().id, folder.getVisibleLabel()));
+            f.add(new Folder(folder));
         }
         args.putSerializable(ARG_FOLDERS, f);
         args.putString(ARG_REQUEST_KEY, requestKey);
@@ -84,6 +87,7 @@ public class SelectFolderFragment extends PopupFragment {
                 getParentFragmentManager().setFragmentResult(requestKey, result);
                 dismiss();
             });
+            TextViewCompat.setCompoundDrawableTintList(folderView, ColorStateList.valueOf(folder.color));
             itemsContainer.addView(folderView);
         }
     }
@@ -91,10 +95,13 @@ public class SelectFolderFragment extends PopupFragment {
     private static class Folder implements Serializable {
         final String id;
         final String label;
+        @ColorInt
+        final int color;
 
-        private Folder(String groupId, String label) {
-            this.id = groupId;
-            this.label = label;
+        Folder(FolderDescriptorUi folder) {
+            this.id = folder.getDescriptor().id;
+            this.label = folder.getVisibleLabel();
+            this.color = folder.getVisibleColor();
         }
     }
 }
