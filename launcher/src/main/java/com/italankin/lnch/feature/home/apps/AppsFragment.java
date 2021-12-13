@@ -340,7 +340,9 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (update.items.isEmpty()) {
             lce.empty()
                     .message(R.string.apps_list_empty)
-                    .button(R.string.open_settings, this::startLnchSettings)
+                    .button(R.string.open_settings, v -> {
+                        startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
+                    })
                     .show();
         } else {
             lce.showContent();
@@ -376,18 +378,10 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Start
     ///////////////////////////////////////////////////////////////////////////
 
-    private boolean startAppActivity(ComponentName componentName, View view) {
+    private void startAppActivity(ComponentName componentName, View view) {
         Rect bounds = ViewUtils.getViewBounds(view);
         Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
-        return IntentUtils.safeStartMainActivity(requireContext(), componentName, bounds, opts);
-    }
-
-    private boolean startAppSettings(String packageName, @Nullable View view) {
-        return IntentUtils.safeStartAppSettings(requireContext(), packageName, view);
-    }
-
-    private void startLnchSettings(View view) {
-        startAppActivity(SettingsActivity.getComponentName(requireContext()), view);
+        IntentUtils.safeStartMainActivity(requireContext(), componentName, bounds, opts);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -856,7 +850,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 }
                 Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
                 String packageName = DescriptorUtils.getPackageName(descriptor);
-                if (packageName != null && startAppSettings(packageName, null)) {
+                if (packageName != null && IntentUtils.safeStartAppSettings(requireContext(), packageName, null)) {
                     searchBarBehavior.hide();
                 }
             }
