@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
@@ -50,6 +48,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
+
+    private volatile Editor currentEditor;
 
     public LauncherDescriptorRepository(Context context, PackageManager packageManager,
             DescriptorStore descriptorStore, PackagesStore packagesStore,
@@ -112,7 +112,10 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     @Override
     public DescriptorRepository.Editor edit() {
-        return new Editor(updatesSubject.getValue());
+        if (currentEditor != null && !currentEditor.disposed) {
+            return currentEditor;
+        }
+        return currentEditor = new Editor(updatesSubject.getValue());
     }
 
     @Override
@@ -191,7 +194,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         private final Queue<DescriptorRepository.Editor.Action> actions = new ArrayDeque<>();
         private final List<Descriptor> items;
         private volatile boolean disposed;
-        private final Consumer<Disposable> onSubscribe = d -> disposed = true;
 
         Editor(List<Descriptor> items) {
             this.items = items;
@@ -218,6 +220,15 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         }
 
         @Override
+        public void dispose() {
+            if (disposed) {
+                return;
+            }
+            disposed = true;
+            currentEditor = null;
+        }
+
+        @Override
         public Completable commit() {
             if (disposed) {
                 throw new IllegalStateException("Editor is disposed");
@@ -225,7 +236,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
             if (actions.isEmpty()) {
                 Timber.d("commit: no actions");
                 return Completable.complete()
-                        .doOnSubscribe(onSubscribe);
+                        .doFinally(this::dispose);
             }
             Timber.d("commit: apply actions");
             return Single
@@ -241,7 +252,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                         }
                         return result;
                     })
-                    .doOnSubscribe(onSubscribe)
+                    .doFinally(this::dispose)
                     .doOnSuccess(LauncherDescriptorRepository.this::writeToDisk)
                     .flatMapCompletable(descriptors -> updater);
         }

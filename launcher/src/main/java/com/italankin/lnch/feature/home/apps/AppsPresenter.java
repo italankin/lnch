@@ -186,6 +186,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void discardChanges() {
+        editor.dispose();
         editor = null;
         getViewState().onChangesDiscarded();
         update();
@@ -203,9 +204,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void stopCustomize() {
         if (editor.isEmpty()) {
-            editor = null;
-            getViewState().onChangesDiscarded();
-            update();
+            discardChanges();
             return;
         }
         editor.commit()

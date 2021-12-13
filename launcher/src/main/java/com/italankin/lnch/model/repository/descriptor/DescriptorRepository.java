@@ -69,6 +69,11 @@ public interface DescriptorRepository {
          */
         Completable commit();
 
+        /**
+         * Dispose this editor, discarding changes
+         */
+        void dispose();
+
         interface Action {
             void apply(List<Descriptor> items);
         }
