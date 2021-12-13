@@ -117,6 +117,9 @@ public class HomeActivity extends AppActivity implements HomeView {
 
     @Override
     public void onBackPressed() {
+        if (getSupportFragmentManager().popBackStackImmediate()) {
+            return;
+        }
         int currentItem = pager.getCurrentItem();
         Fragment fragment = pagerAdapter.getFragmentAt(currentItem);
         boolean handled = false;
@@ -124,9 +127,6 @@ public class HomeActivity extends AppActivity implements HomeView {
             handled = ((BackButtonHandler) fragment).onBackPressed();
         }
         if (!handled) {
-            if (getSupportFragmentManager().popBackStackImmediate()) {
-                return;
-            }
             int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
             if (currentItem != appsPosition) {
                 pager.setCurrentItem(appsPosition, true);

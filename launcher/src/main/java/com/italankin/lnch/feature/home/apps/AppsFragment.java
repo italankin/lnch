@@ -110,6 +110,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -275,8 +276,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         switch (action) {
             case Intent.ACTION_MAIN: {
-                popupDelegate.dismissPopup();
-                dismissFolder();
+                dismissPopups();
                 if (searchBarBehavior.isShown()) {
                     searchBar.reset();
                     searchBarBehavior.hide();
@@ -286,7 +286,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 return true;
             }
             case LauncherIntents.ACTION_EDIT_MODE: {
-                dismissFolder();
+                dismissPopups();
                 if (!editMode) {
                     animateOnResume = false;
                     presenter.startCustomize();
@@ -367,9 +367,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         if (searchBarBehavior.isShown()) {
             searchBarBehavior.hide();
-        }
-        if (dismissFolder()) {
-            return true;
         }
         scrollToTop();
         return true;
@@ -515,8 +512,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchBarBehavior.hide();
         searchBarBehavior.setEnabled(!value);
         if (value) {
-            dismissFolder();
-            popupDelegate.dismissPopup();
+            dismissPopups();
             searchBar.hideSoftKeyboard();
             EditModePanel panel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
@@ -788,11 +784,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Popup
     ///////////////////////////////////////////////////////////////////////////
 
-    private boolean dismissFolder() {
-        if (!getParentFragmentManager().isStateSaved()) {
-            return FolderFragment.dismiss(getParentFragmentManager());
-        }
-        return false;
+    private void dismissPopups() {
+        getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        popupDelegate.dismissPopup();
     }
 
     ///////////////////////////////////////////////////////////////////////////

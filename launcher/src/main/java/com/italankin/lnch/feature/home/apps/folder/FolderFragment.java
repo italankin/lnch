@@ -86,14 +86,6 @@ public class FolderFragment extends AppFragment implements FolderView,
         return fragment;
     }
 
-    public static boolean dismiss(FragmentManager fragmentManager) {
-        if (fragmentManager.findFragmentByTag(TAG) != null) {
-            fragmentManager.popBackStack(FolderFragment.BACKSTACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            return true;
-        }
-        return false;
-    }
-
     private static final String ARG_FOLDER_ID = "folder_id";
     private static final String ARG_ANCHOR = "anchor";
     private static final String ARG_REQUEST_KEY = "request_key";
