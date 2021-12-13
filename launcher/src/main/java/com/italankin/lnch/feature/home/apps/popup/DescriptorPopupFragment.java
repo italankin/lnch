@@ -219,12 +219,12 @@ public class DescriptorPopupFragment extends PopupFragment {
 
     private void showItemPopup(DescriptorUi item) {
         Context context = requireContext();
-        if (item instanceof DeepShortcutDescriptorUi) {
+        if (item.getDescriptor() instanceof PackageDescriptor) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_app_info)
                     .setLabel(R.string.popup_app_info)
                     .setOnClickListener(v -> {
-                        DeepShortcutDescriptor descriptor = ((DeepShortcutDescriptorUi) item).getDescriptor();
+                        PackageDescriptor descriptor = (PackageDescriptor) item.getDescriptor();
                         startAppSettings(descriptor, v);
                     })
             );
@@ -282,9 +282,8 @@ public class DescriptorPopupFragment extends PopupFragment {
         }
     }
 
-    private void startAppSettings(PackageDescriptor item, View v) {
-        String packageName = item.getPackageName();
-        IntentUtils.safeStartAppSettings(requireContext(), packageName, v);
+    private void startAppSettings(PackageDescriptor item, View bounds) {
+        IntentUtils.safeStartAppSettings(requireContext(), item.getPackageName(), bounds);
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
         sendResult(result);
