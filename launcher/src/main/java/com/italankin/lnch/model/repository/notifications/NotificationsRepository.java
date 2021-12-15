@@ -18,5 +18,5 @@ public interface NotificationsRepository {
 
     void clearNotifications();
 
-    Observable<Map<AppDescriptor, NotificationDot>> observe();
+    Observable<Map<AppDescriptor, AppNotifications>> observe();
 }

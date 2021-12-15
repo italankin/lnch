@@ -10,6 +10,7 @@ import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,9 +27,9 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private final DescriptorRepository descriptorRepository;
     private final Preferences preferences;
-    private final PublishSubject<Map<AppDescriptor, NotificationDot>> updates = PublishSubject.create();
+    private final PublishSubject<Map<AppDescriptor, AppNotifications>> updates = PublishSubject.create();
 
-    private final ConcurrentMap<AppDescriptor, NotificationDot> state = new ConcurrentHashMap<>();
+    private final ConcurrentMap<AppDescriptor, AppNotifications> state = new ConcurrentHashMap<>();
 
     public NotificationsRepositoryImpl(DescriptorRepository descriptorRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
@@ -68,7 +69,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     @Override
-    public Observable<Map<AppDescriptor, NotificationDot>> observe() {
+    public Observable<Map<AppDescriptor, AppNotifications>> observe() {
         return observeApps()
                 .map(this::updateState)
                 .startWith(state)
@@ -90,7 +91,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .distinctUntilChanged();
     }
 
-    private Map<AppDescriptor, NotificationDot> updateState(List<AppDescriptor> appDescriptors) {
+    private Map<AppDescriptor, AppNotifications> updateState(List<AppDescriptor> appDescriptors) {
         // remove any notifications, which belong to non-existent apps
         Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
         for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
@@ -104,45 +105,47 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     private boolean modifyState(StatusBarNotification sbn, Type type) {
         List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
         AppDescriptor app = DescriptorUtils.findAppByPackageName(appDescriptors, sbn.getPackageName());
-        if (app != null) {
-            NotificationDot dot = state.get(app);
-            if (sbn.isOngoing() && !showOngoing()) {
-                return modifyStateRemove(app, dot, sbn.getId());
-            }
-            switch (type) {
-                case POSTED:
-                    return modifyStatePost(app, dot, sbn.getId());
-                case REMOVED:
-                    return modifyStateRemove(app, dot, sbn.getId());
-            }
-        }
-        return false;
-    }
-
-    private boolean modifyStatePost(AppDescriptor app, @Nullable NotificationDot dot, int id) {
-        if (dot == null) {
-            state.put(app, new NotificationDot(id));
-            return true;
-        }
-        if (dot.ids.contains(id)) {
+        if (app == null) {
             return false;
         }
-        HashSet<Integer> s = new HashSet<>(dot.ids);
-        s.add(id);
-        state.put(app, new NotificationDot(s));
+        AppNotifications dot = state.get(app);
+        if (sbn.isOngoing() && !showOngoing()) {
+            return modifyStateRemove(app, dot, sbn);
+        }
+        switch (type) {
+            case POSTED:
+                return modifyStatePost(app, dot, sbn);
+            case REMOVED:
+                return modifyStateRemove(app, dot, sbn);
+            default:
+                return false;
+        }
+    }
+
+    private boolean modifyStatePost(AppDescriptor app, @Nullable AppNotifications dot, StatusBarNotification sbn) {
+        if (dot == null) {
+            state.put(app, new AppNotifications(app, sbn));
+            return true;
+        }
+        if (dot.notifications.get(sbn.getId()) == sbn) {
+            return false;
+        }
+        HashMap<Integer, StatusBarNotification> map = new HashMap<>(dot.notifications);
+        map.put(sbn.getId(), sbn);
+        state.put(app, new AppNotifications(app, map));
         return true;
     }
 
-    private boolean modifyStateRemove(AppDescriptor app, @Nullable NotificationDot dot, int id) {
-        if (dot == null || !dot.ids.contains(id)) {
+    private boolean modifyStateRemove(AppDescriptor app, @Nullable AppNotifications dot, StatusBarNotification sbn) {
+        if (dot == null || !dot.notifications.containsKey(sbn.getId())) {
             return false;
         }
-        HashSet<Integer> s = new HashSet<>(dot.ids);
-        s.remove(id);
-        if (s.isEmpty()) {
+        HashMap<Integer, StatusBarNotification> map = new HashMap<>(dot.notifications);
+        map.remove(sbn.getId());
+        if (map.isEmpty()) {
             state.remove(app);
         } else {
-            state.replace(app, new NotificationDot(s));
+            state.replace(app, new AppNotifications(app, map));
         }
         return true;
     }

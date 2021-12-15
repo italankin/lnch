@@ -19,7 +19,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
-import com.italankin.lnch.model.repository.notifications.NotificationDot;
+import com.italankin.lnch.model.repository.notifications.AppNotifications;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -362,7 +362,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .skip(1); // skip empty update
     }
 
-    private Observable<Map<AppDescriptor, NotificationDot>> observeNotifications() {
+    private Observable<Map<AppDescriptor, AppNotifications>> observeNotifications() {
         return notificationsRepository.observe()
                 .doOnNext(map -> {
                     Timber.d("notifications=%s", map);
@@ -371,7 +371,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @NotNull
     private List<DescriptorUi> concatNotifications(List<DescriptorUi> items,
-            Map<AppDescriptor, NotificationDot> notifications) {
+            Map<AppDescriptor, AppNotifications> notifications) {
         if (!preferences.get(Preferences.NOTIFICATION_DOT)) {
             return items;
         }
@@ -382,8 +382,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 continue;
             }
             AppDescriptorUi app = (AppDescriptorUi) item;
-            NotificationDot notificationDot = notifications.get(app.getDescriptor());
-            boolean badgeVisible = notificationDot != null && notificationDot.getCount() > 0;
+            AppNotifications appNotifications = notifications.get(app.getDescriptor());
+            boolean badgeVisible = appNotifications != null && appNotifications.getCount() > 0;
             if (badgeVisible != app.isBadgeVisible()) {
                 // create a copy of AppDescriptorUi to update state correctly
                 AppDescriptorUi newApp = new AppDescriptorUi(app);
