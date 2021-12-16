@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -246,6 +247,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         popupDelegate = new PopupDelegateImpl(list);
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
+            cancelListMotionEvents();
             Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
             DescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
                     .show(getParentFragmentManager());
@@ -778,7 +780,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Popup
     ///////////////////////////////////////////////////////////////////////////
 
-    private void dismissPopups() {
+    public void dismissPopups() {
         FragmentManager fragmentManager = getParentFragmentManager();
         if (!fragmentManager.isStateSaved()) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -906,6 +908,12 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         touchHelper.startDrag(list.getChildViewHolder(view));
+    }
+
+    private void cancelListMotionEvents() {
+        MotionEvent e = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+        list.onTouchEvent(e);
+        e.recycle();
     }
 
     private void animateListAppearance() {

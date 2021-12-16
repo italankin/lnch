@@ -203,6 +203,17 @@ public class HomeActivity extends AppActivity implements HomeView {
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
         updateAdapter();
         pager.addOnPageChangeListener(new PagerIndicatorAnimator(pagerIndicator));
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+                    if (appsFragment != null) {
+                        appsFragment.dismissPopups();
+                    }
+                }
+            }
+        });
     }
 
     private void updateAdapter() {
