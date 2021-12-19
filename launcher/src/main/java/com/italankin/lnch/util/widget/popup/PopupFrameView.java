@@ -29,8 +29,10 @@ public class PopupFrameView extends ViewGroup {
     private float maxWidthFactor = MAX_WIDTH_FACTOR;
     private float maxHeightFactor = MAX_HEIGHT_FACTOR;
 
-    private boolean freezeAtFirstLocation;
-    private Location frozenLocation;
+    private boolean keepLocationOnShrink;
+    private int keptMeasuredWidth = -1;
+    private int keptMeasuredHeight = -1;
+    private Location keptLocation;
 
     public PopupFrameView(Context context) {
         super(context);
@@ -61,8 +63,8 @@ public class PopupFrameView extends ViewGroup {
         invalidate();
     }
 
-    public void setFreezeAtFirstLocation(boolean freezeAtFirstLocation) {
-        this.freezeAtFirstLocation = freezeAtFirstLocation;
+    public void setKeepLocationOnShrink(boolean keepLocationOnShrink) {
+        this.keepLocationOnShrink = keepLocationOnShrink;
     }
 
     public void setLocations(List<Location> locations) {
@@ -129,10 +131,13 @@ public class PopupFrameView extends ViewGroup {
         int childHeight = child.getMeasuredHeight();
         if (anchor != null) {
             Location popupLocation = null;
-            if (freezeAtFirstLocation && frozenLocation != null) {
-                frozenLocation.apply(container, childWidth, childHeight, anchor, tmp, out);
-                popupLocation = frozenLocation;
-            } else {
+            if (keepLocationOnShrink && keptLocation != null
+                    && keptMeasuredWidth >= childWidth && keptMeasuredHeight >= childHeight) {
+                out.set(0, 0, childWidth, childHeight);
+                keptLocation.apply(container, childWidth, childHeight, anchor, tmp, out);
+                popupLocation = keptLocation;
+            }
+            if (popupLocation == null) {
                 for (Location location : locations) {
                     out.set(0, 0, childWidth, childHeight);
                     if (location.apply(container, childWidth, childHeight, anchor, tmp, out)) {
@@ -140,8 +145,10 @@ public class PopupFrameView extends ViewGroup {
                         break;
                     }
                 }
-                if (freezeAtFirstLocation) {
-                    frozenLocation = popupLocation;
+                if (keepLocationOnShrink) {
+                    keptLocation = popupLocation;
+                    keptMeasuredWidth = childWidth;
+                    keptMeasuredHeight = childHeight;
                 }
             }
             int anchorX = tmp[0];
