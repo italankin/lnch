@@ -40,6 +40,7 @@ import com.italankin.lnch.util.ListUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -364,16 +365,23 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     private Observable<Map<AppDescriptor, NotificationBag>> observeNotifications() {
-        return notificationsRepository.observe()
-                .doOnNext(map -> {
-                    Timber.d("notifications=%s", map);
+        return Observable.combineLatest(
+                notificationsRepository.observe(),
+                preferences.observe(Preferences.NOTIFICATION_DOT),
+                preferences.observe(Preferences.NOTIFICATION_DOT_ONGOING),
+                (notifications, showNotificationDots, showOngoing) -> {
+                    if (showNotificationDots) {
+                        return notifications;
+                    } else {
+                        return Collections.emptyMap();
+                    }
                 });
     }
 
     @NotNull
     private List<DescriptorUi> concatNotifications(List<DescriptorUi> items,
             Map<AppDescriptor, NotificationBag> notifications) {
-        if (!preferences.get(Preferences.NOTIFICATION_DOT)) {
+        if (notifications.isEmpty()) {
             return items;
         }
         List<DescriptorUi> result = new ArrayList<>(items.size());
