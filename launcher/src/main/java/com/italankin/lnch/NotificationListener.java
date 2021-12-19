@@ -5,7 +5,11 @@ import android.service.notification.StatusBarNotification;
 
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class NotificationListener extends NotificationListenerService implements NotificationsRepository.Callback {
@@ -22,8 +26,13 @@ public class NotificationListener extends NotificationListenerService implements
     @Override
     public void onListenerConnected() {
         Timber.d("onListenerConnected");
-        notificationsRepository.postNotifications(getActiveNotifications());
         notificationsRepository.setCallback(this);
+
+        Disposable d = Completable.timer(500, TimeUnit.MILLISECONDS)
+                .subscribe(() -> {
+                    notificationsRepository.postNotifications(getActiveNotifications());
+                });
+        disposables.add(d);
     }
 
     @Override
