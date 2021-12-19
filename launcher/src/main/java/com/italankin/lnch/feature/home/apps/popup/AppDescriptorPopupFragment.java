@@ -88,7 +88,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
 
     private RecyclerView notificationsList;
     private View notificationsListDivider;
-    private CompositeAdapter<PopupNotificationItem> adapter;
+    private CompositeAdapter<PopupNotificationItem> notificationsAdapter;
 
     private ErrorDelegate errorDelegate;
     private ShortcutStarterDelegate shortcutStarterDelegate;
@@ -161,13 +161,13 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         AppDescriptorUi item = (AppDescriptorUi) DescriptorUiFactory.createItem(descriptor);
         String folderId = args.getString(ARG_FOLDER_ID);
         item.setFolderId(folderId);
-        showAppPopup(item);
+        buildItemPopup(item);
         createItemViews();
         // post delay here due to deferred recycler view items inflation
         new Handler().post(this::showPopup);
     }
 
-    private void showAppPopup(AppDescriptorUi item) {
+    private void buildItemPopup(AppDescriptorUi item) {
         Context context = requireContext();
         boolean uninstallAvailable = !PackageUtils.isSystem(context.getPackageManager(), item.packageName);
         ItemBuilder infoItem = new ItemBuilder()
@@ -317,7 +317,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     }
 
     private void setupNotifications() {
-        this.adapter = new CompositeAdapter.Builder<PopupNotificationItem>(requireContext())
+        this.notificationsAdapter = new CompositeAdapter.Builder<PopupNotificationItem>(requireContext())
                 .add(new AppNotificationUiAdapter(this))
                 .add(new AppNotificationHeaderAdapter())
                 .setHasStableIds(true)
@@ -364,8 +364,8 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
                         notificationsList.setVisibility(View.GONE);
                         compositeDisposable.clear();
                     } else {
-                        adapter.setDataset(items);
-                        adapter.notifyDataSetChanged();
+                        notificationsAdapter.setDataset(items);
+                        notificationsAdapter.notifyDataSetChanged();
                     }
                 }, e -> {
                     Timber.e(e, "subscribeForNotifications:");
