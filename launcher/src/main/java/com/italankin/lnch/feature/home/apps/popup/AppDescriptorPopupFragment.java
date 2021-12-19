@@ -108,6 +108,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_app_descriptor_popup, container, false);
         root = view.findViewById(R.id.popup_root);
+        root.setKeepLocationOnShrink(true);
         containerRoot = view.findViewById(R.id.popup_container_root);
         itemsContainer = view.findViewById(R.id.popup_item_container);
         notificationsList = view.findViewById(R.id.notifications_list);
