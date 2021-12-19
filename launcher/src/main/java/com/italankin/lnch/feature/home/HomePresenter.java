@@ -24,15 +24,11 @@ public class HomePresenter extends AppPresenter<HomeView> {
     @Override
     protected void onFirstViewAttach() {
         Observable.combineLatest(
-                preferences.observe(Preferences.WALLPAPER_OVERLAY_COLOR)
-                        .map(Preferences.Value::get)
-                        .startWith(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR)),
-                preferences.observe(Preferences.WALLPAPER_OVERLAY_SHOW)
-                        .map(Preferences.Value::get)
-                        .startWith(preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)),
-                (overlayColor, showOverlay) -> {
-                    return showOverlay ? overlayColor : Color.TRANSPARENT;
-                })
+                        preferences.observe(Preferences.WALLPAPER_OVERLAY_COLOR),
+                        preferences.observe(Preferences.WALLPAPER_OVERLAY_SHOW),
+                        (overlayColor, showOverlay) -> {
+                            return showOverlay ? overlayColor : Color.TRANSPARENT;
+                        })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Integer>() {
                     @Override
@@ -41,7 +37,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        preferences.observe(Preferences.STATUS_BAR_COLOR)
+        preferences.observeValue(Preferences.STATUS_BAR_COLOR)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Preferences.Value<Integer>>() {
                     @Override
@@ -50,7 +46,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        preferences.observe(Preferences.HOME_PAGER_INDICATOR)
+        preferences.observeValue(Preferences.HOME_PAGER_INDICATOR)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Preferences.Value<Boolean>>() {
                     @Override
@@ -59,7 +55,7 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        Observable.merge(preferences.observe(Preferences.ENABLE_WIDGETS), preferences.observe(Preferences.WIDGETS_POSITION))
+        Observable.merge(preferences.observeValue(Preferences.ENABLE_WIDGETS), preferences.observeValue(Preferences.WIDGETS_POSITION))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Object>() {
                     @Override

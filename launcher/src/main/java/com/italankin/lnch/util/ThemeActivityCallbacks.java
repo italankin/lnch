@@ -23,7 +23,7 @@ public class ThemeActivityCallbacks implements Application.ActivityLifecycleCall
             Preferences preferences = LauncherApp.daggerService.main().preferences();
             ThemeUtils.applyTheme(preferences.get(Preferences.COLOR_THEME));
             disposable = preferences
-                    .observe(Preferences.COLOR_THEME)
+                    .observeValue(Preferences.COLOR_THEME)
                     .map(Preferences.Value::get)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(ThemeUtils::applyTheme);

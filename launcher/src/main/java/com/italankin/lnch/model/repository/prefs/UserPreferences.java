@@ -67,7 +67,14 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public <T> Observable<Value<T>> observe(Pref<T> pref) {
+    public <T> Observable<T> observe(Pref<T> pref) {
+        return observeValue(pref)
+                .map(Value::get)
+                .startWith(get(pref));
+    }
+
+    @Override
+    public <T> Observable<Value<T>> observeValue(Pref<T> pref) {
         return updates
                 .filter(pref.key()::equals)
                 .map(key -> new Value<>(get(pref)));

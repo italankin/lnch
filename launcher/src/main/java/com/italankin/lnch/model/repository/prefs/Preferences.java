@@ -28,7 +28,9 @@ public interface Preferences {
 
     Observable<Pref<?>> observe();
 
-    <T> Observable<Value<T>> observe(Pref<T> pref);
+    <T> Observable<T> observe(Pref<T> pref);
+
+    <T> Observable<Value<T>> observeValue(Pref<T> pref);
 
     void reset(Pref<?>... prefs);
 

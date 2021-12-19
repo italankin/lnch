@@ -79,7 +79,7 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
     }
 
     private void subscribeForUpdates() {
-        Disposable disposable = preferences.observe(Preferences.SEARCH_ENGINE)
+        Disposable disposable = preferences.observeValue(Preferences.SEARCH_ENGINE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
                     Preferences.SearchEngine engine = value.get();

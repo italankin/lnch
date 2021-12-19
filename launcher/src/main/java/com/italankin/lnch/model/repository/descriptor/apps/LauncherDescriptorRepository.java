@@ -138,7 +138,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        preferences.observe(Preferences.APPS_SORT_MODE)
+        preferences.observeValue(Preferences.APPS_SORT_MODE)
                 .filter(value -> value.get() != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
