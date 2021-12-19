@@ -84,7 +84,7 @@ public class AppNotificationFactory {
 
     private static boolean ignore(StatusBarNotification sbn) {
         if (sbn.isOngoing()) {
-            return false;
+            return true;
         }
         Notification n = sbn.getNotification();
         CharSequence title = n.extras.getCharSequence(Notification.EXTRA_TITLE);
