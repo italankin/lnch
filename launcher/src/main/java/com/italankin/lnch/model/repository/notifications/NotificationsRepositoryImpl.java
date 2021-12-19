@@ -5,12 +5,10 @@ import android.service.notification.StatusBarNotification;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,14 +24,25 @@ import io.reactivex.subjects.PublishSubject;
 public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private final DescriptorRepository descriptorRepository;
-    private final Preferences preferences;
-    private final PublishSubject<Map<AppDescriptor, AppNotifications>> updates = PublishSubject.create();
+    private final PublishSubject<Map<AppDescriptor, NotificationBag>> updates = PublishSubject.create();
 
-    private final ConcurrentMap<AppDescriptor, AppNotifications> state = new ConcurrentHashMap<>();
+    private final ConcurrentMap<AppDescriptor, NotificationBag> state = new ConcurrentHashMap<>();
 
-    public NotificationsRepositoryImpl(DescriptorRepository descriptorRepository, Preferences preferences) {
+    private volatile Callback callback;
+
+    public NotificationsRepositoryImpl(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
-        this.preferences = preferences;
+    }
+
+    @Override
+    public void setCallback(@Nullable Callback callback) {
+        this.callback = callback;
+    }
+
+    @Nullable
+    @Override
+    public Callback getCallback() {
+        return callback;
     }
 
     @Override
@@ -68,8 +77,14 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         updates.onNext(state);
     }
 
+    @Nullable
     @Override
-    public Observable<Map<AppDescriptor, AppNotifications>> observe() {
+    public NotificationBag getByApp(AppDescriptor descriptor) {
+        return state.get(descriptor);
+    }
+
+    @Override
+    public Observable<Map<AppDescriptor, NotificationBag>> observe() {
         return observeApps()
                 .map(this::updateState)
                 .startWith(state)
@@ -91,7 +106,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .distinctUntilChanged();
     }
 
-    private Map<AppDescriptor, AppNotifications> updateState(List<AppDescriptor> appDescriptors) {
+    private Map<AppDescriptor, NotificationBag> updateState(List<AppDescriptor> appDescriptors) {
         // remove any notifications, which belong to non-existent apps
         Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
         for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
@@ -108,10 +123,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         if (app == null) {
             return false;
         }
-        AppNotifications dot = state.get(app);
-        if (sbn.isOngoing() && !showOngoing()) {
-            return modifyStateRemove(app, dot, sbn);
-        }
+        NotificationBag dot = state.get(app);
         switch (type) {
             case POSTED:
                 return modifyStatePost(app, dot, sbn);
@@ -122,36 +134,59 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         }
     }
 
-    private boolean modifyStatePost(AppDescriptor app, @Nullable AppNotifications dot, StatusBarNotification sbn) {
-        if (dot == null) {
-            state.put(app, new AppNotifications(app, sbn));
+    private boolean modifyStatePost(AppDescriptor app, @Nullable NotificationBag bag, StatusBarNotification newSbn) {
+        if (bag == null) {
+            state.put(app, new NotificationBag(app, newSbn));
             return true;
         }
-        if (dot.notifications.get(sbn.getId()) == sbn) {
+        if (containsNotification(bag, newSbn)) {
             return false;
         }
-        HashMap<Integer, StatusBarNotification> map = new HashMap<>(dot.notifications);
-        map.put(sbn.getId(), sbn);
-        state.put(app, new AppNotifications(app, map));
+        ArrayList<StatusBarNotification> sbns = new ArrayList<>(bag.sbns);
+        boolean replaced = false;
+        for (int i = 0, s = sbns.size(); i < s; i++) {
+            if (sbns.get(i).getId() == newSbn.getId()) {
+                sbns.set(i, newSbn);
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            sbns.add(newSbn);
+        }
+        state.put(app, new NotificationBag(app, sbns));
         return true;
     }
 
-    private boolean modifyStateRemove(AppDescriptor app, @Nullable AppNotifications dot, StatusBarNotification sbn) {
-        if (dot == null || !dot.notifications.containsKey(sbn.getId())) {
+    private boolean modifyStateRemove(AppDescriptor app, @Nullable NotificationBag bag, StatusBarNotification sbn) {
+        if (bag == null) {
             return false;
         }
-        HashMap<Integer, StatusBarNotification> map = new HashMap<>(dot.notifications);
-        map.remove(sbn.getId());
-        if (map.isEmpty()) {
+        if (!containsNotification(bag, sbn)) {
+            return false;
+        }
+        ArrayList<StatusBarNotification> sbns = new ArrayList<>(bag.sbns);
+        for (int i = 0, s = sbns.size(); i < s; i++) {
+            if (sbns.get(i).getId() == sbn.getId()) {
+                sbns.remove(i);
+                break;
+            }
+        }
+        if (sbns.isEmpty()) {
             state.remove(app);
         } else {
-            state.replace(app, new AppNotifications(app, map));
+            state.replace(app, new NotificationBag(app, sbns));
         }
         return true;
     }
 
-    private Boolean showOngoing() {
-        return preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
+    private static boolean containsNotification(NotificationBag bag, StatusBarNotification sbn) {
+        for (StatusBarNotification s : bag.sbns) {
+            if (s.getId() == sbn.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private enum Type {

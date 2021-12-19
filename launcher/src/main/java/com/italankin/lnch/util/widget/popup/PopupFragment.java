@@ -31,7 +31,6 @@ public abstract class PopupFragment extends Fragment {
 
     protected abstract String getPopupTag();
 
-    @CallSuper
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_popup, container, false);

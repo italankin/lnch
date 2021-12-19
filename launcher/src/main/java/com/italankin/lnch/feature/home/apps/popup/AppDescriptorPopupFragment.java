@@ -1,0 +1,382 @@
+package com.italankin.lnch.feature.home.apps.popup;
+
+import android.animation.LayoutTransition;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationFactory;
+import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationHeaderAdapter;
+import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
+import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
+import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
+import com.italankin.lnch.feature.home.apps.popup.notifications.item.PopupNotificationItem;
+import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.repository.notifications.NotificationBag;
+import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
+import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.ListUtils;
+import com.italankin.lnch.util.NumberUtils;
+import com.italankin.lnch.util.PackageUtils;
+import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
+
+public class AppDescriptorPopupFragment extends ActionPopupFragment implements
+        AppNotificationUiAdapter.Listener,
+        NotificationSwipeCallback.Listener {
+
+    public static AppDescriptorPopupFragment newInstance(
+            AppDescriptorUi descriptorUi,
+            String requestKey,
+            @Nullable Rect anchor) {
+        AppDescriptorPopupFragment fragment = new AppDescriptorPopupFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_ANCHOR, anchor);
+        args.putString(ARG_DESCRIPTOR_ID, descriptorUi.getDescriptor().getId());
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        args.putString(ARG_FOLDER_ID, descriptorUi.getFolderId());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
+    private static final String ARG_FOLDER_ID = "folder_id";
+
+    private static final String BACKSTACK_NAME = "app_descriptor_popup";
+    private static final String TAG = "app_descriptor_popup";
+
+    private Preferences preferences;
+    private NotificationsRepository notificationsRepository;
+    private ShortcutsRepository shortcutsRepository;
+
+    private boolean showNotifications;
+
+    private RecyclerView notificationsList;
+    private View notificationsListDivider;
+    private CompositeAdapter<PopupNotificationItem> adapter;
+
+    private ErrorDelegate errorDelegate;
+    private ShortcutStarterDelegate shortcutStarterDelegate;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        preferences = LauncherApp.daggerService.main().preferences();
+        notificationsRepository = LauncherApp.daggerService.main().notificationsRepository();
+        shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+        showNotifications = preferences.get(Preferences.NOTIFICATION_POPUP);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_app_descriptor_popup, container, false);
+        root = view.findViewById(R.id.popup_root);
+        containerRoot = view.findViewById(R.id.popup_container_root);
+        itemsContainer = view.findViewById(R.id.popup_item_container);
+        notificationsList = view.findViewById(R.id.notifications_list);
+        notificationsListDivider = view.findViewById(R.id.notifications_list_divider);
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (showNotifications) {
+            setupNotifications();
+        }
+
+        Context context = requireContext();
+        errorDelegate = new ErrorDelegateImpl(context);
+        CustomizeDelegate customizeDelegate = () -> {
+            Bundle result = new Bundle();
+            result.putString(FragmentResults.RESULT, FragmentResults.Customize.KEY);
+            sendResult(result);
+            dismiss();
+        };
+        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate, customizeDelegate);
+
+        load();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        compositeDisposable.clear();
+    }
+
+    @Override
+    protected String getPopupBackstackName() {
+        return BACKSTACK_NAME;
+    }
+
+    @Override
+    protected String getPopupTag() {
+        return TAG;
+    }
+
+    private void load() {
+        Bundle args = requireArguments();
+        String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
+        AppDescriptor descriptor = LauncherApp.daggerService.main()
+                .descriptorRepository()
+                .findById(AppDescriptor.class, descriptorId);
+        AppDescriptorUi item = (AppDescriptorUi) DescriptorUiFactory.createItem(descriptor);
+        String folderId = args.getString(ARG_FOLDER_ID);
+        item.setFolderId(folderId);
+        showAppPopup(item);
+        createItemViews();
+        // post delay here due to deferred recycler view items inflation
+        new Handler().post(this::showPopup);
+    }
+
+    private void showAppPopup(AppDescriptorUi item) {
+        Context context = requireContext();
+        boolean uninstallAvailable = !PackageUtils.isSystem(context.getPackageManager(), item.packageName);
+        ItemBuilder infoItem = new ItemBuilder()
+                .setLabel(R.string.popup_app_info)
+                .setIcon(R.drawable.ic_app_info)
+                .setOnClickListener(v -> {
+                    startAppSettings(item.getDescriptor(), v);
+                });
+        ItemBuilder uninstallItem = new ItemBuilder()
+                .setLabel(R.string.popup_app_uninstall)
+                .setIcon(R.drawable.ic_action_delete)
+                .setOnClickListener(v -> {
+                    startUninstall(item);
+                });
+        ItemBuilder removeFromFolderItem = new ItemBuilder()
+                .setIcon(R.drawable.ic_action_remove_from_folder)
+                .setLabel(R.string.customize_item_remove_from_folder)
+                .setOnClickListener(v -> {
+                    removeFromFolder(item);
+                });
+
+        List<Shortcut> shortcuts = getShortcuts(item);
+        if (item.getFolderId() != null) {
+            if (shortcuts.isEmpty()) {
+                addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
+            } else {
+                addAction(removeFromFolderItem);
+            }
+        }
+        addAction(infoItem);
+        if (uninstallAvailable) {
+            addAction(uninstallItem);
+        }
+        for (Shortcut shortcut : shortcuts) {
+            addShortcut(new ItemBuilder()
+                    .setLabel(shortcut.getShortLabel())
+                    .setIcon(shortcut.getIconUri())
+                    .setEnabled(shortcut.isEnabled())
+                    .setOnClickListener(v -> {
+                        startShortcut(shortcut, v);
+                    })
+                    .setOnPinClickListener(v -> {
+                        pinShortcut(shortcut);
+                    })
+            );
+        }
+        if (showNotifications) {
+            subscribeForNotifications(item.getDescriptor());
+        }
+    }
+
+    private List<Shortcut> getShortcuts(AppDescriptorUi item) {
+        if (!item.getDescriptor().showShortcuts) {
+            return Collections.emptyList();
+        }
+        List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());
+        if (shortcuts.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (preferences.get(Preferences.SHORTCUTS_SORT_MODE) == Preferences.ShortcutsSortMode.REVERSED) {
+            shortcuts = ListUtils.reversedCopy(shortcuts);
+        }
+        int max = NumberUtils.parseInt(preferences.get(Preferences.MAX_DYNAMIC_SHORTCUTS), -1);
+        if (max < 0 || shortcuts.size() <= max) {
+            return shortcuts;
+        }
+        List<Shortcut> result = new ArrayList<>(shortcuts.size());
+        for (Shortcut shortcut : shortcuts) {
+            if (!shortcut.isDynamic() || max-- > 0) {
+                result.add(shortcut);
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Actions
+    ///////////////////////////////////////////////////////////////////////////
+
+    private void startShortcut(Shortcut shortcut, View v) {
+        shortcutStarterDelegate.startShortcut(shortcut, v);
+        dismissWithResult();
+    }
+
+    private void startUninstall(AppDescriptorUi item) {
+        Intent intent = PackageUtils.getUninstallIntent(item.packageName);
+        if (IntentUtils.safeStartActivity(requireContext(), intent)) {
+            dismissWithResult();
+        } else {
+            errorDelegate.showError(R.string.error);
+        }
+    }
+
+    private void startAppSettings(PackageDescriptor item, View bounds) {
+        IntentUtils.safeStartAppSettings(requireContext(), item.getPackageName(), bounds);
+        dismissWithResult();
+    }
+
+    private void removeFromFolder(InFolderDescriptorUi item) {
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
+        result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
+        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, item.getFolderId());
+        sendResult(result);
+        dismiss();
+    }
+
+    private void pinShortcut(Shortcut shortcut) {
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.PinShortcut.KEY);
+        result.putString(FragmentResults.PinShortcut.PACKAGE_NAME, shortcut.getPackageName());
+        result.putString(FragmentResults.PinShortcut.SHORTCUT_ID, shortcut.getId());
+        sendResult(result);
+        dismiss();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Notifications
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onNotificationSwiped(AppNotificationUi item) {
+        PendingIntent deleteIntent = item.sbn.getNotification().deleteIntent;
+        if (deleteIntent != null) {
+            try {
+                deleteIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                Timber.e(e, "deleteIntent.send:");
+                dismissWithResult();
+            }
+        }
+        cancelNotification(item);
+    }
+
+    @Override
+    public void onNotificationClick(AppNotificationUi item) {
+        Notification notification = item.sbn.getNotification();
+        try {
+            notification.contentIntent.send();
+            if (((notification.flags & Notification.FLAG_AUTO_CANCEL)) == Notification.FLAG_AUTO_CANCEL) {
+                cancelNotification(item);
+            }
+        } catch (PendingIntent.CanceledException e) {
+            Timber.e(e, "contentIntent.send:");
+        }
+        dismissWithResult();
+    }
+
+    private void setupNotifications() {
+        this.adapter = new CompositeAdapter.Builder<PopupNotificationItem>(requireContext())
+                .add(new AppNotificationUiAdapter(this))
+                .add(new AppNotificationHeaderAdapter())
+                .setHasStableIds(true)
+                .recyclerView(notificationsList)
+                .create();
+        notificationsList.setClipToOutline(true);
+        new ItemTouchHelper(new NotificationSwipeCallback(this))
+                .attachToRecyclerView(notificationsList);
+
+        LayoutTransition transition = new LayoutTransition();
+        transition.disableTransitionType(LayoutTransition.APPEARING);
+        transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        transition.enableTransitionType(LayoutTransition.DISAPPEARING);
+        root.setLayoutTransition(transition);
+    }
+
+    private void subscribeForNotifications(AppDescriptor descriptor) {
+        NotificationBag current = notificationsRepository.getByApp(descriptor);
+        if (current == null || current.getCount() == 0) {
+            return;
+        }
+
+        ViewGroup.LayoutParams lp = containerRoot.getLayoutParams();
+        lp.width = getResources().getDimensionPixelSize(R.dimen.popup_notifications_width);
+        containerRoot.setLayoutParams(lp);
+
+        notificationsListDivider.setVisibility(View.VISIBLE);
+        notificationsList.setVisibility(View.VISIBLE);
+
+        AppNotificationFactory appNotificationFactory = new AppNotificationFactory(requireContext());
+
+        Disposable d = notificationsRepository.observe()
+                .subscribeOn(Schedulers.computation())
+                .map(state -> {
+                    NotificationBag notifications = state.get(descriptor);
+                    return appNotificationFactory.createNotifications(notifications);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(items -> {
+                    if (items.isEmpty()) {
+                        notificationsListDivider.setVisibility(View.GONE);
+                        notificationsList.setVisibility(View.GONE);
+                        compositeDisposable.clear();
+                    } else {
+                        adapter.setDataset(items);
+                        adapter.notifyDataSetChanged();
+                    }
+                }, e -> {
+                    Timber.e(e, "subscribeForNotifications:");
+                    dismissWithResult();
+                });
+        compositeDisposable.add(d);
+    }
+
+    private void cancelNotification(AppNotificationUi item) {
+        NotificationsRepository.Callback callback = notificationsRepository.getCallback();
+        if (callback != null) {
+            callback.cancelNotification(item.sbn);
+        }
+    }
+}

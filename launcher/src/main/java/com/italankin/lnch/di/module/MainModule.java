@@ -152,8 +152,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    NotificationsRepository provideNotificationsRepository(DescriptorRepository descriptorRepository,
-            Preferences preferences) {
-        return new NotificationsRepositoryImpl(descriptorRepository, preferences);
+    NotificationsRepository provideNotificationsRepository(DescriptorRepository descriptorRepository) {
+        return new NotificationsRepositoryImpl(descriptorRepository);
     }
 }

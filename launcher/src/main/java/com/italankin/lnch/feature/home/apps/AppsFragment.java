@@ -58,6 +58,7 @@ import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
+import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
@@ -249,8 +250,13 @@ public class AppsFragment extends AppFragment implements AppsView,
         itemPopupDelegate = (item, anchor) -> {
             cancelListMotionEvents();
             Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
-            DescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
-                    .show(getParentFragmentManager());
+            if (item instanceof AppDescriptorUi) {
+                AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, REQUEST_KEY_APPS, bounds)
+                        .show(getParentFragmentManager());
+            } else {
+                DescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
+                        .show(getParentFragmentManager());
+            }
         };
         CustomizeDelegate customizeDelegate = presenter::startCustomize;
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,

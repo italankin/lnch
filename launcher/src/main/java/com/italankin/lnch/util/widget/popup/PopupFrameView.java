@@ -29,6 +29,9 @@ public class PopupFrameView extends ViewGroup {
     private float maxWidthFactor = MAX_WIDTH_FACTOR;
     private float maxHeightFactor = MAX_HEIGHT_FACTOR;
 
+    private boolean freezeAtFirstLocation;
+    private Location frozenLocation;
+
     public PopupFrameView(Context context) {
         super(context);
     }
@@ -56,6 +59,10 @@ public class PopupFrameView extends ViewGroup {
         this.maxHeightFactor = factor;
         requestLayout();
         invalidate();
+    }
+
+    public void setFreezeAtFirstLocation(boolean freezeAtFirstLocation) {
+        this.freezeAtFirstLocation = freezeAtFirstLocation;
     }
 
     public void setLocations(List<Location> locations) {
@@ -122,11 +129,19 @@ public class PopupFrameView extends ViewGroup {
         int childHeight = child.getMeasuredHeight();
         if (anchor != null) {
             Location popupLocation = null;
-            for (Location location : locations) {
-                out.set(0, 0, childWidth, childHeight);
-                if (location.apply(container, childWidth, childHeight, anchor, tmp, out)) {
-                    popupLocation = location;
-                    break;
+            if (freezeAtFirstLocation && frozenLocation != null) {
+                frozenLocation.apply(container, childWidth, childHeight, anchor, tmp, out);
+                popupLocation = frozenLocation;
+            } else {
+                for (Location location : locations) {
+                    out.set(0, 0, childWidth, childHeight);
+                    if (location.apply(container, childWidth, childHeight, anchor, tmp, out)) {
+                        popupLocation = location;
+                        break;
+                    }
+                }
+                if (freezeAtFirstLocation) {
+                    frozenLocation = popupLocation;
                 }
             }
             int anchorX = tmp[0];

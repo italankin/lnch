@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home.apps;
 
 import android.content.Intent;
+import android.service.notification.StatusBarNotification;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -19,7 +20,7 @@ import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
-import com.italankin.lnch.model.repository.notifications.AppNotifications;
+import com.italankin.lnch.model.repository.notifications.NotificationBag;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -362,7 +363,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .skip(1); // skip empty update
     }
 
-    private Observable<Map<AppDescriptor, AppNotifications>> observeNotifications() {
+    private Observable<Map<AppDescriptor, NotificationBag>> observeNotifications() {
         return notificationsRepository.observe()
                 .doOnNext(map -> {
                     Timber.d("notifications=%s", map);
@@ -371,7 +372,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @NotNull
     private List<DescriptorUi> concatNotifications(List<DescriptorUi> items,
-            Map<AppDescriptor, AppNotifications> notifications) {
+            Map<AppDescriptor, NotificationBag> notifications) {
         if (!preferences.get(Preferences.NOTIFICATION_DOT)) {
             return items;
         }
@@ -382,8 +383,20 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 continue;
             }
             AppDescriptorUi app = (AppDescriptorUi) item;
-            AppNotifications appNotifications = notifications.get(app.getDescriptor());
-            boolean badgeVisible = appNotifications != null && appNotifications.getCount() > 0;
+            NotificationBag notificationBag = notifications.get(app.getDescriptor());
+            boolean badgeVisible = false;
+            boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
+            if (notificationBag != null) {
+                int count = notificationBag.getCount();
+                if (!showOngoing) {
+                    for (StatusBarNotification sbn : notificationBag.getNotifications()) {
+                        if (sbn.isOngoing()) {
+                            count--;
+                        }
+                    }
+                }
+                badgeVisible = count > 0;
+            }
             if (badgeVisible != app.isBadgeVisible()) {
                 // create a copy of AppDescriptorUi to update state correctly
                 AppDescriptorUi newApp = new AppDescriptorUi(app);

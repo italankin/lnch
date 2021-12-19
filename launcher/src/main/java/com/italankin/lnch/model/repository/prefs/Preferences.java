@@ -378,6 +378,13 @@ public interface Preferences {
             false);
 
     /**
+     * Enable notification dots for the apps
+     */
+    Pref<Boolean> NOTIFICATION_POPUP = Prefs.createBoolean(
+            "notification_popup",
+            false);
+
+    /**
      * Creating and editing intents via {@link com.italankin.lnch.feature.intentfactory.IntentFactoryActivity}
      */
     Pref<Boolean> EXPERIMENTAL_INTENT_FACTORY = Prefs.createBoolean(
@@ -429,6 +436,7 @@ public interface Preferences {
             NOTIFICATION_DOT,
             NOTIFICATION_DOT_COLOR,
             NOTIFICATION_DOT_ONGOING,
+            NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
             HOME_PAGER_INDICATOR
     );

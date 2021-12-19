@@ -41,6 +41,7 @@
     <string name="popup_delete_title">Delete</string>
     <string name="popup_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
     <string name="popup_delete_action">Delete</string>
+    <string name="popup_notifications_header">Notifications</string>
 
     <string name="customize_hint">Customize</string>
     <string name="customize_saved">Saved</string>
@@ -132,9 +133,11 @@
     <string name="settings_home_misc_notifications_dot">Notification dots</string>
     <string name="settings_home_misc_notifications_dot_summary">Show a badge on apps which have active notifications</string>
     <string name="settings_home_misc_notifications_dot_ongoing">Show for ongoing notifications</string>
-    <string name="settings_home_misc_notifications_dot_dialog_title">Notification access required</string>
-    <string name="settings_home_misc_notifications_dot_dialog_message">To show notification dots, lnch needs an access to notifications</string>
-    <string name="settings_home_misc_notifications_dot_dialog_allow">Allow</string>
+    <string name="settings_home_misc_notifications_popup">Notifications popup</string>
+    <string name="settings_home_misc_notifications_popup_show">Show notifications in popup</string>
+    <string name="settings_home_misc_notifications_permissions_dialog_title">Notification access required</string>
+    <string name="settings_home_misc_notifications_permission_dialog_message">To show notifications, lnch needs access to notifications</string>
+    <string name="settings_home_misc_notifications_permissions_dialog_allow">Allow</string>
 
     <string name="settings_home_misc_experimental">Experimental</string>
     <string name="settings_home_misc_experimental_summary">Features, which are not quite ready for production use</string>

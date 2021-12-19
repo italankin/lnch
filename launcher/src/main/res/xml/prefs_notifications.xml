@@ -12,4 +12,10 @@
             android:key="notification_dot_ongoing"
             android:title="@string/settings_home_misc_notifications_dot_ongoing" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_home_misc_notifications_popup">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="notification_popup"
+            android:title="@string/settings_home_misc_notifications_popup_show" />
+    </PreferenceCategory>
 </PreferenceScreen>

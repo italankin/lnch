@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.italankin.lnch.util.widget.popup.PopupFrameView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/popup_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:padding="8dp">
+
+    <com.italankin.lnch.util.widget.popup.ArrowLayout
+        android:id="@+id/popup_container_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/popup_window_arrow_size"
+        android:paddingBottom="@dimen/popup_window_arrow_size"
+        android:visibility="gone"
+        app:al_arrowSize="@dimen/popup_window_arrow_size"
+        app:al_colorArrowDown="?colorPopupBackground"
+        app:al_colorArrowUp="?colorPopupActionsBackground"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/popup_item_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/popup_bg"
+                android:elevation="@dimen/popup_window_elevation"
+                android:minWidth="192dp"
+                android:orientation="vertical"
+                android:outlineProvider="background"
+                tools:ignore="UselessParent"
+                tools:minHeight="92dp">
+
+                <LinearLayout
+                    android:id="@+id/action_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?colorPopupActionsBackground"
+                    android:divider="@drawable/popup_action_divider"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:showDividers="middle"
+                    tools:minHeight="48dp" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="ifContentScrolls">
+
+                    <LinearLayout
+                        android:id="@+id/shortcut_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@drawable/popup_shortcut_divider"
+                        android:orientation="vertical"
+                        android:showDividers="middle"
+                        tools:minHeight="48dp" />
+
+                </ScrollView>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/notifications_list_divider"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notifications_list"
+                android:layout_width="@dimen/popup_notifications_width"
+                android:layout_height="wrap_content"
+                android:background="@drawable/popup_bg"
+                android:elevation="@dimen/popup_window_elevation"
+                android:outlineProvider="background"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_notification"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </com.italankin.lnch.util.widget.popup.ArrowLayout>
+
+</com.italankin.lnch.util.widget.popup.PopupFrameView>

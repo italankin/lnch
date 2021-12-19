@@ -44,6 +44,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
+import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
@@ -232,8 +233,13 @@ public class FolderFragment extends AppFragment implements FolderView,
         };
         ItemPopupDelegate itemPopupDelegate = (item, anchor) -> {
             Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
-            DescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
-                    .show(getParentFragmentManager());
+            if (item instanceof AppDescriptorUi) {
+                AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, FOLDER_REQUEST_KEY, bounds)
+                        .show(getParentFragmentManager());
+            } else {
+                DescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
+                        .show(getParentFragmentManager());
+            }
         };
         CustomizeDelegate customizeDelegate = () -> {
             Bundle result = new Bundle();
