@@ -113,25 +113,25 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                save();
-                if (callbacks != null) {
-                    callbacks.onAppearanceFinish();
-                }
-                return true;
-            case R.id.action_reset:
-                preferences.reset(
-                        Preferences.ITEM_TEXT_SIZE,
-                        Preferences.ITEM_PADDING,
-                        Preferences.ITEM_SHADOW_RADIUS,
-                        Preferences.ITEM_FONT,
-                        Preferences.ITEM_SHADOW_COLOR
-                );
-                if (callbacks != null) {
-                    callbacks.onAppearanceFinish();
-                }
-                return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_save) {
+            save();
+            if (callbacks != null) {
+                callbacks.onAppearanceFinish();
+            }
+            return true;
+        } else if (itemId == R.id.action_reset) {
+            preferences.reset(
+                    Preferences.ITEM_TEXT_SIZE,
+                    Preferences.ITEM_PADDING,
+                    Preferences.ITEM_SHADOW_RADIUS,
+                    Preferences.ITEM_FONT,
+                    Preferences.ITEM_SHADOW_COLOR
+            );
+            if (callbacks != null) {
+                callbacks.onAppearanceFinish();
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

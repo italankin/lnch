@@ -137,10 +137,9 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_filter:
-                showFilterDialog();
-                return true;
+        if (item.getItemId() == R.id.action_filter) {
+            showFilterDialog();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

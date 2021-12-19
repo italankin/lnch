@@ -20,6 +20,8 @@
         android:layout_marginEnd="8dp"
         android:ellipsize="none"
         android:hint="@string/intent_factory_extras_key"
+        android:importantForAutofill="no"
+        android:inputType="textNoSuggestions"
         android:singleLine="true" />
 
     <EditText
@@ -28,6 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:hint="@string/intent_factory_extras_value" />
+        android:hint="@string/intent_factory_extras_value"
+        android:importantForAutofill="no"
+        android:inputType="textNoSuggestions" />
 
 </LinearLayout>

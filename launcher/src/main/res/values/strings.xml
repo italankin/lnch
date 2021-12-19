@@ -54,7 +54,6 @@
     <string name="customize_item_delete">Delete</string>
     <string name="customize_item_remove_from_folder">Remove from folder</string>
     <string name="customize_action_reset">Reset</string>
-    <string name="customize_item_select_folder">Select folder</string>
 
     <string name="folder_empty">Folder is empty</string>
     <string name="folder_select_selected">Added to %1$s</string>
