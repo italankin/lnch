@@ -57,7 +57,7 @@ public abstract class PopupFragment extends Fragment {
 
     public void show(FragmentManager fragmentManager) {
         backstackId = fragmentManager.beginTransaction()
-                .setCustomAnimations(0, 0, 0, R.animator.fragment_folder_out)
+                .setCustomAnimations(0, 0, 0, R.animator.fragment_popup_out)
                 .add(android.R.id.content, this, getPopupTag())
                 .addToBackStack(getPopupBackstackName())
                 .commit();

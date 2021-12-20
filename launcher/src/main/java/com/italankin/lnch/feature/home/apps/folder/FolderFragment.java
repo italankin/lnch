@@ -341,7 +341,7 @@ public class FolderFragment extends AppFragment implements FolderView,
 
     public void show(FragmentManager fragmentManager, @IdRes int containerId) {
         backstackId = fragmentManager.beginTransaction()
-                .setCustomAnimations(0, 0, 0, R.animator.fragment_folder_out)
+                .setCustomAnimations(0, 0, 0, R.animator.fragment_popup_out)
                 .add(containerId, this, TAG)
                 .addToBackStack(BACKSTACK_NAME)
                 .commit();
