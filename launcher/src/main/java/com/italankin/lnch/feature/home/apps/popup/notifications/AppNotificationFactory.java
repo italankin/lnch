@@ -6,7 +6,6 @@ import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationHeader;
 import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.item.PopupNotificationItem;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
@@ -69,7 +68,6 @@ public class AppNotificationFactory {
             return Collections.emptyList();
         }
         Collections.sort(result);
-        result.add(0, new AppNotificationHeader(result.size()));
         return result;
     }
 

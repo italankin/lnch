@@ -13,7 +13,9 @@
         android:id="@+id/popup_container_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:clipToPadding="false"
+        android:focusable="true"
         android:paddingTop="@dimen/popup_window_arrow_size"
         android:paddingBottom="@dimen/popup_window_arrow_size"
         android:visibility="gone"
@@ -70,26 +72,57 @@
 
             </LinearLayout>
 
-            <View
-                android:id="@+id/notifications_list_divider"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/notifications_list"
-                android:layout_width="@dimen/popup_notifications_width"
+            <LinearLayout
+                android:id="@+id/notifications_list_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/popup_bg"
                 android:elevation="@dimen/popup_window_elevation"
+                android:orientation="vertical"
                 android:outlineProvider="background"
-                android:overScrollMode="never"
                 android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_notification"
-                tools:visibility="visible" />
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?colorPopupActionsBackground"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="6dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="6dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/popup_notifications_header"
+                        android:textColor="?colorText"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/notifications_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?colorText"
+                        android:textSize="12sp"
+                        tools:text="5" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/notifications_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_notification" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

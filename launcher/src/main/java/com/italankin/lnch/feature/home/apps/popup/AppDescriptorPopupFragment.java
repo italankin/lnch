@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -21,7 +22,6 @@ import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationFactory;
-import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationHeaderAdapter;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
 import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
 import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
@@ -87,7 +87,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     private boolean showNotifications;
 
     private RecyclerView notificationsList;
-    private View notificationsListDivider;
+    private View notificationsListContainer;
     private CompositeAdapter<PopupNotificationItem> notificationsAdapter;
 
     private ErrorDelegate errorDelegate;
@@ -112,7 +112,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         containerRoot = view.findViewById(R.id.popup_container_root);
         itemsContainer = view.findViewById(R.id.popup_item_container);
         notificationsList = view.findViewById(R.id.notifications_list);
-        notificationsListDivider = view.findViewById(R.id.notifications_list_divider);
+        notificationsListContainer = view.findViewById(R.id.notifications_list_container);
         return root;
     }
 
@@ -319,11 +319,10 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     private void setupNotifications() {
         this.notificationsAdapter = new CompositeAdapter.Builder<PopupNotificationItem>(requireContext())
                 .add(new AppNotificationUiAdapter(this))
-                .add(new AppNotificationHeaderAdapter())
                 .setHasStableIds(true)
                 .recyclerView(notificationsList)
                 .create();
-        notificationsList.setClipToOutline(true);
+        notificationsListContainer.setClipToOutline(true);
         new ItemTouchHelper(new NotificationSwipeCallback(this))
                 .attachToRecyclerView(notificationsList);
 
@@ -346,8 +345,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         lp.width = getResources().getDimensionPixelSize(R.dimen.popup_notifications_width);
         containerRoot.setLayoutParams(lp);
 
-        notificationsListDivider.setVisibility(View.VISIBLE);
-        notificationsList.setVisibility(View.VISIBLE);
+        notificationsListContainer.setVisibility(View.VISIBLE);
 
         AppNotificationFactory appNotificationFactory = new AppNotificationFactory(requireContext());
 
@@ -360,12 +358,13 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(items -> {
                     if (items.isEmpty()) {
-                        notificationsListDivider.setVisibility(View.GONE);
-                        notificationsList.setVisibility(View.GONE);
+                        notificationsListContainer.setVisibility(View.GONE);
                         compositeDisposable.clear();
                     } else {
                         notificationsAdapter.setDataset(items);
                         notificationsAdapter.notifyDataSetChanged();
+                        TextView count = notificationsListContainer.findViewById(R.id.notifications_count);
+                        count.setText(String.valueOf(items.size()));
                     }
                 }, e -> {
                     Timber.e(e, "subscribeForNotifications:");
