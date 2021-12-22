@@ -8,6 +8,7 @@ import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -107,11 +108,29 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemsSwap(from, to);
     }
 
+    void renameItem(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        CustomLabelDescriptorUi item = (CustomLabelDescriptorUi) items.get(position);
+        getViewState().showItemRenameDialog(position, item);
+    }
+
     void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
         String s = customLabel.trim().isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction(item.getDescriptor(), s));
         item.setCustomLabel(s);
         getViewState().onItemChanged(position);
+    }
+
+    void changeItemCustomColor(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        CustomColorDescriptorUi item = (CustomColorDescriptorUi) items.get(position);
+        getViewState().showItemSetColorDialog(position, item);
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
@@ -120,8 +139,13 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemChanged(position);
     }
 
-    void ignoreItem(int position, IgnorableDescriptorUi item) {
-        editor.enqueue(new SetIgnoreAction(item.getDescriptor(), true));
+    void ignoreItem(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        IgnorableDescriptorUi item = (IgnorableDescriptorUi) items.get(position);
+        editor.enqueue(new SetIgnoreAction(arg.id, true));
         item.setIgnored(true);
         getViewState().onItemChanged(position);
     }
@@ -172,9 +196,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    void removeItem(int position, DescriptorUi item) {
-        Descriptor descriptor = item.getDescriptor();
-        editor.enqueue(new RemoveAction(descriptor.getId()));
+    void removeItem(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        editor.enqueue(new RemoveAction(arg.id));
         items.remove(position);
         getViewState().onItemsRemoved(position, 1);
     }
@@ -194,7 +221,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void selectFolder(int position, InFolderDescriptorUi item) {
+    void selectFolder(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        InFolderDescriptorUi item = (InFolderDescriptorUi) items.get(position);
         List<FolderDescriptorUi> folders = new ArrayList<>(4);
         for (DescriptorUi descriptor : items) {
             if (descriptor instanceof FolderDescriptorUi) {
@@ -429,6 +461,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         DescriptorUiDiffCallback callback = new DescriptorUiDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
         return new Update(newItems, diffResult);
+    }
+
+    private int findDescriptorIndex(DescriptorArg arg) {
+        for (int i = 0, s = items.size(); i < s; i++) {
+            DescriptorUi item = items.get(i);
+            if (arg.is(item.getDescriptor())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static class EditIntentAction extends BaseAction {

@@ -46,14 +46,7 @@ import androidx.appcompat.widget.Toolbar;
 
 public class IntentFactoryActivity extends AppCompatActivity implements IntentEditor.Host {
 
-    @Nullable
-    public static IntentFactoryResult getResultExtra(@Nullable Intent data) {
-        return data != null ? data.getParcelableExtra(EXTRA_RESULT) : null;
-    }
-
-    private static final String EXTRA_INTENT = "intent";
     private static final String EXTRA_DESCRIPTOR_ID = "descriptor_id";
-    private static final String EXTRA_LABEL = "label";
 
     private static final String EXTRA_RESULT = "result";
 
@@ -94,16 +87,18 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         textTitle.setOnClickListener(v -> showTitleEdit());
 
         Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_INTENT)) {
-            result = intent.getParcelableExtra(EXTRA_INTENT);
-        } else {
-            intent.putExtra(EXTRA_INTENT, result);
+        if (intent.hasExtra(EXTRA_DESCRIPTOR_ID)) {
+            String descriptorId = intent.getStringExtra(EXTRA_DESCRIPTOR_ID);
+            IntentDescriptor descriptor = LauncherApp.daggerService.main()
+                    .descriptorRepository()
+                    .findById(IntentDescriptor.class, descriptorId);
+            if (descriptor == null) {
+                throw new IllegalArgumentException("No descriptors found by id=" + descriptorId);
+            }
+            result = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
+            textTitle.setText(descriptor.getVisibleLabel());
         }
         result.putExtra(IntentDescriptor.EXTRA_CUSTOM_INTENT, true);
-
-        if (intent.hasExtra(EXTRA_LABEL)) {
-            textTitle.setText(getIntent().getStringExtra(EXTRA_LABEL));
-        }
 
         for (IntentEditor editor : intentEditors) {
             editor.bind(result);
@@ -209,15 +204,12 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         return textView.getText().toString().trim();
     }
 
-    public static class EditContract extends ActivityResultContract<IntentDescriptor, IntentFactoryResult> {
+    public static class EditContract extends ActivityResultContract<String, IntentFactoryResult> {
         @NonNull
         @Override
-        public Intent createIntent(@NonNull Context context, IntentDescriptor descriptor) {
-            Intent intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
+        public Intent createIntent(@NonNull Context context, String descriptorId) {
             return new Intent(context, IntentFactoryActivity.class)
-                    .putExtra(EXTRA_INTENT, intent)
-                    .putExtra(EXTRA_DESCRIPTOR_ID, descriptor.getId())
-                    .putExtra(EXTRA_LABEL, descriptor.getVisibleLabel());
+                    .putExtra(EXTRA_DESCRIPTOR_ID, descriptorId);
         }
 
         @Override

@@ -59,6 +59,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
@@ -73,6 +74,7 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -84,9 +86,7 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
@@ -166,7 +166,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             new IntentFactoryActivity.CreateContract(),
             this::onNewIntentCreated);
 
-    private final ActivityResultLauncher<IntentDescriptor> editIntentLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<String> editIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
@@ -337,6 +337,36 @@ public class AppsFragment extends AppFragment implements AppsView,
                 String folderId = result.getString(FragmentResults.SelectFolder.FOLDER_ID);
                 String descriptorId = result.getString(FragmentResults.SelectFolder.DESCRIPTOR_ID);
                 presenter.addToFolder(folderId, descriptorId);
+                break;
+            }
+            case FragmentResults.Customize.Ignore.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Ignore.DESCRIPTOR);
+                presenter.ignoreItem(arg);
+                break;
+            }
+            case FragmentResults.Customize.Rename.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Rename.DESCRIPTOR);
+                presenter.renameItem(arg);
+                break;
+            }
+            case FragmentResults.Customize.SetColor.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SetColor.DESCRIPTOR);
+                presenter.changeItemCustomColor(arg);
+                break;
+            }
+            case FragmentResults.Customize.Remove.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Remove.DESCRIPTOR);
+                presenter.removeItem(arg);
+                break;
+            }
+            case FragmentResults.Customize.EditIntent.KEY: {
+                String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
+                editIntentLauncher.launch(descriptorId);
+                break;
+            }
+            case FragmentResults.Customize.SelectFolder.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SelectFolder.DESCRIPTOR);
+                presenter.selectFolder(arg);
                 break;
             }
         }
@@ -532,60 +562,10 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showCustomizePopup(int position, DescriptorUi item) {
-        Context context = requireContext();
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        if (item instanceof IgnorableDescriptorUi) {
-            popup.addAction(new ActionPopupWindow.ItemBuilder(context)
-                    .setIcon(R.drawable.ic_action_hide)
-                    .setOnClickListener(v -> presenter.ignoreItem(position, (IgnorableDescriptorUi) item))
-            );
-        }
-        if (item instanceof CustomLabelDescriptorUi) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setLabel(R.string.customize_item_rename)
-                    .setIcon(R.drawable.ic_action_rename)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> setItemCustomLabel(position, (CustomLabelDescriptorUi) item))
-            );
-        }
-        if (item instanceof CustomColorDescriptorUi) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setLabel(R.string.customize_item_color)
-                    .setEnabled(!preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW))
-                    .setIcon(R.drawable.ic_action_color)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> setItemColor(position, (CustomColorDescriptorUi) item))
-            );
-        }
-        if (item instanceof IntentDescriptorUi && preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setLabel(R.string.customize_item_edit_intent)
-                    .setIcon(R.drawable.ic_action_intent_edit)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> {
-                        IntentDescriptor descriptor = ((IntentDescriptorUi) item).getDescriptor();
-                        editIntentLauncher.launch(descriptor);
-                    })
-            );
-        }
-        if (item instanceof InFolderDescriptorUi) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setLabel(R.string.customize_item_add_to_folder)
-                    .setIcon(R.drawable.ic_action_add_to_folder)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> {
-                        presenter.selectFolder(position, (InFolderDescriptorUi) item);
-                    })
-            );
-        }
-        if (item instanceof RemovableDescriptorUi) {
-            popup.addAction(new ActionPopupWindow.ItemBuilder(context)
-                    .setIcon(R.drawable.ic_action_delete)
-                    .setOnClickListener(v -> presenter.removeItem(position, item))
-            );
-        }
         View view = list.findViewForAdapterPosition(position);
-        popupDelegate.showPopupWindow(popup, view);
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
+                .show(getParentFragmentManager());
     }
 
     private void showEditModeAddPopup(View anchor) {
@@ -627,50 +607,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
         String label = nameNormalizer.normalize(result.label);
         presenter.editIntent(result.descriptorId, result.intent, label);
-    }
-
-    private void setItemCustomLabel(int position, CustomLabelDescriptorUi item) {
-        String visibleLabel = item.getVisibleLabel();
-        EditTextAlertDialog.builder(requireContext())
-                .setTitle(item.getVisibleLabel())
-                .customizeEditText(editText -> {
-                    editText.setText(visibleLabel);
-                    editText.setSingleLine(true);
-                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                    if (visibleLabel != null) {
-                        editText.setSelection(visibleLabel.length());
-                    }
-                })
-                .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String newLabel = editText.getText().toString().trim();
-                    if (!newLabel.equals(visibleLabel)) {
-                        presenter.renameItem(position, item, newLabel);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
-                    presenter.renameItem(position, item, "");
-                })
-                .setCancellable(false)
-                .show();
-    }
-
-    private void setItemColor(int position, CustomColorDescriptorUi item) {
-        int visibleColor = item.getVisibleColor();
-        ColorPickerDialog.builder(requireContext())
-                .setHexVisible(false)
-                .setSelectedColor(visibleColor)
-                .setOnColorPickedListener(color -> {
-                    if (color != visibleColor) {
-                        presenter.changeItemCustomColor(position, item, color);
-                    }
-                })
-                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                    presenter.changeItemCustomColor(position, item, null);
-                })
-                .setCancellable(false)
-                .show();
     }
 
     @Override
@@ -771,6 +707,52 @@ public class AppsFragment extends AppFragment implements AppsView,
             text = getString(R.string.folder_select_already_in_folder, item.getVisibleLabel());
         }
         Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showItemRenameDialog(int position, CustomLabelDescriptorUi item) {
+        String visibleLabel = item.getVisibleLabel();
+        EditTextAlertDialog.builder(requireContext())
+                .setTitle(item.getVisibleLabel())
+                .customizeEditText(editText -> {
+                    editText.setText(visibleLabel);
+                    editText.setSingleLine(true);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                    if (visibleLabel != null) {
+                        editText.setSelection(visibleLabel.length());
+                    }
+                })
+                .setPositiveButton(R.string.ok, (dialog, editText) -> {
+                    String newLabel = editText.getText().toString().trim();
+                    if (!newLabel.equals(visibleLabel)) {
+                        presenter.renameItem(position, item, newLabel);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
+                    presenter.renameItem(position, item, "");
+                })
+                .setCancellable(false)
+                .show();
+    }
+
+    @Override
+    public void showItemSetColorDialog(int position, CustomColorDescriptorUi item) {
+        int visibleColor = item.getVisibleColor();
+        ColorPickerDialog.builder(requireContext())
+                .setHexVisible(false)
+                .setSelectedColor(visibleColor)
+                .setOnColorPickedListener(color -> {
+                    if (color != visibleColor) {
+                        presenter.changeItemCustomColor(position, item, color);
+                    }
+                })
+                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
+                    presenter.changeItemCustomColor(position, item, null);
+                })
+                .setCancellable(false)
+                .show();
     }
 
     ///////////////////////////////////////////////////////////////////////////

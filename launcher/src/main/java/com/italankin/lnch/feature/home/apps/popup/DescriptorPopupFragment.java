@@ -3,9 +3,7 @@ package com.italankin.lnch.feature.home.apps.popup;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -52,20 +50,8 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
     private static final String TAG = "descriptor_popup";
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_descriptor_popup, container, false);
-        root = view.findViewById(R.id.popup_root);
-        containerRoot = view.findViewById(R.id.popup_container_root);
-        itemsContainer = view.findViewById(R.id.popup_item_container);
-        return root;
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        actionsContainer = view.findViewById(R.id.action_container);
-        shortcutsContainer = view.findViewById(R.id.shortcut_container);
-
         load();
     }
 

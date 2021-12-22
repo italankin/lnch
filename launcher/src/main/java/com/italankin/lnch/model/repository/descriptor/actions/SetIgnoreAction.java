@@ -10,7 +10,11 @@ public class SetIgnoreAction extends BaseAction {
     private final boolean ignored;
 
     public SetIgnoreAction(IgnorableDescriptor descriptor, boolean ignored) {
-        this.id = descriptor.getId();
+        this(descriptor.getId(), ignored);
+    }
+
+    public SetIgnoreAction(String descriptorId, boolean ignored) {
+        this.id = descriptorId;
         this.ignored = ignored;
     }
 

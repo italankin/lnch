@@ -52,7 +52,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_descriptor_popup, container, false);
+        View view = inflater.inflate(R.layout.fragment_action_popup, container, false);
         root = view.findViewById(R.id.popup_root);
         containerRoot = view.findViewById(R.id.popup_container_root);
         itemsContainer = view.findViewById(R.id.popup_item_container);
@@ -78,10 +78,10 @@ public abstract class ActionPopupFragment extends PopupFragment {
     }
 
     protected void dismissWithResult() {
+        dismiss();
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
         sendResult(result);
-        dismiss();
     }
 
     ///////////////////////////////////////////////////////////////////////////

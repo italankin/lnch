@@ -6,6 +6,36 @@ public final class FragmentResults {
 
     public static final class Customize {
         public static final String KEY = "customize";
+
+        public static final class Ignore {
+            public static final String KEY = "customize_ignore";
+            public static final String DESCRIPTOR = "descriptor";
+        }
+
+        public static final class Rename {
+            public static final String KEY = "customize_rename";
+            public static final String DESCRIPTOR = "descriptor";
+        }
+
+        public static final class SetColor {
+            public static final String KEY = "customize_set_color";
+            public static final String DESCRIPTOR = "descriptor";
+        }
+
+        public static final class Remove {
+            public static final String KEY = "customize_remove";
+            public static final String DESCRIPTOR = "descriptor";
+        }
+
+        public static final class EditIntent {
+            public static final String KEY = "customize_edit_intent";
+            public static final String DESCRIPTOR_ID = "descriptor_id";
+        }
+
+        public static final class SelectFolder {
+            public static final String KEY = "customize_select_folder";
+            public static final String DESCRIPTOR = "descriptor";
+        }
     }
 
     public static final class RemoveFromFolder {

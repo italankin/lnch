@@ -8,6 +8,8 @@ import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
@@ -32,6 +34,12 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showItemRenameDialog(int position, CustomLabelDescriptorUi item);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showItemSetColorDialog(int position, CustomColorDescriptorUi item);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFolderUpdated(FolderDescriptorUi item, boolean added);
