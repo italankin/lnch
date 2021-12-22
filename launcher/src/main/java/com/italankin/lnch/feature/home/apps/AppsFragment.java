@@ -12,14 +12,12 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -32,6 +30,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
+import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.FolderDescriptorUiAdapter;
@@ -100,7 +99,6 @@ import com.italankin.lnch.util.StatusBarUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
@@ -711,29 +709,8 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void showItemRenameDialog(int position, CustomLabelDescriptorUi item) {
-        String visibleLabel = item.getVisibleLabel();
-        EditTextAlertDialog.builder(requireContext())
-                .setTitle(item.getVisibleLabel())
-                .customizeEditText(editText -> {
-                    editText.setText(visibleLabel);
-                    editText.setSingleLine(true);
-                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                    if (visibleLabel != null) {
-                        editText.setSelection(visibleLabel.length());
-                    }
-                })
-                .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String newLabel = editText.getText().toString().trim();
-                    if (!newLabel.equals(visibleLabel)) {
-                        presenter.renameItem(position, item, newLabel);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
-                    presenter.renameItem(position, item, "");
-                })
-                .setCancellable(false)
+        new RenameDescriptorDialog(requireContext(), item.getVisibleLabel(),
+                (newLabel) -> presenter.renameItem(position, item, newLabel))
                 .show();
     }
 

@@ -45,7 +45,7 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
     }
 
     void setCustomLabel(AppDescriptor descriptor, String newValue) {
-        String customLabel = newValue.isEmpty() ? null : newValue;
+        String customLabel = newValue == null || newValue.isEmpty() ? null : newValue;
         descriptor.setCustomLabel(customLabel);
         commitAction(
                 new RenameAction(descriptor, customLabel),

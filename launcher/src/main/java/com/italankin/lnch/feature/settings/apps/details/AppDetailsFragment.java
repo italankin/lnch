@@ -3,11 +3,9 @@ package com.italankin.lnch.feature.settings.apps.details;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,10 +15,10 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 
 import androidx.annotation.NonNull;
@@ -139,7 +137,11 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
             presenter.setSearchShortcutsVisible(descriptor, isChecked);
         });
 
-        buttonRename.setOnClickListener(v -> setCustomLabel(descriptor));
+        buttonRename.setOnClickListener(v -> {
+            new RenameDescriptorDialog(requireContext(), descriptor.getVisibleLabel(),
+                    (newLabel) -> setCustomLabel(descriptor, newLabel))
+                    .show();
+        });
         buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
 
         buttonAppAliases.setOnClickListener(v -> {
@@ -157,32 +159,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         }
     }
 
-    private void setCustomLabel(AppDescriptor descriptor) {
-        String visibleLabel = descriptor.getVisibleLabel();
-        EditTextAlertDialog.builder(requireContext())
-                .setTitle(visibleLabel)
-                .customizeEditText(editText -> {
-                    editText.setText(visibleLabel);
-                    editText.setSingleLine(true);
-                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                    if (visibleLabel != null) {
-                        editText.setSelection(visibleLabel.length());
-                    }
-                })
-                .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String label = editText.getText().toString().trim();
-                    if (!label.equals(visibleLabel)) {
-                        presenter.setCustomLabel(descriptor, label);
-                        textVisibleName.setText(label);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.customize_action_reset, (dialog, which) -> {
-                    presenter.setCustomLabel(descriptor, "");
-                    textVisibleName.setText(descriptor.getVisibleLabel());
-                })
-                .show();
+    private void setCustomLabel(AppDescriptor descriptor, String label) {
+        presenter.setCustomLabel(descriptor, label);
+        textVisibleName.setText(descriptor.getVisibleLabel());
     }
 
     private void setCustomColor(AppDescriptor descriptor) {

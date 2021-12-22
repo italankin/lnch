@@ -118,9 +118,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
-        String s = customLabel.trim().isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item.getDescriptor(), s));
-        item.setCustomLabel(s);
+        String newLabel = customLabel == null || customLabel.isEmpty() ? null : customLabel;
+        editor.enqueue(new RenameAction(item.getDescriptor(), newLabel));
+        item.setCustomLabel(newLabel);
         getViewState().onItemChanged(position);
     }
 
