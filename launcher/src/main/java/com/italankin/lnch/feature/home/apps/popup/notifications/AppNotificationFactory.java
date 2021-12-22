@@ -6,8 +6,6 @@ import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.PopupNotificationItem;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class AppNotificationFactory {
         this.context = context;
     }
 
-    public List<PopupNotificationItem> createNotifications(@Nullable NotificationBag bag) {
+    public List<AppNotificationUi> createNotifications(@Nullable NotificationBag bag) {
         if (bag == null || bag.getCount() == 0) {
             return Collections.emptyList();
         }
@@ -50,7 +48,7 @@ public class AppNotificationFactory {
                 ungrouped.add(sbn);
             }
         }
-        List<PopupNotificationItem> result = new ArrayList<>(bag.getCount());
+        List<AppNotificationUi> result = new ArrayList<>(bag.getCount());
         for (StatusBarNotification sbn : ungrouped) {
             result.add(new AppNotificationUi(context, sbn));
         }

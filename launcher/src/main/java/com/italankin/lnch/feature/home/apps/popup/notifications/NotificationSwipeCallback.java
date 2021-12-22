@@ -1,7 +1,5 @@
 package com.italankin.lnch.feature.home.apps.popup.notifications;
 
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;

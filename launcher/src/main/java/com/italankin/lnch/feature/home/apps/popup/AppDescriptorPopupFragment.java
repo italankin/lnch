@@ -21,10 +21,9 @@ import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationFactory;
+import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
 import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.PopupNotificationItem;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
@@ -87,7 +86,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
 
     private RecyclerView notificationsList;
     private View notificationsListContainer;
-    private CompositeAdapter<PopupNotificationItem> notificationsAdapter;
+    private CompositeAdapter<AppNotificationUi> notificationsAdapter;
 
     private ErrorDelegate errorDelegate;
     private ShortcutStarterDelegate shortcutStarterDelegate;
@@ -315,7 +314,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     }
 
     private void setupNotifications() {
-        this.notificationsAdapter = new CompositeAdapter.Builder<PopupNotificationItem>(requireContext())
+        this.notificationsAdapter = new CompositeAdapter.Builder<AppNotificationUi>(requireContext())
                 .add(new AppNotificationUiAdapter(this))
                 .setHasStableIds(true)
                 .recyclerView(notificationsList)
@@ -362,7 +361,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         compositeDisposable.add(d);
     }
 
-    private void setNotifications(List<PopupNotificationItem> items) {
+    private void setNotifications(List<AppNotificationUi> items) {
         if (items.isEmpty()) {
             notificationsListContainer.setVisibility(View.GONE);
             compositeDisposable.clear();

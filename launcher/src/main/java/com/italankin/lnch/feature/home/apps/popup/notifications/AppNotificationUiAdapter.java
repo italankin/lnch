@@ -5,7 +5,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.popup.notifications.item.AppNotificationUi;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 import androidx.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.apps.popup.notifications.item;
+package com.italankin.lnch.feature.home.apps.popup.notifications;
 
 import android.app.Notification;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.service.notification.StatusBarNotification;
 
-public class AppNotificationUi implements PopupNotificationItem {
+public class AppNotificationUi implements Comparable<AppNotificationUi> {
 
     public final StatusBarNotification sbn;
     public final String title;
@@ -31,7 +31,7 @@ public class AppNotificationUi implements PopupNotificationItem {
     }
 
     @Override
-    public long compareKey() {
-        return sbn.getPostTime();
+    public int compareTo(AppNotificationUi o) {
+        return Long.compare(sbn.getPostTime(), o.sbn.getPostTime());
     }
 }
