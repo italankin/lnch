@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,8 +162,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         item.setFolderId(folderId);
         buildItemPopup(item);
         createItemViews();
-        // post delay here due to deferred recycler view items inflation
-        new Handler().post(this::showPopup);
+        showPopup();
     }
 
     private void buildItemPopup(AppDescriptorUi item) {
@@ -345,32 +343,36 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         lp.width = getResources().getDimensionPixelSize(R.dimen.popup_notifications_width);
         containerRoot.setLayoutParams(lp);
 
-        notificationsListContainer.setVisibility(View.VISIBLE);
-
         AppNotificationFactory appNotificationFactory = new AppNotificationFactory(requireContext());
+        setNotifications(appNotificationFactory.createNotifications(current));
 
         Disposable d = notificationsRepository.observe()
+                .skip(1)
                 .subscribeOn(Schedulers.computation())
                 .map(state -> {
                     NotificationBag notifications = state.get(descriptor);
                     return appNotificationFactory.createNotifications(notifications);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(items -> {
-                    if (items.isEmpty()) {
-                        notificationsListContainer.setVisibility(View.GONE);
-                        compositeDisposable.clear();
-                    } else {
-                        notificationsAdapter.setDataset(items);
-                        notificationsAdapter.notifyDataSetChanged();
-                        TextView count = notificationsListContainer.findViewById(R.id.notifications_count);
-                        count.setText(String.valueOf(items.size()));
-                    }
-                }, e -> {
-                    Timber.e(e, "subscribeForNotifications:");
-                    dismissWithResult();
-                });
+                .subscribe(this::setNotifications,
+                        e -> {
+                            Timber.e(e, "subscribeForNotifications:");
+                            dismissWithResult();
+                        });
         compositeDisposable.add(d);
+    }
+
+    private void setNotifications(List<PopupNotificationItem> items) {
+        if (items.isEmpty()) {
+            notificationsListContainer.setVisibility(View.GONE);
+            compositeDisposable.clear();
+        } else {
+            notificationsAdapter.setDataset(items);
+            notificationsAdapter.notifyDataSetChanged();
+            TextView count = notificationsListContainer.findViewById(R.id.notifications_count);
+            count.setText(String.valueOf(items.size()));
+            notificationsListContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     private void cancelNotification(AppNotificationUi item) {
