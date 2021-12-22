@@ -45,7 +45,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         callbacks = (Callbacks) context;
     }

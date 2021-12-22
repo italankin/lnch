@@ -8,6 +8,7 @@ import java.util.Set;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 public interface Match {
 
@@ -27,6 +28,7 @@ public interface Match {
     @ColorInt
     int getColor(Context context);
 
+    @NonNull
     @Override
     String toString();
 

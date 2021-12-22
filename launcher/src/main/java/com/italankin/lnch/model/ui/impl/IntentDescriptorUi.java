@@ -12,6 +12,8 @@ import com.italankin.lnch.util.IntentUtils;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+
 public final class IntentDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
@@ -80,6 +82,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
         return folderId;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return descriptor.toString();

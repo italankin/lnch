@@ -23,6 +23,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 public class ActionPopupWindow extends BasePopupWindow {
 
@@ -204,7 +205,7 @@ public class ActionPopupWindow extends BasePopupWindow {
         }
 
         public ItemBuilder setIcon(@DrawableRes int icon) {
-            return setIcon(context.getDrawable(icon));
+            return setIcon(AppCompatResources.getDrawable(context, icon));
         }
 
         public ItemBuilder setIcon(Drawable icon) {

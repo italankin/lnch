@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ public final class Update {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "{" +

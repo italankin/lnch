@@ -20,7 +20,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
     private Callbacks callbacks;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         callbacks = (Callbacks) context;
     }

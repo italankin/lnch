@@ -7,6 +7,8 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 public class NotificationBag {
 
     final AppDescriptor descriptor;
@@ -45,6 +47,7 @@ public class NotificationBag {
         return hashCode;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "NotificationBag{count=" + getCount() + "}";

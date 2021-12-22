@@ -31,6 +31,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -116,7 +117,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.settings_apps, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint(getString(R.string.hint_search));
@@ -214,9 +215,9 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
                 .create();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void addListDivider() {
-        Drawable drawable = requireContext().getDrawable(R.drawable.settings_apps_divider);
-        assert drawable != null;
+        Drawable drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.settings_apps_divider);
         DividerItemDecoration decoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);

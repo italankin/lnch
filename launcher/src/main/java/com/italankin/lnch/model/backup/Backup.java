@@ -6,6 +6,8 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+
 class Backup {
 
     @SerializedName("packages")
@@ -19,6 +21,7 @@ class Backup {
         this.preferences = preferences;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Backup{" +

@@ -9,6 +9,8 @@ import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+
 public final class PinnedShortcutDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
@@ -77,6 +79,7 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
         return folderId;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return descriptor.toString();

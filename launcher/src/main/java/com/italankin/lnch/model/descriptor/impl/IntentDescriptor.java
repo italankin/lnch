@@ -9,6 +9,8 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+
 /**
  * Custom intent descriptor (e.g., search intent)
  */
@@ -89,6 +91,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         return this.id.equals(that.id);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Intent{" + intentUri + '}';

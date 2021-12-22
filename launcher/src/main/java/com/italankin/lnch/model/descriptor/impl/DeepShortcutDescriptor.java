@@ -5,6 +5,8 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 
+import androidx.annotation.NonNull;
+
 /**
  * A descriptor for pinned {@link com.italankin.lnch.model.repository.shortcuts.Shortcut}s
  */
@@ -84,6 +86,7 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
         return this.getId().equals(that.getId());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "DeepShortcut{" + getId() + "}";

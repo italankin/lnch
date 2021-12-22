@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public final class UserPrefs {
@@ -100,6 +101,7 @@ public final class UserPrefs {
         return result;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "{" +
@@ -162,9 +164,9 @@ public final class UserPrefs {
 
         @Override
         public int hashCode() {
-            int result = (itemTextSize != +0.0f ? Float.floatToIntBits(itemTextSize) : 0);
+            int result = (itemTextSize != 0f ? Float.floatToIntBits(itemTextSize) : 0);
             result = 31 * result + itemPadding;
-            result = 31 * result + (itemShadowRadius != +0.0f ? Float.floatToIntBits(itemShadowRadius) : 0);
+            result = 31 * result + (itemShadowRadius != 0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
             if (notificationDotColor != null) {
                 result = 31 * result + notificationDotColor;
@@ -175,6 +177,7 @@ public final class UserPrefs {
             return result;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "{" +

@@ -2,6 +2,7 @@ package com.arellomobile.mvp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
@@ -38,7 +39,7 @@ public abstract class MvpAppCompatActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         getMvpDelegate().onSaveInstanceState(outState);
@@ -66,6 +67,7 @@ public abstract class MvpAppCompatActivity extends AppCompatActivity {
     /**
      * @return The {@link MvpDelegate} being used by this Activity.
      */
+    @SuppressWarnings("rawtypes")
     public MvpDelegate getMvpDelegate() {
         if (mMvpDelegate == null) {
             mMvpDelegate = new MvpDelegate<>(this);

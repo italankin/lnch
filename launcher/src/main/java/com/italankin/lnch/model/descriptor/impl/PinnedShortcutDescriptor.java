@@ -7,6 +7,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import java.util.UUID;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 /**
  * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
@@ -82,6 +83,7 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         return this.id.equals(that.id);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Shortcut{" + uri + "}";

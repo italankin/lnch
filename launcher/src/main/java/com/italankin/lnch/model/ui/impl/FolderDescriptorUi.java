@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+
 public final class FolderDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         CustomLabelDescriptorUi,
@@ -66,6 +68,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
         return customColor;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return descriptor.toString();

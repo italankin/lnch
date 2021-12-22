@@ -22,7 +22,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 
 public class LceLayout extends FrameLayout {
 
@@ -161,7 +161,7 @@ public class LceLayout extends FrameLayout {
 
         @CheckResult(suggest = "show()")
         public StateBuilder icon(@DrawableRes int icon) {
-            return icon(ContextCompat.getDrawable(context, icon));
+            return icon(AppCompatResources.getDrawable(context, icon));
         }
 
         @CheckResult(suggest = "show()")

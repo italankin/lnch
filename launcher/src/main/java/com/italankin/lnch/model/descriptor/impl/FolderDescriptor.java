@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+
 /**
  * A home screen folder
  */
@@ -81,6 +83,7 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
         return this.id.equals(that.id);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Folder{" + getVisibleLabel() + '}';

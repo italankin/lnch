@@ -73,7 +73,7 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         callbacks = (Callbacks) context;
     }
@@ -114,7 +114,7 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.settings_appearance, menu);
     }
 

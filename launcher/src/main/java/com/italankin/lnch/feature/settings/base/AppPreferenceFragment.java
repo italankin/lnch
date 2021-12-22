@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.arellomobile.mvp.MvpDelegate;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 public abstract class AppPreferenceFragment extends BasePreferenceFragment {
@@ -34,7 +35,7 @@ public abstract class AppPreferenceFragment extends BasePreferenceFragment {
         getMvpDelegate().onAttach();
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         mIsStateSaved = true;

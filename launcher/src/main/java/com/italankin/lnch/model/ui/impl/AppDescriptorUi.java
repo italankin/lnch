@@ -10,6 +10,8 @@ import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+
 public final class AppDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
@@ -130,6 +132,7 @@ public final class AppDescriptorUi implements DescriptorUi,
         return badgeVisible;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "App{" + packageName + (ignored ? "*" : "") + (badgeVisible ? "!" : "") + "}";
