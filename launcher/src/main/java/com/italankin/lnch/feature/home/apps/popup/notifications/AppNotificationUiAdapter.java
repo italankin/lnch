@@ -71,7 +71,12 @@ public class AppNotificationUiAdapter extends BaseAdapterDelegate<AppNotificatio
         void bind(AppNotificationUi item) {
             this.item = item;
             icon.setImageDrawable(item.icon);
-            title.setText(item.title);
+            if (item.title != null) {
+                title.setText(item.title);
+                title.setVisibility(View.VISIBLE);
+            } else {
+                title.setVisibility(View.GONE);
+            }
             content.setText(item.text);
             if (item.summaryCount == 0) {
                 count.setVisibility(View.GONE);
