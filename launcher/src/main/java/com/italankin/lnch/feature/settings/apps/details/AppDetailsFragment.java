@@ -16,10 +16,10 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
+import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -165,18 +165,8 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     }
 
     private void setCustomColor(AppDescriptor descriptor) {
-        int visibleColor = descriptor.getVisibleColor();
-        ColorPickerDialog.builder(requireContext())
-                .setHexVisible(false)
-                .setSelectedColor(visibleColor)
-                .setOnColorPickedListener(color -> {
-                    if (color != visibleColor) {
-                        presenter.setCustomColor(descriptor, color);
-                    }
-                })
-                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                    presenter.setCustomColor(descriptor, null);
-                })
+        new SetColorDescriptorDialog(requireContext(), descriptor.getVisibleColor(),
+                newColor -> presenter.setCustomColor(descriptor, newColor))
                 .show();
     }
 

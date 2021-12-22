@@ -31,6 +31,7 @@ import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
+import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.FolderDescriptorUiAdapter;
@@ -100,7 +101,6 @@ import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -716,19 +716,8 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void showItemSetColorDialog(int position, CustomColorDescriptorUi item) {
-        int visibleColor = item.getVisibleColor();
-        ColorPickerDialog.builder(requireContext())
-                .setHexVisible(false)
-                .setSelectedColor(visibleColor)
-                .setOnColorPickedListener(color -> {
-                    if (color != visibleColor) {
-                        presenter.changeItemCustomColor(position, item, color);
-                    }
-                })
-                .setResetButton(getString(R.string.customize_action_reset), (dialog, which) -> {
-                    presenter.changeItemCustomColor(position, item, null);
-                })
-                .setCancellable(false)
+        new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
+                newColor -> presenter.changeItemCustomColor(position, item, newColor))
                 .show();
     }
 
