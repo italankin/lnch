@@ -26,18 +26,22 @@ import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class WallpaperOverlayFragment extends AppFragment {
-
-    private static final int REQUEST_CODE_PERMISSION = 1;
+public class WallpaperOverlayFragment extends AppFragment implements ActivityResultCallback<Boolean> {
 
     private Preferences preferences;
     private ColorPickerView colorPicker;
     private ImageView wallpaper;
 
     private Callbacks callbacks;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), this);
 
     @Override
     public void onAttach(Context context) {
@@ -100,24 +104,19 @@ public class WallpaperOverlayFragment extends AppFragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length == 0) {
-            return;
-        }
-        if (requestCode == REQUEST_CODE_PERMISSION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showWallpaper();
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         colorPicker = null;
         wallpaper = null;
+    }
+
+    @Override
+    public void onActivityResult(Boolean permissionGranted) {
+        if (permissionGranted) {
+            showWallpaper();
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initWallpaper() {
@@ -125,8 +124,7 @@ public class WallpaperOverlayFragment extends AppFragment {
                 PackageManager.PERMISSION_GRANTED) {
             showWallpaper();
         } else {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_CODE_PERMISSION);
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
 

@@ -31,19 +31,23 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-public class AppearanceFragment extends AppFragment implements BackButtonHandler, ColorPickerDialogFragment.Listener,
+public class AppearanceFragment extends AppFragment implements
+        BackButtonHandler,
+        ActivityResultCallback<Boolean>,
+        ColorPickerDialogFragment.Listener,
         SimpleDialogFragment.Listener {
 
     private static final String TAG_OVERLAY_COLOR = "overlay_color";
     private static final String TAG_SHADOW_COLOR = "shadow_color";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final String TAG_DISCARD_CHANGES = "discard_changes";
-
-    private static final int REQUEST_CODE_PERMISSION = 1;
 
     private Preferences preferences;
 
@@ -57,6 +61,9 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
     private ValuePrefView itemShadowColor;
 
     private Callbacks callbacks;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -137,20 +144,6 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length == 0) {
-            return;
-        }
-        if (requestCode == REQUEST_CODE_PERMISSION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showWallpaper(getView());
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
     public boolean onBackPressed() {
         if (isChanged()) {
             new SimpleDialogFragment.Builder()
@@ -213,10 +206,19 @@ public class AppearanceFragment extends AppFragment implements BackButtonHandler
         }
     }
 
+    @Override
+    public void onActivityResult(Boolean permissionGranted) {
+        if (permissionGranted) {
+            showWallpaper(getView());
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void initRoot(View view) {
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return;
         }
         showWallpaper(view);
