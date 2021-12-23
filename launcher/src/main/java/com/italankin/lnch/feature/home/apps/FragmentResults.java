@@ -36,6 +36,17 @@ public final class FragmentResults {
             public static final String KEY = "customize_select_folder";
             public static final String DESCRIPTOR = "descriptor";
         }
+
+        public static final class RemoveFromFolder {
+            public static final String KEY = "customize_remove_from_folder";
+            public static final String DESCRIPTOR = "descriptor";
+            public static final String FOLDER = "folder";
+        }
+
+        public static final class OpenFolder {
+            public static final String KEY = "customize_open_folder";
+            public static final String FOLDER = "folder";
+        }
     }
 
     public static final class RemoveFromFolder {

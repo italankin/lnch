@@ -9,6 +9,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -16,6 +17,7 @@ import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 
@@ -86,7 +88,9 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     }
 
     private void buildItemPopup(DescriptorUi item) {
-        if (item instanceof IgnorableDescriptorUi) {
+        boolean isInFolder = item instanceof InFolderDescriptorUi
+                && ((InFolderDescriptorUi) item).getFolderId() != null;
+        if (item instanceof IgnorableDescriptorUi && !isInFolder) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_hide)
                     .setOnClickListener(v -> sendIgnoreResult((IgnorableDescriptorUi) item))
@@ -118,17 +122,34 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             );
         }
         if (item instanceof InFolderDescriptorUi) {
-            addShortcut(new ItemBuilder()
-                    .setLabel(R.string.customize_item_add_to_folder)
-                    .setIcon(R.drawable.ic_action_add_to_folder)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
-                    .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item))
-            );
+            if (isInFolder) {
+                addShortcut(new ItemBuilder()
+                        .setLabel(R.string.customize_item_remove_from_folder)
+                        .setIcon(R.drawable.ic_action_remove_from_folder)
+                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item))
+                );
+            } else {
+                addShortcut(new ItemBuilder()
+                        .setLabel(R.string.customize_item_add_to_folder)
+                        .setIcon(R.drawable.ic_folder)
+                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item))
+                );
+            }
         }
         if (item instanceof RemovableDescriptorUi) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_delete)
                     .setOnClickListener(v -> sendRemoveResult((RemovableDescriptorUi) item))
+            );
+        }
+        if (item instanceof FolderDescriptorUi) {
+            addShortcut(new ItemBuilder()
+                    .setLabel(R.string.customize_item_edit_folder)
+                    .setIcon(R.drawable.ic_folder)
+                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setOnClickListener(v -> sendOpenFolderResult((FolderDescriptorUi) item))
             );
         }
     }
@@ -146,6 +167,25 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.Customize.SelectFolder.KEY);
         result.putSerializable(FragmentResults.Customize.SelectFolder.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        sendResult(result);
+    }
+
+    private void sendRemoveFromFolderResult(InFolderDescriptorUi item) {
+        dismiss();
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.Customize.RemoveFromFolder.KEY);
+        result.putSerializable(FragmentResults.Customize.RemoveFromFolder.DESCRIPTOR,
+                new DescriptorArg(item.getDescriptor()));
+        result.putSerializable(FragmentResults.Customize.RemoveFromFolder.FOLDER,
+                new DescriptorArg(item.getFolderId(), FolderDescriptor.class));
+        sendResult(result);
+    }
+
+    private void sendOpenFolderResult(FolderDescriptorUi item) {
+        dismiss();
+        Bundle result = new Bundle();
+        result.putString(FragmentResults.RESULT, FragmentResults.Customize.OpenFolder.KEY);
+        result.putSerializable(FragmentResults.Customize.OpenFolder.FOLDER, new DescriptorArg(item.getDescriptor()));
         sendResult(result);
     }
 

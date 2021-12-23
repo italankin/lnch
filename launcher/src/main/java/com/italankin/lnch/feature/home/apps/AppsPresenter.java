@@ -15,6 +15,7 @@ import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
+import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
@@ -124,13 +125,13 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onItemChanged(position);
     }
 
-    void changeItemCustomColor(DescriptorArg arg) {
+    void showSetItemColorDialog(DescriptorArg arg) {
         int position = findDescriptorIndex(arg);
         if (position == -1) {
             return;
         }
         CustomColorDescriptorUi item = (CustomColorDescriptorUi) items.get(position);
-        getViewState().showItemSetColorDialog(position, item);
+        getViewState().showSetItemColorDialog(position, item);
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
@@ -175,6 +176,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         editor.enqueue(new AddToFolderAction(folderId, descriptorId));
         folder.items.add(descriptorId);
         getViewState().onFolderUpdated(folder, true);
+    }
+
+    void showFolder(DescriptorArg arg) {
+        int position = findDescriptorIndex(arg);
+        if (position == -1) {
+            return;
+        }
+        FolderDescriptorUi item = (FolderDescriptorUi) items.get(position);
+        getViewState().showFolder(position, item.getDescriptor());
     }
 
     void addIntent(IntentDescriptor item) {
@@ -471,28 +481,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             }
         }
         return -1;
-    }
-
-    private static class EditIntentAction extends BaseAction {
-
-        private final String id;
-        private final Intent intent;
-        private final String label;
-
-        EditIntentAction(String id, Intent intent, String label) {
-            this.id = id;
-            this.intent = intent;
-            this.label = label;
-        }
-
-        @Override
-        public void apply(List<Descriptor> items) {
-            IntentDescriptor descriptor = findById(items, id);
-            if (descriptor != null) {
-                descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
-                descriptor.setCustomLabel(label);
-            }
-        }
     }
 
     private static class AddToFolderAction extends BaseAction {

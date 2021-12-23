@@ -57,6 +57,7 @@ import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate
 import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
@@ -349,7 +350,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
             case FragmentResults.Customize.SetColor.KEY: {
                 DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SetColor.DESCRIPTOR);
-                presenter.changeItemCustomColor(arg);
+                presenter.showSetItemColorDialog(arg);
                 break;
             }
             case FragmentResults.Customize.Remove.KEY: {
@@ -365,6 +366,11 @@ public class AppsFragment extends AppFragment implements AppsView,
             case FragmentResults.Customize.SelectFolder.KEY: {
                 DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SelectFolder.DESCRIPTOR);
                 presenter.selectFolder(arg);
+                break;
+            }
+            case FragmentResults.Customize.OpenFolder.KEY: {
+                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.OpenFolder.FOLDER);
+                presenter.showFolder(arg);
                 break;
             }
         }
@@ -521,7 +527,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
-    private void showFolder(int position, FolderDescriptor descriptor) {
+    @Override
+    public void showFolder(int position, FolderDescriptor descriptor) {
         Point point = null;
         View view = list.findViewForAdapterPosition(position);
         if (view != null) {
@@ -530,8 +537,13 @@ public class AppsFragment extends AppFragment implements AppsView,
             point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
         }
 
-        FolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
-                .show(getParentFragmentManager(), android.R.id.content);
+        if (editMode) {
+            EditFolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
+                    .show(getParentFragmentManager(), android.R.id.content);
+        } else {
+            FolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
+                    .show(getParentFragmentManager(), android.R.id.content);
+        }
     }
 
     private void setEditMode(boolean value) {
@@ -715,7 +727,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showItemSetColorDialog(int position, CustomColorDescriptorUi item) {
+    public void showSetItemColorDialog(int position, CustomColorDescriptorUi item) {
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
                 newColor -> presenter.changeItemCustomColor(position, item, newColor))
                 .show();

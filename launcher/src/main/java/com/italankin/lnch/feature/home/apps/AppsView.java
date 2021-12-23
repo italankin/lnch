@@ -7,6 +7,7 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
 import com.italankin.lnch.feature.home.model.Update;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -39,7 +40,10 @@ interface AppsView extends MvpView {
     void showItemRenameDialog(int position, CustomLabelDescriptorUi item);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showItemSetColorDialog(int position, CustomColorDescriptorUi item);
+    void showSetItemColorDialog(int position, CustomColorDescriptorUi item);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showFolder(int position, FolderDescriptor descriptor);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFolderUpdated(FolderDescriptorUi item, boolean added);
