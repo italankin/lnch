@@ -27,6 +27,9 @@ public abstract class PopupFragment extends Fragment {
 
     private int backstackId;
 
+    private boolean showAfterInsetsApplied = false;
+    private boolean insetsApplied = false;
+
     protected abstract String getPopupBackstackName();
 
     protected abstract String getPopupTag();
@@ -47,11 +50,18 @@ public abstract class PopupFragment extends Fragment {
 
         Rect anchor = requireArguments().getParcelable(ARG_ANCHOR);
         root.setAnchor(anchor);
-        root.post(() -> {
-            WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-            root.setPaddingRelative(root.getPaddingStart(), insets.getStableInsetTop(),
-                    root.getPaddingEnd(), insets.getStableInsetBottom());
-        });
+        WindowInsets initialInsets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
+        if (initialInsets == null) {
+            root.post(() -> {
+                WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
+                applyInsets(insets);
+                if (showAfterInsetsApplied) {
+                    showPopupInternal();
+                }
+            });
+        } else {
+            applyInsets(initialInsets);
+        }
         root.setOnClickListener(v -> dismiss());
     }
 
@@ -72,6 +82,20 @@ public abstract class PopupFragment extends Fragment {
     }
 
     protected void showPopup() {
+        if (insetsApplied) {
+            showPopupInternal();
+        } else {
+            showAfterInsetsApplied = true;
+        }
+    }
+
+    private void applyInsets(WindowInsets insets) {
+        root.setPaddingRelative(root.getPaddingStart(), insets.getStableInsetTop(),
+                root.getPaddingEnd(), insets.getStableInsetBottom());
+        insetsApplied = true;
+    }
+
+    private void showPopupInternal() {
         containerRoot.setScaleX(0.4f);
         containerRoot.setScaleY(0.4f);
         containerRoot.setAlpha(0);
