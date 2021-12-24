@@ -88,8 +88,8 @@ public class PopupFrameView extends ViewGroup {
             return;
         }
 
-        if (!(getChildAt(0) instanceof ArrowLayout)) {
-            throw new IllegalArgumentException(getClass().getSimpleName() + " can only host " + ArrowLayout.class.getSimpleName());
+        if (!(getChildAt(0) instanceof Child)) {
+            throw new IllegalArgumentException(getClass().getSimpleName() + " child must implement " + Child.class.getSimpleName());
         }
 
         int maxWidth = (int) ((getMeasuredWidth() - getPaddingLeft() - getPaddingRight()) * maxWidthFactor);
