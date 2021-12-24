@@ -153,10 +153,22 @@ public class PopupFrameView extends ViewGroup {
             }
             int anchorX = tmp[0];
             int anchorY = tmp[1];
-            child.setAnchorPoint(anchorX - out.left, anchorY - out.top, popupLocation);
+            int childAnchorX = anchorX - out.left;
+            int childAnchorY = anchorY - out.top;
             if (!container.contains(out)) {
-                placeInside(out, container);
+                tmp[0] = 0;
+                tmp[1] = 0;
+                placeInside(out, container, tmp);
+                if (tmp[0] != 0) {
+                    // shifted along x axis
+                    childAnchorX = anchorX - out.left;
+                }
+                if (tmp[1] != 0) {
+                    // shifted along y axis
+                    childAnchorY = anchorY - out.top;
+                }
             }
+            child.setAnchorPoint(childAnchorX, childAnchorY, popupLocation);
             child.setPivotX(anchorX - out.left);
             child.setPivotY(anchorY - out.top);
         } else {
@@ -166,22 +178,26 @@ public class PopupFrameView extends ViewGroup {
         child.layout(out.left, out.top, out.right, out.bottom);
     }
 
-    private static void placeInside(Rect target, Rect bounds) {
+    private static void placeInside(Rect target, Rect bounds, int[] shifts) {
         if (target.left < bounds.left) {
             int dx = bounds.left - target.left;
             target.offset(dx, 0);
+            shifts[0] = dx;
         }
         if (target.top < bounds.top) {
             int dy = bounds.top - target.top;
             target.offset(0, dy);
+            shifts[1] = dy;
         }
         if (target.right > bounds.right) {
             int dx = bounds.right - target.right;
             target.offset(dx, 0);
+            shifts[0] = dx;
         }
         if (target.bottom > bounds.bottom) {
             int dy = bounds.bottom - target.bottom;
             target.offset(0, dy);
+            shifts[1] = dy;
         }
     }
 
