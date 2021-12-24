@@ -23,7 +23,6 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
-    private String folderId;
 
     public PinnedShortcutDescriptorUi(PinnedShortcutDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -67,16 +66,6 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
     @Override
     public Integer getCustomColor() {
         return customColor;
-    }
-
-    @Override
-    public void setFolderId(String folderId) {
-        this.folderId = folderId;
-    }
-
-    @Override
-    public String getFolderId() {
-        return folderId;
     }
 
     @NonNull

@@ -16,7 +16,7 @@ import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
-import com.italankin.lnch.feature.home.util.SwapItemHelper;
+import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
@@ -38,7 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class EditFolderFragment extends BaseFolderFragment implements EditFolderView, SwapItemHelper.Callback {
+public class EditFolderFragment extends BaseFolderFragment implements EditFolderView, MoveItemHelper.Callback {
 
     public static EditFolderFragment newInstance(
             FolderDescriptor descriptor,
@@ -58,7 +58,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
-    private final ItemTouchHelper touchHelper = new ItemTouchHelper(new SwapItemHelper(this));
+    private final ItemTouchHelper touchHelper = new ItemTouchHelper(new MoveItemHelper(this));
 
     @ProvidePresenter
     EditFolderPresenter providePresenter() {
@@ -149,13 +149,13 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
     }
 
     @Override
-    public void onItemsSwap(int from, int to) {
+    public void onFolderItemMove(int from, int to) {
         adapter.notifyItemMoved(from, to);
     }
 
     @Override
     public void onItemMove(int from, int to) {
-        presenter.swapApps(from, to);
+        presenter.moveItem(from, to);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -240,6 +240,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         View view = holder != null ? holder.itemView : null;
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
         CustomizeDescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
+                .setFolderId(folderId)
                 .show(getParentFragmentManager());
     }
 

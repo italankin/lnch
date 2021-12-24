@@ -26,7 +26,6 @@ public final class IntentDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
-    private String folderId;
 
     public IntentDescriptorUi(IntentDescriptor descriptor) {
         this.intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
@@ -70,16 +69,6 @@ public final class IntentDescriptorUi implements DescriptorUi,
     @Override
     public Integer getCustomColor() {
         return customColor;
-    }
-
-    @Override
-    public void setFolderId(String folderId) {
-        this.folderId = folderId;
-    }
-
-    @Override
-    public String getFolderId() {
-        return folderId;
     }
 
     @NonNull

@@ -74,6 +74,8 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
     protected ErrorDelegate errorDelegate;
 
+    protected String folderId;
+
     private int backstackId = -1;
 
     protected abstract BaseFolderPresenter<? extends BaseFolderView> getPresenter();
@@ -81,6 +83,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        folderId = requireArguments().getString(ARG_FOLDER_ID);
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
         }
@@ -138,7 +141,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
         initDelegates(requireContext());
 
-        getPresenter().loadFolder(requireArguments().getString(ARG_FOLDER_ID));
+        getPresenter().loadFolder(folderId);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -146,8 +149,8 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onShowFolder(FolderDescriptor descriptor, List<DescriptorUi> items, UserPrefs userPrefs) {
-        title.setText(descriptor.getVisibleLabel());
+    public void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs) {
+        title.setText(folderTitle);
         adapter.updateUserPrefs(userPrefs);
         onFolderUpdated(items);
         animatePopupAppearance();

@@ -20,5 +20,5 @@ interface EditFolderView extends BaseFolderView {
     void onItemRemoved(int position);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemsSwap(int from, int to);
+    void onFolderItemMove(int from, int to);
 }

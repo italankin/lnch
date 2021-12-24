@@ -7,6 +7,8 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -16,12 +18,12 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
+import com.italankin.lnch.model.repository.descriptor.actions.MoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SwapAction;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -37,7 +39,6 @@ import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
-import com.italankin.lnch.util.ListUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -62,22 +63,21 @@ import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
 
-    private static final List<DescriptorUi> INITIAL = new ArrayList<>();
-
+    private final HomeDescriptorsState homeDescriptorsState;
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final NotificationsRepository notificationsRepository;
     private final Preferences preferences;
-    /**
-     * View commands will dispatch this instance on every state restore, so any changes
-     * made to this list will be visible to new views.
-     */
-    private List<DescriptorUi> items = INITIAL;
+
     private DescriptorRepository.Editor editor;
 
     @Inject
-    AppsPresenter(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
-            NotificationsRepository notificationsRepository, Preferences preferences) {
+    AppsPresenter(HomeDescriptorsState homeDescriptorsState,
+            DescriptorRepository descriptorRepository,
+            ShortcutsRepository shortcutsRepository,
+            NotificationsRepository notificationsRepository,
+            Preferences preferences) {
+        this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.notificationsRepository = notificationsRepository;
@@ -103,72 +103,63 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onStartCustomize();
     }
 
-    void swapApps(int from, int to) {
-        editor.enqueue(new SwapAction(from, to));
-        ListUtils.swap(items, from, to);
-        getViewState().onItemsSwap(from, to);
+    void moveItem(int from, int to) {
+        editor.enqueue(new MoveAction(from, to));
+        homeDescriptorsState.moveItem(from, to);
     }
 
     void renameItem(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
+        DescriptorUiEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(arg);
+        if (entry == null) {
             return;
         }
-        CustomLabelDescriptorUi item = (CustomLabelDescriptorUi) items.get(position);
-        getViewState().showItemRenameDialog(position, item);
+        getViewState().showItemRenameDialog(entry.position, entry.item);
     }
 
-    void renameItem(int position, CustomLabelDescriptorUi item, String customLabel) {
+    void renameItem(CustomLabelDescriptorUi item, String customLabel) {
         String newLabel = customLabel == null || customLabel.isEmpty() ? null : customLabel;
         editor.enqueue(new RenameAction(item.getDescriptor(), newLabel));
         item.setCustomLabel(newLabel);
-        getViewState().onItemChanged(position);
+        homeDescriptorsState.updateItem(item);
     }
 
     void showSetItemColorDialog(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
+        DescriptorUiEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(arg);
+        if (entry == null) {
             return;
         }
-        CustomColorDescriptorUi item = (CustomColorDescriptorUi) items.get(position);
-        getViewState().showSetItemColorDialog(position, item);
+        getViewState().showSetItemColorDialog(entry.position, entry.item);
     }
 
-    void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
+    void changeItemCustomColor(CustomColorDescriptorUi item, Integer color) {
         editor.enqueue(new SetColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
-        getViewState().onItemChanged(position);
+        homeDescriptorsState.updateItem(item);
     }
 
     void ignoreItem(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
+        DescriptorUiEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(arg);
+        if (entry == null) {
             return;
         }
-        IgnorableDescriptorUi item = (IgnorableDescriptorUi) items.get(position);
         editor.enqueue(new SetIgnoreAction(arg.id, true));
+        IgnorableDescriptorUi item = entry.item;
         item.setIgnored(true);
-        getViewState().onItemChanged(position);
+        homeDescriptorsState.updateItem(item);
     }
 
     void addFolder(String label, @ColorInt int color) {
         FolderDescriptor item = new FolderDescriptor(label, color);
         editor.enqueue(new AddAction(item));
-        items.add(new FolderDescriptorUi(item));
-        getViewState().onItemInserted(items.size() - 1);
+        homeDescriptorsState.insertItem(new FolderDescriptorUi(item));
     }
 
     void addToFolder(String folderId, String descriptorId) {
-        FolderDescriptorUi folder = null;
-        for (DescriptorUi item : items) {
-            if (item.getDescriptor().getId().equals(folderId)) {
-                folder = (FolderDescriptorUi) item;
-                break;
-            }
-        }
-        if (folder == null) {
+        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
+        if (entry == null) {
             return;
         }
+        FolderDescriptorUi folder = entry.item;
         if (folder.items.contains(descriptorId)) {
             getViewState().onFolderUpdated(folder, false);
             return;
@@ -179,41 +170,32 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void showFolder(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
+        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(arg);
+        if (entry == null) {
             return;
         }
-        FolderDescriptorUi item = (FolderDescriptorUi) items.get(position);
-        getViewState().showFolder(position, item.getDescriptor());
+        getViewState().showFolder(entry.position, entry.item.getDescriptor());
     }
 
     void addIntent(IntentDescriptor item) {
         editor.enqueue(new AddAction(item));
-        items.add(new IntentDescriptorUi(item));
-        getViewState().onItemInserted(items.size() - 1);
+        homeDescriptorsState.insertItem(new IntentDescriptorUi(item));
     }
 
     void editIntent(String id, Intent intent, String label) {
         editor.enqueue(new EditIntentAction(id, intent, label));
-        for (int i = 0; i < items.size(); i++) {
-            DescriptorUi item = items.get(i);
-            if (item.getDescriptor().getId().equals(id)) {
-                IntentDescriptorUi ui = (IntentDescriptorUi) item;
-                ui.setCustomLabel(label);
-                getViewState().onItemChanged(i);
-                break;
-            }
+        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
+        if (entry == null) {
+            return;
         }
+        IntentDescriptorUi item = entry.item;
+        item.setCustomLabel(label);
+        homeDescriptorsState.updateItem(item);
     }
 
     void removeItem(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
-            return;
-        }
         editor.enqueue(new RemoveAction(arg.id));
-        items.remove(position);
-        getViewState().onItemsRemoved(position, 1);
+        homeDescriptorsState.removeByArg(arg);
     }
 
     void confirmDiscardChanges() {
@@ -232,18 +214,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void selectFolder(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
-        if (position == -1) {
+        DescriptorUiEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(arg);
+        if (entry == null) {
             return;
         }
-        InFolderDescriptorUi item = (InFolderDescriptorUi) items.get(position);
-        List<FolderDescriptorUi> folders = new ArrayList<>(4);
-        for (DescriptorUi descriptor : items) {
-            if (descriptor instanceof FolderDescriptorUi) {
-                folders.add((FolderDescriptorUi) descriptor);
-            }
-        }
-        getViewState().showSelectFolderDialog(position, item, folders);
+        List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
+        getViewState().showSelectFolderDialog(entry.position, entry.item, folders);
     }
 
     void stopCustomize() {
@@ -382,14 +358,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     @Override
                     protected void onNext(AppsView viewState, Update update) {
                         Timber.d("Update: %s", update);
-                        items = update.items;
+                        homeDescriptorsState.setItems(update.items);
                         viewState.onReceiveUpdate(update);
                         updateShortcuts();
                     }
 
                     @Override
                     protected void onError(AppsView viewState, Throwable e) {
-                        if (items == INITIAL) {
+                        if (homeDescriptorsState.isInitialState()) {
                             viewState.onReceiveUpdateError(e);
                         } else {
                             viewState.showError(e);
@@ -471,16 +447,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         DescriptorUiDiffCallback callback = new DescriptorUiDiffCallback(previous.items, newItems);
         DiffUtil.DiffResult diffResult = calculateDiff(callback, true);
         return new Update(newItems, diffResult);
-    }
-
-    private int findDescriptorIndex(DescriptorArg arg) {
-        for (int i = 0, s = items.size(); i < s; i++) {
-            DescriptorUi item = items.get(i);
-            if (arg.is(item.getDescriptor())) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     private static class AddToFolderAction extends BaseAction {

@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SwapItemHelper extends ItemTouchHelper.Callback {
+public class MoveItemHelper extends ItemTouchHelper.Callback {
 
     private static final int DRAG_FLAGS = ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END;
 
     private final Callback callback;
 
-    public SwapItemHelper(Callback callback) {
+    public MoveItemHelper(Callback callback) {
         this.callback = callback;
     }
 

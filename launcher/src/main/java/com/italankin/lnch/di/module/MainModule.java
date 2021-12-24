@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -154,5 +156,11 @@ public class MainModule {
     @Singleton
     NotificationsRepository provideNotificationsRepository(DescriptorRepository descriptorRepository) {
         return new NotificationsRepositoryImpl(descriptorRepository);
+    }
+
+    @Provides
+    @Singleton
+    HomeDescriptorsState provideHomeDescriptorsState() {
+        return new HomeDescriptorsStateImpl();
     }
 }

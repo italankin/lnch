@@ -7,7 +7,7 @@ import android.view.View;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -19,7 +19,6 @@ import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
-import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +34,6 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_DESCRIPTOR_ID, descriptorUi.getDescriptor().getId());
         args.putString(ARG_REQUEST_KEY, requestKey);
-        if (descriptorUi instanceof InFolderDescriptorUi) {
-            args.putString(ARG_FOLDER_ID, ((InFolderDescriptorUi) descriptorUi).getFolderId());
-        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,6 +44,11 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     private static final String TAG = "customize_popup";
 
     private Preferences preferences;
+
+    public CustomizeDescriptorPopupFragment setFolderId(String folderId) {
+        requireArguments().putString(ARG_FOLDER_ID, folderId);
+        return this;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,25 +73,21 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     }
 
     private void load() {
-        Bundle args = requireArguments();
-        String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
-        Descriptor descriptor = LauncherApp.daggerService.main()
-                .descriptorRepository()
-                .findById(Descriptor.class, descriptorId);
-        DescriptorUi item = DescriptorUiFactory.createItem(descriptor);
-        if (item instanceof InFolderDescriptorUi) {
-            String folderId = args.getString(ARG_FOLDER_ID);
-            ((InFolderDescriptorUi) item).setFolderId(folderId);
+        String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
+        DescriptorUiEntry<? extends DescriptorUi> entry = LauncherApp.daggerService.main()
+                .homeDescriptorState()
+                .find(descriptorId);
+        if (entry == null) {
+            throw new NullPointerException("No descriptors found by descriptorId=" + descriptorId);
         }
-        buildItemPopup(item);
+        buildItemPopup(entry.item);
         createItemViews();
         showPopup();
     }
 
     private void buildItemPopup(DescriptorUi item) {
-        boolean isInFolder = item instanceof InFolderDescriptorUi
-                && ((InFolderDescriptorUi) item).getFolderId() != null;
-        if (item instanceof IgnorableDescriptorUi && !isInFolder) {
+        String folderId = item instanceof InFolderDescriptorUi ? requireArguments().getString(ARG_FOLDER_ID) : null;
+        if (item instanceof IgnorableDescriptorUi && folderId == null) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_hide)
                     .setOnClickListener(v -> sendIgnoreResult((IgnorableDescriptorUi) item))
@@ -122,12 +119,12 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             );
         }
         if (item instanceof InFolderDescriptorUi) {
-            if (isInFolder) {
+            if (folderId != null) {
                 addShortcut(new ItemBuilder()
                         .setLabel(R.string.customize_item_remove_from_folder)
                         .setIcon(R.drawable.ic_action_remove_from_folder)
                         .setIconDrawableTintAttr(R.attr.colorAccent)
-                        .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item))
+                        .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId))
                 );
             } else {
                 addShortcut(new ItemBuilder()
@@ -170,14 +167,14 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         sendResult(result);
     }
 
-    private void sendRemoveFromFolderResult(InFolderDescriptorUi item) {
+    private void sendRemoveFromFolderResult(InFolderDescriptorUi item, String folderId) {
         dismiss();
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.Customize.RemoveFromFolder.KEY);
         result.putSerializable(FragmentResults.Customize.RemoveFromFolder.DESCRIPTOR,
                 new DescriptorArg(item.getDescriptor()));
         result.putSerializable(FragmentResults.Customize.RemoveFromFolder.FOLDER,
-                new DescriptorArg(item.getFolderId(), FolderDescriptor.class));
+                new DescriptorArg(folderId, FolderDescriptor.class));
         sendResult(result);
     }
 

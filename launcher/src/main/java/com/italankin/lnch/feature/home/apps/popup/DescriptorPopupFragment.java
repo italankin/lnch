@@ -8,14 +8,13 @@ import android.view.View;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 import com.italankin.lnch.util.IntentUtils;
 
 import androidx.annotation.NonNull;
@@ -36,9 +35,6 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_DESCRIPTOR_ID, descriptorUi.getDescriptor().getId());
         args.putString(ARG_REQUEST_KEY, requestKey);
-        if (descriptorUi instanceof InFolderDescriptorUi) {
-            args.putString(ARG_FOLDER_ID, ((InFolderDescriptorUi) descriptorUi).getFolderId());
-        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,6 +44,11 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
 
     private static final String BACKSTACK_NAME = "descriptor_popup";
     private static final String TAG = "descriptor_popup";
+
+    public DescriptorPopupFragment setFolderId(String folderId) {
+        requireArguments().putString(ARG_FOLDER_ID, folderId);
+        return this;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -68,15 +69,13 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
     private void load() {
         Bundle args = requireArguments();
         String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
-        Descriptor descriptor = LauncherApp.daggerService.main()
-                .descriptorRepository()
-                .findById(Descriptor.class, descriptorId);
-        DescriptorUi item = DescriptorUiFactory.createItem(descriptor);
-        if (item instanceof InFolderDescriptorUi) {
-            String folderId = args.getString(ARG_FOLDER_ID);
-            ((InFolderDescriptorUi) item).setFolderId(folderId);
+        DescriptorUiEntry<DescriptorUi> entry = LauncherApp.daggerService.main()
+                .homeDescriptorState()
+                .find(DescriptorUi.class, descriptorId);
+        if (entry == null) {
+            throw new NullPointerException("No descriptor found by descriptorId=" + descriptorId);
         }
-        buildItemPopup(item);
+        buildItemPopup(entry.item);
         createItemViews();
         showPopup();
     }
@@ -111,37 +110,38 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
                     })
             );
         }
-        if (item instanceof InFolderDescriptorUi && ((InFolderDescriptorUi) item).getFolderId() != null) {
+        String folderId = requireArguments().getString(ARG_FOLDER_ID);
+        if (item instanceof InFolderDescriptorUi && folderId != null) {
             addShortcut(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_remove_from_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)
                     .setLabel(R.string.customize_item_remove_from_folder)
                     .setOnClickListener(v -> {
-                        removeFromFolder(((InFolderDescriptorUi) item));
+                        removeFromFolder((InFolderDescriptorUi) item, folderId);
                     })
             );
         }
     }
 
     private void startAppSettings(PackageDescriptor item, View bounds) {
-        IntentUtils.safeStartAppSettings(requireContext(), item.getPackageName(), bounds);
         dismissWithResult();
+        IntentUtils.safeStartAppSettings(requireContext(), item.getPackageName(), bounds);
     }
 
     private void removeItemImmediate(RemovableDescriptorUi item) {
+        dismiss();
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.RemoveItem.KEY);
         result.putString(FragmentResults.RemoveItem.DESCRIPTOR_ID, item.getDescriptor().getId());
         sendResult(result);
-        dismiss();
     }
 
-    private void removeFromFolder(InFolderDescriptorUi item) {
+    private void removeFromFolder(InFolderDescriptorUi item, String folderId) {
+        dismiss();
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
         result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
-        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, item.getFolderId());
+        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, folderId);
         sendResult(result);
-        dismiss();
     }
 }

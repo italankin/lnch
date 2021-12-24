@@ -24,6 +24,7 @@ import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationF
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
 import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
+import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
@@ -33,7 +34,6 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
@@ -67,7 +67,6 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_DESCRIPTOR_ID, descriptorUi.getDescriptor().getId());
         args.putString(ARG_REQUEST_KEY, requestKey);
-        args.putString(ARG_FOLDER_ID, descriptorUi.getFolderId());
         fragment.setArguments(args);
         return fragment;
     }
@@ -92,6 +91,11 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     private ShortcutStarterDelegate shortcutStarterDelegate;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    public AppDescriptorPopupFragment setFolderId(String folderId) {
+        requireArguments().putString(ARG_FOLDER_ID, folderId);
+        return this;
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -151,14 +155,14 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     }
 
     private void load() {
-        Bundle args = requireArguments();
-        String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
-        AppDescriptor descriptor = LauncherApp.daggerService.main()
-                .descriptorRepository()
-                .findById(AppDescriptor.class, descriptorId);
-        AppDescriptorUi item = (AppDescriptorUi) DescriptorUiFactory.createItem(descriptor);
-        String folderId = args.getString(ARG_FOLDER_ID);
-        item.setFolderId(folderId);
+        String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
+        DescriptorUiEntry<AppDescriptorUi> entry = LauncherApp.daggerService.main()
+                .homeDescriptorState()
+                .find(AppDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            throw new NullPointerException("No apps found by descriptorId=" + descriptorId);
+        }
+        AppDescriptorUi item = entry.item;
         buildItemPopup(item);
         createItemViews();
         showPopup();
@@ -179,15 +183,16 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
                 .setOnClickListener(v -> {
                     startUninstall(item);
                 });
+        String folderId = requireArguments().getString(ARG_FOLDER_ID);
         ItemBuilder removeFromFolderItem = new ItemBuilder()
                 .setIcon(R.drawable.ic_action_remove_from_folder)
                 .setLabel(R.string.customize_item_remove_from_folder)
                 .setOnClickListener(v -> {
-                    removeFromFolder(item);
+                    removeFromFolder(item, folderId);
                 });
 
         List<Shortcut> shortcuts = getShortcuts(item);
-        if (item.getFolderId() != null) {
+        if (folderId != null) {
             if (shortcuts.isEmpty()) {
                 addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
             } else {
@@ -263,11 +268,11 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         dismissWithResult();
     }
 
-    private void removeFromFolder(InFolderDescriptorUi item) {
+    private void removeFromFolder(InFolderDescriptorUi item, String folderId) {
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
         result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
-        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, item.getFolderId());
+        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, folderId);
         sendResult(result);
         dismiss();
     }

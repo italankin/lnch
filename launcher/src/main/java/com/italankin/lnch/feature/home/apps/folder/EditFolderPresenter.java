@@ -3,12 +3,12 @@ package com.italankin.lnch.feature.home.apps.folder;
 import android.content.Intent;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
-import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
+import com.italankin.lnch.model.repository.descriptor.actions.FolderMoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
@@ -20,21 +20,17 @@ import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.List;
+import java.util.Iterator;
 
 import javax.inject.Inject;
-
-import androidx.annotation.NonNull;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 @InjectViewState
 public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
 
     @Inject
-    EditFolderPresenter(DescriptorRepository descriptorRepository, Preferences preferences) {
-        super(descriptorRepository, preferences);
+    EditFolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
+            Preferences preferences) {
+        super(homeDescriptorsState, descriptorRepository, preferences);
     }
 
     void showRenameDialog(DescriptorArg arg) {
@@ -50,6 +46,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         descriptorRepository.edit()
                 .enqueue(new RenameAction(item.getDescriptor(), newLabel));
         item.setCustomLabel(newLabel);
+        homeDescriptorsState.updateItem(item);
         getViewState().onItemChanged(position);
     }
 
@@ -66,13 +63,8 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         descriptorRepository.edit()
                 .enqueue(new SetColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
+        homeDescriptorsState.updateItem(item);
         getViewState().onItemChanged(position);
-    }
-
-    void removeFromFolder(String descriptorId, String folderId) {
-        descriptorRepository.edit()
-                .enqueue(new RemoveFromFolderAction(folderId, descriptorId));
-        removeItemFromFolder(descriptorId);
     }
 
     void editIntent(String descriptorId, Intent intent, String label) {
@@ -83,10 +75,32 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
             if (item.getDescriptor().getId().equals(descriptorId)) {
                 IntentDescriptorUi ui = (IntentDescriptorUi) item;
                 ui.setCustomLabel(label);
+                homeDescriptorsState.updateItem(ui);
                 getViewState().onItemChanged(i);
                 break;
             }
         }
+    }
+
+    void moveItem(int from, int to) {
+        descriptorRepository.edit()
+                .enqueue(new FolderMoveAction(folder.getDescriptor(), from, to));
+        ListUtils.move(folder.items, from, to);
+        ListUtils.move(items, from, to);
+        getViewState().onFolderItemMove(from, to);
+    }
+
+    void removeFromFolder(String descriptorId, String folderId) {
+        if (!folder.getDescriptor().getId().equals(folderId)) {
+            return;
+        }
+        descriptorRepository.edit()
+                .enqueue(new RemoveFromFolderAction(folderId, descriptorId));
+        removeFromFolder(descriptorId);
+        if (items.isEmpty()) {
+            items.add(new EmptyFolderDescriptorUi());
+        }
+        getViewState().onFolderUpdated(items);
     }
 
     void removeItem(DescriptorArg arg) {
@@ -96,14 +110,19 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         }
         descriptorRepository.edit()
                 .enqueue(new RemoveAction(arg.id));
-        removeItemFromFolder(arg.id);
+        homeDescriptorsState.removeByArg(arg);
+        removeFromFolder(arg.id);
+        getViewState().onFolderUpdated(items);
     }
 
-    void swapApps(int from, int to) {
-        descriptorRepository.edit()
-                .enqueue(new FolderSwapAction(folder, from, to));
-        ListUtils.swap(items, from, to);
-        getViewState().onItemsSwap(from, to);
+    private void removeFromFolder(String descriptorId) {
+        for (Iterator<DescriptorUi> i = items.iterator(); i.hasNext(); ) {
+            if (i.next().getDescriptor().getId().equals(descriptorId)) {
+                i.remove();
+                folder.items.remove(descriptorId);
+                break;
+            }
+        }
     }
 
     private int findDescriptorIndex(DescriptorArg arg) {
@@ -114,26 +133,5 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
             }
         }
         return -1;
-    }
-
-    private static class FolderSwapAction extends BaseAction {
-
-        private final String folderId;
-        private final int from;
-        private final int to;
-
-        private FolderSwapAction(FolderDescriptor descriptor, int from, int to) {
-            this.folderId = descriptor.getId();
-            this.from = from;
-            this.to = to;
-        }
-
-        @Override
-        public void apply(List<Descriptor> items) {
-            FolderDescriptor folder = findById(items, folderId);
-            if (folder != null) {
-                ListUtils.swap(folder.items, from, to);
-            }
-        }
     }
 }

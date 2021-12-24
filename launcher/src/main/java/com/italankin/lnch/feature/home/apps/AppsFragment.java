@@ -66,8 +66,9 @@ import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.home.util.SwapItemHelper;
+import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.home.widget.SearchBar;
@@ -124,7 +125,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         IntentDescriptorUiAdapter.Listener,
         AppDescriptorUiAdapter.Listener,
         FolderDescriptorUiAdapter.Listener,
-        PinnedShortcutDescriptorUiAdapter.Listener {
+        PinnedShortcutDescriptorUiAdapter.Listener, HomeDescriptorsState.Callback {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
@@ -134,6 +135,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     AppsPresenter presenter;
 
     private Preferences preferences;
+    private HomeDescriptorsState homeDescriptorsState;
     private Picasso picasso;
     private IntentQueue intentQueue;
 
@@ -180,6 +182,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         preferences = LauncherApp.daggerService.main().preferences();
         picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
+        homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_APPS, this, this);
     }
@@ -231,7 +234,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         setupSearchBar();
 
-        touchHelper = new ItemTouchHelper(new SwapItemHelper(presenter::swapApps));
+        touchHelper = new ItemTouchHelper(new MoveItemHelper(presenter::moveItem));
         touchHelper.attachToRecyclerView(list);
 
         registerWindowInsets(view);
@@ -239,6 +242,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         initDelegates(requireContext());
 
         intentQueue.registerOnIntentAction(this);
+
+        homeDescriptorsState.addCallback(this);
     }
 
     private void initDelegates(Context context) {
@@ -273,6 +278,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void onDestroyView() {
         super.onDestroyView();
         intentQueue.unregisterOnIntentAction(this);
+        homeDescriptorsState.removeCallback(this);
     }
 
     @Override
@@ -527,6 +533,40 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // State callbacks
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onNewItems(List<DescriptorUi> items) {
+        // empty
+    }
+
+    @Override
+    public void onItemChanged(int position, DescriptorUi item) {
+        adapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void onItemRemoved(int position, DescriptorUi item) {
+        adapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemInserted(int position, DescriptorUi item) {
+        adapter.notifyItemInserted(position);
+        list.scrollToPosition(position);
+    }
+
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+        adapter.notifyItemMoved(fromPosition, toPosition);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Other
+    ///////////////////////////////////////////////////////////////////////////
+
     @Override
     public void showFolder(int position, FolderDescriptor descriptor) {
         Point point = null;
@@ -662,33 +702,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onItemsSwap(int from, int to) {
-        adapter.notifyItemMoved(from, to);
-    }
-
-    @Override
-    public void onItemChanged(int position) {
-        adapter.notifyItemChanged(position);
-    }
-
-    @Override
-    public void onItemInserted(int position) {
-        adapter.notifyItemInserted(position);
-        list.scrollToPosition(position);
-    }
-
-    @Override
-    public void onItemsInserted(int startIndex, int count) {
-        adapter.notifyItemRangeInserted(startIndex, count);
-        list.scrollToPosition(startIndex + Math.min(1, count));
-    }
-
-    @Override
-    public void onItemsRemoved(int startIndex, int count) {
-        adapter.notifyItemRangeRemoved(startIndex, count);
-    }
-
-    @Override
     public void onReceiveUpdateError(Throwable e) {
         lce.error()
                 .button(v -> presenter.reloadApps())
@@ -722,14 +735,14 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void showItemRenameDialog(int position, CustomLabelDescriptorUi item) {
         new RenameDescriptorDialog(requireContext(), item.getVisibleLabel(),
-                (newLabel) -> presenter.renameItem(position, item, newLabel))
+                (newLabel) -> presenter.renameItem(item, newLabel))
                 .show();
     }
 
     @Override
     public void showSetItemColorDialog(int position, CustomColorDescriptorUi item) {
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
-                newColor -> presenter.changeItemCustomColor(position, item, newColor))
+                newColor -> presenter.changeItemCustomColor(item, newColor))
                 .show();
     }
 

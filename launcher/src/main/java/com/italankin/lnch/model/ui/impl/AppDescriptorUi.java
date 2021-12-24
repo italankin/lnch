@@ -27,7 +27,6 @@ public final class AppDescriptorUi implements DescriptorUi,
     private final int color;
     private final String label;
     private boolean ignored;
-    private String folderId;
     private String customLabel;
     private Integer customColor;
     private boolean badgeVisible;
@@ -51,7 +50,6 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.componentName = item.componentName;
         this.label = item.label;
         this.ignored = item.ignored;
-        this.folderId = item.folderId;
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
@@ -94,22 +92,12 @@ public final class AppDescriptorUi implements DescriptorUi,
         return customColor;
     }
 
-    @Override
-    public String getFolderId() {
-        return folderId;
-    }
-
     public void setSearchFlags(int searchFlags) {
         this.searchFlags = searchFlags;
     }
 
     public int getSearchFlags() {
         return searchFlags;
-    }
-
-    @Override
-    public void setFolderId(String folderId) {
-        this.folderId = folderId;
     }
 
     @Override

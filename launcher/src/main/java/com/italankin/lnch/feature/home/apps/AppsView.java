@@ -65,19 +65,4 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShortcutAlreadyPinnedError(Shortcut shortcut);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemsSwap(int from, int to);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemChanged(int position);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemInserted(int position);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemsInserted(int startIndex, int count);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemsRemoved(int startIndex, int count);
 }
