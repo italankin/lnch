@@ -122,7 +122,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
         alignFrameView.setAnchorPoint(anchor.x, anchor.y);
         alignFrameView.post(() -> {
-            WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
+            WindowInsets insets = alignFrameView.getRootWindowInsets();
             alignFrameView.setPaddingRelative(alignFrameView.getPaddingStart(), insets.getStableInsetTop(),
                     alignFrameView.getPaddingEnd(), insets.getStableInsetBottom());
         });

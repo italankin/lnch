@@ -50,18 +50,7 @@ public abstract class PopupFragment extends Fragment {
 
         Rect anchor = requireArguments().getParcelable(ARG_ANCHOR);
         root.setAnchor(anchor);
-        WindowInsets initialInsets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-        if (initialInsets == null) {
-            root.post(() -> {
-                WindowInsets insets = requireActivity().getWindow().getDecorView().getRootWindowInsets();
-                applyInsets(insets);
-                if (showAfterInsetsApplied) {
-                    showPopupInternal();
-                }
-            });
-        } else {
-            applyInsets(initialInsets);
-        }
+        applyInsets();
         root.setOnClickListener(v -> dismiss());
     }
 
@@ -86,6 +75,21 @@ public abstract class PopupFragment extends Fragment {
             showPopupInternal();
         } else {
             showAfterInsetsApplied = true;
+        }
+    }
+
+    private void applyInsets() {
+        WindowInsets initialInsets = root.getRootWindowInsets();
+        if (initialInsets != null) {
+            applyInsets(initialInsets);
+        } else {
+            root.post(() -> {
+                WindowInsets insets = root.getRootWindowInsets();
+                applyInsets(insets);
+                if (showAfterInsetsApplied) {
+                    showPopupInternal();
+                }
+            });
         }
     }
 
