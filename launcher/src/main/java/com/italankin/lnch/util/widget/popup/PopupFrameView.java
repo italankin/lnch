@@ -153,10 +153,10 @@ public class PopupFrameView extends ViewGroup {
             }
             int anchorX = tmp[0];
             int anchorY = tmp[1];
+            child.setAnchorPoint(anchorX - out.left, anchorY - out.top, popupLocation);
             if (!container.contains(out)) {
                 placeInside(out, container);
             }
-            child.setAnchorPoint(anchorX - out.left, anchorY - out.top, popupLocation);
             child.setPivotX(anchorX - out.left);
             child.setPivotY(anchorY - out.top);
         } else {
