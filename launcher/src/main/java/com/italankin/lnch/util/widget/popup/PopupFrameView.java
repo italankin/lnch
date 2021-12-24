@@ -111,7 +111,7 @@ public class PopupFrameView extends ViewGroup {
             p.setColor(Color.BLUE);
             p.setAlpha(64);
             canvas.drawRect(out, p);
-            p.setColor(Color.BLUE);
+            p.setColor(Color.GREEN);
             p.setAlpha(64);
             canvas.drawRect(anchor, p);
         }
