@@ -19,6 +19,7 @@ import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
+import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

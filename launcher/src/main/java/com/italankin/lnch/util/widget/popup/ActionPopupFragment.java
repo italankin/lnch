@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.apps.popup;
+package com.italankin.lnch.util.widget.popup;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,7 +16,6 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.widget.popup.PopupFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -195,6 +194,9 @@ public abstract class ActionPopupFragment extends PopupFragment {
         private View.OnClickListener onClickListener;
         private View.OnLongClickListener onLongClickListener;
         private View.OnClickListener onPinClickListener;
+
+        public ItemBuilder() {
+        }
 
         public ItemBuilder setLabel(@StringRes int label) {
             return setLabel(requireContext().getText(label));

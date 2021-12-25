@@ -8,6 +8,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
