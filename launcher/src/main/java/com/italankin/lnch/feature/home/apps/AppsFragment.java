@@ -167,7 +167,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             new IntentFactoryActivity.CreateContract(),
             this::onNewIntentCreated);
 
-    private final ActivityResultLauncher<String> editIntentLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<IntentDescriptorUi> editIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
@@ -366,7 +366,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
             case FragmentResults.Customize.EditIntent.KEY: {
                 String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
-                editIntentLauncher.launch(descriptorId);
+                presenter.startEditIntent(descriptorId);
                 break;
             }
             case FragmentResults.Customize.SelectFolder.KEY: {
@@ -644,19 +644,15 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (result == null) {
             return;
         }
-        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-        String label = nameNormalizer.normalize(result.label);
-        IntentDescriptor intentDescriptor = new IntentDescriptor(result.intent, label);
-        presenter.addIntent(intentDescriptor);
+        String label = getString(R.string.intent_factory_default_title);
+        presenter.addIntent(result.intent, label);
     }
 
     private void onIntentEdited(@Nullable IntentFactoryResult result) {
         if (result == null || result.descriptorId == null) {
             return;
         }
-        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-        String label = nameNormalizer.normalize(result.label);
-        presenter.editIntent(result.descriptorId, result.intent, label);
+        presenter.editIntent(result.descriptorId, result.intent);
     }
 
     @Override
@@ -744,6 +740,11 @@ public class AppsFragment extends AppFragment implements AppsView,
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
                 newColor -> presenter.changeItemCustomColor(item, newColor))
                 .show();
+    }
+
+    @Override
+    public void showIntentEditor(IntentDescriptorUi item) {
+        editIntentLauncher.launch(item);
     }
 
     ///////////////////////////////////////////////////////////////////////////

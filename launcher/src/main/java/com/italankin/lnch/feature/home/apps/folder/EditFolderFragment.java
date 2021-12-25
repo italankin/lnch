@@ -21,7 +21,6 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
-import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -54,7 +53,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
 
     private Preferences preferences;
 
-    private final ActivityResultLauncher<String> editIntentLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<IntentDescriptorUi> editIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
@@ -98,7 +97,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
             }
             case FragmentResults.Customize.EditIntent.KEY: {
                 String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
-                editIntentLauncher.launch(descriptorId);
+                presenter.startEditIntent(descriptorId);
                 break;
             }
             case FragmentResults.Customize.RemoveFromFolder.KEY: {
@@ -136,6 +135,11 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
                 newColor -> presenter.changeItemCustomColor(position, item, newColor))
                 .show();
+    }
+
+    @Override
+    public void onEditIntent(IntentDescriptorUi item) {
+        editIntentLauncher.launch(item);
     }
 
     @Override
@@ -248,8 +252,6 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         if (result == null || result.descriptorId == null) {
             return;
         }
-        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-        String label = nameNormalizer.normalize(result.label);
-        presenter.editIntent(result.descriptorId, result.intent, label);
+        presenter.editIntent(result.descriptorId, result.intent);
     }
 }

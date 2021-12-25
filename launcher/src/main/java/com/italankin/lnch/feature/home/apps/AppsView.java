@@ -13,6 +13,7 @@ import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 import java.util.List;
 
@@ -43,6 +44,9 @@ interface AppsView extends MvpView {
     void showSetItemColorDialog(int position, CustomColorDescriptorUi item);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void showIntentEditor(IntentDescriptorUi item);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void showFolder(int position, FolderDescriptor descriptor);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -65,4 +69,5 @@ interface AppsView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShortcutAlreadyPinnedError(Shortcut shortcut);
+
 }

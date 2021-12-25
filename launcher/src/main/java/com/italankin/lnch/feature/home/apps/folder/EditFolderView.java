@@ -4,6 +4,7 @@ import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 interface EditFolderView extends BaseFolderView {
 
@@ -12,6 +13,9 @@ interface EditFolderView extends BaseFolderView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShowSetColorDialog(int position, CustomColorDescriptorUi item);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onEditIntent(IntentDescriptorUi item);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemChanged(int position);

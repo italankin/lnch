@@ -11,12 +11,10 @@ public class EditIntentAction extends BaseAction {
 
     private final String id;
     private final Intent intent;
-    private final String label;
 
-    public EditIntentAction(String id, Intent intent, String label) {
+    public EditIntentAction(String id, Intent intent) {
         this.id = id;
         this.intent = intent;
-        this.label = label;
     }
 
     @Override
@@ -24,7 +22,6 @@ public class EditIntentAction extends BaseAction {
         IntentDescriptor descriptor = findById(items, id);
         if (descriptor != null) {
             descriptor.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
-            descriptor.setCustomLabel(label);
         }
     }
 }

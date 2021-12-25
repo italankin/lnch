@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
+import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -32,6 +33,14 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
             Preferences preferences) {
         super(homeDescriptorsState, descriptorRepository, preferences);
     }
+
+     void startEditIntent(String descriptorId) {
+         DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+         if (entry == null) {
+             return;
+         }
+         getViewState().onEditIntent(entry.item);
+     }
 
     void showRenameDialog(DescriptorArg arg) {
         int position = findDescriptorIndex(arg);
@@ -67,16 +76,14 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         getViewState().onItemChanged(position);
     }
 
-    void editIntent(String descriptorId, Intent intent, String label) {
+    void editIntent(String descriptorId, Intent intent) {
         descriptorRepository.edit()
-                .enqueue(new EditIntentAction(descriptorId, intent, label));
+                .enqueue(new EditIntentAction(descriptorId, intent));
         for (int i = 0; i < items.size(); i++) {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(descriptorId)) {
-                IntentDescriptorUi ui = (IntentDescriptorUi) item;
-                ui.setCustomLabel(label);
-                homeDescriptorsState.updateItem(ui);
-                getViewState().onItemChanged(i);
+                IntentDescriptorUi intentItem = (IntentDescriptorUi) item;
+                intentItem.intent = intent;
                 break;
             }
         }

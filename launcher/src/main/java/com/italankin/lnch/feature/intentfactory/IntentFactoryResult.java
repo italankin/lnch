@@ -11,7 +11,6 @@ public final class IntentFactoryResult implements Parcelable {
     @Nullable
     public final String descriptorId;
     public final Intent intent;
-    public final String label;
 
     public static final Creator<IntentFactoryResult> CREATOR = new Creator<IntentFactoryResult>() {
         @Override
@@ -25,15 +24,13 @@ public final class IntentFactoryResult implements Parcelable {
         }
     };
 
-    IntentFactoryResult(@Nullable String descriptorId, Intent intent, String label) {
+    IntentFactoryResult(@Nullable String descriptorId, Intent intent) {
         this.descriptorId = descriptorId;
         this.intent = intent;
-        this.label = label;
     }
 
     private IntentFactoryResult(Parcel in) {
         this.descriptorId = in.readString();
-        this.label = in.readString();
         this.intent = in.readParcelable(Intent.class.getClassLoader());
     }
 
@@ -45,7 +42,6 @@ public final class IntentFactoryResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(descriptorId);
-        dest.writeString(label);
         dest.writeParcelable(intent, flags);
     }
 }

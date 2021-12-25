@@ -20,7 +20,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
         RemovableDescriptorUi,
         InFolderDescriptorUi {
 
-    public final Intent intent;
+    public Intent intent;
     private final IntentDescriptor descriptor;
     private final String label;
     private final int color;

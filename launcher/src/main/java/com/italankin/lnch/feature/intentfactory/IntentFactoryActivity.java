@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +26,8 @@ import com.italankin.lnch.feature.intentfactory.componenteditor.TypeEditor;
 import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -47,10 +44,9 @@ import androidx.appcompat.widget.Toolbar;
 public class IntentFactoryActivity extends AppCompatActivity implements IntentEditor.Host {
 
     private static final String EXTRA_DESCRIPTOR_ID = "descriptor_id";
+    private static final String EXTRA_INTENT = "intent";
 
     private static final String EXTRA_RESULT = "result";
-
-    private TextView textTitle;
 
     private final List<IntentEditor> intentEditors = Arrays.asList(
             new ActionEditor(this),
@@ -83,20 +79,11 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
             finish();
         });
 
-        textTitle = findViewById(R.id.intent_title);
-        textTitle.setOnClickListener(v -> showTitleEdit());
-
         Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_DESCRIPTOR_ID)) {
-            String descriptorId = intent.getStringExtra(EXTRA_DESCRIPTOR_ID);
-            IntentDescriptor descriptor = LauncherApp.daggerService.main()
-                    .descriptorRepository()
-                    .findById(IntentDescriptor.class, descriptorId);
-            if (descriptor == null) {
-                throw new IllegalArgumentException("No descriptors found by id=" + descriptorId);
-            }
-            result = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
-            textTitle.setText(descriptor.getVisibleLabel());
+        if (intent.hasExtra(EXTRA_INTENT)) {
+            result = intent.getParcelableExtra(EXTRA_INTENT);
+        } else {
+            intent.putExtra(EXTRA_INTENT, result);
         }
         result.putExtra(IntentDescriptor.EXTRA_CUSTOM_INTENT, true);
 
@@ -130,44 +117,17 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         }
     }
 
-    private void showTitleEdit() {
-        String label = getTrimmed(textTitle);
-        EditTextAlertDialog.builder(this)
-                .setTitle(R.string.intent_factory_intent_title)
-                .customizeEditText(editText -> {
-                    editText.setText(label);
-                    editText.setSingleLine(true);
-                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                    editText.setSelection(label.length());
-                })
-                .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    String newLabel = editText.getText().toString().trim();
-                    if (!newLabel.isEmpty() && !newLabel.equals(label)) {
-                        textTitle.setText(newLabel);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
     private void finishWithResult() {
         if (!validate()) {
             return;
         }
-        String label = getTrimmed(textTitle);
         String descriptorId = getIntent().getStringExtra(EXTRA_DESCRIPTOR_ID);
-        IntentFactoryResult intentFactoryResult = new IntentFactoryResult(descriptorId, result, label);
+        IntentFactoryResult intentFactoryResult = new IntentFactoryResult(descriptorId, result);
         setResult(RESULT_OK, new Intent().putExtra(EXTRA_RESULT, intentFactoryResult));
         finish();
     }
 
     private boolean validate() {
-        String label = getTrimmed(textTitle);
-        if (label.isEmpty()) {
-            Toast.makeText(this, R.string.intent_factory_intent_error_title, Toast.LENGTH_SHORT).show();
-            return false;
-        }
         String action = result.getAction();
         ComponentName cn = result.getComponent();
         if ((action == null || action.isEmpty()) &&
@@ -200,16 +160,13 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         }
     }
 
-    private static String getTrimmed(TextView textView) {
-        return textView.getText().toString().trim();
-    }
-
-    public static class EditContract extends ActivityResultContract<String, IntentFactoryResult> {
+    public static class EditContract extends ActivityResultContract<IntentDescriptorUi, IntentFactoryResult> {
         @NonNull
         @Override
-        public Intent createIntent(@NonNull Context context, String descriptorId) {
+        public Intent createIntent(@NonNull Context context, IntentDescriptorUi input) {
             return new Intent(context, IntentFactoryActivity.class)
-                    .putExtra(EXTRA_DESCRIPTOR_ID, descriptorId);
+                    .putExtra(EXTRA_DESCRIPTOR_ID, input.getDescriptor().getId())
+                    .putExtra(EXTRA_INTENT, input.intent);
         }
 
         @Override

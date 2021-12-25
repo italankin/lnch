@@ -177,20 +177,27 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().showFolder(entry.position, entry.item.getDescriptor());
     }
 
-    void addIntent(IntentDescriptor item) {
+    void addIntent(Intent intent, String label) {
+        IntentDescriptor item = new IntentDescriptor(intent, label);
         editor.enqueue(new AddAction(item));
         homeDescriptorsState.insertItem(new IntentDescriptorUi(item));
     }
 
-    void editIntent(String id, Intent intent, String label) {
-        editor.enqueue(new EditIntentAction(id, intent, label));
+    void startEditIntent(String id) {
         DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
-        IntentDescriptorUi item = entry.item;
-        item.setCustomLabel(label);
-        homeDescriptorsState.updateItem(item);
+        getViewState().showIntentEditor(entry.item);
+    }
+
+    void editIntent(String id, Intent intent) {
+        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
+        if (entry == null) {
+            return;
+        }
+        editor.enqueue(new EditIntentAction(id, intent));
+        entry.item.intent = intent;
     }
 
     void removeItem(DescriptorArg arg) {
