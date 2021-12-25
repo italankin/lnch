@@ -34,7 +34,7 @@ public interface HomeDescriptorsState {
      * @return item and it's position in a list, or {@code null}
      */
     @Nullable
-    DescriptorUiEntry<? extends DescriptorUi> find(String id);
+    HomeEntry<? extends DescriptorUi> find(String id);
 
     /**
      * Find descriptor by {@link DescriptorArg}
@@ -42,7 +42,7 @@ public interface HomeDescriptorsState {
      * @return item and it's position in a list, or {@code null}
      */
     @Nullable
-    <T extends DescriptorUi> DescriptorUiEntry<T> find(DescriptorArg arg);
+    <T extends DescriptorUi> HomeEntry<T> find(DescriptorArg arg);
 
     /**
      * Remove descriptor by a given {@link DescriptorArg}
@@ -57,7 +57,7 @@ public interface HomeDescriptorsState {
      * @return item and it's position in a list, or {@code null}
      */
     @Nullable
-    <T extends DescriptorUi> DescriptorUiEntry<T> find(Class<T> type, String id);
+    <T extends DescriptorUi> HomeEntry<T> find(Class<T> type, String id);
 
     /**
      * @return all descriptors of a given type

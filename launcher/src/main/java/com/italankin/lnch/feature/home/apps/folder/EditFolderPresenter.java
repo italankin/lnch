@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
@@ -34,7 +34,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
     }
 
     void startEditIntent(String descriptorId) {
-        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
         if (entry == null) {
             return;
         }

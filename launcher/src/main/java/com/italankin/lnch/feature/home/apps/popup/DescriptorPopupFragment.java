@@ -8,7 +8,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
@@ -68,7 +68,7 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
     private void load() {
         Bundle args = requireArguments();
         String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
-        DescriptorUiEntry<DescriptorUi> entry = LauncherApp.daggerService.main()
+        HomeEntry<DescriptorUi> entry = LauncherApp.daggerService.main()
                 .homeDescriptorState()
                 .find(DescriptorUi.class, descriptorId);
         if (entry == null) {

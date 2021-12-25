@@ -7,7 +7,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -109,7 +109,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void renameItem(String id) {
-        DescriptorUiEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, id);
+        HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -124,7 +124,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void showSetItemColorDialog(String id) {
-        DescriptorUiEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, id);
+        HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -138,7 +138,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void ignoreItem(String id) {
-        DescriptorUiEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, id);
+        HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -155,7 +155,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void addToFolder(String descriptorId, String folderId) {
-        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
+        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
         if (entry == null) {
             return;
         }
@@ -170,7 +170,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void showFolder(String folderId) {
-        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
+        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
         if (entry == null) {
             return;
         }
@@ -184,7 +184,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void startEditIntent(String id) {
-        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
+        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -192,7 +192,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void editIntent(String id, Intent intent) {
-        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
+        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -221,7 +221,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void selectFolder(String descriptorId) {
-        DescriptorUiEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class, descriptorId);
+        HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class, descriptorId);
         if (entry == null) {
             return;
         }
@@ -314,7 +314,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void requestRemoveItem(String descriptorId) {
-        DescriptorUiEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
+        HomeEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
         if (entry == null) {
             return;
         }

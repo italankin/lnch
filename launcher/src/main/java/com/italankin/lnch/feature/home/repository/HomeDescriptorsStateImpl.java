@@ -45,11 +45,11 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
 
     @Nullable
     @Override
-    public DescriptorUiEntry<? extends DescriptorUi> find(String id) {
+    public HomeEntry<? extends DescriptorUi> find(String id) {
         for (int i = 0, s = items.size(); i < s; i++) {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(id)) {
-                return new DescriptorUiEntry<>(i, item);
+                return new HomeEntry<>(i, item);
             }
         }
         return null;
@@ -58,13 +58,13 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <T extends DescriptorUi> DescriptorUiEntry<T> find(DescriptorArg arg) {
-        DescriptorUiEntry<? extends DescriptorUi> entry = find(arg.id);
+    public <T extends DescriptorUi> HomeEntry<T> find(DescriptorArg arg) {
+        HomeEntry<? extends DescriptorUi> entry = find(arg.id);
         if (entry == null) {
             return null;
         }
         if (arg.is(entry.item.getDescriptor())) {
-            return (DescriptorUiEntry<T>) entry;
+            return (HomeEntry<T>) entry;
         }
         return null;
     }
@@ -99,11 +99,11 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
 
     @Nullable
     @Override
-    public <T extends DescriptorUi> DescriptorUiEntry<T> find(Class<T> type, String id) {
+    public <T extends DescriptorUi> HomeEntry<T> find(Class<T> type, String id) {
         for (int i = 0, s = items.size(); i < s; i++) {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(id) && type.isAssignableFrom(item.getClass())) {
-                return new DescriptorUiEntry<>(i, type.cast(item));
+                return new HomeEntry<>(i, type.cast(item));
             }
         }
         return null;

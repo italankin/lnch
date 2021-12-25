@@ -25,7 +25,7 @@ import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationU
 import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
@@ -157,7 +157,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
 
     private void load() {
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
-        DescriptorUiEntry<AppDescriptorUi> entry = LauncherApp.daggerService.main()
+        HomeEntry<AppDescriptorUi> entry = LauncherApp.daggerService.main()
                 .homeDescriptorState()
                 .find(AppDescriptorUi.class, descriptorId);
         if (entry == null) {

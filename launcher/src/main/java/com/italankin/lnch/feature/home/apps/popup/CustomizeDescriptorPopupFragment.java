@@ -8,7 +8,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -74,7 +74,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
 
     private void load() {
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
-        DescriptorUiEntry<? extends DescriptorUi> entry = LauncherApp.daggerService.main()
+        HomeEntry<? extends DescriptorUi> entry = LauncherApp.daggerService.main()
                 .homeDescriptorState()
                 .find(descriptorId);
         if (entry == null) {

@@ -3,7 +3,7 @@ package com.italankin.lnch.feature.home.apps.folder;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -35,7 +35,7 @@ abstract class BaseFolderPresenter<V extends BaseFolderView> extends AppPresente
     protected void loadFolder(String folderId) {
         Single
                 .fromCallable(() -> {
-                    DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(
+                    HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(
                             FolderDescriptorUi.class, folderId);
                     if (entry == null) {
                         throw new NullPointerException("No folder found for folderId=" + folderId);
