@@ -30,7 +30,6 @@ public final class AppDescriptorUi implements DescriptorUi,
     private String customLabel;
     private Integer customColor;
     private boolean badgeVisible;
-    private int searchFlags;
 
     public AppDescriptorUi(AppDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -41,7 +40,6 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
-        this.searchFlags = descriptor.searchFlags;
     }
 
     public AppDescriptorUi(AppDescriptorUi item) {
@@ -53,7 +51,6 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
-        this.searchFlags = item.searchFlags;
         this.badgeVisible = item.badgeVisible;
     }
 
@@ -90,14 +87,6 @@ public final class AppDescriptorUi implements DescriptorUi,
     @Override
     public Integer getCustomColor() {
         return customColor;
-    }
-
-    public void setSearchFlags(int searchFlags) {
-        this.searchFlags = searchFlags;
-    }
-
-    public int getSearchFlags() {
-        return searchFlags;
     }
 
     @Override
