@@ -27,6 +27,15 @@ class WidgetItemsState {
         appWidgets.clear();
     }
 
+    public AppWidget getWidgetById(int appWidgetId) {
+        for (AppWidget appWidget : appWidgets) {
+            if (appWidget.appWidgetId == appWidgetId) {
+                return appWidget;
+            }
+        }
+        return null;
+    }
+
     public void removeWidgetById(int appWidgetId) {
         Iterator<AppWidget> iterator = appWidgets.iterator();
         while (iterator.hasNext()) {

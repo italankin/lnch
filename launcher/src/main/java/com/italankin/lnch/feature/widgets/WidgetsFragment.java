@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.widgets;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
@@ -9,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +22,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
@@ -30,9 +31,9 @@ import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.popup.WidgetPopupFragment;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.widget.ActionPopupWindow;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.ViewUtils;
 
 import java.util.List;
 
@@ -41,14 +42,19 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQueue.OnIntentAction {
+public class WidgetsFragment extends AppFragment implements WidgetsView,
+        IntentQueue.OnIntentAction,
+        FragmentResultListener {
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
+
+    private static final String REQUEST_KEY_WIDGETS = "widgets";
 
     @InjectPresenter
     WidgetsPresenter presenter;
@@ -58,7 +64,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         return LauncherApp.daggerService.presenters().widgets();
     }
 
-    private Picasso picasso;
     private IntentQueue intentQueue;
 
     private RecyclerView widgetsList;
@@ -67,40 +72,21 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     private AppWidgetManager appWidgetManager;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    private ActionPopupWindow popupWindow;
 
     private WidgetCompositeAdapter adapter;
     private final WidgetItemsState widgetItemsState = new WidgetItemsState();
 
     private final ActivityResultLauncher<Integer> addWidgetLauncher = registerForActivityResult(
             new WidgetGalleryActivity.Contract(),
-            info -> {
-                if (info != null) {
-                    configureWidget(info);
-                } else {
-                    cancelAddNewWidget(newAppWidgetId);
-                }
-            });
+            this::onNewWidgetSelected);
 
     private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher = registerForActivityResult(
             new ConfigureWidgetContract(),
-            configured -> {
-                if (configured) {
-                    AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
-                    if (info == null) {
-                        cancelAddNewWidget(newAppWidgetId);
-                        return;
-                    }
-                    addWidget(info);
-                } else {
-                    cancelAddNewWidget(newAppWidgetId);
-                }
-            });
+            this::onNewWidgetConfigured);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
     }
 
@@ -109,6 +95,8 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         super.onAttach(context);
         appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
+
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_WIDGETS, this, this);
     }
 
     @Override
@@ -136,6 +124,33 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         return true;
     }
 
+    @Override
+    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+        if (!REQUEST_KEY_WIDGETS.equals(requestKey)) {
+            return;
+        }
+        String key = result.getString(FragmentResults.RESULT);
+        switch (key) {
+            case FragmentResults.Widgets.AppInfo.KEY: {
+                int appWidgetId = result.getInt(FragmentResults.Widgets.AppInfo.APP_WIDGET_ID);
+                AppWidget appWidget = widgetItemsState.getWidgetById(appWidgetId);
+                if (appWidget == null) {
+                    return;
+                }
+                String packageName = appWidget.providerInfo.provider.getPackageName();
+                IntentUtils.safeStartAppSettings(requireContext(), packageName, null);
+                break;
+            }
+            case FragmentResults.Widgets.RemoveWidget.KEY: {
+                int appWidgetId = result.getInt(FragmentResults.Widgets.RemoveWidget.APP_WIDGET_ID);
+                widgetItemsState.removeWidgetById(appWidgetId);
+                appWidgetHost.deleteAppWidgetId(appWidgetId);
+                updateWidgets();
+                break;
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -148,7 +163,9 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
 
         adapter = new WidgetCompositeAdapter.Builder(requireContext())
                 .add(new WidgetAdapter(appWidgetHost, (appWidgetId, hostView) -> {
-                    showActionsPopup(appWidgetId, hostView);
+                    Rect bounds = ViewUtils.getViewBounds(hostView);
+                    WidgetPopupFragment.newInstance(appWidgetId, REQUEST_KEY_WIDGETS, bounds)
+                            .show(getParentFragmentManager());
                     return true;
                 }))
                 .add(new AddWidgetAdapter(
@@ -201,17 +218,17 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         appWidgetHost.stopListening();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (popupWindow != null) {
-            popupWindow.dismiss();
-        }
-    }
-
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
         addWidgetLauncher.launch(newAppWidgetId);
+    }
+
+    private void onNewWidgetSelected(AppWidgetProviderInfo info) {
+        if (info != null) {
+            configureWidget(info);
+        } else {
+            cancelAddNewWidget(newAppWidgetId);
+        }
     }
 
     private void configureWidget(AppWidgetProviderInfo info) {
@@ -225,6 +242,19 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
             }
         } else {
             addWidget(info);
+        }
+    }
+
+    private void onNewWidgetConfigured(boolean configured) {
+        if (configured) {
+            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
+            if (info == null) {
+                cancelAddNewWidget(newAppWidgetId);
+                return;
+            }
+            addWidget(info);
+        } else {
+            cancelAddNewWidget(newAppWidgetId);
         }
     }
 
@@ -276,31 +306,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         if (insets != null) {
             widgetsList.setPadding(0, 0, 0, insets.getStableInsetBottom());
         }
-    }
-
-    private void showActionsPopup(int appWidgetId, AppWidgetHostView widgetView) {
-        Context context = requireContext();
-        popupWindow = new ActionPopupWindow(context, picasso)
-                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                        .setLabel(R.string.widgets_app_info)
-                        .setOnClickListener(v -> showAppInfo(widgetView))
-                        .setIconDrawableTintAttr(R.attr.colorAccent)
-                        .setIcon(R.drawable.ic_app_info))
-                .addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                        .setLabel(R.string.widgets_remove)
-                        .setOnClickListener(v -> {
-                            widgetItemsState.removeWidgetById(appWidgetId);
-                            appWidgetHost.deleteAppWidgetId(appWidgetId);
-                            updateWidgets();
-                        })
-                        .setIconDrawableTintAttr(R.attr.colorAccent)
-                        .setIcon(R.drawable.ic_action_delete));
-        popupWindow.showAtAnchor(widgetView, widgetsList);
-    }
-
-    private void showAppInfo(AppWidgetHostView widgetView) {
-        String packageName = widgetView.getAppWidgetInfo().provider.getPackageName();
-        IntentUtils.safeStartAppSettings(requireContext(), packageName, widgetView);
     }
 
     private void updateWidgets() {

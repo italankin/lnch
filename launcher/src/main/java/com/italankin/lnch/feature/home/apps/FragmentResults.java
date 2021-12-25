@@ -83,4 +83,16 @@ public final class FragmentResults {
     public static final class OnActionHandled {
         public static final String KEY = "on_action_handled";
     }
+
+    public static final class Widgets {
+        public static final class AppInfo {
+            public static final String KEY = "widget_app_info";
+            public static final String APP_WIDGET_ID = "app_widget_id";
+        }
+
+        public static final class RemoveWidget {
+            public static final String KEY = "widget_remove";
+            public static final String APP_WIDGET_ID = "app_widget_id";
+        }
+    }
 }
