@@ -72,12 +72,12 @@ public abstract class ActionPopupFragment extends PopupFragment {
         picasso = null;
     }
 
-    protected void sendResult(Bundle result) {
+    protected final void sendResult(Bundle result) {
         String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
         getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
-    protected void dismissWithResult() {
+    protected final void dismissWithResult() {
         dismiss();
         Bundle result = new Bundle();
         result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
@@ -88,15 +88,15 @@ public abstract class ActionPopupFragment extends PopupFragment {
     // Popup builder
     ///////////////////////////////////////////////////////////////////////////
 
-    protected void addAction(ItemBuilder item) {
+    protected final void addAction(ItemBuilder item) {
         actions.add(item);
     }
 
-    protected void addShortcut(ItemBuilder item) {
+    protected final void addShortcut(ItemBuilder item) {
         shortcuts.add(item);
     }
 
-    protected void createItemViews() {
+    protected final void createItemViews() {
         if (shortcuts.isEmpty()) {
             for (ItemBuilder action : actions) {
                 addShortcutInternal(action.setIconDrawableTintAttr(R.attr.colorAccent));
@@ -185,7 +185,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
         shortcutsContainer.addView(view);
     }
 
-    protected class ItemBuilder {
+    protected final class ItemBuilder {
         private CharSequence label;
         private Drawable iconDrawable;
         @ColorInt
