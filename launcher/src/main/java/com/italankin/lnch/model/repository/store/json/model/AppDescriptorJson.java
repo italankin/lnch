@@ -77,7 +77,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
-        descriptor.ignored = this.ignored == null ? false : this.ignored;
+        descriptor.ignored = this.ignored != null && this.ignored;
         descriptor.searchFlags = this.searchFlags != null ? this.searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS;
         descriptor.showShortcuts = this.showShortcuts;
         descriptor.setAliases(aliases);
