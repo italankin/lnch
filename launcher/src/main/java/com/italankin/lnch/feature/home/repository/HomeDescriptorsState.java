@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home.repository;
 
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
@@ -35,19 +34,6 @@ public interface HomeDescriptorsState {
      */
     @Nullable
     HomeEntry<? extends DescriptorUi> find(String id);
-
-    /**
-     * Find descriptor by {@link DescriptorArg}
-     *
-     * @return item and it's position in a list, or {@code null}
-     */
-    @Nullable
-    <T extends DescriptorUi> HomeEntry<T> find(DescriptorArg arg);
-
-    /**
-     * Remove descriptor by a given {@link DescriptorArg}
-     */
-    void removeByArg(DescriptorArg arg);
 
     void removeById(String id);
 

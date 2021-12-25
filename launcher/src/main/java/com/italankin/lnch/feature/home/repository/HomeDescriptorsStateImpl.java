@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home.repository;
 
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.ListUtils;
@@ -53,34 +52,6 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
             }
         }
         return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    @Override
-    public <T extends DescriptorUi> HomeEntry<T> find(DescriptorArg arg) {
-        HomeEntry<? extends DescriptorUi> entry = find(arg.id);
-        if (entry == null) {
-            return null;
-        }
-        if (arg.is(entry.item.getDescriptor())) {
-            return (HomeEntry<T>) entry;
-        }
-        return null;
-    }
-
-    @Override
-    public void removeByArg(DescriptorArg arg) {
-        for (int i = 0, s = items.size(); i < s; i++) {
-            DescriptorUi item = items.get(i);
-            if (arg.is(item.getDescriptor())) {
-                items.remove(i);
-                for (Callback callback : callbacks) {
-                    callback.onItemRemoved(i, item);
-                }
-                break;
-            }
-        }
     }
 
     @Override
