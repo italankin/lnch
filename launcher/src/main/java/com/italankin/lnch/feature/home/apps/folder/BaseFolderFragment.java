@@ -1,9 +1,12 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
 import android.animation.LayoutTransition;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.animation.ArgbEvaluatorCompat;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
@@ -27,6 +32,7 @@ import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
@@ -35,6 +41,7 @@ import java.util.List;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +62,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
     protected static final String REQUEST_KEY_FOLDER = "folder";
     protected static final long ANIM_DURATION = 150;
+    private static final float ANIM_INITIAL_SCALE = .4f;
 
     private static final String ARG_FOLDER_ID = "folder_id";
     private static final String ARG_ANCHOR = "anchor";
@@ -63,6 +71,9 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     private static final String STATE_BACKSTACK_ID = "backstack_id";
     private static final String BACKSTACK_NAME = "folder";
     private static final String TAG = "folder";
+
+    private static final float MIN_FULLSCREEN_WIDTH_FACTOR = .75f;
+    private static final float MIN_FULLSCREEN_HEIGHT_FACTOR = .3f;
 
     protected FragmentResultManager fragmentResultManager;
 
@@ -76,7 +87,9 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     protected ErrorDelegate errorDelegate;
 
     protected String folderId;
+    protected boolean darkBackground;
 
+    private boolean isFullscreen;
     private int backstackId = -1;
 
     protected abstract BaseFolderPresenter<? extends BaseFolderView> getPresenter();
@@ -84,6 +97,10 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isFullscreen = LauncherApp.daggerService.main()
+                .preferences()
+                .get(Preferences.FULLSCREEN_FOLDERS);
+        darkBackground = isFullscreen;
         folderId = requireArguments().getString(ARG_FOLDER_ID);
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
@@ -119,8 +136,15 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         list = view.findViewById(R.id.folder_list);
         title = view.findViewById(R.id.folder_title);
 
-        Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
-        alignFrameView.setAnchorPoint(anchor.x, anchor.y);
+        if (isFullscreen) {
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            container.setMinimumWidth((int) (dm.widthPixels * MIN_FULLSCREEN_WIDTH_FACTOR));
+            container.setMinimumHeight((int) (dm.heightPixels * MIN_FULLSCREEN_HEIGHT_FACTOR));
+        } else {
+            Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
+            alignFrameView.setAnchorPoint(anchor.x, anchor.y);
+        }
+
         alignFrameView.post(() -> {
             WindowInsets insets = alignFrameView.getRootWindowInsets();
             alignFrameView.setPaddingRelative(alignFrameView.getPaddingStart(), insets.getStableInsetTop(),
@@ -202,9 +226,9 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
-    protected void animatePopupAppearance() {
-        container.setScaleX(0.4f);
-        container.setScaleY(0.4f);
+    private void animatePopupAppearance() {
+        container.setScaleX(ANIM_INITIAL_SCALE);
+        container.setScaleY(ANIM_INITIAL_SCALE);
         container.setAlpha(0);
 
         container.animate()
@@ -220,5 +244,16 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
                     alignFrameView.setLayoutTransition(new LayoutTransition());
                 })
                 .start();
+
+        if (darkBackground) {
+            int bgColor = ContextCompat.getColor(requireContext(), R.color.dark_folder_background);
+            ValueAnimator animator = ValueAnimator.ofInt(Color.TRANSPARENT, bgColor);
+            animator.setEvaluator(new ArgbEvaluatorCompat());
+            animator.addUpdateListener(animation -> {
+                alignFrameView.setBackgroundColor((int) animation.getAnimatedValue());
+            });
+            animator.setDuration(ANIM_DURATION);
+            animator.start();
+        }
     }
 }

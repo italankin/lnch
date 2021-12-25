@@ -5,4 +5,5 @@
     <color name="status_bar">#4000</color>
     <color name="notification_dot">#ff2600</color>
     <color name="pinned_shortcut_default">#ffffff</color>
+    <color name="dark_folder_background">#d0000000</color>
 </resources>

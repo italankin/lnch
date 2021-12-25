@@ -1,7 +1,5 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
-import android.animation.ValueAnimator;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -9,7 +7,6 @@ import android.view.View;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.google.android.material.animation.ArgbEvaluatorCompat;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
@@ -87,6 +84,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
                 .register(new CustomizeDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     presenter.removeFromFolder(result.descriptorId, result.folderId);
                 });
+        darkBackground = true;
     }
 
     @Override
@@ -185,19 +183,6 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
     ///////////////////////////////////////////////////////////////////////////
     // Other
     ///////////////////////////////////////////////////////////////////////////
-
-    @Override
-    protected void animatePopupAppearance() {
-        super.animatePopupAppearance();
-
-        ValueAnimator animator = ValueAnimator.ofInt(Color.TRANSPARENT, 0xd0000000);
-        animator.setEvaluator(new ArgbEvaluatorCompat());
-        animator.addUpdateListener(animation -> {
-            alignFrameView.setBackgroundColor((int) animation.getAnimatedValue());
-        });
-        animator.setDuration(ANIM_DURATION);
-        animator.start();
-    }
 
     private void startDrag(int position) {
         if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {

@@ -400,6 +400,13 @@ public interface Preferences {
             "home_pager_indicator",
             true);
 
+    /**
+     * Show folders in fullscreen mode instead of popup
+     */
+    Pref<Boolean> FULLSCREEN_FOLDERS = Prefs.createBoolean(
+            "fullscreen_folders",
+            false);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -440,7 +447,8 @@ public interface Preferences {
             NOTIFICATION_DOT_ONGOING,
             NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
-            HOME_PAGER_INDICATOR
+            HOME_PAGER_INDICATOR,
+            FULLSCREEN_FOLDERS
     );
 
     ///////////////////////////////////////////////////////////////////////////

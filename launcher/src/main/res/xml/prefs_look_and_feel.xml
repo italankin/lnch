@@ -61,6 +61,11 @@
             android:title="@string/settings_home_laf_other_status_bar_color"
             tools:ignore="PrefsDetector" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="fullscreen_folders"
+            android:summary="@string/settings_home_laf_other_fullscreen_folders_summary"
+            android:title="@string/settings_home_laf_other_fullscreen_folders" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="home_pager_indicator"
             android:summary="@string/settings_home_laf_other_home_pager_indicator_summary"
