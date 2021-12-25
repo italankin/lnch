@@ -398,7 +398,7 @@ public interface Preferences {
      */
     Pref<Boolean> HOME_PAGER_INDICATOR = Prefs.createBoolean(
             "home_pager_indicator",
-            true);
+            false);
 
     /**
      * Show folders in fullscreen mode instead of popup
