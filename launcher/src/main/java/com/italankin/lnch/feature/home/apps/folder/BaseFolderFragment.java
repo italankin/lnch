@@ -54,7 +54,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         return args;
     }
 
-    protected static final String FOLDER_REQUEST_KEY = "folder";
+    protected static final String REQUEST_KEY_FOLDER = "folder";
     protected static final long ANIM_DURATION = 150;
 
     private static final String ARG_FOLDER_ID = "folder_id";
@@ -87,7 +87,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
         }
-        getParentFragmentManager().setFragmentResultListener(FOLDER_REQUEST_KEY, this, this);
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_FOLDER, this, this);
     }
 
     @Override
@@ -98,7 +98,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
     @Override
     public final void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-        if (!FOLDER_REQUEST_KEY.equals(requestKey)) {
+        if (!REQUEST_KEY_FOLDER.equals(requestKey)) {
             return;
         }
         String resultKey = result.getString(FragmentResults.RESULT);

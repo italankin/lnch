@@ -100,11 +100,11 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         ItemPopupDelegate itemPopupDelegate = (item, anchor) -> {
             Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
             if (item instanceof AppDescriptorUi) {
-                AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, FOLDER_REQUEST_KEY, bounds)
+                AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, REQUEST_KEY_FOLDER, bounds)
                         .setFolderId(folderId)
                         .show(getParentFragmentManager());
             } else {
-                DescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
+                DescriptorPopupFragment.newInstance(item, REQUEST_KEY_FOLDER, bounds)
                         .setFolderId(folderId)
                         .show(getParentFragmentManager());
             }

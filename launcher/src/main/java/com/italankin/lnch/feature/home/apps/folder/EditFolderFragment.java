@@ -243,7 +243,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
         View view = holder != null ? holder.itemView : null;
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
-        CustomizeDescriptorPopupFragment.newInstance(item, FOLDER_REQUEST_KEY, bounds)
+        CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_FOLDER, bounds)
                 .setFolderId(folderId)
                 .show(getParentFragmentManager());
     }
