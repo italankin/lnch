@@ -223,7 +223,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     }
 
     private List<Shortcut> getShortcuts(AppDescriptorUi item) {
-        if (!item.getDescriptor().showShortcuts) {
+        if (!preferences.get(Preferences.SHOW_SHORTCUTS) || !item.getDescriptor().showShortcuts) {
             return Collections.emptyList();
         }
         List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(item.getDescriptor());

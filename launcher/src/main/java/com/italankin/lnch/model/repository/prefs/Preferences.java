@@ -329,6 +329,13 @@ public interface Preferences {
             "default");
 
     /**
+     * Maximum app dynamic shortcuts to display
+     */
+    Pref<Boolean> SHOW_SHORTCUTS = Prefs.createBoolean(
+            "show_shortcuts",
+            true);
+
+    /**
      * Enable widgets page
      */
     Pref<Boolean> ENABLE_WIDGETS = Prefs.createBoolean(
@@ -437,6 +444,7 @@ public interface Preferences {
             EXPAND_NOTIFICATIONS,
             STATUS_BAR_COLOR,
             MAX_DYNAMIC_SHORTCUTS,
+            SHOW_SHORTCUTS,
             STATUS_BAR_COLOR,
             ENABLE_WIDGETS,
             WIDGETS_POSITION,

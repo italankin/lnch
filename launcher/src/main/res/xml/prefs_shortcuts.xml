@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="show_shortcuts"
+        android:summaryOff="@string/settings_home_misc_shortcuts_show_summary_off"
+        android:summaryOn="@string/settings_home_misc_shortcuts_show_summary_on"
+        android:title="@string/settings_home_misc_shortcuts_show" />
     <ListPreference
         android:defaultValue="default"
+        android:dependency="show_shortcuts"
         android:entries="@array/pref_desc_shortcuts_sort_mode"
         android:entryValues="@array/pref_values_shortcuts_sort_mode"
         android:key="shortcuts_sort_mode"
@@ -9,6 +16,7 @@
         android:title="@string/settings_home_misc_shortcuts_sort_mode" />
     <ListPreference
         android:defaultValue="default"
+        android:dependency="show_shortcuts"
         android:entries="@array/pref_desc_app_max_dynamic_shortcuts"
         android:entryValues="@array/pref_values_app_max_dynamic_shortcuts"
         android:key="max_dynamic_shortcuts"

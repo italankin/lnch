@@ -128,6 +128,9 @@
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
     <string name="settings_home_misc_shortcuts_sort_mode">Sorting</string>
+    <string name="settings_home_misc_shortcuts_show">Show shortcuts</string>
+    <string name="settings_home_misc_shortcuts_show_summary_on">Shortcuts will be shown in popups</string>
+    <string name="settings_home_misc_shortcuts_show_summary_off">Shortcuts will not be shown in popups. Shortcuts will still be visible in search</string>
 
     <string name="settings_home_misc_notifications">Notifications</string>
     <string name="settings_home_misc_notifications_dot">Notification dots</string>
