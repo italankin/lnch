@@ -6,7 +6,7 @@
     <!-- secondary text color, muted -->
     <attr name="colorTextSecondary" format="color|reference" />
 
-    <!-- divier color (e.g. for lists) -->
+    <!-- divider color (e.g. for lists) -->
     <attr name="colorDivider" format="color|reference" />
 
     <!-- icons tint -->
