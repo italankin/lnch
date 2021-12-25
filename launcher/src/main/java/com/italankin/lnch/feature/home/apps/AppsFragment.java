@@ -51,8 +51,6 @@ import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.PopupDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.PopupDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
@@ -62,6 +60,7 @@ import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
 import com.italankin.lnch.feature.home.model.Update;
@@ -101,9 +100,7 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.StatusBarUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
-import com.italankin.lnch.util.widget.ActionPopupWindow;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -136,7 +133,6 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private Preferences preferences;
     private HomeDescriptorsState homeDescriptorsState;
-    private Picasso picasso;
     private IntentQueue intentQueue;
 
     private LceLayout lce;
@@ -155,7 +151,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     private boolean editMode;
 
     private AppClickDelegate appClickDelegate;
-    private PopupDelegate popupDelegate;
     private ErrorDelegate errorDelegate;
     private ItemPopupDelegate itemPopupDelegate;
     private PinnedShortcutClickDelegate pinnedShortcutClickDelegate;
@@ -180,7 +175,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         preferences = LauncherApp.daggerService.main().preferences();
-        picasso = LauncherApp.daggerService.main().picassoFactory().create(requireContext());
         intentQueue = LauncherApp.daggerService.main().intentQueue();
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 
@@ -249,7 +243,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     private void initDelegates(Context context) {
         ShortcutsRepository shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
 
-        popupDelegate = new PopupDelegateImpl(list);
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
             cancelListMotionEvents();
@@ -364,9 +357,19 @@ public class AppsFragment extends AppFragment implements AppsView,
                 presenter.removeItem(arg);
                 break;
             }
+            case FragmentResults.Customize.CreateIntent.KEY: {
+                createIntentLauncher.launch(null);
+                break;
+            }
             case FragmentResults.Customize.EditIntent.KEY: {
                 String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
                 presenter.startEditIntent(descriptorId);
+                break;
+            }
+            case FragmentResults.Customize.AddFolder.KEY: {
+                String label = getString(R.string.new_folder_default_label);
+                int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
+                presenter.addFolder(label, color);
                 break;
             }
             case FragmentResults.Customize.SelectFolder.KEY: {
@@ -408,9 +411,6 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public boolean onBackPressed() {
-        if (popupDelegate.dismissPopup()) {
-            return true;
-        }
         if (editMode) {
             presenter.confirmDiscardChanges();
             return true;
@@ -619,25 +619,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showEditModeAddPopup(View anchor) {
-        Context context = requireContext();
-        ActionPopupWindow popup = new ActionPopupWindow(context, picasso);
-        popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                .setIcon(R.drawable.ic_action_add_new_folder)
-                .setLabel(R.string.edit_add_folder)
-                .setOnClickListener(v -> {
-                    String label = getString(R.string.new_folder_default_label);
-                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
-                    presenter.addFolder(label, color);
-                }));
-        if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
-            popup.addShortcut(new ActionPopupWindow.ItemBuilder(context)
-                    .setIcon(R.drawable.ic_action_intent_edit)
-                    .setLabel(R.string.edit_add_intent)
-                    .setOnClickListener(v -> {
-                        createIntentLauncher.launch(null);
-                    }));
-        }
-        popupDelegate.showPopupWindow(popup, anchor);
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
+        EditModePopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
+                .show(getParentFragmentManager());
     }
 
     private void onNewIntentCreated(@Nullable IntentFactoryResult result) {
@@ -765,7 +749,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (!fragmentManager.isStateSaved()) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-        popupDelegate.dismissPopup();
     }
 
     ///////////////////////////////////////////////////////////////////////////

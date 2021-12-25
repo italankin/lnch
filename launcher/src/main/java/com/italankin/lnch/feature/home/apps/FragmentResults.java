@@ -27,6 +27,10 @@ public final class FragmentResults {
             public static final String DESCRIPTOR = "descriptor";
         }
 
+        public static final class CreateIntent {
+            public static final String KEY = "customize_create_intent";
+        }
+
         public static final class EditIntent {
             public static final String KEY = "customize_edit_intent";
             public static final String DESCRIPTOR_ID = "descriptor_id";
@@ -35,6 +39,10 @@ public final class FragmentResults {
         public static final class SelectFolder {
             public static final String KEY = "customize_select_folder";
             public static final String DESCRIPTOR = "descriptor";
+        }
+
+        public static final class AddFolder {
+            public static final String KEY = "customize_add_folder";
         }
 
         public static final class RemoveFromFolder {
