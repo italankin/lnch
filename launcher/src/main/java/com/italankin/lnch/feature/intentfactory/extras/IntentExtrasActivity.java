@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -168,6 +169,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
         for (IntentExtra intentExtra : intentExtras) {
             intentExtra.putTo(bundle);
         }
+        bundle.putBoolean(IntentDescriptor.EXTRA_CUSTOM_INTENT, true);
         Intent data = new Intent().putExtra(EXTRA_RESULT, bundle);
         setResult(RESULT_OK, data);
         finish();

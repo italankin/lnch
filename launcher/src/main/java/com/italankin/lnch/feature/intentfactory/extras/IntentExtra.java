@@ -2,14 +2,20 @@ package com.italankin.lnch.feature.intentfactory.extras;
 
 import android.os.Bundle;
 
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import timber.log.Timber;
 
 class IntentExtra {
 
     static void putAllFrom(Bundle bundle, List<IntentExtra> out) {
-        for (String key : bundle.keySet()) {
+        Set<String> keys = new HashSet<>(bundle.keySet());
+        keys.remove(IntentDescriptor.EXTRA_CUSTOM_INTENT);
+        for (String key : keys) {
             Object value = bundle.get(key);
             Class<?> klass = value.getClass();
             if (klass.isAssignableFrom(int.class) || klass.isAssignableFrom(Integer.class)) {
