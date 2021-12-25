@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home.apps.popup;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +10,6 @@ import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultCo
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
@@ -21,7 +19,6 @@ import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 public class DescriptorPopupFragment extends ActionPopupFragment {
 
@@ -83,7 +80,6 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
     }
 
     private void buildItemPopup(DescriptorUi item) {
-        Context context = requireContext();
         if (item.getDescriptor() instanceof PackageDescriptor) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_app_info)
@@ -99,16 +95,7 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
                     .setIcon(R.drawable.ic_action_delete)
                     .setLabel(R.string.customize_item_delete)
                     .setOnClickListener(v -> {
-                        String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
-                        String message = context.getString(R.string.popup_delete_message, visibleLabel);
-                        new AlertDialog.Builder(context)
-                                .setTitle(R.string.popup_delete_title)
-                                .setMessage(message)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.popup_delete_action, (dialog, which) -> {
-                                    removeItemImmediate((RemovableDescriptorUi) item);
-                                })
-                                .show();
+                        requestRemoval((RemovableDescriptorUi) item);
                     })
             );
         }
@@ -130,9 +117,9 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
         IntentUtils.safeStartAppSettings(requireContext(), item.getPackageName(), bounds);
     }
 
-    private void removeItemImmediate(RemovableDescriptorUi item) {
+    private void requestRemoval(RemovableDescriptorUi item) {
         dismiss();
-        Bundle result = new RemoveContract().result(item.getDescriptor().getId());
+        Bundle result = new RequestRemovalContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
@@ -142,9 +129,9 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
         sendResult(result);
     }
 
-    public static class RemoveContract extends DescriptorFragmentResultContract {
-        public RemoveContract() {
-            super("remove");
+    public static class RequestRemovalContract extends DescriptorFragmentResultContract {
+        public RequestRemovalContract() {
+            super("request_removal");
         }
     }
 

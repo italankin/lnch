@@ -33,6 +33,7 @@ import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
@@ -312,8 +313,17 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    void removeItemImmediate(String descriptorId) {
+    void requestRemoveItem(String descriptorId) {
+        DescriptorUiEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        getViewState().showDeleteDialog(entry.item);
+    }
+
+    void removeItemImmediate(RemovableDescriptorUi item) {
         DescriptorRepository.Editor editor = descriptorRepository.edit();
+        String descriptorId = item.getDescriptor().getId();
         editor.enqueue(new RemoveAction(descriptorId));
         editor.commit()
                 .subscribeOn(Schedulers.io())

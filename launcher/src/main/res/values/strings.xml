@@ -38,9 +38,10 @@
 
     <string name="apps_list_empty">No apps</string>
 
-    <string name="popup_delete_title">Delete</string>
-    <string name="popup_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
-    <string name="popup_delete_action">Delete</string>
+    <string name="dialog_delete_title">Delete item</string>
+    <string name="dialog_delete_message">Delete \"%1$s\"?\nThis operation cannot be undone</string>
+    <string name="dialog_delete_action">Delete</string>
+
     <string name="popup_notifications_header">Notifications</string>
 
     <string name="customize_hint">Customize</string>

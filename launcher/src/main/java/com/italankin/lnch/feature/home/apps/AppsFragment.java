@@ -88,6 +88,7 @@ import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
@@ -316,8 +317,8 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     presenter.removeFromFolder(result.descriptorId, result.folderId);
                 })
-                .register(new DescriptorPopupFragment.RemoveContract(), descriptorId -> {
-                    presenter.removeItemImmediate(descriptorId);
+                .register(new DescriptorPopupFragment.RequestRemovalContract(), descriptorId -> {
+                    presenter.requestRemoveItem(descriptorId);
                 })
                 .register(new DescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     presenter.removeFromFolder(result.descriptorId, result.folderId);
@@ -642,6 +643,20 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onChangesDiscarded() {
         setEditMode(false);
+    }
+
+    @Override
+    public void showDeleteDialog(RemovableDescriptorUi item) {
+        String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
+        String message = getString(R.string.dialog_delete_message, visibleLabel);
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.dialog_delete_action, (dialog, which) -> {
+                    presenter.removeItemImmediate((RemovableDescriptorUi) item);
+                })
+                .show();
     }
 
     @Override

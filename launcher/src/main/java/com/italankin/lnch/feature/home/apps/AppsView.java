@@ -12,6 +12,7 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
@@ -65,9 +66,11 @@ interface AppsView extends MvpView {
     void onChangesDiscarded();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void showDeleteDialog(RemovableDescriptorUi item);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onShortcutPinned(Shortcut shortcut);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShortcutAlreadyPinnedError(Shortcut shortcut);
-
 }
