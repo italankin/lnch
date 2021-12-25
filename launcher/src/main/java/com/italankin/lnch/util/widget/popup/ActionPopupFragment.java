@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.squareup.picasso.Picasso;
@@ -78,8 +78,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
 
     protected final void dismissWithResult() {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.OnActionHandled.KEY);
+        Bundle result = new ActionDoneContract().result();
         sendResult(result);
     }
 
@@ -248,6 +247,12 @@ public abstract class ActionPopupFragment extends PopupFragment {
         public ItemBuilder setOnPinClickListener(View.OnClickListener listener) {
             this.onPinClickListener = listener;
             return this;
+        }
+    }
+
+    public static class ActionDoneContract extends SignalFragmentResultContract {
+        public ActionDoneContract() {
+            super("popup_action_done");
         }
     }
 }

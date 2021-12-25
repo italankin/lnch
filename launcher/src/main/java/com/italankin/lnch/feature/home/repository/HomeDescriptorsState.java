@@ -49,6 +49,8 @@ public interface HomeDescriptorsState {
      */
     void removeByArg(DescriptorArg arg);
 
+    void removeById(String id);
+
     /**
      * Find descriptor by id with a given type
      *

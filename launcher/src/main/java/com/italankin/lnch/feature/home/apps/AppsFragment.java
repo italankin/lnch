@@ -63,6 +63,7 @@ import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
@@ -75,7 +76,6 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -101,6 +101,7 @@ import com.italankin.lnch.util.StatusBarUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.picasso.PackageIconHandler;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
 
@@ -110,13 +111,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsFragment extends AppFragment implements AppsView,
         BackButtonHandler,
-        FragmentResultListener,
         IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -178,7 +177,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         intentQueue = LauncherApp.daggerService.main().intentQueue();
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_APPS, this, this);
+        registerFragmentResultListeners();
     }
 
     @Override
@@ -303,86 +302,62 @@ public class AppsFragment extends AppFragment implements AppsView,
         return false;
     }
 
-    @Override
-    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-        if (!REQUEST_KEY_APPS.equals(requestKey)) {
-            return;
-        }
-        String key = result.getString(FragmentResults.RESULT);
-        switch (key) {
-            case FragmentResults.Customize.KEY: {
-                presenter.startCustomize();
-                break;
-            }
-            case FragmentResults.PinShortcut.KEY: {
-                String packageName = result.getString(FragmentResults.PinShortcut.PACKAGE_NAME);
-                String shortcutId = result.getString(FragmentResults.PinShortcut.SHORTCUT_ID);
-                presenter.pinShortcut(packageName, shortcutId);
-                break;
-            }
-            case FragmentResults.RemoveItem.KEY: {
-                String descriptorId = result.getString(FragmentResults.RemoveItem.DESCRIPTOR_ID);
-                presenter.removeItemImmediate(descriptorId);
-                break;
-            }
-            case FragmentResults.RemoveFromFolder.KEY: {
-                String descriptorId = result.getString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID);
-                String folderId = result.getString(FragmentResults.RemoveFromFolder.FOLDER_ID);
-                presenter.removeFromFolder(descriptorId, folderId);
-                break;
-            }
-            case FragmentResults.SelectFolder.KEY: {
-                String folderId = result.getString(FragmentResults.SelectFolder.FOLDER_ID);
-                String descriptorId = result.getString(FragmentResults.SelectFolder.DESCRIPTOR_ID);
-                presenter.addToFolder(folderId, descriptorId);
-                break;
-            }
-            case FragmentResults.Customize.Ignore.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Ignore.DESCRIPTOR);
-                presenter.ignoreItem(arg);
-                break;
-            }
-            case FragmentResults.Customize.Rename.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Rename.DESCRIPTOR);
-                presenter.renameItem(arg);
-                break;
-            }
-            case FragmentResults.Customize.SetColor.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SetColor.DESCRIPTOR);
-                presenter.showSetItemColorDialog(arg);
-                break;
-            }
-            case FragmentResults.Customize.Remove.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Remove.DESCRIPTOR);
-                presenter.removeItem(arg);
-                break;
-            }
-            case FragmentResults.Customize.CreateIntent.KEY: {
-                createIntentLauncher.launch(null);
-                break;
-            }
-            case FragmentResults.Customize.EditIntent.KEY: {
-                String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
-                presenter.startEditIntent(descriptorId);
-                break;
-            }
-            case FragmentResults.Customize.AddFolder.KEY: {
-                String label = getString(R.string.new_folder_default_label);
-                int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
-                presenter.addFolder(label, color);
-                break;
-            }
-            case FragmentResults.Customize.SelectFolder.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.SelectFolder.DESCRIPTOR);
-                presenter.selectFolder(arg);
-                break;
-            }
-            case FragmentResults.Customize.OpenFolder.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.OpenFolder.FOLDER);
-                presenter.showFolder(arg);
-                break;
-            }
-        }
+    private void registerFragmentResultListeners() {
+        new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_APPS)
+                .register(new FolderFragment.CustomizeContract(), ignored -> {
+                    presenter.startCustomize();
+                })
+                .register(new AppDescriptorPopupFragment.CustomizeContract(), ignored -> {
+                    presenter.startCustomize();
+                })
+                .register(new AppDescriptorPopupFragment.PinShortcutContract(), result -> {
+                    presenter.pinShortcut(result.packageName, result.shortcutId);
+                })
+                .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
+                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                })
+                .register(new DescriptorPopupFragment.RemoveContract(), descriptorId -> {
+                    presenter.removeItemImmediate(descriptorId);
+                })
+                .register(new DescriptorPopupFragment.RemoveFromFolderContract(), result -> {
+                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                })
+                .register(new SelectFolderFragment.AddToFolderContract(), result -> {
+                    presenter.addToFolder(result.descriptorId, result.folderId);
+                })
+                .register(new EditModePopupFragment.AddFolderContract(), ignored -> {
+                    String label = getString(R.string.new_folder_default_label);
+                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
+                    presenter.addFolder(label, color);
+                })
+                .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
+                    createIntentLauncher.launch(null);
+                })
+                .register(new CustomizeDescriptorPopupFragment.ShowSelectFolderContract(), descriptorId -> {
+                    presenter.selectFolder(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.IgnoreContract(), descriptorId -> {
+                    presenter.ignoreItem(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.RenameContract(), descriptorId -> {
+                    presenter.renameItem(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.SetColorContract(), descriptorId -> {
+                    presenter.showSetItemColorDialog(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.RemoveContract(), descriptorId -> {
+                    presenter.removeItem(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.EditIntentContract(), descriptorId -> {
+                    presenter.startEditIntent(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.EditFolderContract(), folderId -> {
+                    presenter.showFolder(folderId);
+                })
+                .register(new ActionPopupFragment.ActionDoneContract(), ignored -> {
+                    // empty
+                })
+                .attach();
     }
 
     @Override

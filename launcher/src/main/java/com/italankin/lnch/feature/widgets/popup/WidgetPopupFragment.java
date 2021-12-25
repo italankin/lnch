@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import androidx.annotation.NonNull;
@@ -50,10 +50,7 @@ public class WidgetPopupFragment extends ActionPopupFragment {
                 .setLabel(R.string.widgets_app_info)
                 .setOnClickListener(v -> {
                     dismiss();
-                    Bundle result = new Bundle();
-                    result.putString(FragmentResults.RESULT, FragmentResults.Widgets.AppInfo.KEY);
-                    result.putInt(FragmentResults.Widgets.AppInfo.APP_WIDGET_ID, appWidgetId);
-                    sendResult(result);
+                    sendResult(AppInfoContract.result(appWidgetId));
                 })
                 .setIconDrawableTintAttr(R.attr.colorAccent)
                 .setIcon(R.drawable.ic_app_info));
@@ -61,15 +58,56 @@ public class WidgetPopupFragment extends ActionPopupFragment {
                 .setLabel(R.string.widgets_remove)
                 .setOnClickListener(v -> {
                     dismiss();
-                    Bundle result = new Bundle();
-                    result.putString(FragmentResults.RESULT, FragmentResults.Widgets.RemoveWidget.KEY);
-                    result.putInt(FragmentResults.Widgets.AppInfo.APP_WIDGET_ID, appWidgetId);
-                    sendResult(result);
+                    sendResult(RemoveWidgetContract.result(appWidgetId));
                 })
                 .setIconDrawableTintAttr(R.attr.colorAccent)
                 .setIcon(R.drawable.ic_action_delete));
 
         createItemViews();
         showPopup();
+    }
+
+    public static class AppInfoContract implements FragmentResultContract<Integer> {
+        private static final String KEY = "widget_app_info";
+        private static final String APP_WIDGET_ID = "app_widget_id";
+
+        static Bundle result(int appWidgetId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putInt(APP_WIDGET_ID, appWidgetId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Integer parseResult(Bundle result) {
+            return result.getInt(APP_WIDGET_ID);
+        }
+    }
+
+    public static class RemoveWidgetContract implements FragmentResultContract<Integer> {
+        private static final String KEY = "widget_remove";
+        private static final String APP_WIDGET_ID = "app_widget_id";
+
+        static Bundle result(int appWidgetId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putInt(APP_WIDGET_ID, appWidgetId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Integer parseResult(Bundle result) {
+            return result.getInt(APP_WIDGET_ID);
+        }
     }
 }

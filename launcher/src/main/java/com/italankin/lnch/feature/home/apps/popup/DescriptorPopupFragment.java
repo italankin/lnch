@@ -7,7 +7,8 @@ import android.view.View;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -131,18 +132,53 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
 
     private void removeItemImmediate(RemovableDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.RemoveItem.KEY);
-        result.putString(FragmentResults.RemoveItem.DESCRIPTOR_ID, item.getDescriptor().getId());
+        Bundle result = new RemoveContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void removeFromFolder(InFolderDescriptorUi item, String folderId) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
-        result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
-        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, folderId);
+        Bundle result = RemoveFromFolderContract.result(item.getDescriptor().getId(), folderId);
         sendResult(result);
+    }
+
+    public static class RemoveContract extends DescriptorFragmentResultContract {
+        public RemoveContract() {
+            super("remove");
+        }
+    }
+
+    public static class RemoveFromFolderContract implements FragmentResultContract<RemoveFromFolderContract.Result> {
+        private static final String KEY = "remove_from_folder";
+        private static final String DESCRIPTOR_ID = "descriptor_id";
+        private static final String FOLDER_ID = "folder_id";
+
+        static Bundle result(String descriptorId, String folderId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putString(DESCRIPTOR_ID, descriptorId);
+            result.putString(FOLDER_ID, folderId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+        }
+
+        public static class Result {
+            public final String descriptorId;
+            public final String folderId;
+
+            Result(String descriptorId, String folderId) {
+                this.descriptorId = descriptorId;
+                this.folderId = folderId;
+            }
+        }
     }
 }

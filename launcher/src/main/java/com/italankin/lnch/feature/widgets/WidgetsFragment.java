@@ -22,7 +22,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
@@ -42,14 +42,11 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends AppFragment implements WidgetsView,
-        IntentQueue.OnIntentAction,
-        FragmentResultListener {
+public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQueue.OnIntentAction {
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
@@ -96,7 +93,21 @@ public class WidgetsFragment extends AppFragment implements WidgetsView,
         appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
 
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_WIDGETS, this, this);
+        new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_WIDGETS)
+                .register(new WidgetPopupFragment.AppInfoContract(), appWidgetId -> {
+                    AppWidget appWidget = widgetItemsState.getWidgetById(appWidgetId);
+                    if (appWidget == null) {
+                        return;
+                    }
+                    String packageName = appWidget.providerInfo.provider.getPackageName();
+                    IntentUtils.safeStartAppSettings(requireContext(), packageName, null);
+                })
+                .register(new WidgetPopupFragment.RemoveWidgetContract(), appWidgetId -> {
+                    widgetItemsState.removeWidgetById(appWidgetId);
+                    appWidgetHost.deleteAppWidgetId(appWidgetId);
+                    updateWidgets();
+                })
+                .attach();
     }
 
     @Override
@@ -122,33 +133,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView,
             }
         }
         return true;
-    }
-
-    @Override
-    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-        if (!REQUEST_KEY_WIDGETS.equals(requestKey)) {
-            return;
-        }
-        String key = result.getString(FragmentResults.RESULT);
-        switch (key) {
-            case FragmentResults.Widgets.AppInfo.KEY: {
-                int appWidgetId = result.getInt(FragmentResults.Widgets.AppInfo.APP_WIDGET_ID);
-                AppWidget appWidget = widgetItemsState.getWidgetById(appWidgetId);
-                if (appWidget == null) {
-                    return;
-                }
-                String packageName = appWidget.providerInfo.provider.getPackageName();
-                IntentUtils.safeStartAppSettings(requireContext(), packageName, null);
-                break;
-            }
-            case FragmentResults.Widgets.RemoveWidget.KEY: {
-                int appWidgetId = result.getInt(FragmentResults.Widgets.RemoveWidget.APP_WIDGET_ID);
-                widgetItemsState.removeWidgetById(appWidgetId);
-                appWidgetHost.deleteAppWidgetId(appWidgetId);
-                updateWidgets();
-                break;
-            }
-        }
     }
 
     @Nullable

@@ -6,10 +6,9 @@ import android.view.View;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
-import com.italankin.lnch.model.descriptor.DescriptorArg;
-import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
@@ -154,68 +153,125 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
 
     private void sendRemoveResult(RemovableDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.Remove.KEY);
-        result.putSerializable(FragmentResults.Customize.Remove.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new RemoveContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void sendSelectFolderResult(InFolderDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.SelectFolder.KEY);
-        result.putSerializable(FragmentResults.Customize.SelectFolder.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new ShowSelectFolderContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void sendRemoveFromFolderResult(InFolderDescriptorUi item, String folderId) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.RemoveFromFolder.KEY);
-        result.putSerializable(FragmentResults.Customize.RemoveFromFolder.DESCRIPTOR,
-                new DescriptorArg(item.getDescriptor()));
-        result.putSerializable(FragmentResults.Customize.RemoveFromFolder.FOLDER,
-                new DescriptorArg(folderId, FolderDescriptor.class));
+        Bundle result = RemoveFromFolderContract.result(item.getDescriptor().getId(), folderId);
         sendResult(result);
     }
 
     private void sendOpenFolderResult(FolderDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.OpenFolder.KEY);
-        result.putSerializable(FragmentResults.Customize.OpenFolder.FOLDER, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new EditFolderContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void sendEditIntentResult(IntentDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.EditIntent.KEY);
-        result.putString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID, item.getDescriptor().getId());
+        Bundle result = new EditIntentContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void setColorResult(CustomColorDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.SetColor.KEY);
-        result.putSerializable(FragmentResults.Customize.SetColor.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new SetColorContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void setRenameResult(CustomLabelDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.Rename.KEY);
-        result.putSerializable(FragmentResults.Customize.Rename.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new RenameContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
     private void sendIgnoreResult(IgnorableDescriptorUi item) {
         dismiss();
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.Customize.Ignore.KEY);
-        result.putSerializable(FragmentResults.Customize.Ignore.DESCRIPTOR, new DescriptorArg(item.getDescriptor()));
+        Bundle result = new IgnoreContract().result(item.getDescriptor().getId());
         sendResult(result);
+    }
+
+    public static class ShowSelectFolderContract extends DescriptorFragmentResultContract {
+        public ShowSelectFolderContract() {
+            super("customize_show_select_folder");
+        }
+    }
+
+    public static class RemoveFromFolderContract implements FragmentResultContract<RemoveFromFolderContract.Result> {
+        private static final String KEY = "customize_remove_from_folder";
+        private static final String DESCRIPTOR_ID = "descriptor_id";
+        private static final String FOLDER_ID = "folder_id";
+
+        private static Bundle result(String descriptorId, String folderId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putSerializable(DESCRIPTOR_ID, descriptorId);
+            result.putSerializable(FOLDER_ID, folderId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+        }
+
+        public static class Result {
+            public final String descriptorId;
+            public final String folderId;
+
+            Result(String descriptorId, String folderId) {
+                this.descriptorId = descriptorId;
+                this.folderId = folderId;
+            }
+        }
+    }
+
+    public static class EditFolderContract extends DescriptorFragmentResultContract {
+        public EditFolderContract() {
+            super("customize_edit_folder");
+        }
+    }
+
+    public static class EditIntentContract extends DescriptorFragmentResultContract {
+        public EditIntentContract() {
+            super("customize_edit_intent");
+        }
+    }
+
+    public static class SetColorContract extends DescriptorFragmentResultContract {
+        public SetColorContract() {
+            super("customize_set_color");
+        }
+    }
+
+    public static class RenameContract extends DescriptorFragmentResultContract {
+        public RenameContract() {
+            super("customize_rename");
+        }
+    }
+
+    public static class IgnoreContract extends DescriptorFragmentResultContract {
+        public IgnoreContract() {
+            super("customize_ignore");
+        }
+    }
+
+    public static class RemoveContract extends DescriptorFragmentResultContract {
+        public RemoveContract() {
+            super("customize_remove");
+        }
     }
 }

@@ -83,6 +83,20 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
         }
     }
 
+    @Override
+    public void removeById(String id) {
+        for (int i = 0, s = items.size(); i < s; i++) {
+            DescriptorUi item = items.get(i);
+            if (item.getDescriptor().getId().equals(id)) {
+                items.remove(i);
+                for (Callback callback : callbacks) {
+                    callback.onItemRemoved(i, item);
+                }
+                break;
+            }
+        }
+    }
+
     @Nullable
     @Override
     public <T extends DescriptorUi> DescriptorUiEntry<T> find(Class<T> type, String id) {

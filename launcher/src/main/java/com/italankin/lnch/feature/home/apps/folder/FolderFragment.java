@@ -11,7 +11,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
 import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
@@ -28,6 +27,7 @@ import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -38,7 +38,6 @@ import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,19 +70,13 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         return presenter;
     }
 
-    protected void handleFragmentResult(String resultKey, @NonNull Bundle result) {
-        switch (resultKey) {
-            case FragmentResults.PinShortcut.KEY:
-                sendResult(result);
-                return;
-            case FragmentResults.RemoveFromFolder.KEY: {
-                String descriptorId = result.getString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID);
-                presenter.removeFromFolderImmediate(descriptorId);
-                break;
-            }
-            default:
-                super.handleFragmentResult(resultKey, result);
-        }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        fragmentResultManager
+                .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
+                    presenter.removeFromFolderImmediate(result.descriptorId);
+                });
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -110,10 +103,9 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
             }
         };
         CustomizeDelegate customizeDelegate = () -> {
-            Bundle result = new Bundle();
-            result.putString(FragmentResults.RESULT, FragmentResults.Customize.KEY);
-            sendResult(result);
             dismiss();
+            Bundle result = new CustomizeContract().result();
+            sendResult(result);
         };
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
                 customizeDelegate);
@@ -196,5 +188,11 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
         View view = holder != null ? holder.itemView : null;
         pinnedShortcutClickDelegate.onPinnedShortcutLongClick(item, view);
+    }
+
+    public static class CustomizeContract extends SignalFragmentResultContract {
+        public CustomizeContract() {
+            super("customize_from_folder");
+        }
     }
 }

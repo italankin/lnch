@@ -20,14 +20,15 @@ import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.folder.widget.AlignFrameView;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
 
@@ -35,11 +36,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 
 abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
-        FragmentResultListener,
         AppDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -65,6 +64,8 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     private static final String BACKSTACK_NAME = "folder";
     private static final String TAG = "folder";
 
+    protected FragmentResultManager fragmentResultManager;
+
     protected RecyclerView list;
     protected AlignFrameView alignFrameView;
     protected View container;
@@ -87,22 +88,21 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
         }
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY_FOLDER, this, this);
+        fragmentResultManager = new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_FOLDER)
+                .register(new ActionPopupFragment.ActionDoneContract(), ignored -> {
+                    // empty
+                })
+                .setUnhandledResultListener((key, result) -> {
+                    dismiss();
+                    sendResult(result);
+                });
+        fragmentResultManager.attach();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_BACKSTACK_ID, backstackId);
-    }
-
-    @Override
-    public final void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-        if (!REQUEST_KEY_FOLDER.equals(requestKey)) {
-            return;
-        }
-        String resultKey = result.getString(FragmentResults.RESULT);
-        handleFragmentResult(resultKey, result);
     }
 
     @Nullable
@@ -194,13 +194,6 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
             getParentFragmentManager()
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
-        }
-    }
-
-    protected void handleFragmentResult(String resultKey, @NonNull Bundle result) {
-        dismiss();
-        if (!FragmentResults.OnActionHandled.KEY.equals(resultKey)) {
-            sendResult(result);
         }
     }
 

@@ -6,7 +6,6 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
 import com.italankin.lnch.model.repository.descriptor.actions.FolderMoveAction;
@@ -34,16 +33,16 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         super(homeDescriptorsState, descriptorRepository, preferences);
     }
 
-     void startEditIntent(String descriptorId) {
-         DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
-         if (entry == null) {
-             return;
-         }
-         getViewState().onEditIntent(entry.item);
-     }
+    void startEditIntent(String descriptorId) {
+        DescriptorUiEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        getViewState().onEditIntent(entry.item);
+    }
 
-    void showRenameDialog(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
+    void showRenameDialog(String descriptorId) {
+        int position = findDescriptorIndex(descriptorId);
         if (position == -1) {
             return;
         }
@@ -59,8 +58,8 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         getViewState().onItemChanged(position);
     }
 
-    void showSetColorDialog(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
+    void showSetColorDialog(String descriptorId) {
+        int position = findDescriptorIndex(descriptorId);
         if (position == -1) {
             return;
         }
@@ -110,15 +109,15 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         getViewState().onFolderUpdated(items);
     }
 
-    void removeItem(DescriptorArg arg) {
-        int position = findDescriptorIndex(arg);
+    void removeItem(String descriptorId) {
+        int position = findDescriptorIndex(descriptorId);
         if (position == -1) {
             return;
         }
         descriptorRepository.edit()
-                .enqueue(new RemoveAction(arg.id));
-        homeDescriptorsState.removeByArg(arg);
-        removeFromFolder(arg.id);
+                .enqueue(new RemoveAction(descriptorId));
+        homeDescriptorsState.removeById(descriptorId);
+        removeFromFolder(descriptorId);
         getViewState().onFolderUpdated(items);
     }
 
@@ -132,10 +131,10 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         }
     }
 
-    private int findDescriptorIndex(DescriptorArg arg) {
+    private int findDescriptorIndex(String descriptorId) {
         for (int i = 0, s = items.size(); i < s; i++) {
             DescriptorUi item = items.get(i);
-            if (arg.is(item.getDescriptor())) {
+            if (item.getDescriptor().getId().equals(descriptorId)) {
                 return i;
             }
         }

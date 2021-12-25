@@ -10,7 +10,6 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -108,8 +107,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.moveItem(from, to);
     }
 
-    void renameItem(DescriptorArg arg) {
-        DescriptorUiEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(arg);
+    void renameItem(String id) {
+        DescriptorUiEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -123,8 +122,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.updateItem(item);
     }
 
-    void showSetItemColorDialog(DescriptorArg arg) {
-        DescriptorUiEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(arg);
+    void showSetItemColorDialog(String id) {
+        DescriptorUiEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
@@ -137,12 +136,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.updateItem(item);
     }
 
-    void ignoreItem(DescriptorArg arg) {
-        DescriptorUiEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(arg);
+    void ignoreItem(String id) {
+        DescriptorUiEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, id);
         if (entry == null) {
             return;
         }
-        editor.enqueue(new SetIgnoreAction(arg.id, true));
+        editor.enqueue(new SetIgnoreAction(id, true));
         IgnorableDescriptorUi item = entry.item;
         item.setIgnored(true);
         homeDescriptorsState.updateItem(item);
@@ -154,7 +153,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.insertItem(new FolderDescriptorUi(item));
     }
 
-    void addToFolder(String folderId, String descriptorId) {
+    void addToFolder(String descriptorId, String folderId) {
         DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
         if (entry == null) {
             return;
@@ -169,8 +168,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         getViewState().onFolderUpdated(folder, true);
     }
 
-    void showFolder(DescriptorArg arg) {
-        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(arg);
+    void showFolder(String folderId) {
+        DescriptorUiEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
         if (entry == null) {
             return;
         }
@@ -200,9 +199,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         entry.item.intent = intent;
     }
 
-    void removeItem(DescriptorArg arg) {
-        editor.enqueue(new RemoveAction(arg.id));
-        homeDescriptorsState.removeByArg(arg);
+    void removeItem(String id) {
+        editor.enqueue(new RemoveAction(id));
+        homeDescriptorsState.removeById(id);
     }
 
     void confirmDiscardChanges() {
@@ -220,8 +219,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void selectFolder(DescriptorArg arg) {
-        DescriptorUiEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(arg);
+    void selectFolder(String descriptorId) {
+        DescriptorUiEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class, descriptorId);
         if (entry == null) {
             return;
         }

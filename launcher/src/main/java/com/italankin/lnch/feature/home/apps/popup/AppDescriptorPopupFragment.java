@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
@@ -24,6 +23,8 @@ import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationF
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
 import com.italankin.lnch.feature.home.apps.popup.notifications.NotificationSwipeCallback;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.home.repository.DescriptorUiEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -129,8 +130,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         Context context = requireContext();
         errorDelegate = new ErrorDelegateImpl(context);
         CustomizeDelegate customizeDelegate = () -> {
-            Bundle result = new Bundle();
-            result.putString(FragmentResults.RESULT, FragmentResults.Customize.KEY);
+            Bundle result = new CustomizeContract().result();
             sendResult(result);
             dismiss();
         };
@@ -270,19 +270,13 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     }
 
     private void removeFromFolder(InFolderDescriptorUi item, String folderId) {
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.RemoveFromFolder.KEY);
-        result.putString(FragmentResults.RemoveFromFolder.DESCRIPTOR_ID, item.getDescriptor().getId());
-        result.putString(FragmentResults.RemoveFromFolder.FOLDER_ID, folderId);
+        Bundle result = RemoveFromFolderContract.result(item.getDescriptor().getId(), folderId);
         sendResult(result);
         dismiss();
     }
 
     private void pinShortcut(Shortcut shortcut) {
-        Bundle result = new Bundle();
-        result.putString(FragmentResults.RESULT, FragmentResults.PinShortcut.KEY);
-        result.putString(FragmentResults.PinShortcut.PACKAGE_NAME, shortcut.getPackageName());
-        result.putString(FragmentResults.PinShortcut.SHORTCUT_ID, shortcut.getId());
+        Bundle result = PinShortcutContract.result(shortcut.getPackageName(), shortcut.getId());
         sendResult(result);
         dismiss();
     }
@@ -384,6 +378,80 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         NotificationsRepository.Callback callback = notificationsRepository.getCallback();
         if (callback != null) {
             callback.cancelNotification(item.sbn);
+        }
+    }
+
+    public static class RemoveFromFolderContract implements FragmentResultContract<RemoveFromFolderContract.Result> {
+        private static final String KEY = "app_remove_from_folder";
+        private static final String DESCRIPTOR_ID = "descriptor_id";
+        private static final String FOLDER_ID = "folder_id";
+
+        static Bundle result(String descriptorId, String folderId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putString(DESCRIPTOR_ID, descriptorId);
+            result.putString(FOLDER_ID, folderId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+        }
+
+        public static class Result {
+            public final String descriptorId;
+            public final String folderId;
+
+            Result(String descriptorId, String folderId) {
+                this.descriptorId = descriptorId;
+                this.folderId = folderId;
+            }
+        }
+    }
+
+    public static class PinShortcutContract implements FragmentResultContract<PinShortcutContract.Result> {
+        private static final String KEY = "app_pin_shortcut";
+        private static final String PACKAGE_NAME = "package_name";
+        private static final String SHORTCUT_ID = "shortcut_id";
+
+        static Bundle result(String packageName, String shortcutId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putString(PACKAGE_NAME, packageName);
+            result.putString(SHORTCUT_ID, shortcutId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(PACKAGE_NAME), result.getString(SHORTCUT_ID));
+        }
+
+        public static class Result {
+            public final String packageName;
+            public final String shortcutId;
+
+            Result(String packageName, String shortcutId) {
+                this.packageName = packageName;
+                this.shortcutId = shortcutId;
+            }
+        }
+    }
+
+    public static class CustomizeContract extends SignalFragmentResultContract {
+        public CustomizeContract() {
+            super("app_customize");
         }
     }
 }

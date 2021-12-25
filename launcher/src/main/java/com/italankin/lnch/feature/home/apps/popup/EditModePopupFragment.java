@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
@@ -56,8 +56,7 @@ public class EditModePopupFragment extends ActionPopupFragment {
                 .setLabel(R.string.edit_add_folder)
                 .setOnClickListener(v -> {
                     dismiss();
-                    Bundle result = new Bundle();
-                    result.putString(FragmentResults.RESULT, FragmentResults.Customize.AddFolder.KEY);
+                    Bundle result = new AddFolderContract().result();
                     sendResult(result);
                 }));
         if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
@@ -66,13 +65,24 @@ public class EditModePopupFragment extends ActionPopupFragment {
                     .setLabel(R.string.edit_add_intent)
                     .setOnClickListener(v -> {
                         dismiss();
-                        Bundle result = new Bundle();
-                        result.putString(FragmentResults.RESULT, FragmentResults.Customize.CreateIntent.KEY);
+                        Bundle result = new CreateIntentContract().result();
                         sendResult(result);
                     }));
         }
 
         createItemViews();
         showPopup();
+    }
+
+    public static class AddFolderContract extends SignalFragmentResultContract {
+        public AddFolderContract() {
+            super("edit_add_folder");
+        }
+    }
+
+    public static class CreateIntentContract extends SignalFragmentResultContract {
+        public CreateIntentContract() {
+            super("edit_create_intent");
+        }
     }
 }

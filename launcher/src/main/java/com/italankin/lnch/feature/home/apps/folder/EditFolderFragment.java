@@ -14,12 +14,10 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
-import com.italankin.lnch.model.descriptor.DescriptorArg;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
@@ -73,44 +71,22 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
-    }
-
-    @Override
-    protected void handleFragmentResult(String resultKey, @NonNull Bundle result) {
-        switch (resultKey) {
-            case FragmentResults.Customize.Rename.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(FragmentResults.Customize.Rename.DESCRIPTOR);
-                presenter.showRenameDialog(arg);
-                break;
-            }
-            case FragmentResults.Customize.SetColor.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(
-                        FragmentResults.Customize.SetColor.DESCRIPTOR);
-                presenter.showSetColorDialog(arg);
-                break;
-            }
-            case FragmentResults.Customize.Remove.KEY: {
-                DescriptorArg arg = (DescriptorArg) result.getSerializable(
-                        FragmentResults.Customize.Remove.DESCRIPTOR);
-                presenter.removeItem(arg);
-                break;
-            }
-            case FragmentResults.Customize.EditIntent.KEY: {
-                String descriptorId = result.getString(FragmentResults.Customize.EditIntent.DESCRIPTOR_ID);
-                presenter.startEditIntent(descriptorId);
-                break;
-            }
-            case FragmentResults.Customize.RemoveFromFolder.KEY: {
-                DescriptorArg descriptor = (DescriptorArg) result.getSerializable(
-                        FragmentResults.Customize.RemoveFromFolder.DESCRIPTOR);
-                DescriptorArg folder = (DescriptorArg) result.getSerializable(
-                        FragmentResults.Customize.RemoveFromFolder.FOLDER);
-                presenter.removeFromFolder(descriptor.id, folder.id);
-                break;
-            }
-            default:
-                super.handleFragmentResult(resultKey, result);
-        }
+        fragmentResultManager
+                .register(new CustomizeDescriptorPopupFragment.RenameContract(), descriptorId -> {
+                    presenter.showRenameDialog(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.SetColorContract(), descriptorId -> {
+                    presenter.showSetColorDialog(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.RemoveContract(), descriptorId -> {
+                    presenter.removeItem(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.EditIntentContract(), descriptorId -> {
+                    presenter.startEditIntent(descriptorId);
+                })
+                .register(new CustomizeDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
+                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                });
     }
 
     @Override

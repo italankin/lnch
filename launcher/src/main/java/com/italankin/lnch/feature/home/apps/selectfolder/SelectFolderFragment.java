@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.FragmentResults;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -79,13 +79,10 @@ public class SelectFolderFragment extends PopupFragment {
             TextView folderView = (TextView) inflater.inflate(R.layout.item_folder_select, itemsContainer, false);
             folderView.setText(folder.label);
             folderView.setOnClickListener(v -> {
-                String requestKey = args.getString(ARG_REQUEST_KEY);
-                Bundle result = new Bundle();
-                result.putString(FragmentResults.RESULT, FragmentResults.SelectFolder.KEY);
-                result.putString(FragmentResults.SelectFolder.FOLDER_ID, folder.id);
-                result.putString(FragmentResults.SelectFolder.DESCRIPTOR_ID, args.getString(ARG_DESCRIPTOR_ID));
-                getParentFragmentManager().setFragmentResult(requestKey, result);
                 dismiss();
+                String requestKey = args.getString(ARG_REQUEST_KEY);
+                Bundle result = AddToFolderContract.result(args.getString(ARG_DESCRIPTOR_ID), folder.id);
+                getParentFragmentManager().setFragmentResult(requestKey, result);
             });
             TextViewCompat.setCompoundDrawableTintList(folderView, ColorStateList.valueOf(folder.color));
             itemsContainer.addView(folderView);
@@ -102,6 +99,40 @@ public class SelectFolderFragment extends PopupFragment {
             this.id = folder.getDescriptor().id;
             this.label = folder.getVisibleLabel();
             this.color = folder.getVisibleColor();
+        }
+    }
+
+    public static class AddToFolderContract implements FragmentResultContract<AddToFolderContract.Result> {
+        private static final String KEY = "add_to_folder";
+        private static final String DESCRIPTOR_ID = "descriptor_id";
+        private static final String FOLDER_ID = "folder_id";
+
+        static Bundle result(String descriptorId, String folderId) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putString(DESCRIPTOR_ID, descriptorId);
+            result.putString(FOLDER_ID, folderId);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+        }
+
+        public static class Result {
+            public final String descriptorId;
+            public final String folderId;
+
+            public Result(String descriptorId, String folderId) {
+                this.descriptorId = descriptorId;
+                this.folderId = folderId;
+            }
         }
     }
 }
