@@ -10,7 +10,7 @@
             android:summary="%s"
             android:title="@string/settings_home_laf_color_theme" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_home_laf_other_apps">
+    <PreferenceCategory android:title="@string/settings_home_laf_other_home">
         <Preference
             android:key="@string/pref_key_appearance"
             android:summary="@string/settings_home_laf_appearance_summary"
