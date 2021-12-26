@@ -84,6 +84,7 @@ public class AppNotificationFactory {
         }
         Notification n = sbn.getNotification();
         CharSequence text = n.extras.getCharSequence(Notification.EXTRA_TEXT);
-        return TextUtils.isEmpty(text);
+        CharSequence title = n.extras.getCharSequence(Notification.EXTRA_TITLE);
+        return TextUtils.isEmpty(title) && TextUtils.isEmpty(text);
     }
 }
