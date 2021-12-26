@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/wallpaper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/appearance_overlay_container_height"
         android:layout_above="@+id/prefs_container"
         android:layout_alignParentTop="true"
         android:contentDescription="@string/cd_wallpaper"
@@ -19,7 +19,7 @@
     <LinearLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/appearance_overlay_container_height"
         android:layout_above="@+id/prefs_container"
         android:layout_alignParentTop="true"
         android:gravity="center">
@@ -33,7 +33,7 @@
     <ScrollView
         android:id="@+id/prefs_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/appearance_prefs_container_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="?colorPrimary"
         android:fillViewport="true">

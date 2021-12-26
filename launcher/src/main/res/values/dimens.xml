@@ -17,7 +17,7 @@
     <dimen name="search_icon_size">24dp</dimen>
     <dimen name="search_match_icon_size">24dp</dimen>
     <dimen name="search_padding_start">16dp</dimen>
-    <dimen name="appearance_prefs_container_height">208dp</dimen>
+    <dimen name="appearance_overlay_container_height">200dp</dimen>
     <dimen name="widget_min_width">128dp</dimen>
     <dimen name="widget_min_height">128dp</dimen>
     <dimen name="widget_max_height">400dp</dimen>
