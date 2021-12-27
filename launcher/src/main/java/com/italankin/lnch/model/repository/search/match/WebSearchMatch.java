@@ -31,4 +31,9 @@ public class WebSearchMatch extends PartialMatch {
     public Kind getKind() {
         return Kind.WEB;
     }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
 }

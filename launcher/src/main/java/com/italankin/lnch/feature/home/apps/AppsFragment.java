@@ -12,6 +12,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,16 +64,16 @@ import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragme
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
-import com.italankin.lnch.feature.home.behavior.SearchBarBehavior;
+import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
-import com.italankin.lnch.feature.home.widget.SearchBar;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
@@ -139,10 +141,10 @@ public class AppsFragment extends AppFragment implements AppsView,
     private HomeRecyclerView list;
     private HomeAdapter adapter;
     private EditModePanel editModePanel;
-    private SearchBar searchBar;
+    private SearchOverlay searchOverlay;
     private CoordinatorLayout coordinator;
 
-    private SearchBarBehavior searchBarBehavior;
+    private SearchOverlayBehavior searchOverlayBehavior;
 
     private ItemTouchHelper touchHelper;
     private Preferences.HomeLayout layout;
@@ -166,6 +168,9 @@ public class AppsFragment extends AppFragment implements AppsView,
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable hideSearchRunnable;
+
     @ProvidePresenter
     AppsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().apps();
@@ -186,6 +191,10 @@ public class AppsFragment extends AppFragment implements AppsView,
         super.onStart();
         animateOnResume = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 preferences.get(Preferences.APPS_LIST_ANIMATE);
+        if (hideSearchRunnable != null) {
+            hideSearchRunnable = null;
+            searchOverlayBehavior.hideNow();
+        }
     }
 
     @Override
@@ -200,7 +209,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onPause() {
         super.onPause();
-        searchBarBehavior.hide();
+        searchOverlayBehavior.hide();
     }
 
     public void setAnimateOnResume(boolean animateOnResume) {
@@ -222,11 +231,11 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         lce = view.findViewById(R.id.lce_apps);
-        searchBar = view.findViewById(R.id.search_bar);
+        searchOverlay = view.findViewById(R.id.search_bar);
         list = view.findViewById(R.id.list);
         coordinator = view.findViewById(R.id.coordinator);
 
-        setupSearchBar();
+        setupSearchOverlay();
 
         touchHelper = new ItemTouchHelper(new MoveItemHelper(presenter::moveItem));
         touchHelper.attachToRecyclerView(list);
@@ -283,9 +292,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         switch (action) {
             case Intent.ACTION_MAIN: {
                 dismissPopups();
-                if (searchBarBehavior.isShown()) {
-                    searchBar.reset();
-                    searchBarBehavior.hide();
+                if (searchOverlayBehavior.isShown()) {
+                    searchOverlayBehavior.hide();
                 } else if (preferences.get(Preferences.SCROLL_TO_TOP)) {
                     scrollToTop();
                 }
@@ -391,8 +399,9 @@ public class AppsFragment extends AppFragment implements AppsView,
             presenter.confirmDiscardChanges();
             return true;
         }
-        if (searchBarBehavior.isShown()) {
-            searchBarBehavior.hide();
+        if (searchOverlayBehavior.isShown()) {
+            searchOverlayBehavior.hide();
+            return true;
         }
         scrollToTop();
         return true;
@@ -567,11 +576,11 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         editMode = value;
-        searchBarBehavior.hide();
-        searchBarBehavior.setEnabled(!value);
+        searchOverlayBehavior.hide();
+        searchOverlayBehavior.setEnabled(!value);
         if (value) {
             dismissPopups();
-            searchBar.hideSoftKeyboard();
+            searchOverlay.hideSoftKeyboard();
             EditModePanel panel = new EditModePanel(requireContext())
                     .setMessage(R.string.customize_hint)
                     .setOnAddActionClickListener(this::showEditModeAddPopup)
@@ -745,18 +754,24 @@ public class AppsFragment extends AppFragment implements AppsView,
     // SearchBar
     ///////////////////////////////////////////////////////////////////////////
 
-    private void setupSearchBar() {
-        searchBarBehavior = new SearchBarBehavior(searchBar, list, new SearchBarBehavior.Listener() {
+    private void setupSearchOverlay() {
+        searchOverlayBehavior = new SearchOverlayBehavior(searchOverlay, list, new SearchOverlayBehavior.Listener() {
+            @Override
+            public int calculateMaxOffset() {
+                return searchOverlay.searchBarHeight();
+            }
+
             @Override
             public void onShow() {
+                searchOverlay.onSearchShown();
                 if (preferences.get(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)) {
-                    searchBar.focusEditText();
+                    searchOverlay.focusEditText();
                 }
             }
 
             @Override
             public void onHide() {
-                searchBar.reset();
+                searchOverlay.onSearchHidden();
             }
 
             @Override
@@ -767,30 +782,35 @@ public class AppsFragment extends AppFragment implements AppsView,
                 }
             }
         });
-        searchBarBehavior.setEnabled(!editMode);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchBar.getLayoutParams();
-        lp.setBehavior(searchBarBehavior);
-        searchBar.setLayoutParams(lp);
+        searchOverlayBehavior.setEnabled(!editMode);
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchOverlay.getLayoutParams();
+        lp.setBehavior(searchOverlayBehavior);
+        searchOverlay.setLayoutParams(lp);
 
-        SearchBar.Listener listener = new SearchBar.Listener() {
+        SearchOverlay.Listener listener = new SearchOverlay.Listener() {
             @Override
             public void handleIntent(Intent intent) {
                 searchIntentStarterDelegate.handleSearchIntent(intent);
             }
 
             @Override
+            public void handleDescriptorIntent(Intent intent, Descriptor descriptor) {
+                searchIntentStarterDelegate.handleSearchIntent(intent);
+            }
+
+            @Override
             public void onSearchFired() {
-                searchBarBehavior.hide();
+                hideSearchOverlayWithDelay();
             }
 
             @Override
             public void onSearchDismissed() {
-                searchBarBehavior.hide();
+                hideSearchOverlayWithDelay();
             }
 
             @Override
             public void onSearchItemPinClick(Match match) {
-                searchBarBehavior.hide();
+                searchOverlayBehavior.hide();
                 NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
                 String label = nameNormalizer.normalize(match.getLabel(requireContext()));
                 IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
@@ -806,16 +826,16 @@ public class AppsFragment extends AppFragment implements AppsView,
                 Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
                 String packageName = DescriptorUtils.getPackageName(descriptor);
                 if (packageName != null && IntentUtils.safeStartAppSettings(requireContext(), packageName, null)) {
-                    searchBarBehavior.hide();
+                    hideSearchOverlayWithDelay();
                 }
             }
         };
-        searchBar.setListener(listener);
-        searchBar.setupSettings(v -> {
-            searchBarBehavior.hide();
+        searchOverlay.setListener(listener);
+        searchOverlay.setupSettings(v -> {
+            hideSearchOverlayWithDelay();
             startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
         }, v -> {
-            searchBarBehavior.hide(presenter::startCustomize);
+            searchOverlayBehavior.hide(presenter::startCustomize);
             return true;
         });
 
@@ -827,13 +847,13 @@ public class AppsFragment extends AppFragment implements AppsView,
     private void setupGlobalSearchButton() {
         ComponentName searchActivity = PackageUtils.getGlobalSearchActivity(requireContext());
         if (searchActivity == null) {
-            searchBar.hideGlobalSearch();
+            searchOverlay.hideGlobalSearch();
         } else {
             Uri icon = PackageIconHandler.uriFrom(searchActivity.getPackageName());
-            searchBar.setupGlobalSearch(icon, v -> {
+            searchOverlay.setupGlobalSearch(icon, v -> {
                 Intent intent = new Intent().setComponent(searchActivity);
                 if (IntentUtils.safeStartActivity(requireContext(), intent)) {
-                    searchBarBehavior.hide();
+                    hideSearchOverlayWithDelay();
                 } else {
                     errorDelegate.showError(R.string.error);
                 }
@@ -863,6 +883,14 @@ public class AppsFragment extends AppFragment implements AppsView,
         touchHelper.startDrag(list.getChildViewHolder(view));
     }
 
+    private void hideSearchOverlayWithDelay() {
+        hideSearchRunnable = () -> {
+            hideSearchRunnable = null;
+            searchOverlayBehavior.hide();
+        };
+        handler.postDelayed(hideSearchRunnable, 1000);
+    }
+
     private void cancelListMotionEvents() {
         MotionEvent e = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
         list.onTouchEvent(e);
@@ -870,7 +898,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void animateListAppearance() {
-        float endY = searchBarBehavior.isShown() ? list.getTranslationY() : 0;
+        float endY = searchOverlayBehavior.isShown() ? list.getTranslationY() : 0;
         float startY = -endY - getResources().getDimension(R.dimen.list_appearance_translation_offset);
         list.setTranslationY(startY);
         list.setAlpha(0);
@@ -886,30 +914,30 @@ public class AppsFragment extends AppFragment implements AppsView,
         animations.playTogether(translationAnimator, alphaAnimator);
         animations.setInterpolator(new DecelerateInterpolator(3));
         animations.setDuration(ANIM_LIST_APPEARANCE_DURATION);
-        if (searchBarBehavior.isEnabled()) {
+        if (searchOverlayBehavior.isEnabled()) {
             animations.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    searchBarBehavior.setEnabled(true);
+                    searchOverlayBehavior.setEnabled(true);
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    searchBarBehavior.setEnabled(true);
+                    searchOverlayBehavior.setEnabled(true);
                 }
             });
-            searchBarBehavior.setEnabled(false);
+            searchOverlayBehavior.setEnabled(false);
         }
         animations.start();
     }
 
     private void applyUserPrefs(UserPrefs userPrefs) {
-        if (userPrefs.globalSearch && !searchBar.isGlobalSearchVisible()) {
+        if (userPrefs.globalSearch && !searchOverlay.isGlobalSearchVisible()) {
             setupGlobalSearchButton();
-        } else if (!userPrefs.globalSearch && searchBar.isGlobalSearchVisible()) {
-            searchBar.hideGlobalSearch();
+        } else if (!userPrefs.globalSearch && searchOverlay.isGlobalSearchVisible()) {
+            searchOverlay.hideGlobalSearch();
         }
-        searchBar.setSearchBarSizeDimen(userPrefs.largeSearchBar
+        searchOverlay.setSearchBarSizeDimen(userPrefs.largeSearchBar
                 ? R.dimen.search_bar_size_large
                 : R.dimen.search_bar_size);
         setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);

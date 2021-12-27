@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?colorSearchBarBackground"
-    tools:parentTag="android.widget.FrameLayout">
+    android:layout_height="match_parent"
+    tools:background="?colorSearchBarBackground"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <AutoCompleteTextView
         android:id="@+id/search_edit_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
-        android:background="#0000"
+        android:background="#2000"
         android:completionThreshold="1"
         android:hint="@string/hint_search"
         android:imeOptions="actionGo|flagNoExtractUi"
@@ -22,6 +23,9 @@
         android:paddingBottom="16dp"
         android:selectAllOnFocus="true"
         android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:paddingStart="@dimen/search_bar_size" />
 
     <ImageView
@@ -34,6 +38,7 @@
         android:padding="16dp"
         android:scaleType="centerInside"
         android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
         tools:src="@drawable/ic_action_search"
         tools:visibility="visible" />
 
@@ -46,6 +51,23 @@
         android:contentDescription="@string/cd_settings"
         android:padding="16dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_settings" />
+        android:src="@drawable/ic_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_results"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:overScrollMode="ifContentScrolls"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_edit_text"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_search_match"
+        tools:visibility="visible" />
 
 </merge>

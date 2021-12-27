@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.widget;
+package com.italankin.lnch.feature.home.search;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,46 +7,54 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.WindowInsets;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
-import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.adapter.SearchAdapter;
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.search.SearchRepository;
+import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
+import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchBar extends FrameLayout {
+public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Listener {
 
     private static final float TEXT_SIZE_FACTOR = 3.11f;
 
     private final InputMethodManager inputMethodManager;
     private final Picasso picasso;
+    private final SearchRepository searchRepository;
 
-    private final AutoCompleteTextView searchEditText;
+    private final EditText searchEditText;
     private final ImageView buttonGlobalSearch;
     private final ImageView buttonSettings;
 
-    private final SearchAdapter searchAdapter;
+    private final RecyclerView searchResultsList;
+    private final CompositeAdapter<Match> searchAdapter;
 
     private SettingsState settingsState = SettingsState.SETTINGS;
     private Listener listener;
 
-    public SearchBar(@NonNull Context context) {
+    public SearchOverlay(@NonNull Context context) {
         this(context, null);
     }
 
-    public SearchBar(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SearchOverlay(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -57,13 +65,13 @@ public class SearchBar extends FrameLayout {
         setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorSearchBarBackground));
         setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.search_bar_size));
 
-        inflate(context, R.layout.widget_search_bar, this);
+        inflate(context, R.layout.widget_search_overlay, this);
 
         searchEditText = findViewById(R.id.search_edit_text);
         buttonGlobalSearch = findViewById(R.id.search_global);
         buttonSettings = findViewById(R.id.search_settings);
+        searchResultsList = findViewById(R.id.search_results);
 
-        searchEditText.setDropDownBackgroundResource(R.drawable.search_dropdown_bg);
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 onFireSearch(null);
@@ -77,6 +85,12 @@ public class SearchBar extends FrameLayout {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 0) {
+                    setResults(searchRepository.recent());
+                    return;
+                }
+                List<? extends Match> results = searchRepository.search(s);
+                setResults(results);
             }
 
             @Override
@@ -86,32 +100,26 @@ public class SearchBar extends FrameLayout {
             }
         });
 
-        SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
-        searchAdapter = new SearchAdapter(picasso, searchRepository, new SearchAdapter.Listener() {
-            @Override
-            public void onSearchItemClick(int position, Match match) {
-                onFireSearch(match);
-            }
+        searchRepository = LauncherApp.daggerService.main().searchRepository();
+        searchAdapter = new CompositeAdapter.Builder<Match>(context)
+                .add(new SearchAdapter(picasso, this))
+                .recyclerView(searchResultsList)
+                .setHasStableIds(true)
+                .create();
+    }
 
-            @Override
-            public void onSearchItemPinClick(int position, Match match) {
-                if (listener != null) {
-                    listener.onSearchItemPinClick(match);
-                }
-            }
-
-            @Override
-            public void onSearchItemInfoClick(int position, Match match) {
-                if (listener != null) {
-                    listener.onSearchItemInfoClick(match);
-                }
-            }
-        });
-        searchEditText.setAdapter(searchAdapter);
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        ViewUtils.setPaddingBottom(searchResultsList, insets.getSystemWindowInsetBottom());
+        return super.onApplyWindowInsets(insets);
     }
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    public int searchBarHeight() {
+        return searchEditText.getHeight();
     }
 
     public void focusEditText() {
@@ -119,10 +127,18 @@ public class SearchBar extends FrameLayout {
         inputMethodManager.showSoftInput(searchEditText, 0);
     }
 
-    public void reset() {
-        hidePopup();
+    public void onSearchShown() {
+        if (searchResultsList.getAdapter() == null) {
+            searchResultsList.setAdapter(searchAdapter);
+        }
+        searchResultsList.setVisibility(VISIBLE);
+    }
+
+    public void onSearchHidden() {
+        searchResultsList.setAdapter(null);
+        searchResultsList.setVisibility(GONE);
         searchEditText.setText("");
-        inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+        hideSoftKeyboard();
         searchEditText.clearFocus();
     }
 
@@ -170,12 +186,6 @@ public class SearchBar extends FrameLayout {
         }
     }
 
-    public void hidePopup() {
-        if (searchEditText.isPopupShowing()) {
-            searchEditText.dismissDropDown();
-        }
-    }
-
     public void hideGlobalSearch() {
         buttonGlobalSearch.setVisibility(GONE);
         buttonGlobalSearch.setOnClickListener(null);
@@ -189,6 +199,31 @@ public class SearchBar extends FrameLayout {
 
     public void hideSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onSearchItemClick(int position, Match match) {
+        onFireSearch(match);
+    }
+
+    @Override
+    public void onSearchItemPinClick(int position, Match match) {
+        if (listener != null) {
+            listener.onSearchItemPinClick(match);
+        }
+    }
+
+    @Override
+    public void onSearchItemInfoClick(int position, Match match) {
+        if (listener != null) {
+            listener.onSearchItemInfoClick(match);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setResults(List<? extends Match> results) {
+        searchAdapter.setDataset((List<Match>) results);
+        searchAdapter.notifyDataSetChanged();
     }
 
     private void setSettingsState(SettingsState state) {
@@ -206,22 +241,21 @@ public class SearchBar extends FrameLayout {
         if (listener == null) {
             return;
         }
-        if (searchEditText.getText().length() > 0) {
-            if (!searchEditText.isPopupShowing()) {
-                searchEditText.showDropDown();
-                return;
+        if (match == null && searchEditText.getText().length() > 0) {
+            int count = searchAdapter.getItemCount();
+            if (count > 0) {
+                match = searchAdapter.getItem(0);
             }
-            if (match == null) {
-                int count = searchAdapter.getCount();
-                if (count > 0) {
-                    match = searchAdapter.getItem(0);
-                }
-            }
-            if (match != null) {
+        }
+        if (match != null) {
+            if (match instanceof DescriptorMatch) {
+                Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
+                listener.handleDescriptorIntent(match.getIntent(), descriptor);
+            } else {
                 listener.handleIntent(match.getIntent());
             }
-            searchEditText.setText("");
         }
+        searchEditText.setText("");
         listener.onSearchFired();
     }
 
@@ -232,6 +266,8 @@ public class SearchBar extends FrameLayout {
 
     public interface Listener {
         void handleIntent(Intent intent);
+
+        void handleDescriptorIntent(Intent intent, Descriptor descriptor);
 
         void onSearchFired();
 

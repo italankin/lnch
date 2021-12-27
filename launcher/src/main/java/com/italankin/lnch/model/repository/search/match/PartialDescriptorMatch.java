@@ -23,4 +23,9 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
     public Kind getKind() {
         return kind;
     }
+
+    @Override
+    public int hashCode() {
+        return descriptor.hashCode();
+    }
 }

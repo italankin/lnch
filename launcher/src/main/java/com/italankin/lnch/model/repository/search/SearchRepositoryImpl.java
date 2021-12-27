@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
 
@@ -60,6 +61,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches.addAll(list);
         }
         return matches;
+    }
+
+    @Override
+    public List<? extends Match> recent() {
+        return Collections.emptyList(); // TODO
     }
 
     private static final class MatchComparator implements Comparator<Match> {

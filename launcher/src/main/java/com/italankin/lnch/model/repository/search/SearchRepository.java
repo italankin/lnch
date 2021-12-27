@@ -7,4 +7,6 @@ import java.util.List;
 public interface SearchRepository {
 
     List<? extends Match> search(CharSequence constraint);
+
+    List<? extends Match> recent();
 }

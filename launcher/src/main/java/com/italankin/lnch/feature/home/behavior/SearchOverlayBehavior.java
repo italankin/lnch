@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
-public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
+public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
 
     private static final int ANIM_DURATION = 160;
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
@@ -28,7 +28,7 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
     private final Listener listener;
     private final Interpolator resistanceInterpolator = new DecelerateInterpolator(0.25f);
 
-    public SearchBarBehavior(View topView, View bottomView, @NonNull Listener listener) {
+    public SearchOverlayBehavior(View topView, View bottomView, @NonNull Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
         this.listener = listener;
@@ -140,6 +140,7 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
         bottomView.animate()
                 .translationY(maxOffset)
                 .setDuration(ANIM_DURATION)
+                .alpha(0)
                 .start();
     }
 
@@ -168,6 +169,7 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
         bottomView.animate()
                 .translationY(0)
                 .setDuration(ANIM_DURATION)
+                .alpha(1)
                 .start();
     }
 
@@ -179,7 +181,20 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
         topView.setAlpha(1);
         bottomView.animate().cancel();
         bottomView.setTranslationY(maxOffset);
+        bottomView.setAlpha(0);
         listener.onShow();
+    }
+
+    public void hideNow() {
+        dragInProgress = false;
+        shown = false;
+        topView.animate().cancel();
+        topView.setTranslationY(-maxOffset);
+        topView.setAlpha(0);
+        bottomView.animate().cancel();
+        bottomView.setTranslationY(0);
+        bottomView.setAlpha(1);
+        listener.onHide();
     }
 
     public boolean isShown() {
@@ -199,15 +214,17 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     private void setupInitialState() {
-        maxOffset = topView.getHeight();
+        maxOffset = listener.calculateMaxOffset();
         if (shown) {
             topView.setTranslationY(0);
             topView.setAlpha(1);
             bottomView.setTranslationY(maxOffset);
+            bottomView.setAlpha(0);
         } else {
             topView.setTranslationY(-maxOffset);
             topView.setAlpha(0);
             bottomView.setTranslationY(0);
+            bottomView.setAlpha(1);
         }
     }
 
@@ -222,7 +239,9 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
 
         float topViewTy = box(currentTopViewTy - actualDy, -maxOffset, 0);
         topView.setTranslationY(topViewTy);
-        topView.setAlpha(1 - Math.abs(topViewTy) / maxOffset);
+        float v = Math.abs(topViewTy) / maxOffset;
+        topView.setAlpha(1 - v);
+        bottomView.setAlpha(v);
 
         float bottomViewTy = box(bottomView.getTranslationY() - actualDy, 0, maxOffset);
         bottomView.setTranslationY(bottomViewTy);
@@ -231,6 +250,9 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
     private void jumpToActualState() {
         float abs = Math.abs(topView.getTranslationY());
         if (shown) {
+            if (abs == 0) {
+                return;
+            }
             if (abs < maxOffset * SHOWN_SHOW_THRESHOLD) {
                 show();
             } else {
@@ -259,6 +281,8 @@ public class SearchBarBehavior extends CoordinatorLayout.Behavior<View> {
     ///////////////////////////////////////////////////////////////////////////
 
     public interface Listener {
+
+        int calculateMaxOffset();
 
         void onShow();
 

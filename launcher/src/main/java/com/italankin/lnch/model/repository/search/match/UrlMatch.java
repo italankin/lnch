@@ -59,6 +59,11 @@ public class UrlMatch extends PartialMatch {
     }
 
     @Override
+    public int hashCode() {
+        return 2;
+    }
+
+    @Override
     public int getColor(Context context) {
         return ResUtils.resolveColor(context, R.attr.colorText);
     }

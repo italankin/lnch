@@ -20,11 +20,6 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <com.italankin.lnch.feature.home.widget.SearchBar
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <com.italankin.lnch.feature.home.widget.HomeRecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
@@ -38,6 +33,11 @@
             tools:listitem="@layout/item_app"
             tools:spanCount="2"
             tools:visibility="visible" />
+
+        <com.italankin.lnch.feature.home.search.SearchOverlay
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
