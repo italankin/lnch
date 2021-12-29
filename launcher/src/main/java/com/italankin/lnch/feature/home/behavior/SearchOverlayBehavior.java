@@ -25,6 +25,7 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     private boolean dragInProgress = false;
     private boolean shown = false;
     private boolean enabled = true;
+    private ScrollState topViewScrollState = ScrollState.UNKNOWN;
     private final Listener listener;
     private final Interpolator resistanceInterpolator = new DecelerateInterpolator(0.25f);
 
@@ -74,6 +75,9 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         if (!dragInProgress) {
             dragInProgress = dyUnconsumed != 0;
         }
+        topViewScrollState = (child == bottomView || dyUnconsumed == 0)
+                ? ScrollState.UNKNOWN
+                : (dyUnconsumed > 0 ? ScrollState.BOTTOM : ScrollState.TOP);
         if (dragInProgress) {
             onDrag(dyUnconsumed);
         }
@@ -85,6 +89,8 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         if (enabled && dragInProgress && type == ViewCompat.TYPE_TOUCH) {
             jumpToActualState();
         }
+        dragInProgress = false;
+        topViewScrollState = ScrollState.UNKNOWN;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -94,14 +100,14 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (!enabled || true) { // TODO
+        if (!enabled) {
             return false;
         }
-        if (velocityY > 0 && (shown || dragInProgress)) {
+        if (topViewScrollState == ScrollState.BOTTOM && velocityY > 0 && (shown || dragInProgress)) {
             hide();
             return true;
         }
-        if (shown && velocityY < 0) {
+        if (topViewScrollState == ScrollState.TOP && shown && velocityY < 0) {
             listener.onShowExpand();
             return true;
         }
@@ -271,6 +277,12 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             return max;
         }
         return value;
+    }
+
+    private enum ScrollState {
+        UNKNOWN,
+        TOP,
+        BOTTOM
     }
 
     ///////////////////////////////////////////////////////////////////////////
