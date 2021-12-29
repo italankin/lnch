@@ -94,7 +94,7 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, float velocityX, float velocityY) {
-        if (!enabled) {
+        if (!enabled || true) { // TODO
             return false;
         }
         if (velocityY > 0 && (shown || dragInProgress)) {
