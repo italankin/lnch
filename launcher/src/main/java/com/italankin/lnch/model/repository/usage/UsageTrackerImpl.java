@@ -126,11 +126,10 @@ public class UsageTrackerImpl implements UsageTracker {
             Set<Descriptor> allDescriptors = new HashSet<>(descriptorRepository.items());
             UsageStats stats = new UsageStats();
             stats.launches = new HashMap<>(descriptors.size());
-            int min = min(descriptors.values());
             for (Map.Entry<Descriptor, Integer> entry : descriptors.entrySet()) {
                 Descriptor descriptor = entry.getKey();
                 if (allDescriptors.contains(descriptor)) {
-                    stats.launches.put(descriptor.getId(), entry.getValue() - min);
+                    stats.launches.put(descriptor.getId(), entry.getValue());
                 }
             }
             try (FileWriter writer = new FileWriter(file)) {
@@ -139,16 +138,6 @@ public class UsageTrackerImpl implements UsageTracker {
             } catch (IOException e) {
                 Timber.e(e, "write:");
             }
-        }
-
-        private int min(Iterable<Integer> values) {
-            Integer min = null;
-            for (Integer i : values) {
-                if (min == null || i < min) {
-                    min = i;
-                }
-            }
-            return min == null ? 0 : min - 1;
         }
     }
 
