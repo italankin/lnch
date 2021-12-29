@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.WindowInsets;
@@ -22,6 +21,7 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.TextWatcherAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -32,13 +32,12 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Listener {
+public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Listener, SearchResultsFilter.Listener {
 
     private static final float TEXT_SIZE_FACTOR = 3.11f;
 
     private final InputMethodManager inputMethodManager;
     private final Picasso picasso;
-    private final SearchRepository searchRepository;
 
     private final EditText searchEditText;
     private final ImageView buttonGlobalSearch;
@@ -46,6 +45,7 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
 
     private final RecyclerView searchResultsList;
     private final CompositeAdapter<Match> searchAdapter;
+    private final SearchResultsFilter filter;
 
     private SettingsState settingsState = SettingsState.SETTINGS;
     private Listener listener;
@@ -78,19 +78,10 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
             }
             return true;
         });
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        searchEditText.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() == 0) {
-                    setResults(searchRepository.recent());
-                    return;
-                }
-                List<? extends Match> results = searchRepository.search(s);
-                setResults(results);
+                filter.filter(s);
             }
 
             @Override
@@ -100,7 +91,9 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
             }
         });
 
-        searchRepository = LauncherApp.daggerService.main().searchRepository();
+        SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
+        filter = new SearchResultsFilter(searchRepository, this);
+
         searchAdapter = new CompositeAdapter.Builder<Match>(context)
                 .add(new SearchAdapter(picasso, this))
                 .recyclerView(searchResultsList)
@@ -223,9 +216,9 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void setResults(List<? extends Match> results) {
-        searchAdapter.setDataset((List<Match>) results);
+    @Override
+    public void onSearchResults(List<Match> results) {
+        searchAdapter.setDataset(results);
         searchAdapter.notifyDataSetChanged();
     }
 

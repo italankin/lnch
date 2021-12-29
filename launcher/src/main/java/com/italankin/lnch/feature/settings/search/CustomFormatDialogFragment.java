@@ -13,6 +13,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.TextWatcherAdapter;
 
 import java.util.regex.Matcher;
 
@@ -54,7 +55,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
                     editText.setHint(R.string.settings_search_engine_custom_format_edit_hint);
-                    editText.addTextChangedListener(new EditTextAlertDialog.TextWatcherAdapter() {
+                    editText.addTextChangedListener(new TextWatcherAdapter() {
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
                             customFormat = s.toString();
