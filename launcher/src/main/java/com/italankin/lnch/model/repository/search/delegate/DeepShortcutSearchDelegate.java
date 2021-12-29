@@ -32,6 +32,9 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
 
+    private volatile int stateKey = 0;
+    private volatile Set<ShortcutData> shortcutData;
+
     public DeepShortcutSearchDelegate(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
@@ -54,6 +57,10 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     }
 
     private Set<ShortcutData> getAllShortcuts() {
+        int newStateKey = descriptorRepository.stateKey();
+        if (shortcutData != null && stateKey == newStateKey) {
+            return shortcutData;
+        }
         List<Descriptor> descriptors = descriptorRepository.items();
         Set<ShortcutData> result = new LinkedHashSet<>(descriptors.size() * 2);
         for (Descriptor descriptor : descriptors) {
@@ -79,6 +86,8 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
                 }
             }
         }
+        shortcutData = result;
+        stateKey = newStateKey;
         return result;
     }
 
