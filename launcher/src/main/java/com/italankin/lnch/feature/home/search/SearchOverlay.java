@@ -106,6 +106,8 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
                 .recyclerView(searchResultsList)
                 .setHasStableIds(true)
                 .create();
+        int margin = context.getResources().getDimensionPixelSize(R.dimen.search_result_margin);
+        searchResultsList.addItemDecoration(new MarginItemDecoration(margin));
     }
 
     @Override
