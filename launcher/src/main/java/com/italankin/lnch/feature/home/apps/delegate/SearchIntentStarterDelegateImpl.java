@@ -7,8 +7,10 @@ import android.os.Build;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.api.LauncherShortcuts;
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ResUtils;
 
@@ -21,13 +23,15 @@ public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDeleg
     private final Preferences preferences;
     private final ErrorDelegate errorDelegate;
     private final CustomizeDelegate customizeDelegate;
+    private final UsageTracker usageTracker;
 
     public SearchIntentStarterDelegateImpl(Context context, Preferences preferences, ErrorDelegate errorDelegate,
-            CustomizeDelegate customizeDelegate) {
+            CustomizeDelegate customizeDelegate, UsageTracker usageTracker) {
         this.context = context;
         this.preferences = preferences;
         this.errorDelegate = errorDelegate;
         this.customizeDelegate = customizeDelegate;
+        this.usageTracker = usageTracker;
     }
 
     @Override
@@ -66,6 +70,12 @@ public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDeleg
         if (!IntentUtils.safeStartActivity(context, intent)) {
             errorDelegate.showError(R.string.error);
         }
+    }
+
+    @Override
+    public void handleSearchIntent(Intent intent, Descriptor descriptor) {
+        usageTracker.trackLaunch(descriptor);
+        handleSearchIntent(intent);
     }
 
     private boolean handleCustomizeShortcut(String packageName, String shortcutId) {

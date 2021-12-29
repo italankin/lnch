@@ -36,6 +36,8 @@ import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
 import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
 import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
+import com.italankin.lnch.model.repository.usage.UsageTrackerImpl;
 import com.italankin.lnch.util.picasso.PicassoFactory;
 
 import java.util.Arrays;
@@ -103,7 +105,7 @@ public class MainModule {
     @Singleton
     SearchRepository provideSearchRepository(PackageManager packageManager,
             DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository,
-            Preferences preferences) {
+            Preferences preferences, UsageTracker usageTracker) {
         List<SearchDelegate> delegates = Arrays.asList(
                 new AppSearchDelegate(packageManager, descriptorRepository),
                 new DeepShortcutSearchDelegate(descriptorRepository, shortcutsRepository),
@@ -114,7 +116,8 @@ public class MainModule {
                 new WebSearchDelegate(preferences),
                 new UrlSearchDelegate()
         );
-        return new SearchRepositoryImpl(delegates, additionalDelegates, preferences);
+        return new SearchRepositoryImpl(packageManager, delegates, additionalDelegates, preferences, usageTracker,
+                shortcutsRepository);
     }
 
     @Provides
@@ -162,5 +165,11 @@ public class MainModule {
     @Singleton
     HomeDescriptorsState provideHomeDescriptorsState() {
         return new HomeDescriptorsStateImpl();
+    }
+
+    @Provides
+    @Singleton
+    UsageTracker provideUsageTracker() {
+        return new UsageTrackerImpl();
     }
 }

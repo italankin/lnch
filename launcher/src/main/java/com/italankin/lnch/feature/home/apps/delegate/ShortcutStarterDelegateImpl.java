@@ -9,6 +9,7 @@ import android.view.View;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ViewUtils;
 
@@ -19,12 +20,14 @@ public class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
     private final Context context;
     private final ErrorDelegate errorDelegate;
     private final CustomizeDelegate customizeDelegate;
+    private final UsageTracker usageTracker;
 
     public ShortcutStarterDelegateImpl(Context context, ErrorDelegate errorDelegate,
-            CustomizeDelegate customizeDelegate) {
+            CustomizeDelegate customizeDelegate, UsageTracker usageTracker) {
         this.context = context;
         this.errorDelegate = errorDelegate;
         this.customizeDelegate = customizeDelegate;
+        this.usageTracker = usageTracker;
     }
 
     @Override
@@ -40,6 +43,7 @@ public class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
             onShortcutDisabled(shortcut.getDisabledMessage());
             return;
         }
+        usageTracker.trackShortcut(shortcut);
         Rect bounds = ViewUtils.getViewBounds(view);
         Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
         if (!shortcut.start(bounds, opts)) {

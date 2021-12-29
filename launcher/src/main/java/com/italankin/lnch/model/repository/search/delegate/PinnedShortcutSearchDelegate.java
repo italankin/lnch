@@ -1,12 +1,10 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
-import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
-import com.italankin.lnch.util.IntentUtils;
 
 import java.util.EnumSet;
 
@@ -26,12 +24,10 @@ public class PinnedShortcutSearchDelegate extends AbstractSearchDelegate<PinnedS
     @Nullable
     @Override
     PartialMatch testTarget(PinnedShortcutDescriptor item, String query) {
-        PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
-        if (match != null) {
-            match.color = item.getVisibleColor();
-            match.intent = IntentUtils.fromUri(item.uri);
-            match.iconRes = R.drawable.ic_shortcut;
+        PartialMatch.Type matchType = DescriptorSearchUtils.test(item, query);
+        if (matchType != null) {
+            return new PartialDescriptorMatch(item, matchType);
         }
-        return match;
+        return null;
     }
 }

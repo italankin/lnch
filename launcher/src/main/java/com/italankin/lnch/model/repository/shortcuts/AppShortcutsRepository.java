@@ -229,6 +229,23 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         public int getRank() {
             return shortcutInfo.getRank();
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            AppShortcut that = (AppShortcut) o;
+            return this.getPackageName().equals(that.getPackageName()) && this.getId().equals(that.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return getPackageName().hashCode() * 31 + getId().hashCode();
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -211,6 +211,23 @@ class ShortcutBackport implements Shortcut {
         return mIntent;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ShortcutBackport that = (ShortcutBackport) o;
+        return packageName.equals(that.packageName) && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return packageName.hashCode() * 31 + id.hashCode();
+    }
+
     private static String getString(Resources resources, @Nullable String value) {
         if (value == null || value.length() < 2) {
             return "";

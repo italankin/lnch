@@ -19,7 +19,7 @@ public class IntentClickDelegateImpl implements IntentClickDelegate {
 
     @Override
     public void onIntentClick(IntentDescriptorUi item) {
-        searchIntentStarterDelegate.handleSearchIntent(item.intent);
+        searchIntentStarterDelegate.handleSearchIntent(item.intent, item.getDescriptor());
     }
 
     @Override

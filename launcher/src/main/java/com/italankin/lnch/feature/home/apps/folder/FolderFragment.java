@@ -32,6 +32,7 @@ import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
@@ -88,6 +89,7 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         super.initDelegates(context);
 
         ShortcutsRepository shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+        UsageTracker usageTracker = LauncherApp.daggerService.main().usageTracker();
         Preferences preferences = LauncherApp.daggerService.main().preferences();
 
         ItemPopupDelegate itemPopupDelegate = (item, anchor) -> {
@@ -108,14 +110,16 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
             sendResult(result);
         };
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
-                customizeDelegate);
-        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
+                customizeDelegate, usageTracker);
+        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate,
+                usageTracker);
         deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate, itemPopupDelegate,
                 shortcutsRepository);
         SearchIntentStarterDelegate searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context,
-                preferences, errorDelegate, customizeDelegate);
+                preferences, errorDelegate, customizeDelegate, usageTracker);
         intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
-        appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate);
+        appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate,
+                usageTracker);
     }
 
     @Override

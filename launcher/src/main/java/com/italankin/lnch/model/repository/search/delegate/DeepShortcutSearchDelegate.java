@@ -84,10 +84,15 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     private static Match createMatch(Shortcut shortcut, Descriptor descriptor) {
-        PartialDescriptorMatch match = new PartialDescriptorMatch(descriptor, PartialMatch.Type.OTHER, Match.Kind.SHORTCUT);
-        match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
-        match.label = shortcut.getShortLabel();
-        match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
+        PartialDescriptorMatch match;
+        if (descriptor instanceof DeepShortcutDescriptor) {
+            match = new PartialDescriptorMatch((DeepShortcutDescriptor) descriptor, shortcut, PartialMatch.Type.CONTAINS);
+        } else {
+            match = new PartialDescriptorMatch(descriptor, PartialMatch.Type.CONTAINS, Match.Kind.SHORTCUT);
+            match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
+            match.label = shortcut.getShortLabel();
+            match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
+        }
         return match;
     }
 

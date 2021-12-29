@@ -86,6 +86,7 @@ import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -251,6 +252,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private void initDelegates(Context context) {
         ShortcutsRepository shortcutsRepository = LauncherApp.daggerService.main().shortcutsRepository();
+        UsageTracker usageTracker = LauncherApp.daggerService.main().usageTracker();
 
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
@@ -266,14 +268,16 @@ public class AppsFragment extends AppFragment implements AppsView,
         };
         CustomizeDelegate customizeDelegate = presenter::startCustomize;
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
-                customizeDelegate);
-        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate);
+                customizeDelegate, usageTracker);
+        pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate,
+                usageTracker);
         deepShortcutClickDelegate = new DeepShortcutClickDelegateImpl(shortcutStarterDelegate, itemPopupDelegate,
                 shortcutsRepository);
         searchIntentStarterDelegate = new SearchIntentStarterDelegateImpl(context, preferences, errorDelegate,
-                customizeDelegate);
+                customizeDelegate, usageTracker);
         intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
-        appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate);
+        appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate,
+                usageTracker);
     }
 
     @Override
@@ -795,7 +799,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
             @Override
             public void handleDescriptorIntent(Intent intent, Descriptor descriptor) {
-                searchIntentStarterDelegate.handleSearchIntent(intent);
+                searchIntentStarterDelegate.handleSearchIntent(intent, descriptor);
             }
 
             @Override

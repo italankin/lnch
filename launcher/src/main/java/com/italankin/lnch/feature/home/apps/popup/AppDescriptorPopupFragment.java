@@ -33,6 +33,7 @@ import com.italankin.lnch.model.repository.notifications.NotificationsRepository
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.IntentUtils;
@@ -134,7 +135,9 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
             sendResult(result);
             dismiss();
         };
-        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate, customizeDelegate);
+        UsageTracker usageTracker = LauncherApp.daggerService.main().usageTracker();
+        shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate, customizeDelegate,
+                usageTracker);
 
         load();
     }

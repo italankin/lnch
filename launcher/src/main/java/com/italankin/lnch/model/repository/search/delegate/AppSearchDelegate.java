@@ -1,6 +1,5 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
-import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -9,7 +8,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
+import com.italankin.lnch.model.repository.search.match.PartialMatch;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -42,15 +41,10 @@ public class AppSearchDelegate implements SearchDelegate {
     }
 
     private Match testApp(AppDescriptor item, String query) {
-        PartialDescriptorMatch match = DescriptorSearchUtils.test(item, query);
-        if (match != null) {
-            match.color = item.getVisibleColor();
-            match.intent = packageManager.getLaunchIntentForPackage(item.packageName);
-            if (match.intent != null && item.componentName != null) {
-                match.intent.setComponent(ComponentName.unflattenFromString(item.componentName));
-            }
-            match.icon = PackageIconHandler.uriFrom(item.packageName);
+        PartialMatch.Type matchType = DescriptorSearchUtils.test(item, query);
+        if (matchType != null) {
+            return new PartialDescriptorMatch(item, packageManager, matchType);
         }
-        return match;
+        return null;
     }
 }
