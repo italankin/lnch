@@ -134,12 +134,12 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
             searchResultsList.setAdapter(searchAdapter);
         }
         searchResultsList.setVisibility(VISIBLE);
+        searchEditText.setText("");
     }
 
     public void onSearchHidden() {
         searchResultsList.setAdapter(null);
         searchResultsList.setVisibility(GONE);
-        searchEditText.setText("");
         hideSoftKeyboard();
         searchEditText.clearFocus();
     }
