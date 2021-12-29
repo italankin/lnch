@@ -169,7 +169,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    UsageTracker provideUsageTracker() {
-        return new UsageTrackerImpl();
+    UsageTracker provideUsageTracker(Context context, DescriptorRepository descriptorRepository,
+            GsonBuilder gsonBuilder) {
+        return new UsageTrackerImpl(context, descriptorRepository, gsonBuilder.create());
     }
 }

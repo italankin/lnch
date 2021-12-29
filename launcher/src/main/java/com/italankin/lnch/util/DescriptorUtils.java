@@ -14,7 +14,9 @@ import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 
@@ -78,6 +80,14 @@ public final class DescriptorUtils {
             }
         }
         return null;
+    }
+
+    public static Map<String, Descriptor> associateById(List<? extends Descriptor> descriptors) {
+        Map<String, Descriptor> map = new HashMap<>(descriptors.size());
+        for (Descriptor descriptor : descriptors) {
+            map.put(descriptor.getId(), descriptor);
+        }
+        return map;
     }
 
     private DescriptorUtils() {
