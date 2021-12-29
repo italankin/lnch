@@ -49,6 +49,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
 
+    private volatile int stateKey = 0;
     private volatile Editor currentEditor;
 
     public LauncherDescriptorRepository(Context context, PackageManager packageManager,
@@ -86,6 +87,11 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     public List<Descriptor> items() {
         List<Descriptor> value = updatesSubject.getValue();
         return value != null ? value : Collections.emptyList();
+    }
+
+    @Override
+    public int stateKey() {
+        return stateKey;
     }
 
     @Override
@@ -158,7 +164,10 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                     }
                 })
                 .map(appsData -> Collections.unmodifiableList(appsData.items))
-                .doOnSuccess(updatesSubject::onNext)
+                .doOnSuccess(descriptors -> {
+                    stateKey = computeStateKey(descriptors);
+                    updatesSubject.onNext(descriptors);
+                })
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
     }
@@ -188,6 +197,14 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void writeToDisk(List<Descriptor> items) {
         descriptorStore.write(packagesStore.output(), items);
+    }
+
+    private static int computeStateKey(List<Descriptor> descriptors) {
+        int key = 0;
+        for (Descriptor descriptor : descriptors) {
+            key = key * 31 + System.identityHashCode(descriptor);
+        }
+        return key;
     }
 
     final class Editor implements DescriptorRepository.Editor {

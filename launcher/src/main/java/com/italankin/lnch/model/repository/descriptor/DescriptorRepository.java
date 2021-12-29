@@ -35,6 +35,11 @@ public interface DescriptorRepository {
     List<Descriptor> items();
 
     /**
+     * @return a unique state key of current items
+     */
+    int stateKey();
+
+    /**
      * @return descriptors list of a given {@code klass}
      */
     <T extends Descriptor> List<T> itemsOfType(Class<T> klass);
