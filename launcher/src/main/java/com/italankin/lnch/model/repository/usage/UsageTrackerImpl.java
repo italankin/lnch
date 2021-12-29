@@ -61,11 +61,13 @@ public class UsageTrackerImpl implements UsageTracker {
 
     @Override
     public void trackShortcut(Shortcut shortcut) {
+        readState();
         // TODO track shortcuts
     }
 
     @Override
     public List<Descriptor> getMostUsed() {
+        readState();
         return sortedByValue(launches);
     }
 
