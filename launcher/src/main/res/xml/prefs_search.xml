@@ -24,6 +24,10 @@
         android:defaultValue="true"
         android:key="search_show_global_search"
         android:title="@string/settings_search_global" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="search_show_most_used"
+        android:title="@string/settings_search_most_used" />
     <PreferenceCategory android:title="@string/settings_search_engine">
         <ListPreference
             android:defaultValue="google"

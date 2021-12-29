@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
+import static com.italankin.lnch.model.repository.prefs.Preferences.SEARCH_SHOW_MOST_USED;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
 
 public class SearchRepositoryImpl implements SearchRepository {
@@ -85,6 +86,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public List<? extends Match> recent() {
+        if (!preferences.get(SEARCH_SHOW_MOST_USED)) {
+            return Collections.emptyList();
+        }
         List<Descriptor> descriptors = usageTracker.getMostUsed();
         List<Match> matches = new ArrayList<>(descriptors.size());
         int count = 0;

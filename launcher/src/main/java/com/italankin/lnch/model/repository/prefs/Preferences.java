@@ -121,6 +121,13 @@ public interface Preferences {
             true);
 
     /**
+     * Show most used items in search
+     */
+    Pref<Boolean> SEARCH_SHOW_MOST_USED = Prefs.createBoolean(
+            "search_show_most_used",
+            true);
+
+    /**
      * Use 'custom tabs' for opening external search intents
      */
     Pref<Boolean> SEARCH_USE_CUSTOM_TABS = Prefs.createBoolean(
@@ -417,6 +424,7 @@ public interface Preferences {
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
+            SEARCH_SHOW_MOST_USED,
             SEARCH_USE_CUSTOM_TABS,
             SEARCH_ENGINE,
             CUSTOM_SEARCH_ENGINE_FORMAT,
