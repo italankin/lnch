@@ -32,19 +32,12 @@ public class AppSearchDelegate implements SearchDelegate {
             if (descriptor.ignored && skipIgnored || (descriptor.searchFlags & AppDescriptor.FLAG_SEARCH_VISIBLE) == 0) {
                 continue;
             }
-            Match match = testApp(descriptor, query);
-            if (match != null) {
+            PartialMatch.Type matchType = DescriptorSearchUtils.test(descriptor, query);
+            if (matchType != null) {
+                Match match = new PartialDescriptorMatch(descriptor, packageManager, matchType);
                 matches.add(match);
             }
         }
         return matches;
-    }
-
-    private Match testApp(AppDescriptor item, String query) {
-        PartialMatch.Type matchType = DescriptorSearchUtils.test(item, query);
-        if (matchType != null) {
-            return new PartialDescriptorMatch(item, packageManager, matchType);
-        }
-        return null;
     }
 }
