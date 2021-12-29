@@ -58,9 +58,6 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         if (!enabled) {
             return;
         }
-        if (!dragInProgress && shown) {
-            dragInProgress = dy > 0;
-        }
         if (dragInProgress && topView.getTranslationY() > -maxOffset) {
             consumed[1] = dy;
             onDrag(dy);
@@ -75,7 +72,7 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             return;
         }
         if (!dragInProgress) {
-            dragInProgress = dyUnconsumed < 0;
+            dragInProgress = dyUnconsumed != 0;
         }
         if (dragInProgress) {
             onDrag(dyUnconsumed);
