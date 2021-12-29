@@ -138,6 +138,7 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
     }
 
     public void onSearchHidden() {
+        // remove adapter to hide previous search results in next onSearchShown
         searchResultsList.setAdapter(null);
         searchResultsList.setVisibility(GONE);
         hideSoftKeyboard();
