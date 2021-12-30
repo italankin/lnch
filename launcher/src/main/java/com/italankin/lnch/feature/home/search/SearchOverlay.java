@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.home.search;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.Editable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.WindowInsets;
@@ -32,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Listener, SearchResultsFilter.Listener {
+public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResultsFilter.Callback {
 
     private static final float TEXT_SIZE_FACTOR = 3.11f;
 
@@ -82,10 +81,6 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filter.filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
                 int length = s.length();
                 setSettingsState(length == 0 ? SettingsState.SETTINGS : SettingsState.CLEAR_QUERY);
             }
@@ -95,7 +90,7 @@ public class SearchOverlay extends ConstraintLayout implements SearchAdapter.Lis
         filter = new SearchResultsFilter(searchRepository, this);
 
         searchAdapter = new CompositeAdapter.Builder<Match>(context)
-                .add(new SearchAdapter(picasso, this))
+                .add(new MatchAdapter(picasso, this))
                 .recyclerView(searchResultsList)
                 .setHasStableIds(true)
                 .create();

@@ -16,12 +16,12 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchAdapter extends BaseAdapterDelegate<SearchAdapter.ViewHolder, Match> {
+class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
     private final Picasso picasso;
     private final Listener listener;
 
-    public SearchAdapter(Picasso picasso, Listener listener) {
+    MatchAdapter(Picasso picasso, Listener listener) {
         this.picasso = picasso;
         this.listener = listener;
     }

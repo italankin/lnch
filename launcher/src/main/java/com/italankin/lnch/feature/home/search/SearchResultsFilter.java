@@ -20,11 +20,11 @@ class SearchResultsFilter extends Filter {
     }
 
     private final SearchRepository searchRepository;
-    private final Listener listener;
+    private final Callback callback;
 
-    SearchResultsFilter(SearchRepository searchRepository, Listener listener) {
+    SearchResultsFilter(SearchRepository searchRepository, Callback callback) {
         this.searchRepository = searchRepository;
-        this.listener = listener;
+        this.callback = callback;
     }
 
     @Override
@@ -39,9 +39,7 @@ class SearchResultsFilter extends Filter {
     @SuppressWarnings("unchecked")
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        if (results != null) {
-            listener.onSearchResults((List<Match>) results.values);
-        }
+        callback.onSearchResults((List<Match>) results.values);
     }
 
     private static <T> FilterResults of(List<T> items) {
@@ -54,7 +52,7 @@ class SearchResultsFilter extends Filter {
         return results;
     }
 
-    interface Listener {
+    interface Callback {
         void onSearchResults(List<Match> results);
     }
 }
