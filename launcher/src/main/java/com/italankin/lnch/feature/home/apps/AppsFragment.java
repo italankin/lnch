@@ -240,6 +240,13 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         touchHelper = new ItemTouchHelper(new MoveItemHelper(presenter::moveItem));
         touchHelper.attachToRecyclerView(list);
+        list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                // don't scroll list when popups are shown
+                return getParentFragmentManager().getBackStackEntryCount() > 0;
+            }
+        });
 
         registerWindowInsets(view);
 
@@ -256,7 +263,6 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
-            cancelListMotionEvents();
             Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
             if (item instanceof AppDescriptorUi) {
                 AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, REQUEST_KEY_APPS, bounds)
@@ -893,12 +899,6 @@ public class AppsFragment extends AppFragment implements AppsView,
             searchOverlayBehavior.hide();
         };
         handler.postDelayed(hideSearchRunnable, 1000);
-    }
-
-    private void cancelListMotionEvents() {
-        MotionEvent e = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-        list.onTouchEvent(e);
-        e.recycle();
     }
 
     private void animateListAppearance() {
