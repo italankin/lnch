@@ -17,7 +17,8 @@ import androidx.annotation.Px;
 public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
 
     private final ArrowDrawable arrowDrawable = new ArrowDrawable();
-    private final Rect bounds = new Rect();
+    private final Rect arrowBounds = new Rect();
+    private final Rect viewBounds = new Rect();
 
     private final int[] colors = new int[ArrowDrawable.Direction.values().length];
     private int anchorX;
@@ -35,6 +36,15 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
         setArrowColor(ArrowDrawable.Direction.UP, a.getColor(R.styleable.ArrowLayout_al_colorArrowUp, Color.BLACK));
         setArrowColor(ArrowDrawable.Direction.DOWN, a.getColor(R.styleable.ArrowLayout_al_colorArrowDown, Color.BLACK));
         a.recycle();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        viewBounds.set(getPaddingLeft(),
+                getPaddingTop(),
+                getMeasuredWidth() - getPaddingRight(),
+                getMeasuredHeight() - getPaddingBottom());
     }
 
     public void setArrowSize(@Px int size) {
@@ -73,25 +83,27 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
     @Override
     public void onDrawForeground(Canvas canvas) {
         super.onDrawForeground(canvas);
-        arrowDrawable.draw(canvas);
+        if (!viewBounds.intersects(arrowBounds.left, arrowBounds.top, arrowBounds.right, arrowBounds.bottom)) {
+            arrowDrawable.draw(canvas);
+        }
     }
 
     private void update() {
         if (anchorX < 0 || anchorY < 0) {
-            bounds.setEmpty();
+            arrowBounds.setEmpty();
             return;
         }
         ArrowDrawable.Direction direction = arrowDrawable.getDirection();
-        bounds.set(0, 0, arrowDrawable.getIntrinsicWidth(), arrowDrawable.getIntrinsicHeight());
+        arrowBounds.set(0, 0, arrowDrawable.getIntrinsicWidth(), arrowDrawable.getIntrinsicHeight());
         int left = anchorX - arrowDrawable.getIntrinsicWidth() / 2;
         int yOffset;
         yOffset = direction == ArrowDrawable.Direction.UP
                 ? arrowDrawable.getIntrinsicHeight() - getPaddingTop()
                 : getPaddingBottom();
         int top = anchorY - yOffset;
-        bounds.offset(left, top);
+        arrowBounds.offset(left, top);
         arrowDrawable.setColor(colors[direction.ordinal()]);
-        arrowDrawable.setBounds(bounds);
+        arrowDrawable.setBounds(arrowBounds);
         invalidate();
     }
 }
