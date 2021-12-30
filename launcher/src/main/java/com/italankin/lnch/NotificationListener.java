@@ -28,10 +28,12 @@ public class NotificationListener extends NotificationListenerService implements
         Timber.d("onListenerConnected");
         notificationsRepository.setCallback(this);
 
-        Disposable d = Completable.timer(500, TimeUnit.MILLISECONDS)
-                .subscribe(() -> {
+        Disposable d = Completable.timer(750, TimeUnit.MILLISECONDS)
+                .doOnComplete(() -> {
                     notificationsRepository.postNotifications(getActiveNotifications());
-                });
+                })
+                .retry(3) // sometimes we do not have permission to get notifications
+                .subscribe();
         disposables.add(d);
     }
 
