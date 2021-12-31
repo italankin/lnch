@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -23,6 +24,7 @@ import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.DimenRes;
@@ -37,6 +39,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
     private final InputMethodManager inputMethodManager;
     private final Picasso picasso;
+    private final Preferences preferences;
 
     private final EditText searchEditText;
     private final ImageView buttonGlobalSearch;
@@ -58,6 +61,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        preferences = LauncherApp.daggerService.main().preferences();
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -130,12 +134,16 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void onSearchShown() {
+        boolean showMostUsed = preferences.get(Preferences.SEARCH_SHOW_MOST_USED);
         if (searchResultsList.getAdapter() == null) {
+            if (!showMostUsed) {
+                searchAdapter.setDataset(Collections.emptyList());
+            }
             searchResultsList.setAdapter(searchAdapter);
         }
         searchResultsList.setVisibility(VISIBLE);
-        if (searchAdapter.getItemCount() == 0) {
-            // fire initial search to show recent items
+        if (showMostUsed) {
+            // fire initial search to show/hide recent items
             searchEditText.setText("");
         }
     }
