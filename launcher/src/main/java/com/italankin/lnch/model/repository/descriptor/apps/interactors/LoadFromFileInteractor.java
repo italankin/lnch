@@ -7,8 +7,10 @@ import android.content.pm.PackageManager;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.reactivex.Maybe;
+import timber.log.Timber;
 
 import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
 import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
@@ -36,15 +39,18 @@ public class LoadFromFileInteractor {
     private final DescriptorStore descriptorStore;
     private final ShortcutsRepository shortcutsRepository;
     private final PackageManager packageManager;
+    private final NameNormalizer nameNormalizer;
 
     public LoadFromFileInteractor(AppDescriptorInteractor appDescriptorInteractor,
             PackagesStore packagesStore, DescriptorStore descriptorStore,
-            ShortcutsRepository shortcutsRepository, PackageManager packageManager) {
+            ShortcutsRepository shortcutsRepository, PackageManager packageManager,
+            NameNormalizer nameNormalizer) {
         this.appDescriptorInteractor = appDescriptorInteractor;
         this.packagesStore = packagesStore;
         this.descriptorStore = descriptorStore;
         this.shortcutsRepository = shortcutsRepository;
         this.packageManager = packageManager;
+        this.nameNormalizer = nameNormalizer;
     }
 
     /**
@@ -86,8 +92,10 @@ public class LoadFromFileInteractor {
                 visitApp(env, (AppDescriptor) item);
             } else if (item instanceof IntentDescriptor) {
                 visitIntent(env, (IntentDescriptor) item);
+            } else if (item instanceof FolderDescriptor) {
+                visitFolder(env, (FolderDescriptor) item);
             } else {
-                // no special handling needed, just add it to the list
+                Timber.e("Unknown descriptor: class=%s, item=%s", item.getClass(), item);
                 env.addItem(item);
             }
         }
@@ -121,12 +129,14 @@ public class LoadFromFileInteractor {
         env.addItem(item);
         Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
         item.enabled = shortcut != null;
+        item.label = nameNormalizer.normalize(item.getOriginalLabel());
     }
 
     private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
         String uri = item.uri;
         Intent intent = IntentUtils.fromUri(uri);
         if (IntentUtils.canHandleIntent(packageManager, intent)) {
+            item.label = nameNormalizer.normalize(item.getOriginalLabel());
             env.addItem(item);
         } else {
             env.markDeleted(item);
@@ -135,10 +145,16 @@ public class LoadFromFileInteractor {
 
     private void visitIntent(ProcessingEnv env, IntentDescriptor item) {
         if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.intentUri))) {
+            item.label = nameNormalizer.normalize(item.getOriginalLabel());
             env.addItem(item);
         } else {
             env.markDeleted(item);
         }
+    }
+
+    private void visitFolder(ProcessingEnv env, FolderDescriptor item) {
+        item.label = nameNormalizer.normalize(item.getOriginalLabel());
+        env.addItem(item);
     }
 }
 

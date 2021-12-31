@@ -15,6 +15,7 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
 
     public String id;
     public String packageName;
+    public String originalLabel;
     public String label;
     public int color;
     public String customLabel;
@@ -37,6 +38,11 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
     @Override
     public String getId() {
         return packageName + "/" + id;
+    }
+
+    @Override
+    public String getOriginalLabel() {
+        return originalLabel;
     }
 
     @Override
@@ -95,6 +101,7 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
     @Override
     public DeepShortcutDescriptor copy() {
         DeepShortcutDescriptor copy = new DeepShortcutDescriptor(packageName, id);
+        copy.originalLabel = originalLabel;
         copy.label = label;
         copy.color = color;
         copy.customLabel = customLabel;

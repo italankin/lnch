@@ -8,6 +8,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
@@ -15,6 +16,7 @@ import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
+import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.italankin.lnch.model.repository.prefs.Preferences.SEARCH_SHOW_MOST_USED;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
@@ -37,6 +40,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final List<SearchDelegate> additionalDelegates;
     private final Preferences preferences;
     private final UsageTracker usageTracker;
+    private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
 
     /**
@@ -49,12 +53,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             List<SearchDelegate> additionalDelegates,
             Preferences preferences,
             UsageTracker usageTracker,
-            ShortcutsRepository shortcutsRepository) {
+            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
         this.packageManager = packageManager;
         this.delegates = delegates;
         this.additionalDelegates = additionalDelegates;
         this.preferences = preferences;
         this.usageTracker = usageTracker;
+        this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
     }
 
@@ -89,10 +94,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (!preferences.get(SEARCH_SHOW_MOST_USED)) {
             return Collections.emptyList();
         }
-        List<Descriptor> descriptors = usageTracker.getMostUsed();
+        List<String> descriptors = usageTracker.getMostUsed();
+        Map<String, Descriptor> descriptorMap = DescriptorUtils.associateById(descriptorRepository.items());
         List<Match> matches = new ArrayList<>(descriptors.size());
         int count = 0;
-        for (Descriptor descriptor : descriptors) {
+        for (String descriptorId : descriptors) {
+            Descriptor descriptor = descriptorMap.get(descriptorId);
+            if (descriptor == null) {
+                continue;
+            }
             PartialDescriptorMatch match;
             if (descriptor instanceof AppDescriptor) {
                 match = new PartialDescriptorMatch((AppDescriptor) descriptor, packageManager, PartialMatch.Type.EXACT);

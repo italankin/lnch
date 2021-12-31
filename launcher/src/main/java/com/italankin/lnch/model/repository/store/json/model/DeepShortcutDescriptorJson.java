@@ -20,6 +20,9 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     @SerializedName("packageName")
     public String packageName;
 
+    @SerializedName("original_label")
+    public String originalLabel;
+
     @SerializedName("label")
     public String label;
 
@@ -42,6 +45,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     public DeepShortcutDescriptorJson(DeepShortcutDescriptor descriptor) {
         this.id = descriptor.id;
         this.packageName = descriptor.packageName;
+        this.originalLabel = descriptor.originalLabel;
         this.label = descriptor.label;
         this.color = descriptor.color;
         this.customLabel = descriptor.customLabel;
@@ -54,11 +58,12 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         DeepShortcutDescriptor descriptor = new DeepShortcutDescriptor();
         descriptor.id = this.id;
         descriptor.packageName = this.packageName;
+        descriptor.originalLabel = this.originalLabel;
         descriptor.label = this.label;
         descriptor.color = this.color;
         descriptor.customLabel = this.customLabel;
         descriptor.customColor = this.customColor;
-        descriptor.enabled = this.enabled == null ? true : this.enabled;
+        descriptor.enabled = this.enabled == null || this.enabled;
         return descriptor;
     }
 }

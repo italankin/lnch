@@ -117,7 +117,7 @@ public class MainModule {
                 new UrlSearchDelegate()
         );
         return new SearchRepositoryImpl(packageManager, delegates, additionalDelegates, preferences, usageTracker,
-                shortcutsRepository);
+                descriptorRepository, shortcutsRepository);
     }
 
     @Provides
@@ -139,8 +139,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    NameNormalizer provideNameNormalizer() {
-        return new NameNormalizer();
+    NameNormalizer provideNameNormalizer(Preferences preferences) {
+        return new NameNormalizer(preferences);
     }
 
     @Provides

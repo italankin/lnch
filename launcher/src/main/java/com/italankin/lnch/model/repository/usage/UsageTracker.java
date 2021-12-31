@@ -11,5 +11,5 @@ public interface UsageTracker {
 
     void trackShortcut(Shortcut shortcut);
 
-    List<Descriptor> getMostUsed();
+    List<String> getMostUsed();
 }

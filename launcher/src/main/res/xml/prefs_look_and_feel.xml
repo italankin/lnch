@@ -29,6 +29,13 @@
             android:key="apps_sort_mode"
             android:summary="%s"
             android:title="@string/settings_apps_sorting" />
+        <ListPreference
+            android:defaultValue="as_is"
+            android:entries="@array/pref_desc_apps_name_transform"
+            android:entryValues="@array/pref_values_apps_name_transform"
+            android:key="name_transform"
+            android:summary="%s"
+            android:title="@string/settings_apps_name_transform" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="apps_list_animate"

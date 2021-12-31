@@ -23,6 +23,9 @@ public final class FolderDescriptorJson implements DescriptorJson {
     @SerializedName("label")
     public String label;
 
+    @SerializedName("original_label")
+    public String originalLabel;
+
     @SerializedName("custom_label")
     public String customLabel;
 
@@ -41,6 +44,7 @@ public final class FolderDescriptorJson implements DescriptorJson {
 
     public FolderDescriptorJson(FolderDescriptor descriptor) {
         this.id = descriptor.id;
+        this.originalLabel = descriptor.originalLabel;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
@@ -52,6 +56,7 @@ public final class FolderDescriptorJson implements DescriptorJson {
     public Descriptor toDescriptor() {
         FolderDescriptor descriptor = new FolderDescriptor();
         descriptor.id = this.id;
+        descriptor.originalLabel = this.originalLabel;
         descriptor.label = this.label;
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;

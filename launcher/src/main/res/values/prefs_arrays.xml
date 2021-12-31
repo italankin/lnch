@@ -92,6 +92,17 @@
         <item>Z-A</item>
     </string-array>
 
+    <string-array name="pref_values_apps_name_transform">
+        <item>as_is</item>
+        <item>lower</item>
+        <item>upper</item>
+    </string-array>
+    <string-array name="pref_desc_apps_name_transform">
+        <item>As Is</item>
+        <item>lowercase</item>
+        <item>UPPERCASE</item>
+    </string-array>
+
     <string-array name="pref_values_home_layout_alignment">
         <item>start</item>
         <item>center</item>

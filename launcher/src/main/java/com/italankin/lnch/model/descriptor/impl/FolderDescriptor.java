@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;
+    public String originalLabel;
     public String label;
     public String customLabel;
     public int color;
@@ -27,8 +28,13 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
 
     public FolderDescriptor(String label, int color) {
         this.id = "folder/" + UUID.randomUUID().toString();
-        this.label = label;
+        this.originalLabel = this.label = label;
         this.color = color;
+    }
+
+    @Override
+    public String getOriginalLabel() {
+        return originalLabel;
     }
 
     @Override
@@ -53,7 +59,7 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
 
     @Override
     public String getLabel() {
-        return label;
+        return label != null ? label : originalLabel;
     }
 
     @Override
@@ -93,7 +99,7 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
     public FolderDescriptor copy() {
         FolderDescriptor copy = new FolderDescriptor();
         copy.id = id;
-        copy.label = label;
+        copy.originalLabel = copy.label = label;
         copy.customLabel = customLabel;
         copy.color = color;
         copy.customColor = customColor;

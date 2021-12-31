@@ -421,6 +421,11 @@ public interface Preferences {
             "fullscreen_folders",
             false);
 
+    Pref<NameTransform> NAME_TRANSFORM = Prefs.create(
+            "name_transform",
+            NameTransform.AS_IS,
+            NameTransform::from);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -464,7 +469,8 @@ public interface Preferences {
             NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
             HOME_PAGER_INDICATOR,
-            FULLSCREEN_FOLDERS
+            FULLSCREEN_FOLDERS,
+            NAME_TRANSFORM
     );
 
     ///////////////////////////////////////////////////////////////////////////
@@ -816,6 +822,36 @@ public interface Preferences {
         private final String key;
 
         ShortcutsSortMode(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Sorting mode for shortcuts
+     */
+    enum NameTransform {
+        AS_IS("as_is"),
+        LOWER("lower"),
+        UPPER("upper");
+
+        static NameTransform from(String s, NameTransform defaultValue) {
+            for (NameTransform item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        NameTransform(String key) {
             this.key = key;
         }
 

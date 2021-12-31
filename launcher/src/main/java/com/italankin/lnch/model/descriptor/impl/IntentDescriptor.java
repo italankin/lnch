@@ -20,6 +20,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
 
     public String id;
     public String intentUri;
+    public String originalLabel;
     public String label;
     public String customLabel;
     public int color;
@@ -35,13 +36,18 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public IntentDescriptor(Intent intent, String label, int color) {
         this.id = "intent/" + UUID.randomUUID().toString();
         this.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
-        this.label = label;
+        this.originalLabel = label;
         this.color = color;
     }
 
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getOriginalLabel() {
+        return originalLabel;
     }
 
     @Override
@@ -61,7 +67,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
 
     @Override
     public String getLabel() {
-        return label;
+        return label != null ? label : getOriginalLabel();
     }
 
     @Override
@@ -102,6 +108,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         IntentDescriptor copy = new IntentDescriptor();
         copy.id = id;
         copy.intentUri = intentUri;
+        copy.originalLabel = originalLabel;
         copy.label = label;
         copy.customLabel = customLabel;
         copy.color = color;

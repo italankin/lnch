@@ -4,16 +4,18 @@ import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 
 import com.arellomobile.mvp.InjectViewState;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
@@ -299,7 +301,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    void pinIntent(IntentDescriptor descriptor) {
+    void pinIntent(Intent intent, CharSequence label, @ColorInt int color) {
+        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
+        IntentDescriptor descriptor = new IntentDescriptor(intent, label.toString(), color);
+        descriptor.label = nameNormalizer.normalize(label);
         descriptorRepository.edit()
                 .enqueue(new AddAction(descriptor))
                 .commit()

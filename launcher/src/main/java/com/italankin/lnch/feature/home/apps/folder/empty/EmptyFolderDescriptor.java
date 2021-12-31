@@ -20,6 +20,11 @@ class EmptyFolderDescriptor implements Descriptor {
     }
 
     @Override
+    public String getOriginalLabel() {
+        return "";
+    }
+
+    @Override
     public int hashCode() {
         return getId().hashCode();
     }

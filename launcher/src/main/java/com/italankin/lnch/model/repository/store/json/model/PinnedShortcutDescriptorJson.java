@@ -20,6 +20,9 @@ public final class PinnedShortcutDescriptorJson implements DescriptorJson {
     @SerializedName("uri")
     public String uri;
 
+    @SerializedName("original_label")
+    public String originalLabel;
+
     @SerializedName("label")
     public String label;
 
@@ -39,6 +42,7 @@ public final class PinnedShortcutDescriptorJson implements DescriptorJson {
     public PinnedShortcutDescriptorJson(PinnedShortcutDescriptor descriptor) {
         this.id = descriptor.id;
         this.uri = descriptor.uri;
+        this.originalLabel = descriptor.originalLabel;
         this.label = descriptor.label;
         this.color = descriptor.color;
         this.customLabel = descriptor.customLabel;
@@ -50,6 +54,7 @@ public final class PinnedShortcutDescriptorJson implements DescriptorJson {
         PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor();
         descriptor.id = this.id;
         descriptor.uri = this.uri;
+        descriptor.originalLabel = this.originalLabel;
         descriptor.label = this.label;
         descriptor.color = this.color;
         descriptor.customLabel = this.customLabel;

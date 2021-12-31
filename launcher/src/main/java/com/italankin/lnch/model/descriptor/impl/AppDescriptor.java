@@ -28,6 +28,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public String packageName;
     public long versionCode;
     public String componentName;
+    public String originalLabel;
     public String label;
     public String customLabel;
     public int color;
@@ -56,8 +57,13 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     }
 
     @Override
+    public String getOriginalLabel() {
+        return originalLabel;
+    }
+
+    @Override
     public String getLabel() {
-        return label;
+        return label != null ? label : getOriginalLabel();
     }
 
     @Override
@@ -145,6 +151,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         AppDescriptor copy = new AppDescriptor(packageName);
         copy.versionCode = versionCode;
         copy.componentName = componentName;
+        copy.originalLabel = originalLabel;
         copy.label = label;
         copy.customLabel = customLabel;
         copy.color = color;

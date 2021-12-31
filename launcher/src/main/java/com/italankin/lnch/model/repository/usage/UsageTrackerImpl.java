@@ -16,10 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -37,7 +35,7 @@ public class UsageTrackerImpl implements UsageTracker {
     private final DescriptorRepository descriptorRepository;
     private final Gson gson;
 
-    private final ConcurrentMap<Descriptor, Integer> launches = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Integer> launches = new ConcurrentHashMap<>();
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final AtomicBoolean needRead = new AtomicBoolean(true);
 
@@ -50,11 +48,12 @@ public class UsageTrackerImpl implements UsageTracker {
     @Override
     public void trackLaunch(Descriptor descriptor) {
         readState();
-        Integer value = launches.get(descriptor);
+        String id = descriptor.getId();
+        Integer value = launches.get(id);
         if (value == null) {
-            launches.put(descriptor, 1);
+            launches.put(id, 1);
         } else {
-            launches.replace(descriptor, value + 1);
+            launches.replace(id, value + 1);
         }
         writeState();
     }
@@ -66,7 +65,7 @@ public class UsageTrackerImpl implements UsageTracker {
     }
 
     @Override
-    public List<Descriptor> getMostUsed() {
+    public List<String> getMostUsed() {
         readState();
         return sortedByValue(launches);
     }
@@ -97,7 +96,7 @@ public class UsageTrackerImpl implements UsageTracker {
                     for (Map.Entry<String, Integer> entry : stats.launches.entrySet()) {
                         Descriptor descriptor = descriptors.get(entry.getKey());
                         if (descriptor != null) {
-                            launches.put(descriptor, entry.getValue());
+                            launches.put(descriptor.getId(), entry.getValue());
                         }
                     }
                 }
@@ -114,22 +113,22 @@ public class UsageTrackerImpl implements UsageTracker {
 
     private class WriteRunnable implements Runnable {
         private final File file;
-        private final Map<Descriptor, Integer> descriptors;
+        private final Map<String, Integer> descriptors;
 
-        WriteRunnable(File file, Map<Descriptor, Integer> descriptors) {
+        WriteRunnable(File file, Map<String, Integer> descriptors) {
             this.file = file;
             this.descriptors = descriptors;
         }
 
         @Override
         public void run() {
-            Set<Descriptor> allDescriptors = new HashSet<>(descriptorRepository.items());
+            Map<String, Descriptor> allDescriptors = DescriptorUtils.associateById(descriptorRepository.items());
             UsageStats stats = new UsageStats();
             stats.launches = new HashMap<>(descriptors.size());
-            for (Map.Entry<Descriptor, Integer> entry : descriptors.entrySet()) {
-                Descriptor descriptor = entry.getKey();
-                if (allDescriptors.contains(descriptor)) {
-                    stats.launches.put(descriptor.getId(), entry.getValue());
+            for (Map.Entry<String, Integer> entry : descriptors.entrySet()) {
+                String descriptorId = entry.getKey();
+                if (allDescriptors.containsKey(descriptorId)) {
+                    stats.launches.put(descriptorId, entry.getValue());
                 }
             }
             try (FileWriter writer = new FileWriter(file)) {

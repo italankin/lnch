@@ -20,6 +20,9 @@ public final class IntentDescriptorJson implements DescriptorJson {
     @SerializedName("intent_uri")
     public String intentUri;
 
+    @SerializedName("original_label")
+    public String originalLabel;
+
     @SerializedName("label")
     public String label;
 
@@ -39,6 +42,7 @@ public final class IntentDescriptorJson implements DescriptorJson {
     public IntentDescriptorJson(IntentDescriptor descriptor) {
         this.id = descriptor.id;
         this.intentUri = descriptor.intentUri;
+        this.originalLabel = descriptor.originalLabel;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
@@ -50,6 +54,7 @@ public final class IntentDescriptorJson implements DescriptorJson {
         IntentDescriptor descriptor = new IntentDescriptor();
         descriptor.id = this.id;
         descriptor.intentUri = this.intentUri;
+        descriptor.originalLabel = this.originalLabel;
         descriptor.label = this.label;
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;

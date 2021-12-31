@@ -821,11 +821,8 @@ public class AppsFragment extends AppFragment implements AppsView,
             @Override
             public void onSearchItemPinClick(Match match) {
                 searchOverlayBehavior.hide();
-                NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-                String label = nameNormalizer.normalize(match.getLabel(requireContext()));
-                IntentDescriptor intentDescriptor = new IntentDescriptor(match.getIntent(),
-                        label, match.getColor(requireContext()));
-                presenter.pinIntent(intentDescriptor);
+                Context context = requireContext();
+                presenter.pinIntent(match.getIntent(), match.getLabel(context), match.getColor(context));
             }
 
             @Override

@@ -63,7 +63,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
         this.appDescriptorInteractor = new AppDescriptorInteractor(packageManager, preferences, nameNormalizer);
         this.loadFromFileInteractor = new LoadFromFileInteractor(appDescriptorInteractor,
-                packagesStore, descriptorStore, shortcutsRepository, packageManager);
+                packagesStore, descriptorStore, shortcutsRepository, packageManager, nameNormalizer);
         this.preferencesInteractor = new PreferencesInteractor(preferences, Arrays.asList(
                 new SortTransform(),
                 new OverlayTransform()
@@ -148,7 +148,15 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 .filter(value -> value.get() != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
-                    Timber.e(throwable, "subscribeForUpdates (preferences)");
+                    Timber.e(throwable, "subscribeForUpdates (Preferences.APPS_SORT_MODE)");
+                    return true;
+                })
+                .subscribe();
+
+        preferences.observe(Preferences.NAME_TRANSFORM)
+                .flatMapCompletable(s -> updater.onErrorComplete())
+                .onErrorComplete(throwable -> {
+                    Timber.e(throwable, "subscribeForUpdates (Preferences.NAME_TRANSFORM)");
                     return true;
                 })
                 .subscribe();

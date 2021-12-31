@@ -32,6 +32,7 @@ public class AppDescriptorInteractor {
         String packageName = info.getApplicationInfo().packageName;
         AppDescriptor item = new AppDescriptor(packageName);
         item.versionCode = getVersionCode(packageManager, packageName);
+        item.originalLabel = info.getLabel().toString();
         item.label = nameNormalizer.normalize(info.getLabel());
         if (withComponentName) {
             item.componentName = getComponentName(info);
@@ -44,12 +45,13 @@ public class AppDescriptorInteractor {
         long versionCode = getVersionCode(packageManager, app.packageName);
         if (app.versionCode != versionCode) {
             app.versionCode = versionCode;
-            app.label = nameNormalizer.normalize(info.getLabel());
             app.color = getDominantIconColor(info, isDarkTheme());
         }
         if (app.componentName != null) {
             app.componentName = getComponentName(info);
         }
+        app.originalLabel = info.getLabel().toString();
+        app.label = nameNormalizer.normalize(info.getLabel());
     }
 
     private boolean isDarkTheme() {

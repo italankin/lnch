@@ -49,8 +49,9 @@ public final class DescriptorUtils {
         descriptor.color = app.color;
         CharSequence label = shortcut.getShortLabel();
         if (TextUtils.isEmpty(label)) {
-            descriptor.label = app.getVisibleLabel();
+            descriptor.originalLabel = descriptor.label = app.getVisibleLabel();
         } else {
+            descriptor.originalLabel = label.toString();
             descriptor.label = nameNormalizer.normalize(label);
         }
         return descriptor;

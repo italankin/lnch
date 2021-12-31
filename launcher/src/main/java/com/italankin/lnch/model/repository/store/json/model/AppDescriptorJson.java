@@ -25,6 +25,9 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName("component_name")
     public String componentName;
 
+    @SerializedName("original_label")
+    public String originalLabel;
+
     @SerializedName("label")
     public String label;
 
@@ -57,6 +60,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.packageName = descriptor.packageName;
         this.versionCode = descriptor.versionCode;
         this.componentName = descriptor.componentName;
+        this.originalLabel = descriptor.originalLabel;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
@@ -74,6 +78,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.versionCode = this.versionCode;
         descriptor.componentName = this.componentName;
         descriptor.label = this.label;
+        descriptor.originalLabel = this.originalLabel;
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;

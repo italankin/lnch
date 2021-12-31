@@ -14,6 +14,8 @@ public interface Descriptor {
      */
     String getId();
 
+    String getOriginalLabel();
+
     @Override
     boolean equals(Object o);
 

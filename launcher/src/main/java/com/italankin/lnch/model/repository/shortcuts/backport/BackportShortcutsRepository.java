@@ -106,9 +106,9 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
                         return Single.just(false);
                     }
                 }
-                String label = nameNormalizer.normalize(sb.getShortLabel());
                 Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
-                IntentDescriptor descriptor = new IntentDescriptor(intent, label);
+                IntentDescriptor descriptor = new IntentDescriptor(intent, sb.getShortLabel().toString());
+                descriptor.label = nameNormalizer.normalize(sb.getShortLabel());
                 return descriptorRepository.edit()
                         .enqueue(new AddAction(descriptor))
                         .commit()

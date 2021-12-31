@@ -157,6 +157,7 @@
     <string name="settings_apps_list_filter_visible">Visible</string>
     <string name="settings_apps_list_filter_ignored">Hidden</string>
     <string name="settings_apps_sorting">Sorting</string>
+    <string name="settings_apps_name_transform">Names</string>
 
     <string name="settings_app_details">App details</string>
     <string name="settings_app_details_visibility">Visibility</string>
