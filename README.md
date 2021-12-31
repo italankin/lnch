@@ -10,7 +10,7 @@ lnch is Android launcher, focused on effectiveness.
 * Light and dark themes
 * And many more
 
-![lnch.png](/lnch.png)
+![lnch.jpg](/lnch.jpg)
 
 ## Install
 
