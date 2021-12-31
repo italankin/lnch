@@ -23,19 +23,6 @@ import androidx.annotation.RequiresApi;
 
 public class PartialDescriptorMatch extends PartialMatch implements DescriptorMatch {
 
-    public static Kind kindOf(Descriptor descriptor) {
-        if (descriptor instanceof AppDescriptor) {
-            return Kind.APP;
-        }
-        if (descriptor instanceof PinnedShortcutDescriptor || descriptor instanceof DeepShortcutDescriptor) {
-            return Kind.SHORTCUT;
-        }
-        if (descriptor instanceof IntentDescriptor) {
-            return Kind.SHORTCUT;
-        }
-        return Kind.OTHER;
-    }
-
     private final Descriptor descriptor;
     private final Kind kind;
 
