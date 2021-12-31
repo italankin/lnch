@@ -12,4 +12,6 @@ public interface UsageTracker {
     void trackShortcut(Shortcut shortcut);
 
     List<String> getMostUsed();
+
+    void clearStatistics();
 }

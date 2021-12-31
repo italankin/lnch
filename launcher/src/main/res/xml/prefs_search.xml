@@ -24,10 +24,17 @@
         android:defaultValue="true"
         android:key="search_show_global_search"
         android:title="@string/settings_search_global" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="search_show_most_used"
-        android:title="@string/settings_search_most_used" />
+    <PreferenceCategory android:title="@string/settings_search_history">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="search_show_most_used"
+            android:summary="@string/settings_search_history_most_used_summary"
+            android:title="@string/settings_search_history_most_used" />
+        <Preference
+            android:dependency="search_show_most_used"
+            android:key="@string/pref_key_search_most_used_reset"
+            android:title="@string/settings_search_history_most_used_reset" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_search_engine">
         <ListPreference
             android:defaultValue="google"

@@ -70,6 +70,12 @@ public class UsageTrackerImpl implements UsageTracker {
         return sortedByValue(launches);
     }
 
+    @Override
+    public void clearStatistics() {
+        this.launches.clear();
+        writeState();
+    }
+
     @NonNull
     private static <T> List<T> sortedByValue(Map<T, Integer> map) {
         List<Map.Entry<T, Integer>> entries = new ArrayList<>(map.entrySet());

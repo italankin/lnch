@@ -2,6 +2,7 @@
 <resources>
     <!-- references to preference views -->
     <string name="pref_key_search_settings">search_settings</string>
+    <string name="pref_key_search_most_used_reset">search_must_used_reset</string>
     <string name="pref_key_wallpaper">wallpaper</string>
     <string name="pref_key_wallpaper_change">wallpaper_change</string>
     <string name="pref_key_apps_settings">apps_settings</string>

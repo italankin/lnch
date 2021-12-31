@@ -191,7 +191,11 @@
     <string name="settings_search_targets_summary">What to include in search results</string>
     <string name="settings_search_custom_tabs_summary">Web search and links will open inside the launcher</string>
     <string name="settings_search_global">Show global search button</string>
-    <string name="settings_search_most_used">Show most used</string>
+    <string name="settings_search_history">Search history</string>
+    <string name="settings_search_history_most_used">Show most used apps</string>
+    <string name="settings_search_history_most_used_summary">Display most used apps when search opens</string>
+    <string name="settings_search_history_most_used_reset">Reset usage statistics</string>
+    <string name="settings_search_history_most_used_reset_cleared">Usage statistics cleared</string>
     <string name="settings_search_engine">Search engine</string>
     <string name="settings_search_engine_custom_format">Custom format</string>
     <string name="settings_search_engine_custom_format_title">Custom format</string>

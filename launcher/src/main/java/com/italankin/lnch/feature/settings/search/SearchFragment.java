@@ -3,11 +3,13 @@ package com.italankin.lnch.feature.settings.search;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.PackageUtils;
 
 import androidx.annotation.NonNull;
@@ -23,12 +25,14 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private Preferences preferences;
+    private UsageTracker usageTracker;
     private Preference formatPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
+        usageTracker = LauncherApp.daggerService.main().usageTracker();
     }
 
     @Override
@@ -51,6 +55,13 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
             Preference preference = findPreference(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
             preference.setEnabled(false);
         }
+
+        findPreference(R.string.pref_key_search_most_used_reset).setOnPreferenceClickListener(preference -> {
+            usageTracker.clearStatistics();
+            Toast.makeText(requireContext(), R.string.settings_search_history_most_used_reset_cleared, Toast.LENGTH_SHORT)
+                    .show();
+            return true;
+        });
 
         formatPreference = findPreference(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
         formatPreference.setEnabled(
