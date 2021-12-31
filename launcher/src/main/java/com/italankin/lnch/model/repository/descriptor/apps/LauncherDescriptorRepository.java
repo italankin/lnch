@@ -153,7 +153,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        preferences.observe(Preferences.NAME_TRANSFORM)
+        preferences.observeValue(Preferences.NAME_TRANSFORM)
                 .flatMapCompletable(s -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates (Preferences.NAME_TRANSFORM)");
