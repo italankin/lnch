@@ -134,6 +134,9 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void onSearchShown() {
+        if (searchResultsList.getVisibility() == VISIBLE) {
+            return;
+        }
         boolean showMostUsed = preferences.get(Preferences.SEARCH_SHOW_MOST_USED);
         if (searchResultsList.getAdapter() == null) {
             if (!showMostUsed) {
