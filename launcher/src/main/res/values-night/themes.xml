@@ -16,7 +16,7 @@
         <item name="colorFolderTitleDefault">?colorText</item>
         <item name="colorPopupBackground">?colorPrimary</item>
         <item name="colorPopupActionsBackground">#424242</item>
-        <item name="colorFolderBackground">#e8101010</item>
+        <item name="colorFolderBackground">#181818</item>
         <item name="colorFolderTitleBackground">#212121</item>
         <item name="colorItemShadowDefault">#60000000</item>
         <item name="colorSearchBarBackground">#1fff</item>
