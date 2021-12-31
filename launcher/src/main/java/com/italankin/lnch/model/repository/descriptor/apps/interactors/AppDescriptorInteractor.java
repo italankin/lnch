@@ -41,17 +41,29 @@ public class AppDescriptorInteractor {
         return item;
     }
 
-    void updateItem(AppDescriptor app, LauncherActivityInfo info) {
+    boolean updateItem(AppDescriptor app, LauncherActivityInfo info) {
+        boolean updated = false;
         long versionCode = getVersionCode(packageManager, app.packageName);
         if (app.versionCode != versionCode) {
             app.versionCode = versionCode;
             app.color = getDominantIconColor(info, isDarkTheme());
+            updated = true;
         }
         if (app.componentName != null) {
-            app.componentName = getComponentName(info);
+            String newComponentName = getComponentName(info);
+            if (!newComponentName.equals(app.componentName)) {
+                app.componentName = newComponentName;
+                updated = true;
+            }
         }
-        app.originalLabel = info.getLabel().toString();
+        String originalLabel = app.originalLabel;
+        String newLabel = info.getLabel().toString();
+        if (!newLabel.equals(originalLabel)) {
+            app.originalLabel = newLabel;
+            updated = true;
+        }
         app.label = nameNormalizer.normalize(info.getLabel());
+        return updated;
     }
 
     private boolean isDarkTheme() {

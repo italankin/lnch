@@ -13,6 +13,9 @@ public class NameNormalizer {
     }
 
     public String normalize(CharSequence s) {
+        if (s == null) {
+            return "";
+        }
         String label = s.toString()
                 .replaceAll("\\s+", " ")
                 .trim();

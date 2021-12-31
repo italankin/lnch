@@ -20,11 +20,9 @@ import com.italankin.lnch.util.IntentUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.reactivex.Maybe;
 import timber.log.Timber;
@@ -118,7 +116,9 @@ public class LoadFromFileInteractor {
     private void visitApp(ProcessingEnv env, AppDescriptor app) {
         LauncherActivityInfo info = env.pollInfo(app);
         if (info != null) {
-            appDescriptorInteractor.updateItem(app, info);
+            if (appDescriptorInteractor.updateItem(app, info)) {
+                env.markUpdated(app);
+            }
             env.addItem(app);
         } else {
             env.markDeleted(app);
@@ -126,16 +126,32 @@ public class LoadFromFileInteractor {
     }
 
     private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor item) {
-        env.addItem(item);
         Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
         item.enabled = shortcut != null;
-        item.label = nameNormalizer.normalize(item.getOriginalLabel());
+        String originalLabel = item.getOriginalLabel();
+        if (originalLabel != null) {
+            item.label = nameNormalizer.normalize(originalLabel);
+        } else {
+            if (shortcut != null) {
+                item.originalLabel = shortcut.getShortLabel().toString();
+                item.label = nameNormalizer.normalize(item.getOriginalLabel());
+            } else {
+                item.originalLabel = item.label;
+            }
+            env.markUpdated(item);
+        }
+        env.addItem(item);
     }
 
     private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
         String uri = item.uri;
         Intent intent = IntentUtils.fromUri(uri);
         if (IntentUtils.canHandleIntent(packageManager, intent)) {
+            String originalLabel = item.getOriginalLabel();
+            if (originalLabel == null) {
+                item.originalLabel = item.label;
+                env.markUpdated(item);
+            }
             item.label = nameNormalizer.normalize(item.getOriginalLabel());
             env.addItem(item);
         } else {
@@ -145,6 +161,11 @@ public class LoadFromFileInteractor {
 
     private void visitIntent(ProcessingEnv env, IntentDescriptor item) {
         if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.intentUri))) {
+            String originalLabel = item.getOriginalLabel();
+            if (originalLabel == null) {
+                item.originalLabel = item.label;
+                env.markUpdated(item);
+            }
             item.label = nameNormalizer.normalize(item.getOriginalLabel());
             env.addItem(item);
         } else {
@@ -153,6 +174,11 @@ public class LoadFromFileInteractor {
     }
 
     private void visitFolder(ProcessingEnv env, FolderDescriptor item) {
+        String originalLabel = item.getOriginalLabel();
+        if (originalLabel == null) {
+            item.originalLabel = item.label;
+            env.markUpdated(item);
+        }
         item.label = nameNormalizer.normalize(item.getOriginalLabel());
         env.addItem(item);
     }
@@ -167,7 +193,8 @@ class ProcessingEnv {
      * Packages data, fetched from {@link android.content.pm.LauncherApps}
      */
     private final PackagesMap packagesMap;
-    private final Set<Integer> deleted = new HashSet<>(4);
+    private int deleted = 0;
+    private int updated = 0;
 
     ProcessingEnv(PackagesMap packagesMap) {
         this.packagesMap = packagesMap;
@@ -184,11 +211,14 @@ class ProcessingEnv {
         this.items.add(app);
     }
 
-    /**
-     * Add {@link Descriptor} to the list of deleted entries
-     */
     void markDeleted(Descriptor descriptor) {
-        this.deleted.add(descriptor.hashCode());
+        Timber.d("markDeleted: %s", descriptor);
+        deleted++;
+    }
+
+    void markUpdated(Descriptor descriptor) {
+        Timber.d("markUpdated: %s", descriptor);
+        updated++;
     }
 
     /**
@@ -203,7 +233,7 @@ class ProcessingEnv {
     }
 
     AppsData getData() {
-        boolean changed = !deleted.isEmpty() || !packagesMap.isEmpty();
+        boolean changed = deleted > 0 || updated > 0 || !packagesMap.isEmpty();
         return new AppsData(items, changed);
     }
 }
