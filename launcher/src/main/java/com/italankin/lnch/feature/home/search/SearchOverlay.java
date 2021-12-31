@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResultsFilter.Callback {
+public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResults.Callback {
 
     private static final float TEXT_SIZE_FACTOR = 3.11f;
 
@@ -44,7 +44,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
     private final RecyclerView searchResultsList;
     private final CompositeAdapter<Match> searchAdapter;
-    private final SearchResultsFilter filter;
+    private final SearchResults searchResults;
 
     private SettingsState settingsState = SettingsState.SETTINGS;
     private Listener listener;
@@ -80,14 +80,14 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         searchEditText.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filter.filter(s);
+                searchResults.query(s);
                 int length = s.length();
                 setSettingsState(length == 0 ? SettingsState.SETTINGS : SettingsState.CLEAR_QUERY);
             }
         });
 
         SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
-        filter = new SearchResultsFilter(searchRepository, this);
+        searchResults = new SearchResults(searchRepository);
 
         searchAdapter = new CompositeAdapter.Builder<Match>(context)
                 .add(new MatchAdapter(picasso, this))
@@ -99,9 +99,21 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        searchResults.subscribe(this);
+    }
+
+    @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
         ViewUtils.setPaddingBottom(searchResultsList, insets.getSystemWindowInsetBottom());
         return super.onApplyWindowInsets(insets);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        searchResults.unsubscribe();
     }
 
     public void setListener(Listener listener) {
