@@ -6,7 +6,6 @@
     <string name="cd_search">Search</string>
     <string name="cd_pin">Pin</string>
     <string name="cd_wallpaper">Wallpaper</string>
-    <string name="cd_app_info">App info</string>
     <string name="cd_undo">Undo</string>
     <string name="cd_save">Save</string>
 </resources>

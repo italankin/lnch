@@ -74,7 +74,6 @@
     <string name="intent_factory_commit">Commit changes</string>
     <string name="intent_factory_test">Test Intent</string>
     <string name="intent_factory_clear">Clear</string>
-    <string name="intent_factory_intent_title">Title</string>
     <string name="intent_factory_default_title">New Intent</string>
     <string name="intent_factory_intent_properties">Properties</string>
     <string name="intent_factory_intent_component">Component</string>
