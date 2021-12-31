@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -70,6 +69,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private final ShortcutsRepository shortcutsRepository;
     private final NotificationsRepository notificationsRepository;
     private final Preferences preferences;
+    private final NameNormalizer nameNormalizer;
 
     private DescriptorRepository.Editor editor;
 
@@ -78,12 +78,13 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             DescriptorRepository descriptorRepository,
             ShortcutsRepository shortcutsRepository,
             NotificationsRepository notificationsRepository,
-            Preferences preferences) {
+            Preferences preferences, NameNormalizer nameNormalizer) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.notificationsRepository = notificationsRepository;
         this.preferences = preferences;
+        this.nameNormalizer = nameNormalizer;
     }
 
     @Override
@@ -302,7 +303,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void pinIntent(Intent intent, CharSequence label, @ColorInt int color) {
-        NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
         IntentDescriptor descriptor = new IntentDescriptor(intent, label.toString(), color);
         descriptor.label = nameNormalizer.normalize(label);
         descriptorRepository.edit()
