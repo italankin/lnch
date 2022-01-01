@@ -43,7 +43,10 @@ public abstract class ListFilter<T> extends Filter {
     @Override
     protected final FilterResults performFiltering(CharSequence constraint) {
         this.constraint = constraint;
-        String query = constraint.toString().trim().toLowerCase(Locale.getDefault());
+        String query = "";
+        if (constraint != null) {
+            query = constraint.toString().trim().toLowerCase(Locale.getDefault());
+        }
         return performFiltering(query, unfiltered);
     }
 
