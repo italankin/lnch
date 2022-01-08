@@ -79,8 +79,6 @@ import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
-import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
-import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -809,8 +807,12 @@ public class AppsFragment extends AppFragment implements AppsView,
             }
 
             @Override
-            public void onSearchFired() {
-                hideSearchOverlayWithDelay();
+            public void onSearchFired(boolean emptyQuery) {
+                if (emptyQuery) {
+                    searchOverlayBehavior.hide();
+                } else {
+                    hideSearchOverlayWithDelay();
+                }
             }
 
             @Override

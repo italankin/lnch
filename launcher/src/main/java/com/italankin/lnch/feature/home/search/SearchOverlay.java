@@ -259,7 +259,8 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         if (listener == null) {
             return;
         }
-        if (match == null && searchEditText.getText().length() > 0) {
+        boolean emptyQuery = searchEditText.getText().length() == 0;
+        if (match == null && !emptyQuery) {
             int count = searchAdapter.getItemCount();
             if (count > 0) {
                 match = searchAdapter.getItem(0);
@@ -274,7 +275,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
             }
         }
         searchEditText.setText("");
-        listener.onSearchFired();
+        listener.onSearchFired(emptyQuery);
     }
 
     private enum SettingsState {
@@ -287,7 +288,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
         void handleDescriptorIntent(Intent intent, Descriptor descriptor);
 
-        void onSearchFired();
+        void onSearchFired(boolean emptyQuery);
 
         void onSearchDismissed();
 
