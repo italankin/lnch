@@ -18,7 +18,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
@@ -65,7 +64,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorSearchBarBackground));
         setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.search_bar_size));
 
         inflate(context, R.layout.widget_search_overlay, this);

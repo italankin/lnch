@@ -19,7 +19,6 @@
         <item name="colorFolderBackground">#181818</item>
         <item name="colorFolderTitleBackground">#212121</item>
         <item name="colorItemShadowDefault">#60000000</item>
-        <item name="colorSearchBarBackground">#1fff</item>
         <item name="colorSearchResultBackground">#6000</item>
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
 

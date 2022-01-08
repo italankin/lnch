@@ -30,9 +30,6 @@
     <!-- default item shadow -->
     <attr name="colorItemShadowDefault" format="color|reference" />
 
-    <!-- background color of the search bar -->
-    <attr name="colorSearchBarBackground" format="color|reference" />
-
     <!-- color of the search results overlay -->
     <attr name="colorSearchResultBackground" format="color|reference" />
 
