@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/cd_pin"
+        android:contentDescription="@string/cd_pin_item"
         android:padding="8dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_action_pin"

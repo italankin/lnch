@@ -40,7 +40,7 @@
         android:layout_height="32dp"
         android:layout_marginStart="12dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/cd_pin"
+        android:contentDescription="@string/cd_pin_item"
         android:padding="4dp"
         android:src="@drawable/ic_popup_action_pin"
         android:visibility="gone"

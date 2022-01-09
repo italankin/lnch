@@ -12,6 +12,7 @@
         android:id="@+id/widget_preview"
         android:layout_width="wrap_content"
         android:layout_height="96dp"
+        android:contentDescription="@string/cd_widget_preview"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +23,7 @@
         android:id="@+id/widget_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:contentDescription="@string/cd_application_icon"
         app:layout_constraintBottom_toBottomOf="@id/widget_preview"
         app:layout_constraintEnd_toEndOf="parent"
         tools:src="@tools:sample/avatars" />

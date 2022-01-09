@@ -15,6 +15,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:contentDescription="@string/cd_application_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@mipmap/ic_launcher" />
@@ -54,6 +55,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_app_system_settings"
             android:padding="8dp"
             android:src="@drawable/ic_app_info"
             app:layout_constraintBottom_toBottomOf="@id/icon"
