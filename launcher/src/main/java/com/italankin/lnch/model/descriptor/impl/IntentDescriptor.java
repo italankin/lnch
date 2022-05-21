@@ -3,18 +3,20 @@ package com.italankin.lnch.model.descriptor.impl;
 import android.content.Intent;
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 
 import java.util.UUID;
-
-import androidx.annotation.NonNull;
 
 /**
  * Custom intent descriptor (e.g., search intent)
  */
-public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+        IgnorableDescriptor {
 
     public static final String EXTRA_CUSTOM_INTENT = "com.italankin.lnch.extra.CUSTOM_INTENT";
 
@@ -25,6 +27,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public String customLabel;
     public int color;
     public Integer customColor;
+    public boolean ignored;
 
     public IntentDescriptor() {
     }
@@ -78,6 +81,16 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     @Override
     public String getCustomLabel() {
         return customLabel;
+    }
+
+    @Override
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+    @Override
+    public boolean isIgnored() {
+        return ignored;
     }
 
     @Override

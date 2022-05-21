@@ -2,23 +2,25 @@ package com.italankin.lnch.model.ui.impl;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.util.IntentUtils;
 
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-
 public final class IntentDescriptorUi implements DescriptorUi,
         CustomLabelDescriptorUi,
         CustomColorDescriptorUi,
         RemovableDescriptorUi,
-        InFolderDescriptorUi {
+        InFolderDescriptorUi,
+        IgnorableDescriptorUi {
 
     public Intent intent;
     private final IntentDescriptor descriptor;
@@ -26,6 +28,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
+    private boolean ignored;
 
     public IntentDescriptorUi(IntentDescriptor descriptor) {
         this.intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
@@ -34,6 +37,7 @@ public final class IntentDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.ignored = descriptor.ignored;
     }
 
     @Override
@@ -69,6 +73,16 @@ public final class IntentDescriptorUi implements DescriptorUi,
     @Override
     public Integer getCustomColor() {
         return customColor;
+    }
+
+    @Override
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+    @Override
+    public boolean isIgnored() {
+        return ignored;
     }
 
     @NonNull

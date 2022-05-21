@@ -16,6 +16,11 @@ public class IntentDescriptorUiAdapter
     private final Listener listener;
 
     public IntentDescriptorUiAdapter(Listener listener) {
+        this(listener, false);
+    }
+
+    public IntentDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
+        super(ignoreVisibility);
         this.listener = listener;
     }
 
@@ -46,7 +51,8 @@ public class IntentDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item, boolean ignoreVisibility) {
-        return item instanceof IntentDescriptorUi;
+        return item instanceof IntentDescriptorUi &&
+                (ignoreVisibility || !((IntentDescriptorUi) item).isIgnored());
     }
 
     public interface Listener {

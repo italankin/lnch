@@ -155,7 +155,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         adapter = new HomeAdapter.Builder(requireContext())
                 .add(new AppDescriptorUiAdapter(this, true))
                 .add(new PinnedShortcutDescriptorUiAdapter(this))
-                .add(new IntentDescriptorUiAdapter(this))
+                .add(new IntentDescriptorUiAdapter(this, true))
                 .add(new DeepShortcutDescriptorUiAdapter(this, true))
                 .add(new EmptyFolderDescriptorUiAdapter())
                 .setHasStableIds(true)

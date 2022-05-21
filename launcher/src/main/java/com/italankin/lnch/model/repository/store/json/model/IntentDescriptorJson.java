@@ -1,10 +1,10 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
+import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
-
-import androidx.annotation.Keep;
 
 public final class IntentDescriptorJson implements DescriptorJson {
 
@@ -35,6 +35,9 @@ public final class IntentDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("ignored")
+    public Boolean ignored;
+
     @Keep
     public IntentDescriptorJson() {
     }
@@ -47,6 +50,7 @@ public final class IntentDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.ignored = descriptor.ignored ? true : null;
     }
 
     @Override
@@ -59,6 +63,7 @@ public final class IntentDescriptorJson implements DescriptorJson {
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
+        descriptor.ignored = this.ignored != null && this.ignored;
         return descriptor;
     }
 }
