@@ -1,6 +1,9 @@
 package com.italankin.lnch.model.ui.impl;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.ui.BadgeDescriptorUi;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -10,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-
 public final class FolderDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         CustomLabelDescriptorUi,
-        RemovableDescriptorUi {
+        RemovableDescriptorUi,
+        BadgeDescriptorUi {
+
+    public static final Object PAYLOAD_BADGE = new Object();
 
     private final FolderDescriptor descriptor;
     private final String label;
@@ -23,6 +27,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
     private String customLabel;
     private Integer customColor;
     public List<String> items;
+    private boolean badgeVisible;
 
     public FolderDescriptorUi(FolderDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -31,6 +36,16 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
         this.items = new ArrayList<>(descriptor.items);
+    }
+
+    public FolderDescriptorUi(FolderDescriptorUi item) {
+        this.descriptor = item.descriptor;
+        this.label = item.label;
+        this.customLabel = item.customLabel;
+        this.color = item.color;
+        this.customColor = item.customColor;
+        this.items = new ArrayList<>(item.items);
+        this.badgeVisible = item.badgeVisible;
     }
 
     @Override
@@ -68,6 +83,16 @@ public final class FolderDescriptorUi implements DescriptorUi,
         return customColor;
     }
 
+    @Override
+    public void setBadgeVisible(boolean visible) {
+        this.badgeVisible = visible;
+    }
+
+    @Override
+    public boolean isBadgeVisible() {
+        return badgeVisible;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -97,6 +122,15 @@ public final class FolderDescriptorUi implements DescriptorUi,
         FolderDescriptorUi that = (FolderDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
-                && Objects.equals(this.customColor, that.customColor);
+                && Objects.equals(this.customColor, that.customColor)
+                && this.badgeVisible == that.badgeVisible;
+    }
+
+    @Override
+    public Object getChangePayload(DescriptorUi oldItem) {
+        if (this.badgeVisible != ((FolderDescriptorUi) oldItem).badgeVisible) {
+            return PAYLOAD_BADGE;
+        }
+        return null;
     }
 }
