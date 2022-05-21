@@ -10,6 +10,8 @@ import android.util.TypedValue;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 
+import timber.log.Timber;
+
 public final class ResUtils {
 
     public static int px2dp(Context context, int value) {
@@ -19,7 +21,7 @@ public final class ResUtils {
 
     public static TypedValue resolveAttribute(Context context, @AttrRes int attr) {
         if (context == context.getApplicationContext()) {
-            throw new IllegalArgumentException("Cannot accept app context");
+            Timber.w("Don't use resolveAttribute with application Context!");
         }
         TypedValue out = new TypedValue();
         if (context.getTheme().resolveAttribute(attr, out, true)) {
