@@ -11,6 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
@@ -20,14 +28,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 public abstract class ActionPopupFragment extends PopupFragment {
 
@@ -140,7 +140,9 @@ public abstract class ActionPopupFragment extends PopupFragment {
             imageView.setOnLongClickListener(item.onLongClickListener);
         } else {
             imageView.setOnLongClickListener(v -> {
-                Toast.makeText(requireContext(), item.label, Toast.LENGTH_SHORT).show();
+                if (item.label != null) {
+                    Toast.makeText(requireContext(), item.label, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             });
         }
