@@ -7,8 +7,8 @@ android {
         applicationId "com.italankin.lnch"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
-        versionCode 9
-        versionName "1.6.0"
+        versionCode 10
+        versionName "1.7.0"
 
         buildConfigField("boolean", "SAMSUNG_ANR_FIX", "false")
     }
