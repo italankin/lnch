@@ -1,10 +1,10 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
+import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
-
-import androidx.annotation.Keep;
 
 public final class DeepShortcutDescriptorJson implements DescriptorJson {
 
@@ -38,6 +38,9 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     @SerializedName("enabled")
     public Boolean enabled;
 
+    @SerializedName("ignored")
+    public Boolean ignored;
+
     @Keep
     public DeepShortcutDescriptorJson() {
     }
@@ -51,6 +54,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.customColor = descriptor.customColor;
         this.enabled = descriptor.enabled ? null : false;
+        this.ignored = descriptor.ignored ? true : null;
     }
 
     @Override
@@ -64,6 +68,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         descriptor.customLabel = this.customLabel;
         descriptor.customColor = this.customColor;
         descriptor.enabled = this.enabled == null || this.enabled;
+        descriptor.ignored = this.ignored != null && this.ignored;
         return descriptor;
     }
 }

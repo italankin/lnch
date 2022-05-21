@@ -18,6 +18,11 @@ public class DeepShortcutDescriptorUiAdapter
     private final Listener listener;
 
     public DeepShortcutDescriptorUiAdapter(Listener listener) {
+        this(listener, false);
+    }
+
+    public DeepShortcutDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
+        super(ignoreVisibility);
         this.listener = listener;
     }
 
@@ -48,7 +53,8 @@ public class DeepShortcutDescriptorUiAdapter
 
     @Override
     protected boolean isType(int position, Object item, boolean ignoreVisibility) {
-        return item instanceof DeepShortcutDescriptorUi;
+        return item instanceof DeepShortcutDescriptorUi &&
+                (ignoreVisibility || !((DeepShortcutDescriptorUi) item).isIgnored());
     }
 
     public interface Listener {

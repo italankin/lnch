@@ -1,17 +1,18 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
-
-import androidx.annotation.NonNull;
 
 /**
  * A descriptor for pinned {@link com.italankin.lnch.model.repository.shortcuts.Shortcut}s
  */
 public final class DeepShortcutDescriptor implements Descriptor, PackageDescriptor,
-        CustomColorDescriptor, CustomLabelDescriptor {
+        CustomColorDescriptor, CustomLabelDescriptor, IgnorableDescriptor {
 
     public String id;
     public String packageName;
@@ -21,6 +22,7 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
     public String customLabel;
     public Integer customColor;
     public boolean enabled = true;
+    public boolean ignored;
 
     public DeepShortcutDescriptor() {
     }
@@ -73,6 +75,16 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
     @Override
     public String getCustomLabel() {
         return customLabel;
+    }
+
+    @Override
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+    @Override
+    public boolean isIgnored() {
+        return ignored;
     }
 
     @Override
