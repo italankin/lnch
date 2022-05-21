@@ -31,8 +31,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     private static final String TAG_APPS_COLOR_OVERLAY = "apps_color_overlay";
     private static final String TAG_STATUS_COLOR = "status_color";
     private static final String TAG_DOT_COLOR = "dot_color";
