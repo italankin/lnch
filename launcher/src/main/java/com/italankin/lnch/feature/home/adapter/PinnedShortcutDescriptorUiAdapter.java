@@ -16,6 +16,11 @@ public class PinnedShortcutDescriptorUiAdapter
     private final Listener listener;
 
     public PinnedShortcutDescriptorUiAdapter(Listener listener) {
+        this(listener, false);
+    }
+
+    public PinnedShortcutDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
+        super(ignoreVisibility);
         this.listener = listener;
     }
 
@@ -46,7 +51,8 @@ public class PinnedShortcutDescriptorUiAdapter
 
     @Override
     public boolean isType(int position, Object item, boolean ignoreVisibility) {
-        return item instanceof PinnedShortcutDescriptorUi;
+        return item instanceof PinnedShortcutDescriptorUi &&
+                (ignoreVisibility || !((PinnedShortcutDescriptorUi) item).isIgnored());
     }
 
     public interface Listener {

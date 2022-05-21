@@ -1,18 +1,20 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 
 import java.util.UUID;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 /**
  * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
  */
-public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+        IgnorableDescriptor {
 
     public String id;
     public String uri;
@@ -21,6 +23,7 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     public int color;
     public String customLabel;
     public Integer customColor;
+    public boolean ignored;
 
     public PinnedShortcutDescriptor() {
     }
@@ -70,6 +73,16 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     @Override
     public String getCustomLabel() {
         return customLabel;
+    }
+
+    @Override
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+    @Override
+    public boolean isIgnored() {
+        return ignored;
     }
 
     @Override
