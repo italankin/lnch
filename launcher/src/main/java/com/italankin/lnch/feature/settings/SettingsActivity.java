@@ -35,7 +35,6 @@ import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class SettingsActivity extends AppCompatActivity implements
-        AppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
         LookAndFeelFragment.Callbacks,
@@ -105,6 +104,9 @@ public class SettingsActivity extends AppCompatActivity implements
                 .register(new SettingsRootFragment.ShowBackupPreferences(), result -> {
                     showFragment(new BackupFragment(), R.string.settings_other_bar);
                 })
+                .register(new AppearanceFragment.AppearanceFinishedContract(), result -> {
+                    fragmentManager.popBackStack();
+                })
                 .attach();
 
         if (savedInstanceState == null) {
@@ -132,12 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void showItemLookPreferences() {
-        showFragment(new AppearanceFragment(), R.string.settings_home_laf_appearance);
-    }
-
-    @Override
-    public void onAppearanceFinish() {
-        fragmentManager.popBackStack();
+        showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf_appearance);
     }
 
     @Override

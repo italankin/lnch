@@ -17,10 +17,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
@@ -31,18 +39,21 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-
 public class AppearanceFragment extends AppFragment implements
         BackButtonHandler,
         ActivityResultCallback<Boolean>,
         ColorPickerDialogFragment.Listener,
         SimpleDialogFragment.Listener {
+
+    public static AppearanceFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        AppearanceFragment fragment = new AppearanceFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final String ARG_REQUEST_KEY = "request_key";
 
     private static final String TAG_OVERLAY_COLOR = "overlay_color";
     private static final String TAG_SHADOW_COLOR = "shadow_color";
@@ -60,8 +71,6 @@ public class AppearanceFragment extends AppFragment implements
     private SliderPrefView itemShadowRadius;
     private ValuePrefView itemShadowColor;
 
-    private Callbacks callbacks;
-
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), this);
 
@@ -70,18 +79,6 @@ public class AppearanceFragment extends AppFragment implements
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     @Nullable
@@ -123,9 +120,7 @@ public class AppearanceFragment extends AppFragment implements
         int itemId = item.getItemId();
         if (itemId == R.id.action_save) {
             save();
-            if (callbacks != null) {
-                callbacks.onAppearanceFinish();
-            }
+            sendResult(new AppearanceFinishedContract().result());
             return true;
         } else if (itemId == R.id.action_reset) {
             preferences.reset(
@@ -135,9 +130,7 @@ public class AppearanceFragment extends AppFragment implements
                     Preferences.ITEM_FONT,
                     Preferences.ITEM_SHADOW_COLOR
             );
-            if (callbacks != null) {
-                callbacks.onAppearanceFinish();
-            }
+            sendResult(new AppearanceFinishedContract().result());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -201,8 +194,8 @@ public class AppearanceFragment extends AppFragment implements
 
     @Override
     public void onPositiveButtonClick(String tag) {
-        if (TAG_DISCARD_CHANGES.equals(tag) && callbacks != null) {
-            callbacks.onAppearanceFinish();
+        if (TAG_DISCARD_CHANGES.equals(tag)) {
+            sendResult(new AppearanceFinishedContract().result());
         }
     }
 
@@ -404,7 +397,14 @@ public class AppearanceFragment extends AppFragment implements
         prefView.setMax(pref.max().intValue() - min);
     }
 
-    public interface Callbacks {
-        void onAppearanceFinish();
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public static class AppearanceFinishedContract extends SignalFragmentResultContract {
+        public AppearanceFinishedContract() {
+            super("appearance_finished");
+        }
     }
 }
