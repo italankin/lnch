@@ -106,6 +106,12 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             }
             return true;
         });
+        findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
+            if (callbacks != null) {
+                callbacks.showHiddenItems();
+            }
+            return true;
+        });
         findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {
             if (callbacks != null) {
                 callbacks.showBackupPreferences();
@@ -158,6 +164,8 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         void showMiscPreferences();
 
         void showWidgetPreferences();
+
+        void showHiddenItems();
 
         void showWallpaperPreferences();
 

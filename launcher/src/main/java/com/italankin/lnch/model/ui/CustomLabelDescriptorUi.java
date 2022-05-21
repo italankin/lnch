@@ -7,6 +7,13 @@ import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
  */
 public interface CustomLabelDescriptorUi extends LabelDescriptorUi {
 
+    static String getVisibleLabel(DescriptorUi descriptor) {
+        if (descriptor instanceof CustomLabelDescriptorUi) {
+            return ((CustomLabelDescriptorUi) descriptor).getVisibleLabel();
+        }
+        return null;
+    }
+
     @Override
     CustomLabelDescriptor getDescriptor();
 

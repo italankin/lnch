@@ -5,6 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -15,6 +22,7 @@ import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
+import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
@@ -24,13 +32,6 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 public class SettingsActivity extends AppCompatActivity implements
         SettingsRootFragment.Callbacks,
@@ -123,6 +124,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showWidgetPreferences() {
         showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
+    }
+
+    @Override
+    public void showHiddenItems() {
+        showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
     }
 
     @Override

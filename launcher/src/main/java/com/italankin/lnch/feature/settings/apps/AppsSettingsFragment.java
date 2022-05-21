@@ -217,7 +217,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @SuppressWarnings("ConstantConditions")
     private void addListDivider() {
-        Drawable drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.settings_apps_divider);
+        Drawable drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.settings_list_divider);
         DividerItemDecoration decoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);

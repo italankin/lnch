@@ -181,6 +181,9 @@
     <string name="settings_home_widgets_enable_summary">Add a page with widgets on home screen</string>
     <string name="settings_home_widgets_position">Widgets page position</string>
 
+    <string name="settings_home_hidden_items">Hidden items</string>
+    <string name="settings_home_hidden_items_empty">No hidden items</string>
+
     <string name="settings_category_search">Search</string>
     <string name="settings_search">Search settings</string>
     <string name="settings_search_auto_show">Automatically show keyboard</string>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    tools:ignore="RtlSymmetry">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_toStartOf="@+id/visibility"
+        android:layout_alignParentStart="true"
+        android:ellipsize="none"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="horizontal"
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:textColor="?colorText"
+        android:textSize="16sp"
+        tools:text="@tools:sample/first_names" />
+
+    <ImageView
+        android:id="@+id/visibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_visibility_on"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_application_visibility"
+        android:padding="16dp" />
+
+</RelativeLayout>
