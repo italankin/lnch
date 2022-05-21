@@ -3,12 +3,12 @@ package com.italankin.lnch.feature.home.adapter;
 import android.view.View;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
 public class FolderDescriptorUiAdapter
         extends HomeAdapterDelegate<FolderDescriptorUiAdapter.ViewHolder, FolderDescriptorUi> {
@@ -16,6 +16,7 @@ public class FolderDescriptorUiAdapter
     private final Listener listener;
 
     public FolderDescriptorUiAdapter(Listener listener) {
+        super(false);
         this.listener = listener;
     }
 
@@ -45,7 +46,7 @@ public class FolderDescriptorUiAdapter
     }
 
     @Override
-    public boolean isType(int position, Object item) {
+    public boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof FolderDescriptorUi;
     }
 

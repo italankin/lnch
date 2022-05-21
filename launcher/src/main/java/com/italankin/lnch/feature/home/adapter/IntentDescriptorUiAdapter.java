@@ -3,12 +3,12 @@ package com.italankin.lnch.feature.home.adapter;
 import android.view.View;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 public class IntentDescriptorUiAdapter
         extends HomeAdapterDelegate<IntentDescriptorUiAdapter.ViewHolder, IntentDescriptorUi> {
@@ -45,7 +45,7 @@ public class IntentDescriptorUiAdapter
     }
 
     @Override
-    public boolean isType(int position, Object item) {
+    public boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof IntentDescriptorUi;
     }
 

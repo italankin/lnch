@@ -5,14 +5,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.util.widget.StubView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.util.widget.StubView;
+
 public class IgnorableDescriptorUiAdapter
         extends HomeAdapterDelegate<IgnorableDescriptorUiAdapter.ViewHolder, IgnorableDescriptorUi> {
+
+    public IgnorableDescriptorUiAdapter() {
+        super(true);
+    }
 
     @NonNull
     @Override
@@ -21,7 +25,7 @@ public class IgnorableDescriptorUiAdapter
     }
 
     @Override
-    public boolean isType(int position, Object item) {
+    public boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof IgnorableDescriptorUi && ((IgnorableDescriptorUi) item).isIgnored();
     }
 

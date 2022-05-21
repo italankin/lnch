@@ -5,6 +5,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -14,14 +18,19 @@ import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
         extends BaseAdapterDelegate<VH, T> {
 
+    private final boolean ignoreVisibility;
     private UserPrefs.ItemPrefs itemPrefs;
+
+    protected HomeAdapterDelegate() {
+        this(false);
+    }
+
+    protected HomeAdapterDelegate(boolean ignoreVisibility) {
+        this.ignoreVisibility = ignoreVisibility;
+    }
 
     @Override
     public final void onBind(VH holder, int position, T item) {
@@ -47,6 +56,13 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
     public long getItemId(int position, T item) {
         return item.getDescriptor().getId().hashCode();
     }
+
+    @Override
+    public final boolean isType(int position, Object item) {
+        return isType(position, item, ignoreVisibility);
+    }
+
+    protected abstract boolean isType(int position, Object item, boolean ignoreVisibility);
 
     void setItemPrefs(UserPrefs.ItemPrefs itemPrefs) {
         this.itemPrefs = itemPrefs;

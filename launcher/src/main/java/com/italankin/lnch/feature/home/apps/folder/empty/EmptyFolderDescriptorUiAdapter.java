@@ -3,11 +3,11 @@ package com.italankin.lnch.feature.home.apps.folder.empty;
 import android.view.View;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
 
 public class EmptyFolderDescriptorUiAdapter extends
         HomeAdapterDelegate<EmptyFolderDescriptorUiAdapter.ViewHolder, EmptyFolderDescriptorUi> {
@@ -24,7 +24,7 @@ public class EmptyFolderDescriptorUiAdapter extends
     }
 
     @Override
-    public boolean isType(int position, Object item) {
+    public boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof EmptyFolderDescriptorUi;
     }
 

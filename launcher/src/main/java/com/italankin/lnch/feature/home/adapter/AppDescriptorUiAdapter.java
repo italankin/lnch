@@ -4,6 +4,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
@@ -12,23 +17,17 @@ import com.italankin.lnch.util.ResUtils;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiAdapter.ViewHolder, AppDescriptorUi> {
 
     private final Listener listener;
-    private final boolean ignoreVisibility;
 
     public AppDescriptorUiAdapter(Listener listener) {
         this(listener, false);
     }
 
     public AppDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
+        super(ignoreVisibility);
         this.listener = listener;
-        this.ignoreVisibility = ignoreVisibility;
     }
 
     @Override
@@ -64,8 +63,9 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     }
 
     @Override
-    public boolean isType(int position, Object item) {
-        return item instanceof AppDescriptorUi && (ignoreVisibility || !((AppDescriptorUi) item).isIgnored());
+    protected boolean isType(int position, Object item, boolean ignoreVisibility) {
+        return item instanceof AppDescriptorUi &&
+                (ignoreVisibility || !((AppDescriptorUi) item).isIgnored());
     }
 
     @Override

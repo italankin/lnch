@@ -3,12 +3,12 @@ package com.italankin.lnch.feature.home.adapter;
 import android.view.View;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 
 public class DeepShortcutDescriptorUiAdapter
         extends HomeAdapterDelegate<DeepShortcutDescriptorUiAdapter.ViewHolder, DeepShortcutDescriptorUi> {
@@ -47,7 +47,7 @@ public class DeepShortcutDescriptorUiAdapter
     }
 
     @Override
-    public boolean isType(int position, Object item) {
+    protected boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof DeepShortcutDescriptorUi;
     }
 
