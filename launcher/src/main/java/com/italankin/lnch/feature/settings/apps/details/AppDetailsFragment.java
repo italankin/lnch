@@ -40,7 +40,6 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
 
     @InjectPresenter
@@ -153,11 +152,6 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         new SetColorDescriptorDialog(requireContext(), descriptor.getVisibleColor(),
                 newColor -> presenter.setCustomColor(descriptor, newColor))
                 .show();
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class ShowAppAliasesContract extends DescriptorFragmentResultContract {

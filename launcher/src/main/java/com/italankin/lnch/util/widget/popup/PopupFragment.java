@@ -9,15 +9,16 @@ import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
-import com.italankin.lnch.R;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public abstract class PopupFragment extends Fragment {
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultSender;
+
+public abstract class PopupFragment extends Fragment implements FragmentResultSender {
 
     protected static final String ARG_ANCHOR = "anchor";
 
@@ -68,6 +69,12 @@ public abstract class PopupFragment extends Fragment {
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
         }
+    }
+
+    @Override
+    public void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     protected void showPopup() {

@@ -66,7 +66,6 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
     private static final String ARG_FOLDER_ID = "folder_id";
     private static final String ARG_ANCHOR = "anchor";
-    private static final String ARG_REQUEST_KEY = "request_key";
 
     private static final String STATE_BACKSTACK_ID = "backstack_id";
     private static final String BACKSTACK_NAME = "folder";
@@ -219,11 +218,6 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
         }
-    }
-
-    protected void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     private void animatePopupAppearance() {

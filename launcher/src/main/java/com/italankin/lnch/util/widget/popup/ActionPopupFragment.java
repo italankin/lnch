@@ -31,8 +31,6 @@ import java.util.List;
 
 public abstract class ActionPopupFragment extends PopupFragment {
 
-    protected static final String ARG_REQUEST_KEY = "request_key";
-
     private static final float DISABLED_ALPHA = 0.33f;
 
     protected Picasso picasso;
@@ -69,11 +67,6 @@ public abstract class ActionPopupFragment extends PopupFragment {
     public void onDetach() {
         super.onDetach();
         picasso = null;
-    }
-
-    protected final void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     protected final void dismissWithResult() {

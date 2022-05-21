@@ -209,11 +209,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         }
     }
 
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
     public static class ShowItemLookPreferencesContract extends SignalFragmentResultContract {
         public ShowItemLookPreferencesContract() {
             super("show_item_look_preferences");

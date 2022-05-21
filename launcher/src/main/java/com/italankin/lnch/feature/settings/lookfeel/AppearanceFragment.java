@@ -53,8 +53,6 @@ public class AppearanceFragment extends AppFragment implements
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     private static final String TAG_OVERLAY_COLOR = "overlay_color";
     private static final String TAG_SHADOW_COLOR = "shadow_color";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
@@ -395,11 +393,6 @@ public class AppearanceFragment extends AppFragment implements
         int min = pref.min().intValue();
         prefView.setProgress(preferences.get(pref).intValue() - min);
         prefView.setMax(pref.max().intValue() - min);
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class AppearanceFinishedContract extends SignalFragmentResultContract {

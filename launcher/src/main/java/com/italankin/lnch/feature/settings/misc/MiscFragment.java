@@ -20,8 +20,6 @@ public class MiscFragment extends BasePreferenceFragment {
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_misc);
@@ -34,11 +32,6 @@ public class MiscFragment extends BasePreferenceFragment {
             sendResult(new ShowExperimentalPreferencesContract().result());
             return true;
         });
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class ShowExperimentalPreferencesContract extends SignalFragmentResultContract {

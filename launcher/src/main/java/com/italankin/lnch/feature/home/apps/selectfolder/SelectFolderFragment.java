@@ -7,6 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
@@ -17,11 +22,6 @@ import com.italankin.lnch.util.widget.popup.PopupFragment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.widget.TextViewCompat;
 
 public class SelectFolderFragment extends PopupFragment {
 
@@ -45,7 +45,6 @@ public class SelectFolderFragment extends PopupFragment {
 
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
     private static final String ARG_FOLDERS = "folders";
-    private static final String ARG_REQUEST_KEY = "request_key";
 
     private static final String BACKSTACK_NAME = "folder_select";
     private static final String TAG = "folder_select";
@@ -80,9 +79,8 @@ public class SelectFolderFragment extends PopupFragment {
             folderView.setText(folder.label);
             folderView.setOnClickListener(v -> {
                 dismiss();
-                String requestKey = args.getString(ARG_REQUEST_KEY);
                 Bundle result = AddToFolderContract.result(args.getString(ARG_DESCRIPTOR_ID), folder.id);
-                getParentFragmentManager().setFragmentResult(requestKey, result);
+                sendResult(result);
             });
             TextViewCompat.setCompoundDrawableTintList(folderView, ColorStateList.valueOf(folder.color));
             itemsContainer.addView(folderView);

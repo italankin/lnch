@@ -50,8 +50,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
     private static final String TAG_FILTER_FLAGS = "filter";
@@ -222,11 +220,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
                 .setFlags(filter.getFlags())
                 .build()
                 .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class ShowAppDetailsContract extends DescriptorFragmentResultContract {

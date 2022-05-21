@@ -43,8 +43,6 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     private Preferences preferences;
     private ColorPickerView colorPicker;
     private ImageView wallpaper;
@@ -161,11 +159,6 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         drawable.setTintMode(PorterDuff.Mode.SRC_ATOP);
         drawable.setTint(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
         wallpaper.setImageDrawable(drawable);
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class WallpaperOverlayFinishContract extends SignalFragmentResultContract {

@@ -31,7 +31,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
     private static final String SOURCE_CODE_URL = "https://github.com/italankin/lnch";
 
     @Override
@@ -119,11 +118,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class LaunchEditModeContract extends SignalFragmentResultContract {

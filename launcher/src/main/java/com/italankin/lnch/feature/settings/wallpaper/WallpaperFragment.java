@@ -25,8 +25,6 @@ public class WallpaperFragment extends BasePreferenceFragment {
         return fragment;
     }
 
-    private static final String ARG_REQUEST_KEY = "request_key";
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_wallpaper);
@@ -63,11 +61,6 @@ public class WallpaperFragment extends BasePreferenceFragment {
                 .preferences()
                 .get(Preferences.WALLPAPER_OVERLAY_COLOR);
         pref.setSummary(String.format("#%08x", color));
-    }
-
-    private void sendResult(Bundle result) {
-        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
-        getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     public static class ShowWallpaperOverlay extends SignalFragmentResultContract {
