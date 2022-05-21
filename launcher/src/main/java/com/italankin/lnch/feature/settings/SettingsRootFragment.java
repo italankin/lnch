@@ -10,38 +10,34 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.PackageUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import com.italankin.lnch.BuildConfig;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.util.IntentUtils;
+import com.italankin.lnch.util.PackageUtils;
+
 public class SettingsRootFragment extends BasePreferenceFragment {
 
-    private final static String SOURCE_CODE_URL = "https://github.com/italankin/lnch";
+    public static SettingsRootFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        SettingsRootFragment fragment = new SettingsRootFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-    private Callbacks callbacks;
+    private static final String ARG_REQUEST_KEY = "request_key";
+    private static final String SOURCE_CODE_URL = "https://github.com/italankin/lnch";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     @Override
@@ -53,69 +49,47 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_home_customize).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.launchEditMode();
-            }
+            sendResult(new LaunchEditModeContract().result());
             return true;
         });
         findPreference(R.string.pref_key_search_settings).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showSearchPreferences();
-            }
+            sendResult(new ShowSearchPreferencesContract().result());
             return true;
         });
         findPreference(R.string.pref_key_wallpaper).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showWallpaperPreferences();
-            }
+            sendResult(new ShowWallpaperPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_apps_settings).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showAppsSettings();
-            }
+            sendResult(new ShowAppsSettings().result());
             return true;
         });
         findPreference(R.string.pref_key_shortcuts).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showShortcutsPreferences();
-            }
+            sendResult(new ShowShortcutsPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_notifications).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showNotificationsPreferences();
-            }
+            sendResult(new ShowNotificationsPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_look_and_feel).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showLookAndFeelPreferences();
-            }
+            sendResult(new ShowLookAndFeelPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_home_misc).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showMiscPreferences();
-            }
+            sendResult(new ShowMiscPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_home_widgets).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showWidgetPreferences();
-            }
+            sendResult(new ShowWidgetPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showHiddenItems();
-            }
+            sendResult(new ShowHiddenItems().result());
             return true;
         });
         findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showBackupPreferences();
-            }
+            sendResult(new ShowBackupPreferences().result());
             return true;
         });
         Preference version = findPreference(R.string.pref_key_version);
@@ -147,28 +121,74 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public interface Callbacks {
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
 
-        void launchEditMode();
+    public static class LaunchEditModeContract extends SignalFragmentResultContract {
+        public LaunchEditModeContract() {
+            super("launch_edit_mode");
+        }
+    }
 
-        void showSearchPreferences();
+    public static class ShowSearchPreferencesContract extends SignalFragmentResultContract {
+        public ShowSearchPreferencesContract() {
+            super("show_search_preferences");
+        }
+    }
 
-        void showAppsSettings();
+    public static class ShowAppsSettings extends SignalFragmentResultContract {
+        public ShowAppsSettings() {
+            super("show_apps_settings");
+        }
+    }
 
-        void showShortcutsPreferences();
+    public static class ShowShortcutsPreferences extends SignalFragmentResultContract {
+        public ShowShortcutsPreferences() {
+            super("show_shortcuts_preferences");
+        }
+    }
 
-        void showNotificationsPreferences();
+    public static class ShowNotificationsPreferences extends SignalFragmentResultContract {
+        public ShowNotificationsPreferences() {
+            super("show_notifications_preferences");
+        }
+    }
 
-        void showLookAndFeelPreferences();
+    public static class ShowLookAndFeelPreferences extends SignalFragmentResultContract {
+        public ShowLookAndFeelPreferences() {
+            super("show_look_and_feel_preferences");
+        }
+    }
 
-        void showMiscPreferences();
+    public static class ShowMiscPreferences extends SignalFragmentResultContract {
+        public ShowMiscPreferences() {
+            super("show_misc_preferences");
+        }
+    }
 
-        void showWidgetPreferences();
+    public static class ShowWidgetPreferences extends SignalFragmentResultContract {
+        public ShowWidgetPreferences() {
+            super("show_widget_preferences");
+        }
+    }
 
-        void showHiddenItems();
+    public static class ShowHiddenItems extends SignalFragmentResultContract {
+        public ShowHiddenItems() {
+            super("show_hidden_items");
+        }
+    }
 
-        void showWallpaperPreferences();
+    public static class ShowWallpaperPreferences extends SignalFragmentResultContract {
+        public ShowWallpaperPreferences() {
+            super("show_wallpaper_preferences");
+        }
+    }
 
-        void showBackupPreferences();
+    public static class ShowBackupPreferences extends SignalFragmentResultContract {
+        public ShowBackupPreferences() {
+            super("show_backup_preferences");
+        }
     }
 }

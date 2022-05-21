@@ -17,6 +17,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragment;
@@ -34,7 +35,6 @@ import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class SettingsActivity extends AppCompatActivity implements
-        SettingsRootFragment.Callbacks,
         AppearanceFragment.Callbacks,
         WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
@@ -46,6 +46,8 @@ public class SettingsActivity extends AppCompatActivity implements
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
     }
+
+    private static final String REQUEST_KEY_SETTINGS = "settings";
 
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
@@ -67,10 +69,48 @@ public class SettingsActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+
+        new FragmentResultManager(getSupportFragmentManager(), this, REQUEST_KEY_SETTINGS)
+                .register(new SettingsRootFragment.LaunchEditModeContract(), result -> {
+                    finish();
+                    startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
+                })
+                .register(new SettingsRootFragment.ShowSearchPreferencesContract(), result -> {
+                    showFragment(new SearchFragment(), R.string.settings_category_search);
+                })
+                .register(new SettingsRootFragment.ShowAppsSettings(), result -> {
+                    showFragment(new AppsSettingsFragment(), R.string.settings_apps_list);
+                })
+                .register(new SettingsRootFragment.ShowShortcutsPreferences(), result -> {
+                    showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
+                })
+                .register(new SettingsRootFragment.ShowNotificationsPreferences(), result -> {
+                    showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
+                })
+                .register(new SettingsRootFragment.ShowLookAndFeelPreferences(), result -> {
+                    showFragment(new LookAndFeelFragment(), R.string.settings_home_laf);
+                })
+                .register(new SettingsRootFragment.ShowMiscPreferences(), result -> {
+                    showFragment(new MiscFragment(), R.string.settings_home_misc);
+                })
+                .register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
+                    showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
+                })
+                .register(new SettingsRootFragment.ShowHiddenItems(), result -> {
+                    showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
+                })
+                .register(new SettingsRootFragment.ShowWallpaperPreferences(), result -> {
+                    showFragment(new WallpaperFragment(), R.string.settings_home_wallpaper);
+                })
+                .register(new SettingsRootFragment.ShowBackupPreferences(), result -> {
+                    showFragment(new BackupFragment(), R.string.settings_other_bar);
+                })
+                .attach();
+
         if (savedInstanceState == null) {
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.container, new SettingsRootFragment())
+                    .add(R.id.container, SettingsRootFragment.newInstance(REQUEST_KEY_SETTINGS))
                     .commit();
         }
     }
@@ -91,54 +131,8 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void launchEditMode() {
-        finish();
-        startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
-    }
-
-    @Override
-    public void showSearchPreferences() {
-        showFragment(new SearchFragment(), R.string.settings_category_search);
-    }
-
-    @Override
-    public void showAppsSettings() {
-        showFragment(new AppsSettingsFragment(), R.string.settings_apps_list);
-    }
-
-    @Override
     public void showItemLookPreferences() {
         showFragment(new AppearanceFragment(), R.string.settings_home_laf_appearance);
-    }
-
-    @Override
-    public void showLookAndFeelPreferences() {
-        showFragment(new LookAndFeelFragment(), R.string.settings_home_laf);
-    }
-
-    @Override
-    public void showMiscPreferences() {
-        showFragment(new MiscFragment(), R.string.settings_home_misc);
-    }
-
-    @Override
-    public void showWidgetPreferences() {
-        showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
-    }
-
-    @Override
-    public void showHiddenItems() {
-        showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
-    }
-
-    @Override
-    public void showWallpaperPreferences() {
-        showFragment(new WallpaperFragment(), R.string.settings_home_wallpaper);
-    }
-
-    @Override
-    public void showBackupPreferences() {
-        showFragment(new BackupFragment(), R.string.settings_other_bar);
     }
 
     @Override
@@ -154,16 +148,6 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void onWallpaperOverlayFinish() {
         fragmentManager.popBackStack();
-    }
-
-    @Override
-    public void showShortcutsPreferences() {
-        showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
-    }
-
-    @Override
-    public void showNotificationsPreferences() {
-        showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
     }
 
     @Override
