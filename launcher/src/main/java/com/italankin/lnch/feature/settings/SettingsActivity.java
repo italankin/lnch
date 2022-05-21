@@ -35,7 +35,6 @@ import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class SettingsActivity extends AppCompatActivity implements
-        WallpaperFragment.Callbacks,
         WallpaperOverlayFragment.Callbacks,
         LookAndFeelFragment.Callbacks,
         AppsSettingsFragment.Callbacks,
@@ -99,13 +98,16 @@ public class SettingsActivity extends AppCompatActivity implements
                     showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
                 })
                 .register(new SettingsRootFragment.ShowWallpaperPreferences(), result -> {
-                    showFragment(new WallpaperFragment(), R.string.settings_home_wallpaper);
+                    showFragment(WallpaperFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_wallpaper);
                 })
                 .register(new SettingsRootFragment.ShowBackupPreferences(), result -> {
                     showFragment(new BackupFragment(), R.string.settings_other_bar);
                 })
                 .register(new AppearanceFragment.AppearanceFinishedContract(), result -> {
                     fragmentManager.popBackStack();
+                })
+                .register(new WallpaperFragment.ShowWallpaperOverlay(), result -> {
+                    showFragment(new WallpaperOverlayFragment(), R.string.settings_home_wallpaper_overlay_color);
                 })
                 .attach();
 
@@ -135,11 +137,6 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void showItemLookPreferences() {
         showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf_appearance);
-    }
-
-    @Override
-    public void showWallpaperOverlayPreferences() {
-        showFragment(new WallpaperOverlayFragment(), R.string.settings_home_wallpaper_overlay_color);
     }
 
     @Override

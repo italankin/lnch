@@ -1,35 +1,31 @@
 package com.italankin.lnch.feature.settings.wallpaper;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.NumberUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.NumberUtils;
+
 public class WallpaperFragment extends BasePreferenceFragment {
 
-    private Callbacks callbacks;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
+    public static WallpaperFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        WallpaperFragment fragment = new WallpaperFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
-    }
+    private static final String ARG_REQUEST_KEY = "request_key";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -59,9 +55,7 @@ public class WallpaperFragment extends BasePreferenceFragment {
             return true;
         });
         pref.setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showWallpaperOverlayPreferences();
-            }
+            sendResult(new ShowWallpaperOverlay().result());
             return true;
         });
         int color = LauncherApp.daggerService
@@ -71,7 +65,14 @@ public class WallpaperFragment extends BasePreferenceFragment {
         pref.setSummary(String.format("#%08x", color));
     }
 
-    public interface Callbacks {
-        void showWallpaperOverlayPreferences();
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public static class ShowWallpaperOverlay extends SignalFragmentResultContract {
+        public ShowWallpaperOverlay() {
+            super("show_wallpaper_overlay");
+        }
     }
 }
