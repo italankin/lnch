@@ -64,7 +64,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
     }
 
