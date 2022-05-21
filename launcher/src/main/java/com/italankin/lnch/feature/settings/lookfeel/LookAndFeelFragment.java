@@ -1,27 +1,37 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-
-import com.arellomobile.mvp.MvpView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 
+import com.arellomobile.mvp.MvpView;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
+
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, ColorPickerDialogFragment.Listener {
+
+    public static LookAndFeelFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        LookAndFeelFragment fragment = new LookAndFeelFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final String ARG_REQUEST_KEY = "request_key";
 
     private static final String TAG_APPS_COLOR_OVERLAY = "apps_color_overlay";
     private static final String TAG_STATUS_COLOR = "status_color";
@@ -30,7 +40,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     @InjectPresenter
     LookAndFeelPresenter presenter;
 
-    private Callbacks callbacks;
     private Preferences preferences;
 
     @ProvidePresenter
@@ -42,18 +51,6 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     @Override
@@ -71,9 +68,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_appearance).setOnPreferenceClickListener(preference -> {
-            if (callbacks != null) {
-                callbacks.showItemLookPreferences();
-            }
+            sendResult(new ShowItemLookPreferencesContract().result());
             return true;
         });
         findPreference(Preferences.APPS_COLOR_OVERLAY_SHOW).setOnPreferenceChangeListener((preference, newValue) -> {
@@ -214,7 +209,14 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         }
     }
 
-    public interface Callbacks {
-        void showItemLookPreferences();
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public static class ShowItemLookPreferencesContract extends SignalFragmentResultContract {
+        public ShowItemLookPreferencesContract() {
+            super("show_item_look_preferences");
+        }
     }
 }

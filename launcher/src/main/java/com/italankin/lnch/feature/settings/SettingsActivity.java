@@ -34,12 +34,7 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class SettingsActivity extends AppCompatActivity implements
-        WallpaperOverlayFragment.Callbacks,
-        LookAndFeelFragment.Callbacks,
-        AppsSettingsFragment.Callbacks,
-        AppDetailsFragment.Callbacks,
-        MiscFragment.Callbacks {
+public class SettingsActivity extends AppCompatActivity {
 
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
@@ -77,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity implements
                     showFragment(new SearchFragment(), R.string.settings_category_search);
                 })
                 .register(new SettingsRootFragment.ShowAppsSettings(), result -> {
-                    showFragment(new AppsSettingsFragment(), R.string.settings_apps_list);
+                    showFragment(AppsSettingsFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_apps_list);
                 })
                 .register(new SettingsRootFragment.ShowShortcutsPreferences(), result -> {
                     showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
@@ -86,10 +81,10 @@ public class SettingsActivity extends AppCompatActivity implements
                     showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
                 })
                 .register(new SettingsRootFragment.ShowLookAndFeelPreferences(), result -> {
-                    showFragment(new LookAndFeelFragment(), R.string.settings_home_laf);
+                    showFragment(LookAndFeelFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf);
                 })
                 .register(new SettingsRootFragment.ShowMiscPreferences(), result -> {
-                    showFragment(new MiscFragment(), R.string.settings_home_misc);
+                    showFragment(MiscFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_misc);
                 })
                 .register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
                     showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
@@ -107,7 +102,25 @@ public class SettingsActivity extends AppCompatActivity implements
                     fragmentManager.popBackStack();
                 })
                 .register(new WallpaperFragment.ShowWallpaperOverlay(), result -> {
-                    showFragment(new WallpaperOverlayFragment(), R.string.settings_home_wallpaper_overlay_color);
+                    showFragment(WallpaperOverlayFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_wallpaper_overlay_color);
+                })
+                .register(new WallpaperOverlayFragment.WallpaperOverlayFinishContract(), result -> {
+                    fragmentManager.popBackStack();
+                })
+                .register(new LookAndFeelFragment.ShowItemLookPreferencesContract(), result -> {
+                    showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf_appearance);
+                })
+                .register(new AppsSettingsFragment.ShowAppDetailsContract(), descriptorId -> {
+                    showFragment(AppDetailsFragment.newInstance(REQUEST_KEY_SETTINGS, descriptorId), R.string.settings_app_details);
+                })
+                .register(new MiscFragment.ShowExperimentalPreferencesContract(), result -> {
+                    showFragment(new ExperimentalSettingsFragment(), R.string.settings_home_misc_experimental);
+                })
+                .register(new AppDetailsFragment.ShowAppAliasesContract(), descriptorId -> {
+                    showFragment(AppAliasesFragment.newInstance(descriptorId), R.string.settings_app_aliases);
+                })
+                .register(new AppDetailsFragment.AppDetailsErrorContract(), result -> {
+                    fragmentManager.popBackStack();
                 })
                 .attach();
 
@@ -132,36 +145,6 @@ public class SettingsActivity extends AppCompatActivity implements
             return;
         }
         super.onBackPressed();
-    }
-
-    @Override
-    public void showItemLookPreferences() {
-        showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf_appearance);
-    }
-
-    @Override
-    public void onWallpaperOverlayFinish() {
-        fragmentManager.popBackStack();
-    }
-
-    @Override
-    public void showAppDetails(String descriptorId) {
-        showFragment(AppDetailsFragment.newInstance(descriptorId), R.string.settings_app_details);
-    }
-
-    @Override
-    public void showAppAliases(String descriptorId) {
-        showFragment(AppAliasesFragment.newInstance(descriptorId), R.string.settings_app_aliases);
-    }
-
-    @Override
-    public void onAppDetailsError() {
-        fragmentManager.popBackStack();
-    }
-
-    @Override
-    public void showExperimentalPreferences() {
-        showFragment(new ExperimentalSettingsFragment(), R.string.settings_home_misc_experimental);
     }
 
     private void updateToolbar() {

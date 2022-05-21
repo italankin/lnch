@@ -17,43 +17,40 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
-import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.ViewUtils;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
+import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
+
 public class WallpaperOverlayFragment extends AppFragment implements ActivityResultCallback<Boolean> {
+
+    public static WallpaperOverlayFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        WallpaperOverlayFragment fragment = new WallpaperOverlayFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final String ARG_REQUEST_KEY = "request_key";
 
     private Preferences preferences;
     private ColorPickerView colorPicker;
     private ImageView wallpaper;
 
-    private Callbacks callbacks;
-
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), this);
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,9 +92,7 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
             preferences.set(Preferences.WALLPAPER_OVERLAY_COLOR, colorPicker.getSelectedColor());
-            if (callbacks != null) {
-                callbacks.onWallpaperOverlayFinish();
-            }
+            sendResult(new WallpaperOverlayFinishContract().result());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -168,7 +163,14 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         wallpaper.setImageDrawable(drawable);
     }
 
-    public interface Callbacks {
-        void onWallpaperOverlayFinish();
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public static class WallpaperOverlayFinishContract extends SignalFragmentResultContract {
+        public WallpaperOverlayFinishContract() {
+            super("wallpaper_overlay_finish");
+        }
     }
 }

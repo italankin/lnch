@@ -11,11 +11,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsAdapter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
@@ -29,17 +37,20 @@ import com.squareup.picasso.Picasso;
 import java.util.EnumSet;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
         AppsSettingsAdapter.Listener,
         FilterFlagsDialogFragment.Listener,
         ListFilter.OnFilterResult<AppDescriptorUi> {
+
+    public static AppsSettingsFragment newInstance(String requestKey) {
+        Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
+        AppsSettingsFragment fragment = new AppsSettingsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final String ARG_REQUEST_KEY = "request_key";
 
     private static final String DATA_FILTER_FLAGS = "filter_flags";
 
@@ -54,8 +65,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
 
-    private Callbacks callbacks;
-
     @ProvidePresenter
     AppsSettingsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().appsSettings();
@@ -65,18 +74,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     @Override
@@ -170,9 +167,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public void onAppClick(int position, AppDescriptorUi item) {
-        if (callbacks != null) {
-            callbacks.showAppDetails(item.getDescriptor().getId());
-        }
+        sendResult(new ShowAppDetailsContract().result(item.getDescriptor().getId()));
     }
 
     @Override
@@ -229,7 +224,14 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
                 .show(getChildFragmentManager(), TAG_FILTER_FLAGS);
     }
 
-    public interface Callbacks {
-        void showAppDetails(String descriptorId);
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public static class ShowAppDetailsContract extends DescriptorFragmentResultContract {
+        public ShowAppDetailsContract() {
+            super("show_app_details");
+        }
     }
 }

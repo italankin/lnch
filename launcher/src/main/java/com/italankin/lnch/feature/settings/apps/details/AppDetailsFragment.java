@@ -1,6 +1,8 @@
 package com.italankin.lnch.feature.settings.apps.details;
 
-import android.content.Context;
+import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
+import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -17,27 +23,24 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
+import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-
-import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
-import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
-
 public class AppDetailsFragment extends AppFragment implements AppDetailsView {
 
-    public static AppDetailsFragment newInstance(String descriptorId) {
+    public static AppDetailsFragment newInstance(String requestKey, String descriptorId) {
         Bundle args = new Bundle();
+        args.putString(ARG_REQUEST_KEY, requestKey);
         args.putString(ARG_DESCRIPTOR_ID, descriptorId);
         AppDetailsFragment fragment = new AppDetailsFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+    private static final String ARG_REQUEST_KEY = "request_key";
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
 
     @InjectPresenter
@@ -57,23 +60,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private SwitchCompat switchShortcutsVisibility;
     private SwitchCompat switchSearchShortcutsVisibility;
 
-    private Callbacks callbacks;
-
     @ProvidePresenter
     AppDetailsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().appDetails();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        callbacks = (Callbacks) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        callbacks = null;
     }
 
     @Nullable
@@ -145,18 +134,14 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
 
         buttonAppAliases.setOnClickListener(v -> {
-            if (callbacks != null) {
-                callbacks.showAppAliases(descriptor.getId());
-            }
+            sendResult(new ShowAppAliasesContract().result(descriptor.getId()));
         });
     }
 
     @Override
     public void onError(Throwable e) {
         Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        if (callbacks != null) {
-            callbacks.onAppDetailsError();
-        }
+        sendResult(new AppDetailsErrorContract().result());
     }
 
     private void setCustomLabel(AppDescriptor descriptor, String label) {
@@ -170,9 +155,20 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
                 .show();
     }
 
-    public interface Callbacks {
-        void showAppAliases(String descriptorId);
+    private void sendResult(Bundle result) {
+        String requestKey = requireArguments().getString(ARG_REQUEST_KEY);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
 
-        void onAppDetailsError();
+    public static class ShowAppAliasesContract extends DescriptorFragmentResultContract {
+        public ShowAppAliasesContract() {
+            super("show_app_aliases");
+        }
+    }
+
+    public static class AppDetailsErrorContract extends SignalFragmentResultContract {
+        public AppDetailsErrorContract() {
+            super("app_details_error");
+        }
     }
 }
