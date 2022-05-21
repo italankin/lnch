@@ -74,7 +74,7 @@ public class FragmentResultManager implements FragmentResultListener {
                 return;
             }
         } else {
-            Timber.w("[%s] o contract found for key=%s", this.requestKey, key);
+            Timber.w("[%s] no contract found for key=%s", this.requestKey, key);
         }
         if (unhandledResultListener != null) {
             unhandledResultListener.onUnhandledResult(key, result);
@@ -88,7 +88,7 @@ public class FragmentResultManager implements FragmentResultListener {
     private class DefaultOnUnhandledResultListener implements OnUnhandledResultListener {
         @Override
         public void onUnhandledResult(String key, Bundle result) {
-            Timber.w("[%s] unhandled result: key=%s, result=%s", requestKey, key, result);
+            Timber.tag("FragmentResultManager").w("[%s] unhandled result: key=%s, result=%s", requestKey, key, result);
         }
     }
 }
