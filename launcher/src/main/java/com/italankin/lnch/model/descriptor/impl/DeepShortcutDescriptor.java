@@ -119,6 +119,7 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
         copy.customLabel = customLabel;
         copy.customColor = customColor;
         copy.enabled = enabled;
+        copy.ignored = ignored;
         return copy;
     }
 }
