@@ -199,7 +199,11 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     @Override
     public void onStop() {
         super.onStop();
-        appWidgetHost.stopListening();
+        try {
+            appWidgetHost.stopListening();
+        } catch (Exception e) {
+            Timber.w(e, "onStop:");
+        }
     }
 
     private void startAddNewWidget() {
