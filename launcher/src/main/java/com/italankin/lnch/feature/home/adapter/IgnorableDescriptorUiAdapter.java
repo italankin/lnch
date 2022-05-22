@@ -14,6 +14,8 @@ import com.italankin.lnch.util.widget.StubView;
 public class IgnorableDescriptorUiAdapter
         extends HomeAdapterDelegate<IgnorableDescriptorUiAdapter.ViewHolder, IgnorableDescriptorUi> {
 
+    private static final int IGNORED_FLAG = 1 << 22;
+
     public IgnorableDescriptorUiAdapter() {
         super(true);
     }
@@ -22,6 +24,11 @@ public class IgnorableDescriptorUiAdapter
     @Override
     public ViewHolder onCreate(LayoutInflater inflater, ViewGroup parent) {
         return new ViewHolder(new StubView(inflater.getContext()));
+    }
+
+    @Override
+    public long getItemId(int position, IgnorableDescriptorUi item) {
+        return super.getItemId(position, item) ^ IGNORED_FLAG;
     }
 
     @Override
