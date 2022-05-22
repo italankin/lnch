@@ -47,6 +47,11 @@ public class HiddenItemAdapter extends BaseAdapterDelegate<HiddenItemAdapter.Vie
     }
 
     @Override
+    public long getItemId(int position, HiddenItem item) {
+        return item.descriptor.hashCode();
+    }
+
+    @Override
     public boolean isType(int position, Object item) {
         return item instanceof HiddenItem;
     }
