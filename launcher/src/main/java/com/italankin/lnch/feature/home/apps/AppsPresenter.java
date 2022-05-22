@@ -153,6 +153,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void addFolder(String label, @ColorInt int color) {
         FolderDescriptor item = new FolderDescriptor(label, color);
+        item.label = nameNormalizer.normalize(label);
         editor.enqueue(new AddAction(item));
         homeDescriptorsState.insertItem(new FolderDescriptorUi(item));
     }
