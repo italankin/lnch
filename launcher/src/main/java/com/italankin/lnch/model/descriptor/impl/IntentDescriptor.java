@@ -39,7 +39,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public IntentDescriptor(Intent intent, String label, int color) {
         this.id = "intent/" + UUID.randomUUID().toString();
         this.intentUri = intent.toUri(Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
-        this.originalLabel = label;
+        this.originalLabel = this.label = label;
         this.color = color;
     }
 

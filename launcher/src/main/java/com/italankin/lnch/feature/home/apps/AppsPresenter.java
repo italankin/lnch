@@ -182,6 +182,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void addIntent(Intent intent, String label) {
         IntentDescriptor item = new IntentDescriptor(intent, label);
+        item.label = nameNormalizer.normalize(label);
         editor.enqueue(new AddAction(item));
         homeDescriptorsState.insertItem(new IntentDescriptorUi(item));
     }
