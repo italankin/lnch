@@ -123,7 +123,8 @@ public class AppsFragment extends AppFragment implements AppsView,
         IntentDescriptorUiAdapter.Listener,
         AppDescriptorUiAdapter.Listener,
         FolderDescriptorUiAdapter.Listener,
-        PinnedShortcutDescriptorUiAdapter.Listener, HomeDescriptorsState.Callback {
+        PinnedShortcutDescriptorUiAdapter.Listener,
+        HomeDescriptorsState.Callback {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
@@ -529,11 +530,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     ///////////////////////////////////////////////////////////////////////////
     // State callbacks
     ///////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onNewItems(List<DescriptorUi> items) {
-        // empty
-    }
 
     @Override
     public void onItemChanged(int position, DescriptorUi item) {

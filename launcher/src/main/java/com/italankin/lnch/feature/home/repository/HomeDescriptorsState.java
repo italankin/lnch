@@ -1,11 +1,11 @@
 package com.italankin.lnch.feature.home.repository;
 
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 /**
  * Holds current UI state of home descriptor items
@@ -76,14 +76,19 @@ public interface HomeDescriptorsState {
 
     interface Callback {
 
-        void onNewItems(List<DescriptorUi> items);
+        default void onNewItems(List<DescriptorUi> items) {
+        }
 
-        void onItemChanged(int position, DescriptorUi item);
+        default void onItemChanged(int position, DescriptorUi item) {
+        }
 
-        void onItemRemoved(int position, DescriptorUi item);
+        default void onItemRemoved(int position, DescriptorUi item) {
+        }
 
-        void onItemInserted(int position, DescriptorUi item);
+        default void onItemInserted(int position, DescriptorUi item) {
+        }
 
-        void onItemMoved(int fromPosition, int toPosition);
+        default void onItemMoved(int fromPosition, int toPosition) {
+        }
     }
 }
