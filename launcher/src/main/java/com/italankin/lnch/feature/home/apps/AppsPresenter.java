@@ -1,7 +1,13 @@
 package com.italankin.lnch.feature.home.apps;
 
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
+
 import android.content.Intent;
-import android.service.notification.StatusBarNotification;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -45,21 +51,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
@@ -405,57 +407,82 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .skip(1); // skip empty update
     }
 
-    private Observable<Map<AppDescriptor, NotificationBag>> observeNotifications() {
+    private Observable<NotificationBagContainer> observeNotifications() {
         return Observable.combineLatest(
                 notificationsRepository.observe(),
                 preferences.observe(Preferences.NOTIFICATION_DOT),
                 preferences.observe(Preferences.NOTIFICATION_DOT_ONGOING),
                 (notifications, showNotificationDots, showOngoing) -> {
-                    if (showNotificationDots) {
-                        return notifications;
+                    if (showNotificationDots && !notifications.isEmpty()) {
+                        return new NotificationBagContainer(notifications);
                     } else {
-                        return Collections.emptyMap();
+                        return NotificationBagContainer.EMPTY;
                     }
                 });
     }
 
     @NotNull
-    private List<DescriptorUi> concatNotifications(List<DescriptorUi> items,
-            Map<AppDescriptor, NotificationBag> notifications) {
-        if (notifications.isEmpty()) {
+    private List<DescriptorUi> concatNotifications(
+            List<DescriptorUi> items, NotificationBagContainer notificationBagContainer) {
+        if (notificationBagContainer.isEmpty()) {
             return items;
         }
         List<DescriptorUi> result = new ArrayList<>(items.size());
         for (DescriptorUi item : items) {
-            if (!(item instanceof AppDescriptorUi)) {
-                result.add(item);
-                continue;
-            }
-            AppDescriptorUi app = (AppDescriptorUi) item;
-            NotificationBag notificationBag = notifications.get(app.getDescriptor());
-            boolean badgeVisible = false;
-            boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
-            if (notificationBag != null) {
-                int count = notificationBag.getCount();
-                if (!showOngoing) {
-                    for (StatusBarNotification sbn : notificationBag.getNotifications()) {
-                        if (sbn.isOngoing()) {
-                            count--;
-                        }
-                    }
-                }
-                badgeVisible = count > 0;
-            }
-            if (badgeVisible != app.isBadgeVisible()) {
-                // create a copy of AppDescriptorUi to update state correctly
-                AppDescriptorUi newApp = new AppDescriptorUi(app);
-                newApp.setBadgeVisible(badgeVisible);
-                result.add(newApp);
+            if (item instanceof AppDescriptorUi) {
+                AppDescriptorUi app = (AppDescriptorUi) item;
+                NotificationBag bag = notificationBagContainer.get(app.getDescriptor());
+                result.add(concatAppNotifications(app, bag));
+            } else if (item instanceof FolderDescriptorUi) {
+                FolderDescriptorUi folder = (FolderDescriptorUi) item;
+                result.add(concatFolderNotifications(notificationBagContainer, folder));
             } else {
-                result.add(app);
+                result.add(item);
             }
         }
         return result;
+    }
+
+    private AppDescriptorUi concatAppNotifications(
+            AppDescriptorUi item, @Nullable NotificationBag bag) {
+        boolean badgeVisible = false;
+        if (bag != null) {
+            boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
+            // bag will never be empty here
+            badgeVisible = showOngoing || bag.getCount() != bag.getOngoingCount();
+        }
+        if (badgeVisible != item.isBadgeVisible()) {
+            // create a copy of AppDescriptorUi to update state correctly
+            AppDescriptorUi newApp = new AppDescriptorUi(item);
+            newApp.setBadgeVisible(badgeVisible);
+            return newApp;
+        } else {
+            return item;
+        }
+    }
+
+    private FolderDescriptorUi concatFolderNotifications(
+            NotificationBagContainer notificationBagContainer, FolderDescriptorUi item) {
+        boolean badgeVisible = false;
+        boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
+        for (String descriptorId : item.items) {
+            NotificationBag bag = notificationBagContainer.get(descriptorId);
+            if (bag == null) {
+                continue;
+            }
+            badgeVisible = showOngoing || bag.getCount() != bag.getOngoingCount();
+            if (badgeVisible) {
+                break;
+            }
+        }
+        if (badgeVisible != item.isBadgeVisible()) {
+            // create a copy of AppDescriptorUi to update state correctly
+            FolderDescriptorUi newApp = new FolderDescriptorUi(item);
+            newApp.setBadgeVisible(badgeVisible);
+            return newApp;
+        } else {
+            return item;
+        }
     }
 
     private Observable<UserPrefs> observeUserPrefs() {
@@ -488,6 +515,45 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             if (descriptor != null) {
                 descriptor.items.add(descriptorId);
             }
+        }
+    }
+
+    private static class NotificationBagContainer {
+        static final NotificationBagContainer EMPTY = new NotificationBagContainer();
+
+        private final Map<AppDescriptor, NotificationBag> notifications;
+        @Nullable
+        private Map<String, NotificationBag> byDescriptorId;
+
+        NotificationBagContainer(Map<AppDescriptor, NotificationBag> notifications) {
+            this.notifications = notifications;
+        }
+
+        private NotificationBagContainer() {
+            notifications = Collections.emptyMap();
+            byDescriptorId = Collections.emptyMap();
+        }
+
+        boolean isEmpty() {
+            return notifications.isEmpty();
+        }
+
+        NotificationBag get(AppDescriptor descriptor) {
+            return notifications.get(descriptor);
+        }
+
+        NotificationBag get(String descriptorId) {
+            return getByDescriptorId().get(descriptorId);
+        }
+
+        private Map<String, NotificationBag> getByDescriptorId() {
+            if (byDescriptorId == null) {
+                byDescriptorId = new HashMap<>(notifications.size());
+                for (Map.Entry<AppDescriptor, NotificationBag> entry : notifications.entrySet()) {
+                    byDescriptorId.put(entry.getKey().getId(), entry.getValue());
+                }
+            }
+            return byDescriptorId;
         }
     }
 }
