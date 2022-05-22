@@ -57,20 +57,16 @@ public final class DescriptorUtils {
         return descriptor;
     }
 
-    public static String getLabel(Descriptor descriptor) {
-        return descriptor instanceof LabelDescriptor ? ((LabelDescriptor) descriptor).getLabel() : descriptor.getId();
-    }
-
     public static String getVisibleLabel(Descriptor descriptor) {
         if (descriptor instanceof CustomLabelDescriptor) {
             String visibleLabel = ((CustomLabelDescriptor) descriptor).getVisibleLabel();
-            return visibleLabel != null ? visibleLabel : "";
+            return visibleLabel != null ? visibleLabel : descriptor.getOriginalLabel();
         }
         if (descriptor instanceof LabelDescriptor) {
             String label = ((LabelDescriptor) descriptor).getLabel();
-            return label != null ? label : "";
+            return label != null ? label : descriptor.getOriginalLabel();
         }
-        return "";
+        return descriptor.getOriginalLabel();
     }
 
     @Nullable
