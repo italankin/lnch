@@ -32,7 +32,8 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
             throw new NullPointerException("items cannot be null");
         }
         this.items = items;
-        for (Callback callback : callbacks) {
+        for (int i = callbacks.size() - 1; i >= 0; i--) {
+            Callback callback = callbacks.get(i);
             callback.onNewItems(items);
         }
     }
@@ -60,7 +61,8 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(id)) {
                 items.remove(i);
-                for (Callback callback : callbacks) {
+                for (int j = callbacks.size() - 1; j >= 0; j--) {
+                    Callback callback = callbacks.get(j);
                     callback.onItemRemoved(i, item);
                 }
                 break;
@@ -114,14 +116,16 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     public void insertItem(DescriptorUi item) {
         int position = items.size();
         items.add(item);
-        for (Callback callback : callbacks) {
+        for (int i = callbacks.size() - 1; i >= 0; i--) {
+            Callback callback = callbacks.get(i);
             callback.onItemInserted(position, item);
         }
     }
 
     @Override
     public void updateItem(DescriptorUi item) {
-        for (Callback callback : callbacks) {
+        for (int i = callbacks.size() - 1; i >= 0; i--) {
+            Callback callback = callbacks.get(i);
             callback.onItemChanged(items.indexOf(item), item);
         }
     }
@@ -129,7 +133,8 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     @Override
     public void moveItem(int fromPosition, int toPosition) {
         ListUtils.move(items, fromPosition, toPosition);
-        for (Callback callback : callbacks) {
+        for (int i = callbacks.size() - 1; i >= 0; i--) {
+            Callback callback = callbacks.get(i);
             callback.onItemMoved(fromPosition, toPosition);
         }
     }
