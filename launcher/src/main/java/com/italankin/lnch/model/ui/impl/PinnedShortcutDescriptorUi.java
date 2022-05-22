@@ -111,6 +111,7 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
         PinnedShortcutDescriptorUi that = (PinnedShortcutDescriptorUi) another;
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
-                && Objects.equals(this.customColor, that.customColor);
+                && Objects.equals(this.customColor, that.customColor)
+                && this.ignored == that.ignored;
     }
 }
