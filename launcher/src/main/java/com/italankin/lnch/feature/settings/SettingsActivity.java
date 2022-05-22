@@ -89,9 +89,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
                     showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
                 })
-                .register(new SettingsRootFragment.ShowHiddenItems(), result -> {
-                    showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
-                })
                 .register(new SettingsRootFragment.ShowWallpaperPreferences(), result -> {
                     showFragment(WallpaperFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_wallpaper);
                 })
@@ -112,6 +109,9 @@ public class SettingsActivity extends AppCompatActivity {
                 })
                 .register(new AppsSettingsFragment.ShowAppDetailsContract(), descriptorId -> {
                     showFragment(AppDetailsFragment.newInstance(REQUEST_KEY_SETTINGS, descriptorId), R.string.settings_app_details);
+                })
+                .register(new MiscFragment.ShowHiddenItems(), result -> {
+                    showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
                 })
                 .register(new MiscFragment.ShowExperimentalPreferencesContract(), result -> {
                     showFragment(new ExperimentalSettingsFragment(), R.string.settings_home_misc_experimental);

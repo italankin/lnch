@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings.hidden_items;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
     HiddenItemsPresenter presenter;
 
     private LceLayout lce;
-    private CompositeAdapter<IgnorableDescriptorUi> adapter;
+    private CompositeAdapter<HiddenItem> adapter;
 
     @ProvidePresenter
     HiddenItemsPresenter providePresenter() {
@@ -38,7 +40,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_hidden_items, container, false);
     }
 
@@ -48,14 +50,16 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
         RecyclerView list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
 
-        adapter = new CompositeAdapter.Builder<IgnorableDescriptorUi>(requireContext())
-                .add(new HiddenItemAdapter(presenter::showItem))
+        Context context = requireContext();
+        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        adapter = new CompositeAdapter.Builder<HiddenItem>(context)
+                .add(new HiddenItemAdapter(picasso, item -> presenter.showItem(item.descriptor)))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
 
-        Drawable drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.settings_list_divider);
-        DividerItemDecoration decoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.settings_list_divider);
+        DividerItemDecoration decoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);
     }
@@ -66,7 +70,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
     }
 
     @Override
-    public void onItemsUpdated(List<IgnorableDescriptorUi> items) {
+    public void onItemsUpdated(List<HiddenItem> items) {
         adapter.setDataset(items);
         adapter.notifyDataSetChanged();
         if (items.isEmpty()) {

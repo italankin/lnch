@@ -7,20 +7,44 @@
     android:paddingStart="16dp"
     tools:ignore="RtlSymmetry">
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/cd_application_icon"
+        tools:src="@tools:sample/avatars" />
+
     <TextView
-        android:id="@+id/label"
+        android:id="@+id/original_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_toStartOf="@+id/visibility"
-        android:layout_alignParentStart="true"
+        android:layout_toEndOf="@id/icon"
         android:ellipsize="none"
         android:fadingEdgeLength="24dp"
         android:requiresFadingEdge="horizontal"
         android:singleLine="true"
-        android:layout_centerVertical="true"
         android:textColor="?colorText"
         android:textSize="16sp"
+        tools:text="@tools:sample/first_names" />
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/original_label"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/icon"
+        android:layout_toStartOf="@+id/visibility"
+        android:ellipsize="none"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="horizontal"
+        android:singleLine="true"
+        android:textColor="?colorTextSecondary"
+        android:textSize="12sp"
         tools:text="@tools:sample/first_names" />
 
     <ImageView

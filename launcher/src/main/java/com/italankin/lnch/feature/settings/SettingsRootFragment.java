@@ -83,10 +83,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             sendResult(new ShowWidgetPreferences().result());
             return true;
         });
-        findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
-            sendResult(new ShowHiddenItems().result());
-            return true;
-        });
         findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowBackupPreferences().result());
             return true;
@@ -165,12 +161,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     public static class ShowWidgetPreferences extends SignalFragmentResultContract {
         public ShowWidgetPreferences() {
             super("show_widget_preferences");
-        }
-    }
-
-    public static class ShowHiddenItems extends SignalFragmentResultContract {
-        public ShowHiddenItems() {
-            super("show_hidden_items");
         }
     }
 

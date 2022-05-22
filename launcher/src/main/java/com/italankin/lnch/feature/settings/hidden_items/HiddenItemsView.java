@@ -13,7 +13,7 @@ interface HiddenItemsView extends MvpView {
     void showLoading();
 
     @StateStrategyType(SingleStateStrategy.class)
-    void onItemsUpdated(List<IgnorableDescriptorUi> items);
+    void onItemsUpdated(List<HiddenItem> items);
 
     @StateStrategyType(SingleStateStrategy.class)
     void showError(Throwable e);

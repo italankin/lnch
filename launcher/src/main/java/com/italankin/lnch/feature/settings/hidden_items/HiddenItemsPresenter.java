@@ -8,6 +8,7 @@ import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
+import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,9 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
         observeApps();
     }
 
-    void showItem(IgnorableDescriptorUi item) {
+    void showItem(IgnorableDescriptor descriptor) {
         descriptorRepository.edit()
-                .enqueue(new SetIgnoreAction(item.getDescriptor(), false))
+                .enqueue(new SetIgnoreAction(descriptor, false))
                 .commit()
                 .subscribe(new CompletableState() {
                     @Override
@@ -50,20 +51,22 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
         getViewState().showLoading();
         descriptorRepository.observe()
                 .map(descriptors -> {
-                    ArrayList<IgnorableDescriptorUi> list = new ArrayList<>();
+                    ArrayList<HiddenItem> list = new ArrayList<>();
                     for (Descriptor descriptor : descriptors) {
-                        if (descriptor instanceof IgnorableDescriptor &&
-                                ((IgnorableDescriptor) descriptor).isIgnored()) {
-                            list.add((IgnorableDescriptorUi) DescriptorUiFactory.createItem(descriptor));
+                        if (descriptor instanceof IgnorableDescriptor) {
+                            IgnorableDescriptor ignorableDescriptor = (IgnorableDescriptor) descriptor;
+                            if (ignorableDescriptor.isIgnored()) {
+                                list.add(new HiddenItem(ignorableDescriptor));
+                            }
                         }
                     }
                     return list;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<IgnorableDescriptorUi>>() {
+                .subscribe(new State<List<HiddenItem>>() {
                     @Override
-                    protected void onNext(HiddenItemsView viewState, List<IgnorableDescriptorUi> items) {
+                    protected void onNext(HiddenItemsView viewState, List<HiddenItem> items) {
                         viewState.onItemsUpdated(items);
                     }
 

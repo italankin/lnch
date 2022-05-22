@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/pref_key_home_hidden_items"
+        android:title="@string/settings_home_hidden_items" />
     <ListPreference
         android:defaultValue="sensor"
         android:entries="@array/pref_desc_screen_orientation"

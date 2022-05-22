@@ -32,11 +32,21 @@ public class MiscFragment extends BasePreferenceFragment {
             sendResult(new ShowExperimentalPreferencesContract().result());
             return true;
         });
+        findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
+            sendResult(new ShowHiddenItems().result());
+            return true;
+        });
     }
 
     public static class ShowExperimentalPreferencesContract extends SignalFragmentResultContract {
         public ShowExperimentalPreferencesContract() {
             super("show_experimental_preferences");
+        }
+    }
+
+    public static class ShowHiddenItems extends SignalFragmentResultContract {
+        public ShowHiddenItems() {
+            super("show_hidden_items");
         }
     }
 }
