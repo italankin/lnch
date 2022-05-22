@@ -397,7 +397,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (needsFullUpdate) {
             adapter.notifyDataSetChanged();
         } else {
-            update.dispatchTo(list.getAdapter());
+            update.dispatchTo(adapter);
         }
     }
 
