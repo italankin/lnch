@@ -31,7 +31,7 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     public PinnedShortcutDescriptor(String uri, String label, @ColorInt int color) {
         this.id = "shortcut/" + UUID.randomUUID().toString();
         this.uri = uri;
-        this.originalLabel = label;
+        this.originalLabel = this.label = label;
         this.color = color;
     }
 
@@ -113,6 +113,7 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         PinnedShortcutDescriptor copy = new PinnedShortcutDescriptor();
         copy.id = id;
         copy.uri = uri;
+        copy.originalLabel = originalLabel;
         copy.label = label;
         copy.color = color;
         copy.customLabel = customLabel;
