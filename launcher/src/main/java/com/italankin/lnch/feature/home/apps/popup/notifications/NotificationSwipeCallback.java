@@ -21,7 +21,7 @@ public class NotificationSwipeCallback extends ItemTouchHelper.Callback {
             return NON_MOVABLE_FLAGS;
         }
         AppNotificationUi item = ((AppNotificationUiAdapter.ViewHolder) viewHolder).item;
-        if (item.sbn.isOngoing()) {
+        if (!item.sbn.isClearable()) {
             return NON_MOVABLE_FLAGS;
         }
         return MOVABLE_FLAGS;

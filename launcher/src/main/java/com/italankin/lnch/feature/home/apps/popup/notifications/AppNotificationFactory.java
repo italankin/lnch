@@ -79,7 +79,7 @@ public class AppNotificationFactory {
     }
 
     private static boolean ignore(StatusBarNotification sbn) {
-        if (sbn.isOngoing()) {
+        if (!sbn.isClearable()) {
             return true;
         }
         Notification n = sbn.getNotification();

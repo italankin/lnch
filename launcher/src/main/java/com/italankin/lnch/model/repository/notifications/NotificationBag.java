@@ -13,7 +13,7 @@ public class NotificationBag {
 
     final AppDescriptor descriptor;
     final List<StatusBarNotification> sbns;
-    private final int ongoingCount;
+    private final int clearableCount;
     private final int hashCode;
 
     NotificationBag(AppDescriptor descriptor, StatusBarNotification sbn) {
@@ -24,15 +24,15 @@ public class NotificationBag {
         this.descriptor = descriptor;
         this.sbns = Collections.unmodifiableList(sbns);
         int h = descriptor.hashCode();
-        int ongoingCount = 0;
+        int clearableCount = 0;
         for (StatusBarNotification sbn : sbns) {
             h = h * 31 + (sbn.getId() + 131);
-            if (sbn.isOngoing()) {
-                ongoingCount++;
+            if (sbn.isClearable()) {
+                clearableCount++;
             }
         }
         this.hashCode = h;
-        this.ongoingCount = ongoingCount;
+        this.clearableCount = clearableCount;
     }
 
     public List<StatusBarNotification> getNotifications() {
@@ -43,8 +43,8 @@ public class NotificationBag {
         return sbns.size();
     }
 
-    public int getOngoingCount() {
-        return ongoingCount;
+    public int getClearableCount() {
+        return clearableCount;
     }
 
     @Override

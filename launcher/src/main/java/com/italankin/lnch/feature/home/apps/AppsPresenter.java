@@ -445,12 +445,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private AppDescriptorUi concatAppNotifications(
             AppDescriptorUi item, @Nullable NotificationBag bag) {
-        boolean badgeVisible = false;
-        if (bag != null) {
-            boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
-            // bag will never be empty here
-            badgeVisible = showOngoing || bag.getCount() != bag.getOngoingCount();
-        }
+        boolean badgeVisible = isBadgeVisible(bag);
         if (badgeVisible != item.isBadgeVisible()) {
             // create a copy of AppDescriptorUi to update state correctly
             AppDescriptorUi newApp = new AppDescriptorUi(item);
@@ -464,13 +459,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private FolderDescriptorUi concatFolderNotifications(
             NotificationBagContainer notificationBagContainer, FolderDescriptorUi item) {
         boolean badgeVisible = false;
-        boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
         for (String descriptorId : item.items) {
             NotificationBag bag = notificationBagContainer.get(descriptorId);
-            if (bag == null) {
-                continue;
-            }
-            badgeVisible = showOngoing || bag.getCount() != bag.getOngoingCount();
+            badgeVisible = isBadgeVisible(bag);
             if (badgeVisible) {
                 break;
             }
@@ -483,6 +474,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         } else {
             return item;
         }
+    }
+
+    private boolean isBadgeVisible(@Nullable NotificationBag bag) {
+        if (bag != null) {
+            // bag will never be empty here
+            boolean showDotOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
+            return showDotOngoing || bag.getClearableCount() > 0;
+        }
+        return false;
     }
 
     private Observable<UserPrefs> observeUserPrefs() {
