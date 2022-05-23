@@ -37,7 +37,8 @@ public class AppNotificationFactory {
                 continue;
             }
             if (AT_LEAST_N && sbn.isGroup()) {
-                String groupKey = sbn.getGroupKey();
+                String overrideGroupKey = sbn.getOverrideGroupKey();
+                String groupKey = overrideGroupKey != null ? overrideGroupKey : sbn.getGroupKey();
                 List<StatusBarNotification> sbns = grouped.get(groupKey);
                 if (sbns == null) {
                     sbns = new ArrayList<>(1);
