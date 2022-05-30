@@ -10,11 +10,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class PopupFrameView extends ViewGroup {
 
+    private static final List<Location> DEFAULT_LOCATIONS = Arrays.asList(Location.BOTTOM, Location.TOP);
     private static final boolean DEBUG = false;
 
     private static final float MAX_WIDTH_FACTOR = .85f;
@@ -24,7 +26,7 @@ public class PopupFrameView extends ViewGroup {
     private final Rect out = new Rect();
     private final int[] tmp = new int[2];
 
-    private final List<Location> locations = Arrays.asList(Location.BOTTOM, Location.TOP);
+    private final List<Location> locations = new ArrayList<>(DEFAULT_LOCATIONS);
     private Rect anchor;
     private float maxWidthFactor = MAX_WIDTH_FACTOR;
     private float maxHeightFactor = MAX_HEIGHT_FACTOR;
