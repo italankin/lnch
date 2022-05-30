@@ -16,11 +16,11 @@ public class IntentDescriptorUiAdapter
     private final Listener listener;
 
     public IntentDescriptorUiAdapter(Listener listener) {
-        this(listener, false);
+        this(listener, Params.DEFAULT);
     }
 
-    public IntentDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
-        super(ignoreVisibility);
+    public IntentDescriptorUiAdapter(Listener listener, Params params) {
+        super(params);
         this.listener = listener;
     }
 

@@ -28,6 +28,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
         PREFERENCES.add(Preferences.ITEM_SHADOW_COLOR);
         PREFERENCES.add(Preferences.ITEM_FONT);
+        PREFERENCES.add(Preferences.ITEM_MATCH_PARENT);
         PREFERENCES.add(Preferences.NOTIFICATION_DOT_COLOR);
     }
 
@@ -125,6 +126,8 @@ public final class UserPrefs {
         public final Integer itemShadowColor;
         public final Preferences.Font itemFont;
         public final Integer notificationDotColor;
+        public final boolean matchParent;
+        public final Preferences.HomeAlignment alignment;
 
         private ItemPrefs(Preferences preferences) {
             itemTextSize = preferences.get(Preferences.ITEM_TEXT_SIZE);
@@ -133,6 +136,8 @@ public final class UserPrefs {
             itemShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
             itemFont = preferences.get(Preferences.ITEM_FONT);
             notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
+            matchParent = preferences.get(Preferences.ITEM_MATCH_PARENT);
+            alignment = preferences.get(Preferences.HOME_ALIGNMENT);
         }
 
         @Override
@@ -148,6 +153,12 @@ public final class UserPrefs {
                 return false;
             }
             if (itemPadding != itemPrefs.itemPadding) {
+                return false;
+            }
+            if (matchParent != itemPrefs.matchParent) {
+                return false;
+            }
+            if (alignment != itemPrefs.alignment) {
                 return false;
             }
             if (!Objects.equals(notificationDotColor, itemPrefs.notificationDotColor)) {
@@ -166,6 +177,8 @@ public final class UserPrefs {
         public int hashCode() {
             int result = (itemTextSize != 0f ? Float.floatToIntBits(itemTextSize) : 0);
             result = 31 * result + itemPadding;
+            result = 31 * result + (matchParent ? 1 : 0);
+            result = 31 * result + alignment.hashCode();
             result = 31 * result + (itemShadowRadius != 0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
             if (notificationDotColor != null) {
@@ -183,6 +196,8 @@ public final class UserPrefs {
             return "{" +
                     "itemTextSize=" + itemTextSize +
                     ", itemPadding=" + itemPadding +
+                    ", matchParent=" + matchParent +
+                    ", alignment=" + alignment +
                     ", itemShadowRadius=" + itemShadowRadius +
                     ", itemShadowColor=" +
                     (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +

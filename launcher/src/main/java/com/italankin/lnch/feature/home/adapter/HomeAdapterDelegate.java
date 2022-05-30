@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home.adapter;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +22,15 @@ import java.util.List;
 public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
         extends BaseAdapterDelegate<VH, T> {
 
-    private final boolean ignoreVisibility;
+    private final Params params;
     private UserPrefs.ItemPrefs itemPrefs;
 
     protected HomeAdapterDelegate() {
-        this(false);
+        this(Params.DEFAULT);
     }
 
-    protected HomeAdapterDelegate(boolean ignoreVisibility) {
-        this.ignoreVisibility = ignoreVisibility;
+    protected HomeAdapterDelegate(Params params) {
+        this.params = params;
     }
 
     @Override
@@ -59,7 +60,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
     @Override
     public final boolean isType(int position, Object item) {
-        return isType(position, item, ignoreVisibility);
+        return isType(position, item, params.ignoreVisibility);
     }
 
     protected abstract boolean isType(int position, Object item, boolean ignoreVisibility);
@@ -89,6 +90,27 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.itemFont.typeface());
+        ViewGroup.LayoutParams lp = label.getLayoutParams();
+        if (!params.ignoreAlignment && itemPrefs.matchParent) {
+            if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
+                lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                label.requestLayout();
+            }
+            switch (itemPrefs.alignment) {
+                case START:
+                    label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+                    break;
+                case CENTER:
+                    label.setGravity(Gravity.CENTER);
+                    break;
+                case END:
+                    label.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
+                    break;
+            }
+        } else if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            label.requestLayout();
+        }
     }
 
     public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
@@ -106,5 +128,18 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
         @Nullable
         protected abstract TextView getLabel();
+    }
+
+    public static class Params {
+
+        public static final Params DEFAULT = new Params(false, false);
+
+        final boolean ignoreVisibility;
+        final boolean ignoreAlignment;
+
+        public Params(boolean ignoreVisibility, boolean ignoreAlignment) {
+            this.ignoreVisibility = ignoreVisibility;
+            this.ignoreAlignment = ignoreAlignment;
+        }
     }
 }

@@ -22,11 +22,11 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     private final Listener listener;
 
     public AppDescriptorUiAdapter(Listener listener) {
-        this(listener, false);
+        this(listener, Params.DEFAULT);
     }
 
-    public AppDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
-        super(ignoreVisibility);
+    public AppDescriptorUiAdapter(Listener listener, Params params) {
+        super(params);
         this.listener = listener;
     }
 

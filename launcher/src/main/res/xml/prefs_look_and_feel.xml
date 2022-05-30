@@ -37,6 +37,12 @@
             android:summary="%s"
             android:title="@string/settings_apps_name_transform" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="item_match_parent"
+            android:summaryOn="@string/settings_home_laf_other_match_parent_summary_on"
+            android:summaryOff="@string/settings_home_laf_other_match_parent_summary_off"
+            android:title="@string/settings_home_laf_other_match_parent" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="apps_list_animate"
             android:title="@string/settings_home_laf_other_apps_list_animate" />

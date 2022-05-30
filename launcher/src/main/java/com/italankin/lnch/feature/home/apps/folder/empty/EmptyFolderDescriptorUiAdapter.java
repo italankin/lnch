@@ -12,6 +12,10 @@ import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
 public class EmptyFolderDescriptorUiAdapter extends
         HomeAdapterDelegate<EmptyFolderDescriptorUiAdapter.ViewHolder, EmptyFolderDescriptorUi> {
 
+    public EmptyFolderDescriptorUiAdapter() {
+        super(new Params(false, true));
+    }
+
     @Override
     protected int getLayoutRes() {
         return R.layout.item_folder_empty;

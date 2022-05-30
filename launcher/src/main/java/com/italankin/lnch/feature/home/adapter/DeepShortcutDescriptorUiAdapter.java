@@ -18,11 +18,11 @@ public class DeepShortcutDescriptorUiAdapter
     private final Listener listener;
 
     public DeepShortcutDescriptorUiAdapter(Listener listener) {
-        this(listener, false);
+        this(listener, Params.DEFAULT);
     }
 
-    public DeepShortcutDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
-        super(ignoreVisibility);
+    public DeepShortcutDescriptorUiAdapter(Listener listener, Params params) {
+        super(params);
         this.listener = listener;
     }
 

@@ -216,6 +216,9 @@
     <string name="settings_home_laf_other_color_overlay_show">Single items color</string>
     <string name="settings_home_laf_other_color_overlay_show_summary">Use the same color for all items</string>
     <string name="settings_home_laf_other_apps_list_animate">Animate apps list appearance</string>
+    <string name="settings_home_laf_other_match_parent">Maximize item width</string>
+    <string name="settings_home_laf_other_match_parent_summary_on">Items will stretch to full screen width</string>
+    <string name="settings_home_laf_other_match_parent_summary_off">Items will shrink to their size</string>
     <string name="settings_home_laf_other_color_overlay">Custom color</string>
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
     <string name="settings_home_laf_other_fullscreen_folders">Fullscreen folders</string>

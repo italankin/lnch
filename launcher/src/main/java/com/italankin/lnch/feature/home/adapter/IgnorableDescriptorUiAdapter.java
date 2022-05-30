@@ -17,7 +17,7 @@ public class IgnorableDescriptorUiAdapter
     private static final int IGNORED_FLAG = 1 << 22;
 
     public IgnorableDescriptorUiAdapter() {
-        super(true);
+        super(new Params(true, true));
     }
 
     @NonNull

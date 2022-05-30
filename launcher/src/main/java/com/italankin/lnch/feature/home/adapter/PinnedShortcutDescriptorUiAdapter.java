@@ -16,11 +16,11 @@ public class PinnedShortcutDescriptorUiAdapter
     private final Listener listener;
 
     public PinnedShortcutDescriptorUiAdapter(Listener listener) {
-        this(listener, false);
+        this(listener, Params.DEFAULT);
     }
 
-    public PinnedShortcutDescriptorUiAdapter(Listener listener, boolean ignoreVisibility) {
-        super(ignoreVisibility);
+    public PinnedShortcutDescriptorUiAdapter(Listener listener, Params params) {
+        super(params);
         this.listener = listener;
     }
 

@@ -30,6 +30,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
+import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
 import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
@@ -151,11 +152,12 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         });
         alignFrameView.setOnClickListener(v -> dismiss());
 
+        HomeAdapterDelegate.Params params = new HomeAdapterDelegate.Params(true, true);
         adapter = new HomeAdapter.Builder(requireContext())
-                .add(new AppDescriptorUiAdapter(this, true))
-                .add(new PinnedShortcutDescriptorUiAdapter(this, true))
-                .add(new IntentDescriptorUiAdapter(this, true))
-                .add(new DeepShortcutDescriptorUiAdapter(this, true))
+                .add(new AppDescriptorUiAdapter(this, params))
+                .add(new PinnedShortcutDescriptorUiAdapter(this, params))
+                .add(new IntentDescriptorUiAdapter(this, params))
+                .add(new DeepShortcutDescriptorUiAdapter(this, params))
                 .add(new EmptyFolderDescriptorUiAdapter())
                 .setHasStableIds(true)
                 .create();

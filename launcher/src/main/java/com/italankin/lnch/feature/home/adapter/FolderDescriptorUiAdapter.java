@@ -22,7 +22,7 @@ public class FolderDescriptorUiAdapter
     private final Listener listener;
 
     public FolderDescriptorUiAdapter(Listener listener) {
-        super(false);
+        super();
         this.listener = listener;
     }
 

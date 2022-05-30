@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
+import androidx.annotation.NonNull;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -14,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 /**
@@ -286,6 +287,13 @@ public interface Preferences {
             Font::from);
 
     /**
+     * Whether item should occupy full width
+     */
+    Pref<Boolean> ITEM_MATCH_PARENT = Prefs.createBoolean(
+            "item_match_parent",
+            false);
+
+    /**
      * First time launch of the launcher
      */
     Pref<Boolean> FIRST_LAUNCH = Prefs.createBoolean(
@@ -450,6 +458,7 @@ public interface Preferences {
             ITEM_SHADOW_RADIUS,
             ITEM_SHADOW_COLOR,
             ITEM_FONT,
+            ITEM_MATCH_PARENT,
             FIRST_LAUNCH,
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
