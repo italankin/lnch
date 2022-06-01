@@ -3,9 +3,10 @@ package com.italankin.lnch.model.repository.prefs;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.Typeface;
 
 import androidx.annotation.NonNull;
+
+import com.italankin.lnch.model.fonts.FontManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -281,10 +282,9 @@ public interface Preferences {
     /**
      * Home screen items font
      */
-    Pref<Font> ITEM_FONT = Prefs.create(
+    Pref<String> ITEM_FONT = Prefs.createString(
             "item_font",
-            Font.DEFAULT,
-            Font::from);
+            FontManager.DEFAULT_FONT);
 
     /**
      * Whether item should occupy full width
@@ -565,43 +565,6 @@ public interface Preferences {
 
         HomeAlignment(String key) {
             this.key = key;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return key;
-        }
-    }
-
-    /**
-     * Font for item labels
-     */
-    enum Font {
-        DEFAULT("default", Typeface.DEFAULT_BOLD),
-        SANS_SERIF("sans_serif", Typeface.SANS_SERIF),
-        SERIF("serif", Typeface.SERIF),
-        MONOSPACE("monospace", Typeface.MONOSPACE);
-
-        static Font from(String s, Font defaultValue) {
-            for (Font value : values()) {
-                if (value.key.equals(s)) {
-                    return value;
-                }
-            }
-            return defaultValue;
-        }
-
-        private final String key;
-        private final Typeface typeface;
-
-        Font(String key, Typeface typeface) {
-            this.key = key;
-            this.typeface = typeface;
-        }
-
-        public Typeface typeface() {
-            return typeface;
         }
 
         @NonNull

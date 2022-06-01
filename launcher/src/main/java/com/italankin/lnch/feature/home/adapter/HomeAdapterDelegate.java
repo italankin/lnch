@@ -89,7 +89,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                 : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
         label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
-        label.setTypeface(itemPrefs.itemFont.typeface());
+        label.setTypeface(itemPrefs.typeface);
         ViewGroup.LayoutParams lp = label.getLayoutParams();
         if (!params.ignoreAlignment && itemPrefs.matchParent) {
             if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {

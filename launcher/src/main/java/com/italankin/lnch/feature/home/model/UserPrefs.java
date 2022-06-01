@@ -1,5 +1,8 @@
 package com.italankin.lnch.feature.home.model;
 
+import android.graphics.Typeface;
+
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.HashSet;
@@ -43,7 +46,7 @@ public final class UserPrefs {
     public final Integer statusBarColor;
     public final ItemPrefs itemPrefs;
 
-    public UserPrefs(Preferences preferences) {
+    public UserPrefs(Preferences preferences, FontManager fontManager) {
         homeLayout = preferences.get(Preferences.HOME_LAYOUT);
         homeAlignment = preferences.get(Preferences.HOME_ALIGNMENT);
         overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
@@ -51,7 +54,7 @@ public final class UserPrefs {
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
-        itemPrefs = new UserPrefs.ItemPrefs(preferences);
+        itemPrefs = new UserPrefs.ItemPrefs(preferences, fontManager);
     }
 
     @Override
@@ -124,17 +127,19 @@ public final class UserPrefs {
         @ColorInt
         @Nullable
         public final Integer itemShadowColor;
-        public final Preferences.Font itemFont;
+        public final String itemFont;
+        public final Typeface typeface;
         public final Integer notificationDotColor;
         public final boolean matchParent;
         public final Preferences.HomeAlignment alignment;
 
-        private ItemPrefs(Preferences preferences) {
+        private ItemPrefs(Preferences preferences, FontManager fontManager) {
             itemTextSize = preferences.get(Preferences.ITEM_TEXT_SIZE);
             itemPadding = preferences.get(Preferences.ITEM_PADDING);
             itemShadowRadius = preferences.get(Preferences.ITEM_SHADOW_RADIUS);
             itemShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
             itemFont = preferences.get(Preferences.ITEM_FONT);
+            typeface = fontManager.getTypeface(itemFont);
             notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
             matchParent = preferences.get(Preferences.ITEM_MATCH_PARENT);
             alignment = preferences.get(Preferences.HOME_ALIGNMENT);
@@ -170,7 +175,7 @@ public final class UserPrefs {
             if (!Objects.equals(itemShadowColor, itemPrefs.itemShadowColor)) {
                 return false;
             }
-            return itemFont == itemPrefs.itemFont;
+            return itemFont.equals(itemPrefs.itemFont);
         }
 
         @Override
@@ -201,7 +206,7 @@ public final class UserPrefs {
                     ", itemShadowRadius=" + itemShadowRadius +
                     ", itemShadowColor=" +
                     (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
-                    ", itemFont=" + itemFont +
+                    ", typeface=" + typeface +
                     ", notificationDotColor=" + notificationDotColor +
                     '}';
         }

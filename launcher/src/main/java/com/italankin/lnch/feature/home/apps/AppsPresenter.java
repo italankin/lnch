@@ -19,6 +19,7 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
@@ -72,6 +73,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private final NotificationsRepository notificationsRepository;
     private final Preferences preferences;
     private final NameNormalizer nameNormalizer;
+    private final FontManager fontManager;
 
     private DescriptorRepository.Editor editor;
 
@@ -80,13 +82,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             DescriptorRepository descriptorRepository,
             ShortcutsRepository shortcutsRepository,
             NotificationsRepository notificationsRepository,
-            Preferences preferences, NameNormalizer nameNormalizer) {
+            Preferences preferences, NameNormalizer nameNormalizer,
+            FontManager fontManager) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.notificationsRepository = notificationsRepository;
         this.preferences = preferences;
         this.nameNormalizer = nameNormalizer;
+        this.fontManager = fontManager;
     }
 
     @Override
@@ -486,11 +490,15 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     private Observable<UserPrefs> observeUserPrefs() {
-        return preferences.observe()
-                .filter(UserPrefs.PREFERENCES::contains)
-                .map(s -> new UserPrefs(preferences))
-                .startWith(new UserPrefs(preferences))
-                .distinctUntilChanged();
+        return fontManager.loadUserFonts()
+                .andThen(preferences.observe()
+                        .filter(UserPrefs.PREFERENCES::contains)
+                        .map(s -> new UserPrefs(preferences, fontManager))
+                        .startWith(Observable.fromCallable(() -> {
+                            // make sure we load fonts first
+                            return new UserPrefs(preferences, fontManager);
+                        }))
+                        .distinctUntilChanged());
     }
 
     private Update calculateUpdates(Update previous, List<DescriptorUi> newItems) {

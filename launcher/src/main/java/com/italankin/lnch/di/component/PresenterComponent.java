@@ -12,6 +12,7 @@ import com.italankin.lnch.feature.settings.apps.AppsSettingsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
+import com.italankin.lnch.feature.settings.fonts.FontsPresenter;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsPresenter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
 import com.italankin.lnch.feature.widgets.WidgetsPresenter;
@@ -36,6 +37,8 @@ public interface PresenterComponent {
     AppsSettingsPresenter appsSettings();
 
     HiddenItemsPresenter hiddenItems();
+
+    FontsPresenter fonts();
 
     AppDetailsPresenter appDetails();
 

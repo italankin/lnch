@@ -10,6 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
+import com.italankin.lnch.util.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,7 @@ public class BackupReaderImpl implements BackupReader {
                         throw new RuntimeException("Restore failed: " + e.getMessage(), e);
                     }
                 }),
-                BackupUtils::closeQuietly)
+                IOUtils::closeQuietly)
                 .flatMapCompletable(this::applyBackup)
                 .onErrorResumeNext(throwable -> {
                     if (!(throwable instanceof JsonSyntaxException)) {
@@ -75,12 +76,12 @@ public class BackupReaderImpl implements BackupReader {
                         return gson.fromJson(reader, Backup.class);
                     }
                 }),
-                BackupUtils::closeQuietly)
+                IOUtils::closeQuietly)
                 .flatMapCompletable(this::applyBackup);
     }
 
     private InputStreamReader getReader(InputStream inputStream) throws IOException {
-        return new InputStreamReader(new GZIPInputStream(inputStream, BackupUtils.DEFAULT_BUFFER_SIZE));
+        return new InputStreamReader(new GZIPInputStream(inputStream, IOUtils.DEFAULT_BUFFER_SIZE));
     }
 
     private Completable applyBackup(Backup backup) {

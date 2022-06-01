@@ -22,13 +22,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.fonts.FontsFragment;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
@@ -58,7 +61,10 @@ public class AppearanceFragment extends AppFragment implements
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final String TAG_DISCARD_CHANGES = "discard_changes";
 
+    private static final String REQUEST_KEY_APPEARANCE = "appearance";
+
     private Preferences preferences;
+    private FontManager fontManager;
 
     private TextView preview;
     private View overlay;
@@ -76,7 +82,23 @@ public class AppearanceFragment extends AppFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
+        fontManager = LauncherApp.daggerService.main().typefaceStorage();
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_APPEARANCE)
+                .register(new FontsFragment.OnFontSelected(), result -> {
+                    itemFont.setValue(result);
+                    updatePreview();
+                })
+                .register(new FontsFragment.OnFontDeleted(), result -> {
+                    itemFont.setValue(preferences.get(Preferences.ITEM_FONT));
+                    updatePreview();
+                })
+                .attach();
     }
 
     @Nullable
@@ -267,39 +289,28 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void initFont(View view) {
-        String[] fontTitles = getResources().getStringArray(R.array.settings_home_laf_appearance_text_font_titles);
-
         itemFont = view.findViewById(R.id.item_font);
-        Preferences.Font font = preferences.get(Preferences.ITEM_FONT);
-        itemFont.setValueHolder(new ValuePrefView.ValueHolder<Preferences.Font>() {
-            private Preferences.Font value;
+        String font = preferences.get(Preferences.ITEM_FONT);
+        itemFont.setValueHolder(new ValuePrefView.ValueHolder<String>() {
+            private String value;
 
             @Override
-            public void set(Preferences.Font value) {
+            public void set(String value) {
                 this.value = value;
             }
 
             @Override
-            public Preferences.Font get() {
+            public String get() {
                 return value;
             }
 
             @Override
             public CharSequence getDescription() {
-                return fontTitles[value.ordinal()];
+                return value;
             }
         });
         itemFont.setValue(font);
-        itemFont.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle(R.string.settings_home_laf_appearance_text_font);
-            builder.setItems(fontTitles, (dialog, which) -> {
-                Preferences.Font newFont = Preferences.Font.values()[which];
-                itemFont.setValue(newFont);
-                updatePreview();
-            });
-            builder.show();
-        });
+        itemFont.setOnClickListener(v -> sendResult(ShowFontSelectContract.result(REQUEST_KEY_APPEARANCE)));
     }
 
     private void initPadding(View view) {
@@ -336,12 +347,12 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void updatePreview() {
-        Preferences.Font font = itemFont.getValue();
         int textSize = (int) (Preferences.ITEM_TEXT_SIZE.min() + itemTextSize.getProgress());
         int padding = Preferences.ITEM_PADDING.min() + itemPadding.getProgress();
         int shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
-        preview.setTypeface(font.typeface());
+        String font = itemFont.getValue();
+        preview.setTypeface(fontManager.getTypeface(font));
         ViewUtils.setPaddingDp(preview, padding);
         preview.setTextSize(textSize);
         preview.setShadowLayer(shadowRadius, preview.getShadowDx(), preview.getShadowDy(), shadowColor);
@@ -352,7 +363,7 @@ public class AppearanceFragment extends AppFragment implements
         int padding = itemPadding.getProgress() + Preferences.ITEM_PADDING.min();
         float shadowRadius = itemShadowRadius.getProgress();
         int shadowColor = itemShadowColor.getValue();
-        Preferences.Font font = itemFont.getValue();
+        String font = itemFont.getValue();
         preferences.set(Preferences.ITEM_TEXT_SIZE, textSize);
         preferences.set(Preferences.ITEM_PADDING, padding);
         preferences.set(Preferences.ITEM_SHADOW_RADIUS, shadowRadius);
@@ -393,6 +404,28 @@ public class AppearanceFragment extends AppFragment implements
         int min = pref.min().intValue();
         prefView.setProgress(preferences.get(pref).intValue() - min);
         prefView.setMax(pref.max().intValue() - min);
+    }
+
+    public static class ShowFontSelectContract implements FragmentResultContract<String> {
+        private static final String KEY = "show_font_select";
+        private static final String REQUEST_KEY = "request_key";
+
+        static Bundle result(String requestKey) {
+            Bundle bundle = new Bundle();
+            bundle.putString(RESULT_KEY, KEY);
+            bundle.putString(REQUEST_KEY, requestKey);
+            return bundle;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public String parseResult(Bundle result) {
+            return result.getString(REQUEST_KEY);
+        }
     }
 
     public static class AppearanceFinishedContract extends SignalFragmentResultContract {

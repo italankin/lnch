@@ -1,15 +1,15 @@
-package com.italankin.lnch.model.backup;
+package com.italankin.lnch.util;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 import timber.log.Timber;
 
-final class BackupUtils {
+public final class IOUtils {
 
-    static final int DEFAULT_BUFFER_SIZE = 2 << 12;
+    public static final int DEFAULT_BUFFER_SIZE = 2 << 12;
 
-    static void closeQuietly(Closeable closeable) {
+    public static void closeQuietly(Closeable closeable) {
         try {
             closeable.close();
         } catch (IOException e) {
@@ -17,7 +17,7 @@ final class BackupUtils {
         }
     }
 
-    private BackupUtils() {
+    private IOUtils() {
         // no instance
     }
 }

@@ -3,8 +3,9 @@ package com.italankin.lnch.feature.home.apps.folder;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
@@ -21,15 +22,17 @@ abstract class BaseFolderPresenter<V extends BaseFolderView> extends AppPresente
     protected final HomeDescriptorsState homeDescriptorsState;
     protected final DescriptorRepository descriptorRepository;
     protected final Preferences preferences;
+    protected final FontManager fontManager;
 
     protected FolderDescriptorUi folder;
     protected List<DescriptorUi> items;
 
     BaseFolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
-            Preferences preferences) {
+            Preferences preferences, FontManager fontManager) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.preferences = preferences;
+        this.fontManager = fontManager;
     }
 
     protected void loadFolder(String folderId) {
@@ -45,7 +48,7 @@ abstract class BaseFolderPresenter<V extends BaseFolderView> extends AppPresente
                     if (items.isEmpty()) {
                         items.add(new EmptyFolderDescriptorUi());
                     }
-                    return new FolderState(folder, items, new UserPrefs(preferences));
+                    return new FolderState(folder, items, new UserPrefs(preferences, fontManager));
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleState<FolderState>() {

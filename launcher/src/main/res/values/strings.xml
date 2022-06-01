@@ -234,14 +234,18 @@
     <string name="settings_home_laf_appearance_shadow_radius">Shadow radius</string>
     <string name="settings_home_laf_appearance_shadow_color">Shadow color</string>
     <string name="settings_home_laf_appearance_padding">Padding</string>
-    <string-array name="settings_home_laf_appearance_text_font_titles">
-        <item>Default</item>
-        <item>Sans Serif</item>
-        <item>Serif</item>
-        <item>Monospace</item>
-    </string-array>
     <string name="settings_home_laf_appearance_discard_message">Discard changes?</string>
     <string name="settings_home_laf_appearance_discard_button">Discard</string>
+
+    <string name="settings_home_laf_appearance_fonts_select">Select font</string>
+    <string name="settings_home_laf_appearance_fonts_add">Add</string>
+    <string name="settings_home_laf_appearance_fonts_empty">No fonts added</string>
+    <string name="settings_home_laf_appearance_fonts_added">Font added</string>
+    <string name="settings_home_laf_appearance_fonts_deleted">Font deleted</string>
+    <string name="settings_home_laf_appearance_fonts_dialog_title">Add font</string>
+    <string name="settings_home_laf_appearance_fonts_dialog_hint">Font name</string>
+    <string name="settings_home_laf_appearance_fonts_error_empty">Error: name must not be empty</string>
+    <string name="settings_home_laf_appearance_fonts_error_exists">Error: font with name \"%1$s\" exists</string>
 
     <string name="settings_category_other">Other</string>
     <string name="settings_other_bar">Backup and restore</string>

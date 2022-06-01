@@ -27,6 +27,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
@@ -44,6 +45,7 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
     }
 
     private Preferences preferences;
+    private FontManager fontManager;
     private ColorPickerView colorPicker;
     private ImageView wallpaper;
 
@@ -55,6 +57,7 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         preferences = LauncherApp.daggerService.main().preferences();
+        fontManager = LauncherApp.daggerService.main().typefaceStorage();
     }
 
     @Nullable
@@ -142,7 +145,7 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         }
         itemPreview.setShadowLayer(preferences.get(Preferences.ITEM_SHADOW_RADIUS),
                 itemPreview.getShadowDx(), itemPreview.getShadowDy(), shadowColor);
-        itemPreview.setTypeface(preferences.get(Preferences.ITEM_FONT).typeface());
+        itemPreview.setTypeface(fontManager.getTypeface(preferences.get(Preferences.ITEM_FONT)));
     }
 
     private void showWallpaper() {

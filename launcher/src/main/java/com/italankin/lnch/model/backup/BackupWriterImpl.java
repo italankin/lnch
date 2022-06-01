@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.util.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,10 +59,10 @@ public class BackupWriterImpl implements BackupWriter {
                         }
                     });
                 },
-                BackupUtils::closeQuietly);
+                IOUtils::closeQuietly);
     }
 
     private OutputStreamWriter getWriter(OutputStream outputStream) throws IOException {
-        return new OutputStreamWriter(new GZIPOutputStream(outputStream, BackupUtils.DEFAULT_BUFFER_SIZE));
+        return new OutputStreamWriter(new GZIPOutputStream(outputStream, IOUtils.DEFAULT_BUFFER_SIZE));
     }
 }

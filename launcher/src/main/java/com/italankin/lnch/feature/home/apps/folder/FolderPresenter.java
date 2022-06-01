@@ -3,6 +3,7 @@ package com.italankin.lnch.feature.home.apps.folder;
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -22,8 +23,8 @@ public class FolderPresenter extends BaseFolderPresenter<FolderView> {
 
     @Inject
     FolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
-            Preferences preferences) {
-        super(homeDescriptorsState, descriptorRepository, preferences);
+            Preferences preferences, FontManager fontManager) {
+        super(homeDescriptorsState, descriptorRepository, preferences, fontManager);
     }
 
     void removeFromFolderImmediate(String descriptorId) {

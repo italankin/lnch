@@ -11,6 +11,7 @@ import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.LauncherDescriptorRepository;
@@ -99,6 +100,12 @@ public class MainModule {
     @Singleton
     DescriptorStore provideDescriptorStore(GsonBuilder gsonBuilder) {
         return new GsonDescriptorStore(gsonBuilder);
+    }
+
+    @Provides
+    @Singleton
+    FontManager provideFontManager(Context context) {
+        return new FontManager(context);
     }
 
     @Provides

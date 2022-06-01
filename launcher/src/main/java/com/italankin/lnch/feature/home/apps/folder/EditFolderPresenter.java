@@ -4,8 +4,9 @@ import android.content.Intent;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
-import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
 import com.italankin.lnch.model.repository.descriptor.actions.FolderMoveAction;
@@ -29,8 +30,8 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
 
     @Inject
     EditFolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
-            Preferences preferences) {
-        super(homeDescriptorsState, descriptorRepository, preferences);
+            Preferences preferences, FontManager fontManager) {
+        super(homeDescriptorsState, descriptorRepository, preferences, fontManager);
     }
 
     void startEditIntent(String descriptorId) {
