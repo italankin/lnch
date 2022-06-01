@@ -18,7 +18,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
@@ -41,7 +40,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_hidden_items, container, false);
+        return inflater.inflate(R.layout.fragment_settings_items_list, container, false);
     }
 
     @SuppressWarnings("ConstantConditions")

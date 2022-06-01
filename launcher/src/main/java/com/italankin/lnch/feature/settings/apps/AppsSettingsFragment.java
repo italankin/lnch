@@ -77,7 +77,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_apps_list, container, false);
+        return inflater.inflate(R.layout.fragment_settings_items_list, container, false);
     }
 
     @SuppressWarnings("unchecked")
