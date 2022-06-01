@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.common.preferences;
 
+import android.annotation.SuppressLint;
+
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import androidx.annotation.NonNull;
@@ -32,6 +34,7 @@ public class SupportsOrientationDelegate implements LifecycleEventObserver, Supp
         }
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     public void onOrientationChange(Preferences.ScreenOrientation screenOrientation, boolean changed) {
         activity.setRequestedOrientation(screenOrientation.value());
