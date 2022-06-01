@@ -289,9 +289,10 @@ public interface Preferences {
     /**
      * Whether item should occupy full width
      */
-    Pref<Boolean> ITEM_MATCH_PARENT = Prefs.createBoolean(
-            "item_match_parent",
-            false);
+    Pref<ItemWidth> ITEM_WIDTH = Prefs.create(
+            "item_width",
+            ItemWidth.WRAP,
+            ItemWidth::from);
 
     /**
      * First time launch of the launcher
@@ -458,7 +459,7 @@ public interface Preferences {
             ITEM_SHADOW_RADIUS,
             ITEM_SHADOW_COLOR,
             ITEM_FONT,
-            ITEM_MATCH_PARENT,
+            ITEM_WIDTH,
             FIRST_LAUNCH,
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
@@ -564,6 +565,35 @@ public interface Preferences {
         private final String key;
 
         HomeAlignment(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Item's width style
+     */
+    enum ItemWidth {
+        WRAP("wrap"),
+        MATCH_PARENT("match_parent");
+
+        static ItemWidth from(String s, ItemWidth defaultValue) {
+            for (ItemWidth value : values()) {
+                if (value.key.equals(s)) {
+                    return value;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        ItemWidth(String key) {
             this.key = key;
         }
 

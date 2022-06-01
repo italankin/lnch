@@ -36,12 +36,13 @@
             android:key="name_transform"
             android:summary="%s"
             android:title="@string/settings_apps_name_transform" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="item_match_parent"
-            android:summaryOn="@string/settings_home_laf_other_match_parent_summary_on"
-            android:summaryOff="@string/settings_home_laf_other_match_parent_summary_off"
-            android:title="@string/settings_home_laf_other_match_parent" />
+        <ListPreference
+            android:defaultValue="wrap"
+            android:key="item_width"
+            android:summary="%s"
+            android:entries="@array/pref_desc_item_width"
+            android:entryValues="@array/pref_values_item_width"
+            android:title="@string/settings_home_laf_other_width" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="apps_list_animate"

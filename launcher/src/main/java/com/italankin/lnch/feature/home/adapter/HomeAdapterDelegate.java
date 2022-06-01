@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
@@ -91,7 +92,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface);
         ViewGroup.LayoutParams lp = label.getLayoutParams();
-        if (!params.ignoreAlignment && itemPrefs.matchParent) {
+        if (!params.ignoreAlignment && itemPrefs.itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
             if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
                 lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 label.requestLayout();

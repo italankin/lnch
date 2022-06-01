@@ -114,6 +114,15 @@
         <item>End</item>
     </string-array>
 
+    <string-array name="pref_values_item_width">
+        <item>wrap</item>
+        <item>match_parent</item>
+    </string-array>
+    <string-array name="pref_desc_item_width">
+        <item>Default</item>
+        <item>Fill row</item>
+    </string-array>
+
     <string-array name="pref_values_home_widgets_position">
         <item>left</item>
         <item>right</item>

@@ -31,7 +31,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.ITEM_SHADOW_RADIUS);
         PREFERENCES.add(Preferences.ITEM_SHADOW_COLOR);
         PREFERENCES.add(Preferences.ITEM_FONT);
-        PREFERENCES.add(Preferences.ITEM_MATCH_PARENT);
+        PREFERENCES.add(Preferences.ITEM_WIDTH);
         PREFERENCES.add(Preferences.NOTIFICATION_DOT_COLOR);
     }
 
@@ -130,7 +130,7 @@ public final class UserPrefs {
         public final String itemFont;
         public final Typeface typeface;
         public final Integer notificationDotColor;
-        public final boolean matchParent;
+        public final Preferences.ItemWidth itemWidth;
         public final Preferences.HomeAlignment alignment;
 
         private ItemPrefs(Preferences preferences, FontManager fontManager) {
@@ -141,7 +141,7 @@ public final class UserPrefs {
             itemFont = preferences.get(Preferences.ITEM_FONT);
             typeface = fontManager.getTypeface(itemFont);
             notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
-            matchParent = preferences.get(Preferences.ITEM_MATCH_PARENT);
+            itemWidth = preferences.get(Preferences.ITEM_WIDTH);
             alignment = preferences.get(Preferences.HOME_ALIGNMENT);
         }
 
@@ -160,7 +160,7 @@ public final class UserPrefs {
             if (itemPadding != itemPrefs.itemPadding) {
                 return false;
             }
-            if (matchParent != itemPrefs.matchParent) {
+            if (itemWidth != itemPrefs.itemWidth) {
                 return false;
             }
             if (alignment != itemPrefs.alignment) {
@@ -182,7 +182,7 @@ public final class UserPrefs {
         public int hashCode() {
             int result = (itemTextSize != 0f ? Float.floatToIntBits(itemTextSize) : 0);
             result = 31 * result + itemPadding;
-            result = 31 * result + (matchParent ? 1 : 0);
+            result = 31 * result + itemWidth.hashCode();
             result = 31 * result + alignment.hashCode();
             result = 31 * result + (itemShadowRadius != 0f ? Float.floatToIntBits(itemShadowRadius) : 0);
             result = 31 * result + itemFont.hashCode();
@@ -201,7 +201,7 @@ public final class UserPrefs {
             return "{" +
                     "itemTextSize=" + itemTextSize +
                     ", itemPadding=" + itemPadding +
-                    ", matchParent=" + matchParent +
+                    ", itemWidth=" + itemWidth +
                     ", alignment=" + alignment +
                     ", itemShadowRadius=" + itemShadowRadius +
                     ", itemShadowColor=" +
