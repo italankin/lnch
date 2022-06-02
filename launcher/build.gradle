@@ -77,9 +77,7 @@ dependencies {
     implementation annotation
 
     implementation flexbox
-    implementation (picasso) {
-        exclude group: 'com.android.support', module: 'exifinterface'
-    }
+    implementation picasso
 
     lintChecks project(':lintchecks')
 }
