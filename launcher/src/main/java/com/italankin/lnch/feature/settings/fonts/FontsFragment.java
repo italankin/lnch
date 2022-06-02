@@ -161,7 +161,10 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_SHORT).show();
     }
 
-    private void showAddDialog(Uri result) {
+    private void showAddDialog(@Nullable Uri result) {
+        if (result == null) {
+            return;
+        }
         String defaultName = getFileName(result);
 
         EditTextAlertDialog.builder(requireContext())
