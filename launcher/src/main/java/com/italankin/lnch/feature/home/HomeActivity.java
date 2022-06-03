@@ -9,6 +9,10 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.BuildConfig;
@@ -31,9 +35,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator;
 
 public class HomeActivity extends AppActivity implements HomeView {
@@ -48,6 +52,8 @@ public class HomeActivity extends AppActivity implements HomeView {
     private ViewPager pager;
     private ScrollingPagerIndicator pagerIndicator;
     private HomePagerAdapter pagerAdapter;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -174,6 +180,12 @@ public class HomeActivity extends AppActivity implements HomeView {
         updateAdapter();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Setup
     ///////////////////////////////////////////////////////////////////////////
@@ -195,8 +207,18 @@ public class HomeActivity extends AppActivity implements HomeView {
 
             return insets;
         });
-        window.setFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
-                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
+        Disposable disposable = preferences.observe(Preferences.HIDE_STATUS_BAR)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(hideStatusBar -> {
+                    int mask = WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER |
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    int flags = WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+                    if (hideStatusBar) {
+                        flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    }
+                    getWindow().setFlags(flags, mask);
+                });
+        compositeDisposable.add(disposable);
     }
 
     private void setupPager() {

@@ -430,6 +430,13 @@ public interface Preferences {
             "fullscreen_folders",
             false);
 
+    /**
+     * Show/hide status bar on home screen
+     */
+    Pref<Boolean> HIDE_STATUS_BAR = Prefs.createBoolean(
+            "hide_status_bar",
+            false);
+
     Pref<NameTransform> NAME_TRANSFORM = Prefs.create(
             "name_transform",
             NameTransform.AS_IS,
@@ -480,7 +487,8 @@ public interface Preferences {
             EXPERIMENTAL_INTENT_FACTORY,
             HOME_PAGER_INDICATOR,
             FULLSCREEN_FOLDERS,
-            NAME_TRANSFORM
+            NAME_TRANSFORM,
+            HIDE_STATUS_BAR
     );
 
     ///////////////////////////////////////////////////////////////////////////
