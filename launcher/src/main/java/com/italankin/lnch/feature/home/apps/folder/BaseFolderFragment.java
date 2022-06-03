@@ -176,6 +176,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     @Override
     public void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs) {
         title.setText(folderTitle);
+        title.setTypeface(userPrefs.itemPrefs.typeface);
         adapter.updateUserPrefs(userPrefs);
         onFolderUpdated(items);
         animatePopupAppearance();
