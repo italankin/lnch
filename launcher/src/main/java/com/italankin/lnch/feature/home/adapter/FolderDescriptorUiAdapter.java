@@ -73,7 +73,6 @@ public class FolderDescriptorUiAdapter
                     itemView.getResources().getDimensionPixelSize(R.dimen.notification_dot_size),
                     ContextCompat.getColor(itemView.getContext(), R.color.notification_dot),
                     ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault));
-            label.setForegroundGravity(Gravity.END | Gravity.TOP);
             label.setForeground(notificationDot);
         }
 

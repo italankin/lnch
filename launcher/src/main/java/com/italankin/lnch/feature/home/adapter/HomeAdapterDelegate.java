@@ -91,6 +91,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface);
+        label.setForegroundGravity(Gravity.END | Gravity.TOP);
         ViewGroup.LayoutParams lp = label.getLayoutParams();
         if (!params.ignoreAlignment && itemPrefs.itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
             if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {

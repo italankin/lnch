@@ -119,17 +119,17 @@ public class NotificationDotDrawable extends Drawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return size;
+        return size + margin * 2;
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return size;
+        return size + margin * 2;
     }
 
     @Override
     protected void onBoundsChange(Rect bounds) {
         rect.set(bounds);
-        rect.offset(-margin, margin);
+        rect.inset(-margin, -margin);
     }
 }
