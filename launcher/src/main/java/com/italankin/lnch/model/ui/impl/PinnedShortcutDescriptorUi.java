@@ -97,7 +97,8 @@ public final class PinnedShortcutDescriptorUi implements DescriptorUi,
             return false;
         }
         PinnedShortcutDescriptorUi that = (PinnedShortcutDescriptorUi) another;
-        return this.descriptor.equals(that.descriptor);
+        return this.descriptor.equals(that.descriptor)
+                && this.ignored == that.ignored;
     }
 
     @Override

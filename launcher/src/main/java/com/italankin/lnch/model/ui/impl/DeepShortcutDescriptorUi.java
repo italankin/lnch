@@ -101,7 +101,8 @@ public final class DeepShortcutDescriptorUi implements DescriptorUi,
             return false;
         }
         DeepShortcutDescriptorUi that = (DeepShortcutDescriptorUi) another;
-        return this.descriptor.equals(that.descriptor);
+        return this.descriptor.equals(that.descriptor)
+                && this.ignored == that.ignored;
     }
 
     @Override

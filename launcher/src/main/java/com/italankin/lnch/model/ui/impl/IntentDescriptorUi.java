@@ -100,7 +100,8 @@ public final class IntentDescriptorUi implements DescriptorUi,
             return false;
         }
         IntentDescriptorUi that = (IntentDescriptorUi) another;
-        return this.descriptor.equals(that.descriptor);
+        return this.descriptor.equals(that.descriptor)
+                && this.ignored == that.ignored;
     }
 
     @Override
