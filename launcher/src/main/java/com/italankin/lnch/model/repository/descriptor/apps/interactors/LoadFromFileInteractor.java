@@ -1,5 +1,8 @@
 package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
+
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
@@ -20,15 +23,14 @@ import com.italankin.lnch.util.IntentUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Maybe;
 import timber.log.Timber;
-
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
 
 public class LoadFromFileInteractor {
 
@@ -72,6 +74,7 @@ public class LoadFromFileInteractor {
 
                         processSavedItems(env, savedItems);
                         processNewApps(env);
+                        cleanupFolders(env);
 
                         emitter.onSuccess(env.getData());
                     } catch (Exception e) {
@@ -93,8 +96,7 @@ public class LoadFromFileInteractor {
             } else if (item instanceof FolderDescriptor) {
                 visitFolder(env, (FolderDescriptor) item);
             } else {
-                Timber.e("Unknown descriptor: class=%s, item=%s", item.getClass(), item);
-                env.addItem(item);
+                env.addUnknown(item);
             }
         }
     }
@@ -103,11 +105,25 @@ public class LoadFromFileInteractor {
         for (List<LauncherActivityInfo> infos : env.packages()) {
             if (infos.size() == 1) {
                 AppDescriptor item = appDescriptorInteractor.createItem(infos.get(0));
-                env.addItem(item);
+                env.addApp(item);
             } else {
                 for (LauncherActivityInfo info : infos) {
                     AppDescriptor item = appDescriptorInteractor.createItem(info, true);
-                    env.addItem(item);
+                    env.addApp(item);
+                }
+            }
+        }
+    }
+
+    private void cleanupFolders(ProcessingEnv env) {
+        Set<String> itemIds = env.itemIds();
+        for (FolderDescriptor folder : env.folders()) {
+            Iterator<String> iterator = folder.items.iterator();
+            while (iterator.hasNext()) {
+                String folderItemId = iterator.next();
+                if (!itemIds.contains(folderItemId)) {
+                    Timber.d("remove deleted '%s' from '%s'", folderItemId, folder.id);
+                    iterator.remove();
                 }
             }
         }
@@ -119,7 +135,7 @@ public class LoadFromFileInteractor {
             if (appDescriptorInteractor.updateItem(app, info)) {
                 env.markUpdated(app);
             }
-            env.addItem(app);
+            env.addApp(app);
         } else {
             env.markDeleted(app);
         }
@@ -140,7 +156,7 @@ public class LoadFromFileInteractor {
             }
             env.markUpdated(item);
         }
-        env.addItem(item);
+        env.addDeepShortcut(item);
     }
 
     private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
@@ -153,7 +169,7 @@ public class LoadFromFileInteractor {
                 env.markUpdated(item);
             }
             item.label = nameNormalizer.normalize(item.getOriginalLabel());
-            env.addItem(item);
+            env.addPinnedShortcut(item);
         } else {
             env.markDeleted(item);
         }
@@ -167,7 +183,7 @@ public class LoadFromFileInteractor {
                 env.markUpdated(item);
             }
             item.label = nameNormalizer.normalize(item.getOriginalLabel());
-            env.addItem(item);
+            env.addIntent(item);
         } else {
             env.markDeleted(item);
         }
@@ -180,7 +196,7 @@ public class LoadFromFileInteractor {
             env.markUpdated(item);
         }
         item.label = nameNormalizer.normalize(item.getOriginalLabel());
-        env.addItem(item);
+        env.addFolder(item);
     }
 }
 
@@ -189,6 +205,8 @@ public class LoadFromFileInteractor {
  */
 class ProcessingEnv {
     private final List<Descriptor> items = new ArrayList<>(64);
+    private final Set<String> itemIds = new HashSet<>(64);
+    private final List<FolderDescriptor> folders = new ArrayList<>(4);
     /**
      * Packages data, fetched from {@link android.content.pm.LauncherApps}
      */
@@ -200,15 +218,35 @@ class ProcessingEnv {
         this.packagesMap = packagesMap;
     }
 
-    void addItem(Descriptor item) {
+    private void addItem(Descriptor item) {
         this.items.add(item);
+        this.itemIds.add(item.getId());
     }
 
-    /**
-     * Add {@link AppDescriptor} to the list of items
-     */
-    void addItem(AppDescriptor app) {
-        this.items.add(app);
+    void addApp(AppDescriptor item) {
+        addItem(item);
+    }
+
+    void addIntent(IntentDescriptor item) {
+        addItem(item);
+    }
+
+    void addFolder(FolderDescriptor item) {
+        addItem(item);
+        folders.add(item);
+    }
+
+    void addDeepShortcut(DeepShortcutDescriptor item) {
+        addItem(item);
+    }
+
+    void addPinnedShortcut(PinnedShortcutDescriptor item) {
+        addItem(item);
+    }
+
+    void addUnknown(Descriptor item) {
+        Timber.e("addUnknown: class=%s, item=%s", item.getClass(), item);
+        addItem(item);
     }
 
     void markDeleted(Descriptor descriptor) {
@@ -230,6 +268,14 @@ class ProcessingEnv {
 
     Iterable<List<LauncherActivityInfo>> packages() {
         return packagesMap.items();
+    }
+
+    Set<String> itemIds() {
+        return itemIds;
+    }
+
+    List<FolderDescriptor> folders() {
+        return folders;
     }
 
     AppsData getData() {
