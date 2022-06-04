@@ -71,6 +71,13 @@
             android:title="@string/settings_home_laf_notification_dot_color"
             app:colorpref_defaultColor="@color/notification_dot"
             tools:ignore="PrefsDetector" />
+        <ListPreference
+            android:key="notification_dot_size"
+            android:title="@string/settings_home_laf_notification_dot_size"
+            android:defaultValue="normal"
+            android:entries="@array/pref_desc_notification_dot_size"
+            android:entryValues="@array/pref_values_notification_dot_size"
+            android:summary="%s" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other">
         <CheckBoxPreference

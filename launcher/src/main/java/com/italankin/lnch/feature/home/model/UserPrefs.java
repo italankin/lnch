@@ -33,6 +33,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.ITEM_FONT);
         PREFERENCES.add(Preferences.ITEM_WIDTH);
         PREFERENCES.add(Preferences.NOTIFICATION_DOT_COLOR);
+        PREFERENCES.add(Preferences.NOTIFICATION_DOT_SIZE);
     }
 
     public final Preferences.HomeLayout homeLayout;
@@ -130,6 +131,7 @@ public final class UserPrefs {
         public final String itemFont;
         public final Typeface typeface;
         public final Integer notificationDotColor;
+        public final Preferences.NotificationDotSize notificationDotSize;
         public final Preferences.ItemWidth itemWidth;
         public final Preferences.HomeAlignment alignment;
 
@@ -141,6 +143,7 @@ public final class UserPrefs {
             itemFont = preferences.get(Preferences.ITEM_FONT);
             typeface = fontManager.getTypeface(itemFont);
             notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
+            notificationDotSize = preferences.get(Preferences.NOTIFICATION_DOT_SIZE);
             itemWidth = preferences.get(Preferences.ITEM_WIDTH);
             alignment = preferences.get(Preferences.HOME_ALIGNMENT);
         }
@@ -169,6 +172,9 @@ public final class UserPrefs {
             if (!Objects.equals(notificationDotColor, itemPrefs.notificationDotColor)) {
                 return false;
             }
+            if (notificationDotSize != itemPrefs.notificationDotSize) {
+                return false;
+            }
             if (Float.compare(itemPrefs.itemShadowRadius, itemShadowRadius) != 0) {
                 return false;
             }
@@ -189,6 +195,7 @@ public final class UserPrefs {
             if (notificationDotColor != null) {
                 result = 31 * result + notificationDotColor;
             }
+            result = 31 * result + notificationDotSize.hashCode();
             if (itemShadowColor != null) {
                 result = 31 * result + itemShadowColor;
             }
@@ -208,6 +215,7 @@ public final class UserPrefs {
                     (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
                     ", itemFont=" + itemFont +
                     ", notificationDotColor=" + notificationDotColor +
+                    ", notificationDotSize=" + notificationDotSize +
                     '}';
         }
     }

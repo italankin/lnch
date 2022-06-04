@@ -96,6 +96,17 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         if (notificationDot != null) {
             notificationDot.setGravity(Gravity.TOP | Gravity.END);
             notificationDot.setColor(itemPrefs.notificationDotColor);
+            switch (itemPrefs.notificationDotSize) {
+                case SMALL:
+                    notificationDot.setSize(NotificationDotDrawable.Size.SMALL);
+                    break;
+                case NORMAL:
+                    notificationDot.setSize(NotificationDotDrawable.Size.NORMAL);
+                    break;
+                case LARGE:
+                    notificationDot.setSize(NotificationDotDrawable.Size.LARGE);
+                    break;
+            }
         }
         View root = holder.getRoot();
         ViewGroup.LayoutParams rootLp = root.getLayoutParams();

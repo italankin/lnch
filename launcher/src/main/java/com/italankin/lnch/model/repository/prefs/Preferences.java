@@ -398,6 +398,14 @@ public interface Preferences {
             null);
 
     /**
+     * Enable notification dots for the apps
+     */
+    Pref<NotificationDotSize> NOTIFICATION_DOT_SIZE = Prefs.create(
+            "notification_dot_size",
+            NotificationDotSize.NORMAL,
+            NotificationDotSize::from);
+
+    /**
      * Show {@link #NOTIFICATION_DOT} for ongoing notifications
      */
     Pref<Boolean> NOTIFICATION_DOT_ONGOING = Prefs.createBoolean(
@@ -484,6 +492,7 @@ public interface Preferences {
             SHORTCUTS_SORT_MODE,
             NOTIFICATION_DOT,
             NOTIFICATION_DOT_COLOR,
+            NOTIFICATION_DOT_SIZE,
             NOTIFICATION_DOT_ONGOING,
             NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
@@ -834,6 +843,36 @@ public interface Preferences {
         private final String key;
 
         ShortcutsSortMode(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Size of the notification dot
+     */
+    enum NotificationDotSize {
+        SMALL("small"),
+        NORMAL("normal"),
+        LARGE("large");
+
+        static NotificationDotSize from(String s, NotificationDotSize defaultValue) {
+            for (NotificationDotSize item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        NotificationDotSize(String key) {
             this.key = key;
         }
 

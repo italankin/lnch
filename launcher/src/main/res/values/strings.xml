@@ -208,6 +208,7 @@
 
     <string name="settings_home_laf_notification">Notification dots</string>
     <string name="settings_home_laf_notification_dot_color">Notification dot color</string>
+    <string name="settings_home_laf_notification_dot_size">Notification dot size</string>
 
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>

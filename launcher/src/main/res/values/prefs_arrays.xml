@@ -81,6 +81,17 @@
         <item>Landscape</item>
     </string-array>
 
+    <string-array name="pref_values_notification_dot_size">
+        <item>small</item>
+        <item>normal</item>
+        <item>large</item>
+    </string-array>
+    <string-array name="pref_desc_notification_dot_size">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Large</item>
+    </string-array>
+
     <string-array name="pref_values_apps_sort_mode">
         <item>manual</item>
         <item>az</item>
