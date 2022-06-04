@@ -1,10 +1,13 @@
 package com.italankin.lnch.feature.settings.apps.details;
 
+import androidx.annotation.Nullable;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetBadgeColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.descriptor.actions.SetSearchFlagsAction;
@@ -12,7 +15,6 @@ import com.italankin.lnch.model.repository.descriptor.actions.ShortcutsVisibilit
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -62,6 +64,19 @@ public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
         descriptor.setCustomColor(newColor);
         commitAction(
                 new SetColorAction(descriptor, newColor),
+                new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Update package=%s: customColor=%s", descriptor, newColor);
+                    }
+                }
+        );
+    }
+
+    void setCustomBadgeColor(AppDescriptor descriptor, @Nullable Integer newColor) {
+        descriptor.customBadgeColor = newColor;
+        commitAction(
+                new SetBadgeColorAction(descriptor, newColor),
                 new CompletableState() {
                     @Override
                     public void onComplete() {

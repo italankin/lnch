@@ -168,6 +168,7 @@
     <string name="settings_app_details_actions">Actions</string>
     <string name="settings_app_details_action_rename">Rename</string>
     <string name="settings_app_details_action_color">Change color</string>
+    <string name="settings_app_details_action_badge_color">Notification dot color</string>
 
     <string name="settings_app_aliases">Search aliases</string>
     <string name="settings_app_aliases_empty">No aliases</string>

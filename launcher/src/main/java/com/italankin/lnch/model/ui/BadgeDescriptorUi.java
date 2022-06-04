@@ -8,4 +8,6 @@ public interface BadgeDescriptorUi extends DescriptorUi {
     void setBadgeVisible(boolean visible);
 
     boolean isBadgeVisible();
+
+    Integer getCustomBadgeColor();
 }

@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -463,18 +464,23 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private FolderDescriptorUi concatFolderNotifications(
             NotificationBagContainer notificationBagContainer, FolderDescriptorUi item) {
         boolean badgeVisible = false;
+        AppDescriptor descriptor = null;
         for (String descriptorId : item.items) {
             NotificationBag bag = notificationBagContainer.get(descriptorId);
             badgeVisible = isBadgeVisible(bag);
             if (badgeVisible) {
+                descriptor = bag.getDescriptor();
                 break;
             }
         }
-        if (badgeVisible != item.isBadgeVisible()) {
-            // create a copy of AppDescriptorUi to update state correctly
-            FolderDescriptorUi newApp = new FolderDescriptorUi(item);
-            newApp.setBadgeVisible(badgeVisible);
-            return newApp;
+        Integer badgeColor = badgeVisible && descriptor != null ? descriptor.customBadgeColor : null;
+        if (badgeVisible != item.isBadgeVisible() ||
+                badgeVisible && !Objects.equals(badgeColor, item.customBadgeColor)) {
+            // create a copy of FolderDescriptorUi to update state correctly
+            FolderDescriptorUi newItem = new FolderDescriptorUi(item);
+            newItem.setBadgeVisible(badgeVisible);
+            newItem.customBadgeColor = badgeColor;
+            return newItem;
         } else {
             return item;
         }

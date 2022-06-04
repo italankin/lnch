@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home.adapter;
 
-import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -116,6 +115,8 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
         private void bindItem(AppDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+            Integer badgeColor = item.getCustomBadgeColor();
+            notificationDot.setColor(badgeColor != null ? badgeColor : itemPrefs.notificationDotColor);
             notificationDot.setMargin(itemPrefs.itemPadding * 2);
         }
     }

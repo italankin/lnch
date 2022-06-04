@@ -26,6 +26,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
+    public Integer customBadgeColor;
     public List<String> items;
     private boolean badgeVisible;
 
@@ -44,6 +45,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
+        this.customBadgeColor = item.customBadgeColor;
         this.items = new ArrayList<>(item.items);
         this.badgeVisible = item.badgeVisible;
     }
@@ -91,6 +93,11 @@ public final class FolderDescriptorUi implements DescriptorUi,
     @Override
     public boolean isBadgeVisible() {
         return badgeVisible;
+    }
+
+    @Override
+    public Integer getCustomBadgeColor() {
+        return customBadgeColor;
     }
 
     @NonNull

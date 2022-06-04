@@ -35,6 +35,10 @@ public class NotificationBag {
         this.clearableCount = clearableCount;
     }
 
+    public AppDescriptor getDescriptor() {
+        return descriptor;
+    }
+
     public List<StatusBarNotification> getNotifications() {
         return sbns;
     }

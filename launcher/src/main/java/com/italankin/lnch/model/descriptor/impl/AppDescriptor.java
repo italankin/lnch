@@ -33,6 +33,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public String customLabel;
     public int color;
     public Integer customColor;
+    public Integer customBadgeColor;
     public boolean ignored;
     public int searchFlags = SEARCH_DEFAULT_FLAGS;
     public boolean showShortcuts = true;
@@ -154,6 +155,7 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         copy.originalLabel = originalLabel;
         copy.label = label;
         copy.customLabel = customLabel;
+        copy.customBadgeColor = customBadgeColor;
         copy.color = color;
         copy.customColor = customColor;
         copy.ignored = ignored;

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -53,6 +54,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private View buttonAppAliases;
     private View buttonRename;
     private View buttonChangeColor;
+    private View buttonChangeBadgeColor;
 
     private SwitchCompat switchHomeVisibility;
     private SwitchCompat switchSearchVisibility;
@@ -83,6 +85,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         buttonAppAliases = view.findViewById(R.id.app_aliases);
         buttonRename = view.findViewById(R.id.action_rename);
         buttonChangeColor = view.findViewById(R.id.action_color);
+        buttonChangeBadgeColor = view.findViewById(R.id.action_badge_color);
         textVisibleName = view.findViewById(R.id.visible_name);
 
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
@@ -131,6 +134,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
                     .show();
         });
         buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
+        buttonChangeBadgeColor.setOnClickListener(v -> setCustomBadgeColor(descriptor));
 
         buttonAppAliases.setOnClickListener(v -> {
             sendResult(new ShowAppAliasesContract().result(descriptor.getId()));
@@ -151,6 +155,15 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private void setCustomColor(AppDescriptor descriptor) {
         new SetColorDescriptorDialog(requireContext(), descriptor.getVisibleColor(),
                 newColor -> presenter.setCustomColor(descriptor, newColor))
+                .show();
+    }
+
+    private void setCustomBadgeColor(AppDescriptor descriptor) {
+        int color = descriptor.customBadgeColor != null
+                ? descriptor.customBadgeColor
+                : ContextCompat.getColor(requireContext(), R.color.notification_dot);
+        new SetColorDescriptorDialog(requireContext(), color,
+                newColor -> presenter.setCustomBadgeColor(descriptor, newColor))
                 .show();
     }
 

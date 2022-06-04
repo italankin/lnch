@@ -40,6 +40,9 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("custom_badge_color")
+    public Integer customBadgeColor;
+
     @SerializedName(value = "ignored", alternate = "hidden")
     public Boolean ignored;
 
@@ -65,6 +68,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customBadgeColor = descriptor.customBadgeColor;
         this.ignored = descriptor.ignored ? true : null;
         this.searchFlags = descriptor.searchFlags != AppDescriptor.SEARCH_DEFAULT_FLAGS ? descriptor.searchFlags : null;
         this.showShortcuts = descriptor.showShortcuts;
@@ -82,6 +86,7 @@ public final class AppDescriptorJson implements DescriptorJson {
         descriptor.customLabel = this.customLabel;
         descriptor.color = this.color;
         descriptor.customColor = this.customColor;
+        descriptor.customBadgeColor = this.customBadgeColor;
         descriptor.ignored = this.ignored != null && this.ignored;
         descriptor.searchFlags = this.searchFlags != null ? this.searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS;
         descriptor.showShortcuts = this.showShortcuts;

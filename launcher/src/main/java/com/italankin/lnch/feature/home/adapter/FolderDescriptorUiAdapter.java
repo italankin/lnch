@@ -98,6 +98,8 @@ public class FolderDescriptorUiAdapter
         private void bindItem(FolderDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
+            Integer badgeColor = item.getCustomBadgeColor();
+            notificationDot.setColor(badgeColor != null ? badgeColor : itemPrefs.notificationDotColor);
             notificationDot.setMargin(itemPrefs.itemPadding * 2);
         }
 

@@ -29,6 +29,7 @@ public final class AppDescriptorUi implements DescriptorUi,
     private boolean ignored;
     private String customLabel;
     private Integer customColor;
+    private final Integer customBadgeColor;
     private boolean badgeVisible;
 
     public AppDescriptorUi(AppDescriptor descriptor) {
@@ -40,6 +41,7 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customBadgeColor = descriptor.customBadgeColor;
     }
 
     public AppDescriptorUi(AppDescriptorUi item) {
@@ -51,6 +53,7 @@ public final class AppDescriptorUi implements DescriptorUi,
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
+        this.customBadgeColor = item.customBadgeColor;
         this.badgeVisible = item.badgeVisible;
     }
 
@@ -107,6 +110,11 @@ public final class AppDescriptorUi implements DescriptorUi,
     @Override
     public boolean isBadgeVisible() {
         return badgeVisible;
+    }
+
+    @Override
+    public Integer getCustomBadgeColor() {
+        return customBadgeColor;
     }
 
     @NonNull
