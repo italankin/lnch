@@ -24,7 +24,12 @@ public class JsonPackagesStore implements PackagesStore {
     @Override
     public InputStream input() {
         try {
-            return new FileInputStream(getFile());
+            File file = getFile();
+            if (!file.exists()) {
+                Timber.w("file %s does not exist", file);
+                return null;
+            }
+            return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             Timber.e(e, "input:");
             return null;
