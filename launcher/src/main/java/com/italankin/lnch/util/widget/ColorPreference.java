@@ -10,8 +10,10 @@ import android.view.View;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.model.repository.prefs.NoOpPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.icons.CircleDrawable;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
@@ -29,10 +31,10 @@ public class ColorPreference extends Preference {
 
     private OnPreferenceClickListener onPreferenceClickListener;
 
-    public ColorPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    public ColorPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
         setLayoutResource(R.layout.pref_color_preference);
-        preferences = LauncherApp.daggerService.main().preferences();
+        preferences = getPreferences();
         pref = preferences.find(getKey());
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ColorPreference);
@@ -43,14 +45,6 @@ public class ColorPreference extends Preference {
         a.recycle();
 
         super.setOnPreferenceClickListener(this::onPreferenceClick);
-    }
-
-    public ColorPreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    public ColorPreference(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.preferenceStyle, android.R.attr.preferenceStyle);
     }
 
     @Override
@@ -102,5 +96,13 @@ public class ColorPreference extends Preference {
             });
         }
         builder.show();
+    }
+
+    private static Preferences getPreferences() {
+        // a hack for get studio preview working
+        if (BuildConfig.DEBUG && LauncherApp.daggerService == null) {
+            return new NoOpPreferences();
+        }
+        return LauncherApp.daggerService.main().preferences();
     }
 }
