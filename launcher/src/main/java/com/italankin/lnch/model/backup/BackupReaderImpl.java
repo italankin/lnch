@@ -86,7 +86,7 @@ public class BackupReaderImpl implements BackupReader {
 
     private Completable applyBackup(Backup backup) {
         Timber.d("restoring from backup:\n%s", backup);
-        return Completable.mergeArray(writeDescriptors(backup.descriptors), writePrefs(backup.preferences));
+        return Completable.mergeArray(writePrefs(backup.preferences), writeDescriptors(backup.descriptors));
     }
 
     private Completable writeDescriptors(List<Descriptor> descriptors) {
