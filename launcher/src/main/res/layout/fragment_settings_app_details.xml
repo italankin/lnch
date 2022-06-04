@@ -122,6 +122,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/action_rename" />
 
+        <View
+            android:id="@+id/action_color_preview"
+            tools:background="#0cf"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/action_color"
+            app:layout_constraintTop_toTopOf="@id/action_color" />
+
         <TextView
             android:id="@+id/action_badge_color"
             style="@style/AppDetails.Button"
@@ -131,6 +141,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/action_color" />
+
+        <View
+            android:id="@+id/action_badge_color_preview"
+            tools:background="#fc0"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/action_badge_color"
+            app:layout_constraintTop_toTopOf="@id/action_badge_color" />
 
         <TextView
             android:id="@+id/visibility_title"

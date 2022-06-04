@@ -54,7 +54,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private View buttonAppAliases;
     private View buttonRename;
     private View buttonChangeColor;
+    private View buttonChangeColorPreview;
     private View buttonChangeBadgeColor;
+    private View buttonChangeBadgeColorPreview;
 
     private SwitchCompat switchHomeVisibility;
     private SwitchCompat switchSearchVisibility;
@@ -85,7 +87,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
         buttonAppAliases = view.findViewById(R.id.app_aliases);
         buttonRename = view.findViewById(R.id.action_rename);
         buttonChangeColor = view.findViewById(R.id.action_color);
+        buttonChangeColorPreview = view.findViewById(R.id.action_color_preview);
         buttonChangeBadgeColor = view.findViewById(R.id.action_badge_color);
+        buttonChangeBadgeColorPreview = view.findViewById(R.id.action_badge_color_preview);
         textVisibleName = view.findViewById(R.id.visible_name);
 
         String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
@@ -133,8 +137,12 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
                     (newLabel) -> setCustomLabel(descriptor, newLabel))
                     .show();
         });
+
         buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
+        updateColorPreview(descriptor);
+
         buttonChangeBadgeColor.setOnClickListener(v -> setCustomBadgeColor(descriptor));
+        updateBadgeColorPreview(descriptor);
 
         buttonAppAliases.setOnClickListener(v -> {
             sendResult(new ShowAppAliasesContract().result(descriptor.getId()));
@@ -154,7 +162,10 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
 
     private void setCustomColor(AppDescriptor descriptor) {
         new SetColorDescriptorDialog(requireContext(), descriptor.getVisibleColor(),
-                newColor -> presenter.setCustomColor(descriptor, newColor))
+                newColor -> {
+                    presenter.setCustomColor(descriptor, newColor);
+                    updateColorPreview(descriptor);
+                })
                 .show();
     }
 
@@ -163,8 +174,22 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
                 ? descriptor.customBadgeColor
                 : ContextCompat.getColor(requireContext(), R.color.notification_dot);
         new SetColorDescriptorDialog(requireContext(), color,
-                newColor -> presenter.setCustomBadgeColor(descriptor, newColor))
+                newColor -> {
+                    presenter.setCustomBadgeColor(descriptor, newColor);
+                    updateBadgeColorPreview(descriptor);
+                })
                 .show();
+    }
+
+    private void updateColorPreview(AppDescriptor descriptor) {
+        buttonChangeColorPreview.setBackgroundColor(descriptor.getVisibleColor());
+    }
+
+    private void updateBadgeColorPreview(AppDescriptor descriptor) {
+        int badgeColor = descriptor.customBadgeColor != null
+                ? descriptor.customBadgeColor
+                : ContextCompat.getColor(requireContext(), R.color.notification_dot);
+        buttonChangeBadgeColorPreview.setBackgroundColor(badgeColor);
     }
 
     public static class ShowAppAliasesContract extends DescriptorFragmentResultContract {
