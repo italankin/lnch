@@ -47,6 +47,12 @@ public class UserPreferences implements Preferences {
         return pref.fetcher().fetch(prefs, pref.key());
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> Pref<T> find(String key) {
+        return (Pref<T>) PREFS.get(key);
+    }
+
     @Override
     public <T> void set(Pref<T> pref, T newValue) {
         pref.updater().update(prefs, pref.key(), newValue);

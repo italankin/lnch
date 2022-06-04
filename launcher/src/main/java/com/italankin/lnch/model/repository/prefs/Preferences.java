@@ -26,6 +26,8 @@ public interface Preferences {
 
     <T> T get(Pref<T> pref);
 
+    <T> Pref<T> find(String key);
+
     <T> void set(Pref<T> pref, T newValue);
 
     Observable<Pref<?>> observe();
