@@ -10,6 +10,7 @@ import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultCo
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
@@ -80,6 +81,9 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
     }
 
     private void buildItemPopup(DescriptorUi item) {
+        boolean destructiveNonEdit = LauncherApp.daggerService.main()
+                .preferences()
+                .get(Preferences.DESTRUCTIVE_NON_EDIT);
         if (item.getDescriptor() instanceof PackageDescriptor) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_app_info)
@@ -90,7 +94,7 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
                     })
             );
         }
-        if (item instanceof RemovableDescriptorUi) {
+        if (destructiveNonEdit && item instanceof RemovableDescriptorUi) {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_delete)
                     .setLabel(R.string.customize_item_delete)
@@ -100,7 +104,7 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
             );
         }
         String folderId = requireArguments().getString(ARG_FOLDER_ID);
-        if (item instanceof InFolderDescriptorUi && folderId != null) {
+        if (destructiveNonEdit && item instanceof InFolderDescriptorUi && folderId != null) {
             addShortcut(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_remove_from_folder)
                     .setIconDrawableTintAttr(R.attr.colorAccent)

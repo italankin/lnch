@@ -35,6 +35,11 @@
         android:key="expand_notifications"
         android:summary="@string/settings_home_misc_expand_status_bar_summary"
         android:title="@string/settings_home_misc_expand_status_bar" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="destructive_non_edit"
+        android:summary="@string/settings_home_misc_destructive_non_edit_summary"
+        android:title="@string/settings_home_misc_destructive_non_edit" />
     <Preference
         android:key="@string/pref_key_misc_experimental"
         android:summary="@string/settings_home_misc_experimental_summary"

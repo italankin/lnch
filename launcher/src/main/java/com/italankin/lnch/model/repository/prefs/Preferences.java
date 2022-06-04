@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.fonts.FontManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 /**
@@ -448,6 +447,13 @@ public interface Preferences {
             NameTransform.AS_IS,
             NameTransform::from);
 
+    /**
+     * Whether to allow user delete/remove items in non-edit modes
+     */
+    Pref<Boolean> DESTRUCTIVE_NON_EDIT = Prefs.createBoolean(
+            "destructive_non_edit",
+            true);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -494,7 +500,8 @@ public interface Preferences {
             HOME_PAGER_INDICATOR,
             FULLSCREEN_FOLDERS,
             NAME_TRANSFORM,
-            HIDE_STATUS_BAR
+            HIDE_STATUS_BAR,
+            DESTRUCTIVE_NON_EDIT
     );
 
     ///////////////////////////////////////////////////////////////////////////

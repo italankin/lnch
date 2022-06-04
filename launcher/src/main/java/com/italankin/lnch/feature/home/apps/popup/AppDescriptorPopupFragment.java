@@ -188,15 +188,15 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
                     startUninstall(item);
                 });
         String folderId = requireArguments().getString(ARG_FOLDER_ID);
-        ItemBuilder removeFromFolderItem = new ItemBuilder()
-                .setIcon(R.drawable.ic_action_remove_from_folder)
-                .setLabel(R.string.customize_item_remove_from_folder)
-                .setOnClickListener(v -> {
-                    removeFromFolder(item, folderId);
-                });
 
         List<Shortcut> shortcuts = getShortcuts(item);
-        if (folderId != null) {
+        if (folderId != null && preferences.get(Preferences.DESTRUCTIVE_NON_EDIT)) {
+            ItemBuilder removeFromFolderItem = new ItemBuilder()
+                    .setIcon(R.drawable.ic_action_remove_from_folder)
+                    .setLabel(R.string.customize_item_remove_from_folder)
+                    .setOnClickListener(v -> {
+                        removeFromFolder(item, folderId);
+                    });
             if (shortcuts.isEmpty()) {
                 addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
             } else {

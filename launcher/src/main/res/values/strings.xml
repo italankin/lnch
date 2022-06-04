@@ -66,6 +66,7 @@
 
     <string name="popup_app_info">App info</string>
     <string name="popup_app_uninstall">Uninstall</string>
+    <string name="popup_empty">No actions available</string>
 
     <string name="edit_add_folder">Folder</string>
     <string name="edit_add_intent">Custom Intent</string>
@@ -126,6 +127,8 @@
     <string name="settings_home_misc_orientation">Screen orientation</string>
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
     <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n\n<i>Note: will not work for some devices and OS versions</i></string>
+    <string name="settings_home_misc_destructive_non_edit">Destructive actions without edit mode</string>
+    <string name="settings_home_misc_destructive_non_edit_summary">Allow destructive actions (such as remove from folder, unpin shortcuts, delete folders) in non-edit mode</string>
 
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
