@@ -297,13 +297,6 @@ public interface Preferences {
             ItemWidth::from);
 
     /**
-     * First time launch of the launcher
-     */
-    Pref<Boolean> FIRST_LAUNCH = Prefs.createBoolean(
-            "first_launch",
-            true);
-
-    /**
      * Home screen items sorting mode
      */
     Pref<AppsSortMode> APPS_SORT_MODE = Prefs.create(
@@ -347,7 +340,7 @@ public interface Preferences {
             "default");
 
     /**
-     * Maximum app dynamic shortcuts to display
+     * Whether to show shortcuts in popups
      */
     Pref<Boolean> SHOW_SHORTCUTS = Prefs.createBoolean(
             "show_shortcuts",
@@ -398,7 +391,7 @@ public interface Preferences {
             null);
 
     /**
-     * Enable notification dots for the apps
+     * {@link #NOTIFICATION_DOT} size
      */
     Pref<NotificationDotSize> NOTIFICATION_DOT_SIZE = Prefs.create(
             "notification_dot_size",
@@ -413,7 +406,7 @@ public interface Preferences {
             false);
 
     /**
-     * Enable notification dots for the apps
+     * Enable notifications in popups
      */
     Pref<Boolean> NOTIFICATION_POPUP = Prefs.createBoolean(
             "notification_popup",
@@ -427,7 +420,7 @@ public interface Preferences {
             false);
 
     /**
-     * Creating and editing intents via {@link com.italankin.lnch.feature.intentfactory.IntentFactoryActivity}
+     * Display home page indicator
      */
     Pref<Boolean> HOME_PAGER_INDICATOR = Prefs.createBoolean(
             "home_pager_indicator",
@@ -447,6 +440,9 @@ public interface Preferences {
             "hide_status_bar",
             false);
 
+    /**
+     * Apply name case transformation
+     */
     Pref<NameTransform> NAME_TRANSFORM = Prefs.create(
             "name_transform",
             NameTransform.AS_IS,
@@ -477,7 +473,6 @@ public interface Preferences {
             ITEM_SHADOW_COLOR,
             ITEM_FONT,
             ITEM_WIDTH,
-            FIRST_LAUNCH,
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
             APPS_COLOR_OVERLAY,
