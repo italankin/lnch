@@ -44,6 +44,8 @@
 
     <string name="popup_notifications_header">Notifications</string>
 
+    <string name="shortcut_set_default_launcher_hint">Set home app</string>
+
     <string name="customize_hint">Customize</string>
     <string name="customize_saved">Saved</string>
     <string name="customize_discard_message">Discard changes?</string>
@@ -106,6 +108,7 @@
     <string name="settings_version">Version %1$s</string>
     <string name="settings_source_code">Source code</string>
     <string name="settings_customize">Customize</string>
+    <string name="settings_set_default_launcher">Set lnch as home app</string>
 
     <string name="settings_category_home">Home</string>
     <string name="settings_home_wallpaper">Wallpaper</string>

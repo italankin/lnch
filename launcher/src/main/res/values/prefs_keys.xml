@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- references to preference views -->
+    <string name="pref_key_home_set_default_launcher">set_default_launcher</string>
     <string name="pref_key_search_settings">search_settings</string>
     <string name="pref_key_search_most_used_reset">search_must_used_reset</string>
     <string name="pref_key_wallpaper">wallpaper</string>

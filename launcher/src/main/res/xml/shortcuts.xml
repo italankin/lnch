@@ -3,6 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
     <shortcut
         android:enabled="true"
+        android:icon="@drawable/ic_shortcut_set_home"
+        android:shortcutId="set_home_app"
+        android:shortcutShortLabel="@string/shortcut_set_default_launcher_hint"
+        tools:targetApi="n_mr1">
+        <intent android:action="android.settings.HOME_SETTINGS" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
         android:icon="@drawable/ic_shortcut_mode_edit"
         android:shortcutId="customize"
         android:shortcutShortLabel="@string/customize_hint"

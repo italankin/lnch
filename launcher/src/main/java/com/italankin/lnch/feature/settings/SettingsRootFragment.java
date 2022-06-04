@@ -2,8 +2,11 @@ package com.italankin.lnch.feature.settings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,6 +50,11 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        findPreference(R.string.pref_key_home_set_default_launcher).setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
+            startActivity(intent);
+            return true;
+        });
         findPreference(R.string.pref_key_home_customize).setOnPreferenceClickListener(preference -> {
             sendResult(new LaunchEditModeContract().result());
             return true;
@@ -96,6 +104,28 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             startActivity(Intent.createChooser(intent, ""));
             return true;
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        configureSetHomeAction();
+    }
+
+    private void configureSetHomeAction() {
+        Intent home = new Intent(Intent.ACTION_MAIN);
+        home.addCategory(Intent.CATEGORY_HOME);
+        Context context = requireContext();
+        ResolveInfo resolveInfo = context.getPackageManager()
+                .resolveActivity(home, PackageManager.MATCH_DEFAULT_ONLY);
+        Preference setDefaultLauncherPref = findPreference(R.string.pref_key_home_set_default_launcher);
+        if (resolveInfo != null && resolveInfo.activityInfo != null) {
+            String currentHomePackage = resolveInfo.activityInfo.packageName;
+            setDefaultLauncherPref.setVisible(!context.getPackageName().equals(currentHomePackage));
+        } else {
+            // better hide it to not annoy user
+            setDefaultLauncherPref.setVisible(false);
+        }
     }
 
     @Override

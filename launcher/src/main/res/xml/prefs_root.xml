@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory>
+        <Preference
+            android:icon="@drawable/ic_settings_set_home"
+            android:key="@string/pref_key_home_set_default_launcher"
+            android:title="@string/settings_set_default_launcher"
+            app:isPreferenceVisible="false" />
         <Preference
             android:icon="@drawable/ic_action_rename"
             android:key="@string/pref_key_home_customize"
