@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory android:title="@string/settings_home_laf_color_theme">
         <ListPreference
             android:defaultValue="system"
@@ -39,10 +39,10 @@
             android:title="@string/settings_apps_name_transform" />
         <ListPreference
             android:defaultValue="wrap"
-            android:key="item_width"
-            android:summary="%s"
             android:entries="@array/pref_desc_item_width"
             android:entryValues="@array/pref_values_item_width"
+            android:key="item_width"
+            android:summary="%s"
             android:title="@string/settings_home_laf_other_width" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -72,12 +72,12 @@
             app:colorpref_defaultColor="@color/notification_dot"
             tools:ignore="PrefsDetector" />
         <ListPreference
-            android:key="notification_dot_size"
-            android:title="@string/settings_home_laf_notification_dot_size"
             android:defaultValue="normal"
             android:entries="@array/pref_desc_notification_dot_size"
             android:entryValues="@array/pref_values_notification_dot_size"
-            android:summary="%s" />
+            android:key="notification_dot_size"
+            android:summary="%s"
+            android:title="@string/settings_home_laf_notification_dot_size" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other">
         <CheckBoxPreference
