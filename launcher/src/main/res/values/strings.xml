@@ -255,7 +255,7 @@
     <string name="settings_category_other">Other</string>
     <string name="settings_other_bar">Backup and restore</string>
     <string name="settings_other_bar_backup">Backup</string>
-    <string name="settings_other_bar_backup_summary">Save apps settings, such as custom colors, names, visibility, positions to a file</string>
+    <string name="settings_other_bar_backup_summary">Save apps settings, such as custom colors, names, visibility, folders to a file\n\n<i>Note: some settings (e.g. custom fonts) will not be backed up</i></string>
     <string name="settings_other_bar_restore">Restore</string>
     <string name="settings_other_bar_restore_summary">Restore settings from previous backup</string>
     <string name="settings_other_bar_reset">Reset apps settings</string>
