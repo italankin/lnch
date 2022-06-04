@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -49,6 +50,12 @@ public class FolderDescriptorUiAdapter
             return true;
         });
         return holder;
+    }
+
+    @Override
+    protected void update(FolderDescriptorUiAdapter.ViewHolder holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
+        super.update(holder, label, itemPrefs);
+        holder.notificationDot.setColor(itemPrefs.notificationDotColor);
     }
 
     @Override
