@@ -26,4 +26,13 @@
         <attr name="al_colorArrowDown" format="color|reference" />
         <attr name="al_arrowSize" format="dimension|reference" />
     </declare-styleable>
+
+    <declare-styleable name="ColorPreference">
+        <attr name="colorpref_defaultColor" format="color" />
+        <attr name="colorpref_resettable" format="boolean" />
+        <attr name="colorpref_colorModel" format="enum">
+            <enum name="rgb" value="0" />
+            <enum name="argb" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>
