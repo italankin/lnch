@@ -267,7 +267,7 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void initPreview(View view) {
-        preview = view.findViewById(R.id.item_preview);
+        preview = view.findViewById(R.id.item_preview).findViewById(R.id.label);
         preview.setBackgroundResource(R.drawable.selector_item);
         preview.setText(R.string.preview);
         preview.setAllCaps(true);

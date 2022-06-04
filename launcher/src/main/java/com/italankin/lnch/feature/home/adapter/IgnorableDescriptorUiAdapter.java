@@ -57,6 +57,11 @@ public class IgnorableDescriptorUiAdapter
             // empty
         }
 
+        @Override
+        protected View getRoot() {
+            return null;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {

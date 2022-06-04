@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 
@@ -56,12 +58,6 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     }
 
     @Override
-    protected void update(ViewHolder holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
-        super.update(holder, label, itemPrefs);
-        holder.notificationDot.setColor(itemPrefs.notificationDotColor);
-    }
-
-    @Override
     protected boolean isType(int position, Object item, boolean ignoreVisibility) {
         return item instanceof AppDescriptorUi &&
                 (ignoreVisibility || !((AppDescriptorUi) item).isIgnored());
@@ -80,18 +76,20 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     }
 
     static class ViewHolder extends HomeAdapterDelegate.ViewHolder<AppDescriptorUi> {
+        final FrameLayout root;
         final TextView label;
         final NotificationDotDrawable notificationDot;
 
         ViewHolder(View itemView) {
             super(itemView);
+            root = (FrameLayout) itemView;
             label = itemView.findViewById(R.id.label);
 
             notificationDot = new NotificationDotDrawable(
                     itemView.getResources().getDimensionPixelSize(R.dimen.notification_dot_size),
                     ContextCompat.getColor(itemView.getContext(), R.color.notification_dot),
                     ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault));
-            label.setForeground(notificationDot);
+            root.setForeground(notificationDot);
         }
 
         @Override
@@ -106,10 +104,21 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
             notificationDot.setBadgeVisible(item.isBadgeVisible(), payloads.contains(AppDescriptorUi.PAYLOAD_BADGE));
         }
 
+        @Override
+        protected View getRoot() {
+            return root;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {
             return label;
+        }
+
+        @Nullable
+        @Override
+        protected NotificationDotDrawable getNotificationDot() {
+            return notificationDot;
         }
 
         private void bindItem(AppDescriptorUi item) {

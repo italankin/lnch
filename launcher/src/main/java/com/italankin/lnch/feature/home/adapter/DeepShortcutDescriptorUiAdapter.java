@@ -78,6 +78,11 @@ public class DeepShortcutDescriptorUiAdapter
             label.setAlpha(item.enabled ? 1 : DISABLED_ALPHA);
         }
 
+        @Override
+        protected View getRoot() {
+            return label;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {

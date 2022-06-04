@@ -75,6 +75,11 @@ public class PinnedShortcutDescriptorUiAdapter
             label.setTextColor(item.getVisibleColor());
         }
 
+        @Override
+        protected View getRoot() {
+            return label;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {

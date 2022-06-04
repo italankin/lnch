@@ -43,6 +43,11 @@ public class EmptyFolderDescriptorUiAdapter extends
             // empty
         }
 
+        @Override
+        protected View getRoot() {
+            return null;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {

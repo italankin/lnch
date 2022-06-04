@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -91,27 +92,41 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface);
-        label.setForegroundGravity(Gravity.END | Gravity.TOP);
-        ViewGroup.LayoutParams lp = label.getLayoutParams();
+        NotificationDotDrawable notificationDot = holder.getNotificationDot();
+        if (notificationDot != null) {
+            notificationDot.setGravity(Gravity.TOP | Gravity.END);
+            notificationDot.setColor(itemPrefs.notificationDotColor);
+        }
+        View root = holder.getRoot();
+        ViewGroup.LayoutParams lp = root.getLayoutParams();
         if (!params.ignoreAlignment && itemPrefs.itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
             if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
                 lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                label.requestLayout();
+                root.setLayoutParams(lp);
             }
             switch (itemPrefs.alignment) {
                 case START:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+                    if (notificationDot != null) {
+                        notificationDot.setGravity(Gravity.TOP | Gravity.START);
+                    }
                     break;
                 case CENTER:
                     label.setGravity(Gravity.CENTER);
+                    if (notificationDot != null) {
+                        notificationDot.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                    }
                     break;
                 case END:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
+                    if (notificationDot != null) {
+                        notificationDot.setGravity(Gravity.TOP | Gravity.END);
+                    }
                     break;
             }
         } else if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            label.requestLayout();
+            root.setLayoutParams(lp);
         }
     }
 
@@ -128,8 +143,15 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
             bind(item);
         }
 
+        protected abstract View getRoot();
+
         @Nullable
         protected abstract TextView getLabel();
+
+        @Nullable
+        protected NotificationDotDrawable getNotificationDot() {
+            return null;
+        }
     }
 
     public static class Params {

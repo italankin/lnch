@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ public class NotificationDotDrawable extends Drawable {
     private final int size;
     private final int radius;
     private int margin;
+    private int gravity = Gravity.END | Gravity.TOP;
 
     private boolean visible = false;
     private ValueAnimator animator;
@@ -42,6 +44,7 @@ public class NotificationDotDrawable extends Drawable {
         this.defaultColor = defaultColor;
         paint.setColor(defaultColor);
         paint.setShadowLayer(size / 4, 0, 0, shadowColor);
+        this.rect.set(0, 0, size, size);
     }
 
     public void setColor(Integer color) {
@@ -52,9 +55,19 @@ public class NotificationDotDrawable extends Drawable {
         }
     }
 
+    public void setGravity(int gravity) {
+        if (this.gravity != gravity) {
+            this.gravity = gravity;
+            onBoundsChange(getBounds());
+            invalidateSelf();
+        }
+    }
+
     public void setMargin(int margin) {
         if (this.margin != margin) {
             this.margin = margin;
+            this.rect.set(0, 0, size + margin * 2, size + margin * 2);
+            onBoundsChange(getBounds());
             invalidateSelf();
         }
     }
@@ -118,18 +131,7 @@ public class NotificationDotDrawable extends Drawable {
     }
 
     @Override
-    public int getIntrinsicWidth() {
-        return size + margin * 2;
-    }
-
-    @Override
-    public int getIntrinsicHeight() {
-        return size + margin * 2;
-    }
-
-    @Override
     protected void onBoundsChange(Rect bounds) {
-        rect.set(bounds);
-        rect.inset(-margin, -margin);
+        Gravity.apply(gravity, rect.width(), rect.height(), bounds, rect);
     }
 }

@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home.adapter;
 
-import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -10,7 +9,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -50,12 +48,6 @@ public class FolderDescriptorUiAdapter
             return true;
         });
         return holder;
-    }
-
-    @Override
-    protected void update(FolderDescriptorUiAdapter.ViewHolder holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
-        super.update(holder, label, itemPrefs);
-        holder.notificationDot.setColor(itemPrefs.notificationDotColor);
     }
 
     @Override
@@ -103,10 +95,21 @@ public class FolderDescriptorUiAdapter
             notificationDot.setMargin(itemPrefs.itemPadding * 2);
         }
 
+        @Override
+        protected View getRoot() {
+            return label;
+        }
+
         @Nullable
         @Override
         protected TextView getLabel() {
             return label;
+        }
+
+        @Nullable
+        @Override
+        protected NotificationDotDrawable getNotificationDot() {
+            return notificationDot;
         }
     }
 }
