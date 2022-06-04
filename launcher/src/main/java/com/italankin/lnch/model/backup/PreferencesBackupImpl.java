@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import timber.log.Timber;
+
 @SuppressWarnings("unchecked")
 public class PreferencesBackupImpl implements PreferencesBackup {
 
@@ -40,7 +42,7 @@ public class PreferencesBackupImpl implements PreferencesBackup {
                 editor.putInt(key, (Integer) value);
             } else if (klass.isAssignableFrom(float.class) || klass.isAssignableFrom(Float.class)) {
                 editor.putFloat(key, (Float) value);
-            }  else if (klass.isAssignableFrom(boolean.class) || klass.isAssignableFrom(Boolean.class)) {
+            } else if (klass.isAssignableFrom(boolean.class) || klass.isAssignableFrom(Boolean.class)) {
                 editor.putBoolean(key, (Boolean) value);
             } else if (klass.isAssignableFrom(String.class)) {
                 editor.putString(key, (String) value);
@@ -49,5 +51,6 @@ public class PreferencesBackupImpl implements PreferencesBackup {
             }
         }
         editor.commit();
+        Timber.d("wrote %d keys: %s", map.size(), map);
     }
 }
