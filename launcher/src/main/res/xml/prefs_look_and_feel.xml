@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_home_laf_color_theme">
         <ListPreference
             android:defaultValue="system"
@@ -57,16 +58,18 @@
             android:key="apps_color_overlay_show"
             android:summary="@string/settings_home_laf_other_color_overlay_show_summary"
             android:title="@string/settings_home_laf_other_color_overlay_show" />
-        <Preference
+        <com.italankin.lnch.util.widget.ColorPreference
             android:dependency="apps_color_overlay_show"
             android:key="apps_color_overlay"
             android:title="@string/settings_home_laf_other_color_overlay"
+            app:colorpref_defaultColor="#fff"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_notification">
-        <Preference
+        <com.italankin.lnch.util.widget.ColorPreference
             android:key="notification_dot_color"
             android:title="@string/settings_home_laf_notification_dot_color"
+            app:colorpref_defaultColor="@color/notification_dot"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other">
@@ -75,9 +78,11 @@
             android:key="large_search_bar"
             android:summary="@string/settings_home_laf_other_large_search_Bar_summary"
             android:title="@string/settings_home_laf_other_large_search_Bar" />
-        <Preference
+        <com.italankin.lnch.util.widget.ColorPreference
             android:key="status_bar_color"
             android:title="@string/settings_home_laf_other_status_bar_color"
+            app:colorpref_colorModel="argb"
+            app:colorpref_defaultColor="@color/status_bar"
             tools:ignore="PrefsDetector" />
         <CheckBoxPreference
             android:defaultValue="false"
