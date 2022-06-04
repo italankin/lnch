@@ -8,13 +8,17 @@ import androidx.annotation.NonNull;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
+import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
+import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 import java.util.UUID;
 
 /**
  * Custom intent descriptor (e.g., search intent)
  */
+@DescriptorModels(json = IntentDescriptorJson.class, ui = IntentDescriptorUi.class)
 public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
         IgnorableDescriptor {
 

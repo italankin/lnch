@@ -1,18 +1,22 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
+import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
+import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-
 /**
  * A home screen folder
  */
+@DescriptorModels(json = FolderDescriptorJson.class, ui = FolderDescriptorUi.class)
 public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
     public String id;

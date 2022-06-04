@@ -6,13 +6,17 @@ import androidx.annotation.NonNull;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
+import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
+import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 
 import java.util.UUID;
 
 /**
  * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
  */
+@DescriptorModels(json = PinnedShortcutDescriptorJson.class, ui = PinnedShortcutDescriptorUi.class)
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
         IgnorableDescriptor {
 

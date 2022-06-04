@@ -5,12 +5,16 @@ import androidx.annotation.NonNull;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import com.italankin.lnch.model.repository.store.json.model.DeepShortcutDescriptorJson;
+import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 
 /**
  * A descriptor for pinned {@link com.italankin.lnch.model.repository.shortcuts.Shortcut}s
  */
+@DescriptorModels(json = DeepShortcutDescriptorJson.class, ui = DeepShortcutDescriptorUi.class)
 public final class DeepShortcutDescriptor implements Descriptor, PackageDescriptor,
         CustomColorDescriptor, CustomLabelDescriptor, IgnorableDescriptor {
 
