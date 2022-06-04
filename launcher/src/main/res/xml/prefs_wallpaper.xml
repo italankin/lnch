@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_home_wallpaper">
         <Preference
             android:key="@string/pref_key_wallpaper_change"
@@ -11,10 +12,11 @@
             android:defaultValue="false"
             android:key="wallpaper_overlay_show"
             android:title="@string/settings_home_wallpaper_overlay_show" />
-        <Preference
+        <com.italankin.lnch.util.widget.ColorPreference
             android:dependency="wallpaper_overlay_show"
             android:key="wallpaper_overlay_color"
             android:title="@string/settings_home_wallpaper_overlay_color"
+            app:colorpref_defaultColor="#0000"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
 </PreferenceScreen>

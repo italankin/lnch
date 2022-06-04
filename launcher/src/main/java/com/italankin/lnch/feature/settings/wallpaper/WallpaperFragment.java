@@ -6,14 +6,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.NumberUtils;
 
 public class WallpaperFragment extends BasePreferenceFragment {
 
@@ -44,23 +41,10 @@ public class WallpaperFragment extends BasePreferenceFragment {
     }
 
     private void setupOverlayColor() {
-        Preference pref = findPreference(Preferences.WALLPAPER_OVERLAY_COLOR);
-        pref.setOnPreferenceChangeListener((preference, newValue) -> {
-            Integer color = NumberUtils.parseInt(String.valueOf(newValue));
-            if (color != null) {
-                preference.setSummary(String.format("#%08x", color));
-            }
-            return true;
-        });
-        pref.setOnPreferenceClickListener(preference -> {
+        findPreference(Preferences.WALLPAPER_OVERLAY_COLOR).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowWallpaperOverlay().result());
             return true;
         });
-        int color = LauncherApp.daggerService
-                .main()
-                .preferences()
-                .get(Preferences.WALLPAPER_OVERLAY_COLOR);
-        pref.setSummary(String.format("#%08x", color));
     }
 
     public static class ShowWallpaperOverlay extends SignalFragmentResultContract {
