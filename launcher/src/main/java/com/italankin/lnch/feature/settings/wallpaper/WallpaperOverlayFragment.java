@@ -125,7 +125,7 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
     }
 
     private void initItemPreview(View view) {
-        TextView itemPreview = view.findViewById(R.id.item_preview);
+        TextView itemPreview = view.findViewById(R.id.item_preview).findViewById(R.id.label);
         itemPreview.setText(R.string.preview);
         itemPreview.setAllCaps(true);
         itemPreview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
