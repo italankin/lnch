@@ -16,7 +16,8 @@
     <string name="pref_key_backups">backups</string>
     <string name="pref_key_backup">backup</string>
     <string name="pref_key_restore">restore</string>
-    <string name="pref_key_reset">reset</string>
+    <string name="pref_key_reset_apps">reset_apps</string>
+    <string name="pref_key_reset_lnch">reset_lnch</string>
     <string name="pref_key_version">version</string>
     <string name="pref_key_source_code">source_code</string>
     <string name="pref_key_look_and_feel">look_and_feel</string>

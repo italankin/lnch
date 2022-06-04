@@ -25,7 +25,8 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     private static final String MIME_TYPE_ANY = "*/*";
 
-    private static final String TAG_RESET_DIALOG = "reset_dialog";
+    private static final String TAG_RESET_DIALOG_APPS = "reset_dialog_apps";
+    private static final String TAG_RESET_DIALOG_LNCH = "reset_dialog_lnch";
 
     @InjectPresenter
     BackupPresenter presenter;
@@ -65,8 +66,12 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
             restoreSettings();
             return true;
         });
-        findPreference(R.string.pref_key_reset).setOnPreferenceClickListener(preference -> {
-            showResetDialog();
+        findPreference(R.string.pref_key_reset_apps).setOnPreferenceClickListener(preference -> {
+            showResetAppsDialog();
+            return true;
+        });
+        findPreference(R.string.pref_key_reset_lnch).setOnPreferenceClickListener(preference -> {
+            showResetLnchDialog();
             return true;
         });
     }
@@ -103,8 +108,10 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     @Override
     public void onPositiveButtonClick(@Nullable String tag) {
-        if (TAG_RESET_DIALOG.equals(tag)) {
+        if (TAG_RESET_DIALOG_APPS.equals(tag)) {
             presenter.resetAppsSettings();
+        } else if (TAG_RESET_DIALOG_LNCH.equals(tag)) {
+            presenter.resetLnchSettings();
         }
     }
 
@@ -128,14 +135,24 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
         }
     }
 
-    private void showResetDialog() {
+    private void showResetAppsDialog() {
         new SimpleDialogFragment.Builder()
                 .setTitle(R.string.settings_other_bar_reset_dialog_title)
-                .setMessage(R.string.settings_other_bar_reset_dialog_message)
+                .setMessage(R.string.settings_other_bar_reset_dialog_apps_message)
                 .setPositiveButton(R.string.settings_other_bar_reset_dialog_action)
                 .setNegativeButton(R.string.cancel)
                 .build()
-                .show(getChildFragmentManager(), TAG_RESET_DIALOG);
+                .show(getChildFragmentManager(), TAG_RESET_DIALOG_APPS);
+    }
+
+    private void showResetLnchDialog() {
+        new SimpleDialogFragment.Builder()
+                .setTitle(R.string.settings_other_bar_reset_dialog_title)
+                .setMessage(R.string.settings_other_bar_reset_dialog_lnch_message)
+                .setPositiveButton(R.string.settings_other_bar_reset_dialog_action)
+                .setNegativeButton(R.string.cancel)
+                .build()
+                .show(getChildFragmentManager(), TAG_RESET_DIALOG_LNCH);
     }
 
     private static class OpenDocumentContract extends ActivityResultContract<Void, Uri> {
