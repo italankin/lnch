@@ -27,6 +27,7 @@ import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 
@@ -170,10 +171,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     }
 
     private void setCustomBadgeColor(AppDescriptor descriptor) {
-        int color = descriptor.customBadgeColor != null
-                ? descriptor.customBadgeColor
-                : ContextCompat.getColor(requireContext(), R.color.notification_dot);
-        new SetColorDescriptorDialog(requireContext(), color,
+        new SetColorDescriptorDialog(requireContext(), getCurrentBadgeColor(descriptor),
                 newColor -> {
                     presenter.setCustomBadgeColor(descriptor, newColor);
                     updateBadgeColorPreview(descriptor);
@@ -186,10 +184,19 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     }
 
     private void updateBadgeColorPreview(AppDescriptor descriptor) {
-        int badgeColor = descriptor.customBadgeColor != null
-                ? descriptor.customBadgeColor
+        buttonChangeBadgeColorPreview.setBackgroundColor(getCurrentBadgeColor(descriptor));
+    }
+
+    private int getCurrentBadgeColor(AppDescriptor descriptor) {
+        if (descriptor.customBadgeColor != null) {
+            return descriptor.customBadgeColor;
+        }
+        Integer dotColor = LauncherApp.daggerService.main()
+                .preferences()
+                .get(Preferences.NOTIFICATION_DOT_COLOR);
+        return dotColor != null
+                ? dotColor
                 : ContextCompat.getColor(requireContext(), R.color.notification_dot);
-        buttonChangeBadgeColorPreview.setBackgroundColor(badgeColor);
     }
 
     public static class ShowAppAliasesContract extends DescriptorFragmentResultContract {
