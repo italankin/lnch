@@ -3,13 +3,17 @@ package com.italankin.lnch.model.repository.prefs;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
 public class UserPreferences implements Preferences {
 
@@ -23,6 +27,7 @@ public class UserPreferences implements Preferences {
     }
 
     private final SharedPreferences prefs;
+    private final PublishSubject<String> removedKeys = PublishSubject.create();
     private final Observable<String> updates;
 
     @Inject
@@ -31,6 +36,7 @@ public class UserPreferences implements Preferences {
         this.updates = Observable
                 .<String>create(emitter -> {
                     OnSharedPreferenceChangeListener listener = (sp, key) -> {
+                        Timber.d("onPrefChanged: key=%s", key);
                         if (!emitter.isDisposed()) {
                             emitter.onNext(key);
                         }
@@ -38,6 +44,7 @@ public class UserPreferences implements Preferences {
                     prefs.registerOnSharedPreferenceChangeListener(listener);
                     emitter.setCancellable(() -> prefs.unregisterOnSharedPreferenceChangeListener(listener));
                 })
+                .mergeWith(removedKeys)
                 .debounce(100, TimeUnit.MILLISECONDS)
                 .share();
     }
@@ -60,11 +67,18 @@ public class UserPreferences implements Preferences {
 
     @Override
     public void reset(Pref<?>... prefs) {
+        List<String> keys = new ArrayList<>(prefs.length);
         SharedPreferences.Editor editor = this.prefs.edit();
         for (Pref<?> pref : prefs) {
-            editor.remove(pref.key());
+            String key = pref.key();
+            editor.remove(key);
+            keys.add(key);
         }
         editor.apply();
+        for (String key : keys) {
+            Timber.d("removed pref: key=%s", key);
+            removedKeys.onNext(key);
+        }
     }
 
     @Override
