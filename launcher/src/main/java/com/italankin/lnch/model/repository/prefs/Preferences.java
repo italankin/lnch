@@ -258,7 +258,7 @@ public interface Preferences {
      */
     RangePref<Float> ITEM_TEXT_SIZE = Prefs.createFloatRange(
             "item_text_size",
-            22f, 12f, 40f);
+            22f, 12f, 50f);
 
     /**
      * Home screen items padding
