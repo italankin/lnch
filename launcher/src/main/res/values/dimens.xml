@@ -22,5 +22,8 @@
     <dimen name="widget_min_width">128dp</dimen>
     <dimen name="widget_min_height">128dp</dimen>
     <dimen name="widget_max_height">400dp</dimen>
-    <dimen name="notification_dot_size">12dp</dimen>
+    <dimen name="notification_dot_size_small">4dp</dimen>
+    <dimen name="notification_dot_size_normal">6dp</dimen>
+    <dimen name="notification_dot_size_large">8dp</dimen>
+    <dimen name="notification_dot_shadow">3dp</dimen>
 </resources>

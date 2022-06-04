@@ -6,13 +6,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
-import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 
@@ -86,9 +83,8 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
             label = itemView.findViewById(R.id.label);
 
             notificationDot = new NotificationDotDrawable(
-                    itemView.getResources().getDimensionPixelSize(R.dimen.notification_dot_size),
-                    ContextCompat.getColor(itemView.getContext(), R.color.notification_dot),
-                    ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault));
+                    itemView.getContext(),
+                    ResUtils.resolveColor(itemView.getContext(), R.attr.colorItemShadowDefault));
             root.setForeground(notificationDot);
         }
 

@@ -2,6 +2,8 @@ package com.italankin.lnch.feature.home.util;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
@@ -11,8 +13,12 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
+import com.italankin.lnch.R;
 
 public class NotificationDotDrawable extends Drawable {
 
@@ -22,12 +28,13 @@ public class NotificationDotDrawable extends Drawable {
     private static final float[] VALUES_DISAPPEAR = {1, 0};
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Resources resources;
     private final int defaultColor;
     private final Rect rect = new Rect();
-    private final int size;
-    private final int radius;
+    private int radius;
     private int margin;
     private int gravity = Gravity.END | Gravity.TOP;
+    private Size size = Size.NORMAL;
 
     private boolean visible = false;
     private ValueAnimator animator;
@@ -37,14 +44,20 @@ public class NotificationDotDrawable extends Drawable {
         invalidateSelf();
     };
 
-    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    public NotificationDotDrawable(int size, int defaultColor, int shadowColor) {
-        this.size = size;
-        this.radius = size / 2;
-        this.defaultColor = defaultColor;
+    public NotificationDotDrawable(Context context, int shadowColor) {
+        this.resources = context.getResources();
+        this.defaultColor = ContextCompat.getColor(context, R.color.notification_dot);
         paint.setColor(defaultColor);
-        paint.setShadowLayer(size / 4, 0, 0, shadowColor);
-        this.rect.set(0, 0, size, size);
+        float shadowRadius = resources.getDimension(R.dimen.notification_dot_shadow);
+        paint.setShadowLayer(shadowRadius, 0, 0, shadowColor);
+        setSize(size);
+    }
+
+    public void setSize(Size size) {
+        if (this.size != size) {
+            this.size = size;
+            updateRect();
+        }
     }
 
     public void setColor(Integer color) {
@@ -58,18 +71,23 @@ public class NotificationDotDrawable extends Drawable {
     public void setGravity(int gravity) {
         if (this.gravity != gravity) {
             this.gravity = gravity;
-            onBoundsChange(getBounds());
-            invalidateSelf();
+            updateRect();
         }
     }
 
     public void setMargin(int margin) {
         if (this.margin != margin) {
             this.margin = margin;
-            this.rect.set(0, 0, size + margin * 2, size + margin * 2);
-            onBoundsChange(getBounds());
-            invalidateSelf();
+            updateRect();
         }
+    }
+
+    private void updateRect() {
+        radius = resources.getDimensionPixelSize(size.dimenRes);
+        int size = (radius + margin) * 2;
+        this.rect.set(0, 0, size, size);
+        onBoundsChange(getBounds());
+        invalidateSelf();
     }
 
     public void setBadgeVisible(boolean visible, boolean animated) {
@@ -133,5 +151,18 @@ public class NotificationDotDrawable extends Drawable {
     @Override
     protected void onBoundsChange(Rect bounds) {
         Gravity.apply(gravity, rect.width(), rect.height(), bounds, rect);
+    }
+
+    public enum Size {
+        SMALL(R.dimen.notification_dot_size_small),
+        NORMAL(R.dimen.notification_dot_size_normal),
+        LARGE(R.dimen.notification_dot_size_large);
+
+        @DimenRes
+        final int dimenRes;
+
+        Size(int dimenRes) {
+            this.dimenRes = dimenRes;
+        }
     }
 }
