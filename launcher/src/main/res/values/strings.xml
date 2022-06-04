@@ -125,7 +125,7 @@
     <string name="settings_home_misc_long_action">App long click action</string>
     <string name="settings_home_misc_orientation">Screen orientation</string>
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
-    <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n<i>Note: will not work for some devices and OS versions</i></string>
+    <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n\n<i>Note: will not work for some devices and OS versions</i></string>
 
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>
@@ -255,11 +255,12 @@
     <string name="settings_category_other">Other</string>
     <string name="settings_other_bar">Backup and restore</string>
     <string name="settings_other_bar_backup">Backup</string>
-    <string name="settings_other_bar_backup_summary">Save apps settings, such as custom colors, names, visibility, folders to a file\n\n<i>Note: some settings (e.g. custom fonts) will not be backed up</i></string>
+    <string name="settings_other_bar_backup_summary">Save apps settings, colors, names, visibility, created folders and user preferences to a file\n\n<i>Note: some settings (e.g. custom fonts) will not be backed up</i></string>
     <string name="settings_other_bar_restore">Restore</string>
     <string name="settings_other_bar_restore_summary">Restore settings from previous backup</string>
-    <string name="settings_other_bar_reset">Reset apps settings</string>
-    <string name="settings_other_bar_reset_summary">Reset apps settings to their defaults</string>
+    <string name="settings_other_bar_reset">Reset</string>
+    <string name="settings_other_bar_reset_apps">Reset apps settings</string>
+    <string name="settings_other_bar_reset_apps_summary">Reset apps settings to their defaults</string>
     <string name="settings_other_bar_restore_success">Settings restored successfully</string>
     <string name="settings_other_bar_backup_success">Settings backed up successfully</string>
     <string name="settings_other_bar_reset_success">Settings were reset</string>

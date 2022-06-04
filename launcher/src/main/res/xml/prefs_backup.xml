@@ -15,7 +15,7 @@
     <PreferenceCategory android:title="@string/settings_other_bar_reset">
         <Preference
             android:key="@string/pref_key_reset"
-            android:summary="@string/settings_other_bar_reset_summary"
-            android:title="@string/settings_other_bar_reset" />
+            android:summary="@string/settings_other_bar_reset_apps_summary"
+            android:title="@string/settings_other_bar_reset_apps" />
     </PreferenceCategory>
 </PreferenceScreen>
