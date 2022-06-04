@@ -17,12 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -30,6 +24,7 @@ import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.fonts.FontsFragment;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -42,11 +37,18 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class AppearanceFragment extends AppFragment implements
         BackButtonHandler,
         ActivityResultCallback<Boolean>,
         ColorPickerDialogFragment.Listener,
-        SimpleDialogFragment.Listener {
+        SimpleDialogFragment.Listener,
+        SettingsToolbarTitle {
 
     public static AppearanceFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -77,6 +79,11 @@ public class AppearanceFragment extends AppFragment implements
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), this);
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_laf_appearance);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

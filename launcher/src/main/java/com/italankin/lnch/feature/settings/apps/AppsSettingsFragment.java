@@ -11,19 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsAdapter;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
@@ -37,10 +31,18 @@ import com.squareup.picasso.Picasso;
 import java.util.EnumSet;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
 public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
         AppsSettingsAdapter.Listener,
         FilterFlagsDialogFragment.Listener,
-        ListFilter.OnFilterResult<AppDescriptorUi> {
+        ListFilter.OnFilterResult<AppDescriptorUi>,
+        SettingsToolbarTitle {
 
     public static AppsSettingsFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -66,6 +68,11 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     @ProvidePresenter
     AppsSettingsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().appsSettings();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_apps_list);
     }
 
     @Override

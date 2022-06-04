@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +12,12 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class ShortcutsFragment extends BasePreferenceFragment {
+public class ShortcutsFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_misc_shortcuts);
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

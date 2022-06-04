@@ -19,6 +19,20 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.LceLayout;
+
+import java.util.List;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -27,20 +41,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
-import com.italankin.lnch.util.widget.LceLayout;
-
-import java.util.List;
-
-public class FontsFragment extends AppFragment implements FontsView, FontItemAdapter.Listener {
+public class FontsFragment extends AppFragment implements FontsView, FontItemAdapter.Listener, SettingsToolbarTitle {
 
     public static FontsFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -64,6 +65,11 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     @ProvidePresenter
     FontsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().fonts();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_laf_appearance_fonts_select);
     }
 
     @Override

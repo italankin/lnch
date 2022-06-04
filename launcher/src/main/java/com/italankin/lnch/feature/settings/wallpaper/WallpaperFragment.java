@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings.wallpaper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +10,11 @@ import androidx.annotation.Nullable;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class WallpaperFragment extends BasePreferenceFragment {
+public class WallpaperFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
     public static WallpaperFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -20,6 +22,11 @@ public class WallpaperFragment extends BasePreferenceFragment {
         WallpaperFragment fragment = new WallpaperFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_wallpaper);
     }
 
     @Override

@@ -1,16 +1,18 @@
 package com.italankin.lnch.feature.settings.misc;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-
-public class MiscFragment extends BasePreferenceFragment {
+public class MiscFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
     public static MiscFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -23,6 +25,11 @@ public class MiscFragment extends BasePreferenceFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_misc);
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_misc);
     }
 
     @Override

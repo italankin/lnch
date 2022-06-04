@@ -17,16 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
@@ -34,7 +29,14 @@ import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
-public class WallpaperOverlayFragment extends AppFragment implements ActivityResultCallback<Boolean> {
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+public class WallpaperOverlayFragment extends AppFragment implements ActivityResultCallback<Boolean>,
+        SettingsToolbarTitle {
 
     public static WallpaperOverlayFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -51,6 +53,11 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), this);
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_wallpaper_overlay_color);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

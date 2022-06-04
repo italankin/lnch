@@ -1,12 +1,14 @@
 package com.italankin.lnch.feature.settings.search;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
@@ -19,7 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class SearchFragment extends BasePreferenceFragment implements CustomFormatDialogFragment.Listener {
+public class SearchFragment extends BasePreferenceFragment implements CustomFormatDialogFragment.Listener,
+        SettingsToolbarTitle {
 
     private static final String TAG_CUSTOM_SEARCH_ENGINE_FORMAT = "custom_search_engine_format";
 
@@ -27,6 +30,11 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
     private Preferences preferences;
     private UsageTracker usageTracker;
     private Preference formatPreference;
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_category_search);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

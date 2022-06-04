@@ -13,6 +13,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
@@ -21,7 +22,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class BackupFragment extends AppPreferenceFragment implements BackupView, SimpleDialogFragment.Listener {
+public class BackupFragment extends AppPreferenceFragment implements BackupView, SimpleDialogFragment.Listener,
+        SettingsToolbarTitle {
 
     private static final String MIME_TYPE_ANY = "*/*";
 
@@ -48,6 +50,11 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     @ProvidePresenter
     BackupPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().backup();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_other_bar);
     }
 
     @Override

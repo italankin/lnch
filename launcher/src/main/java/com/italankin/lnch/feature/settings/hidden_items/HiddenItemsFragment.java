@@ -7,24 +7,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class HiddenItemsFragment extends AppFragment implements HiddenItemsView {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class HiddenItemsFragment extends AppFragment implements HiddenItemsView, SettingsToolbarTitle {
 
     @InjectPresenter
     HiddenItemsPresenter presenter;
@@ -35,6 +36,11 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView 
     @ProvidePresenter
     HiddenItemsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().hiddenItems();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_hidden_items);
     }
 
     @Override

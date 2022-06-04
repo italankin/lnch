@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings.notifications;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
@@ -17,7 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
 
-public class NotificationsFragment extends BasePreferenceFragment {
+public class NotificationsFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_misc_notifications);
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

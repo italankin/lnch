@@ -1,11 +1,9 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -13,10 +11,14 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, SettingsToolbarTitle {
 
     public static LookAndFeelFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -34,6 +36,11 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     @ProvidePresenter
     LookAndFeelPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().lookAndFeel();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_home_laf);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.italankin.lnch.feature.settings.apps.details;
 
-import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
-import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
-
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,11 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.ContextCompat;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -27,13 +20,22 @@ import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.icons.CircleDrawable;
 
-public class AppDetailsFragment extends AppFragment implements AppDetailsView {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
+
+import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
+import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
+
+public class AppDetailsFragment extends AppFragment implements AppDetailsView, SettingsToolbarTitle {
 
     public static AppDetailsFragment newInstance(String requestKey, String descriptorId) {
         Bundle args = new Bundle();
@@ -65,6 +67,11 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     private SwitchCompat switchSearchVisibility;
     private SwitchCompat switchShortcutsVisibility;
     private SwitchCompat switchSearchShortcutsVisibility;
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_app_details);
+    }
 
     @ProvidePresenter
     AppDetailsPresenter providePresenter() {

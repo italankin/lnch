@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.settings.apps.details.aliases;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -16,6 +17,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -25,7 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppAliasesFragment extends AppFragment implements AppAliasesView {
+public class AppAliasesFragment extends AppFragment implements AppAliasesView, SettingsToolbarTitle {
 
     public static AppAliasesFragment newInstance(String descriptorId) {
         Bundle args = new Bundle();
@@ -51,6 +53,11 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView {
     @ProvidePresenter
     AppAliasesPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().appAliases();
+    }
+
+    @Override
+    public CharSequence getToolbarTitle(Context context) {
+        return context.getString(R.string.settings_app_aliases);
     }
 
     @Override

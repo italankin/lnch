@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -65,63 +64,62 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-
         new FragmentResultManager(getSupportFragmentManager(), this, REQUEST_KEY_SETTINGS)
                 .register(new SettingsRootFragment.LaunchEditModeContract(), result -> {
                     finish();
                     startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
                 })
                 .register(new SettingsRootFragment.ShowSearchPreferencesContract(), result -> {
-                    showFragment(new SearchFragment(), R.string.settings_category_search);
+                    showFragment(new SearchFragment());
                 })
                 .register(new SettingsRootFragment.ShowAppsSettings(), result -> {
-                    showFragment(AppsSettingsFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_apps_list);
+                    showFragment(AppsSettingsFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new SettingsRootFragment.ShowShortcutsPreferences(), result -> {
-                    showFragment(new ShortcutsFragment(), R.string.settings_home_misc_shortcuts);
+                    showFragment(new ShortcutsFragment());
                 })
                 .register(new SettingsRootFragment.ShowNotificationsPreferences(), result -> {
-                    showFragment(new NotificationsFragment(), R.string.settings_home_misc_notifications);
+                    showFragment(new NotificationsFragment());
                 })
                 .register(new SettingsRootFragment.ShowLookAndFeelPreferences(), result -> {
-                    showFragment(LookAndFeelFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf);
+                    showFragment(LookAndFeelFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new SettingsRootFragment.ShowMiscPreferences(), result -> {
-                    showFragment(MiscFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_misc);
+                    showFragment(MiscFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
-                    showFragment(new WidgetsSettingsFragment(), R.string.settings_home_widgets);
+                    showFragment(new WidgetsSettingsFragment());
                 })
                 .register(new SettingsRootFragment.ShowWallpaperPreferences(), result -> {
-                    showFragment(WallpaperFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_wallpaper);
+                    showFragment(WallpaperFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new SettingsRootFragment.ShowBackupPreferences(), result -> {
-                    showFragment(new BackupFragment(), R.string.settings_other_bar);
+                    showFragment(new BackupFragment());
                 })
                 .register(new AppearanceFragment.AppearanceFinishedContract(), result -> {
                     fragmentManager.popBackStack();
                 })
                 .register(new AppearanceFragment.ShowFontSelectContract(), this::handleShowFontSelect)
                 .register(new WallpaperFragment.ShowWallpaperOverlay(), result -> {
-                    showFragment(WallpaperOverlayFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_wallpaper_overlay_color);
+                    showFragment(WallpaperOverlayFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new WallpaperOverlayFragment.WallpaperOverlayFinishContract(), result -> {
                     fragmentManager.popBackStack();
                 })
                 .register(new LookAndFeelFragment.ShowItemLookPreferencesContract(), result -> {
-                    showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS), R.string.settings_home_laf_appearance);
+                    showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new AppsSettingsFragment.ShowAppDetailsContract(), descriptorId -> {
-                    showFragment(AppDetailsFragment.newInstance(REQUEST_KEY_SETTINGS, descriptorId), R.string.settings_app_details);
+                    showFragment(AppDetailsFragment.newInstance(REQUEST_KEY_SETTINGS, descriptorId));
                 })
                 .register(new MiscFragment.ShowHiddenItems(), result -> {
-                    showFragment(new HiddenItemsFragment(), R.string.settings_home_hidden_items);
+                    showFragment(new HiddenItemsFragment());
                 })
                 .register(new MiscFragment.ShowExperimentalPreferencesContract(), result -> {
-                    showFragment(new ExperimentalSettingsFragment(), R.string.settings_home_misc_experimental);
+                    showFragment(new ExperimentalSettingsFragment());
                 })
                 .register(new AppDetailsFragment.ShowAppAliasesContract(), descriptorId -> {
-                    showFragment(AppAliasesFragment.newInstance(descriptorId), R.string.settings_app_aliases);
+                    showFragment(AppAliasesFragment.newInstance(descriptorId));
                 })
                 .register(new AppDetailsFragment.AppDetailsErrorContract(), result -> {
                     fragmentManager.popBackStack();
@@ -152,26 +150,23 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void updateToolbar() {
-        toolbar.setTitle(getFragmentTitle());
+        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+        if (fragment instanceof SettingsToolbarTitle) {
+            toolbar.setTitle(((SettingsToolbarTitle) fragment).getToolbarTitle(this));
+        } else {
+            toolbar.setTitle(R.string.settings_title);
+        }
         toolbar.setNavigationIcon(fragmentManager.getBackStackEntryCount() > 0
                 ? R.drawable.ic_arrow_back
                 : R.drawable.ic_close);
     }
 
-    private CharSequence getFragmentTitle() {
-        int index = fragmentManager.getBackStackEntryCount() - 1;
-        return index < 0
-                ? getString(R.string.settings_title)
-                : fragmentManager.getBackStackEntryAt(index).getBreadCrumbTitle();
-    }
-
-    private void showFragment(Fragment fragment, @StringRes int title) {
+    private void showFragment(Fragment fragment) {
         fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fragment_in, R.animator.fragment_out,
                         R.animator.fragment_bs_in, R.animator.fragment_bs_out)
                 .replace(R.id.container, fragment)
-                .setBreadCrumbTitle(title)
                 .addToBackStack(null)
                 .commit();
     }
@@ -186,6 +181,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
             fragmentManager.setFragmentResult(targetRequestKey, result);
         });
-        showFragment(FontsFragment.newInstance(proxyRequestKey), R.string.settings_home_laf_appearance_fonts_select);
+        showFragment(FontsFragment.newInstance(proxyRequestKey));
     }
 }
