@@ -4,6 +4,7 @@ import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH
 import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
 
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
+import com.italankin.lnch.util.icons.CircleDrawable;
 
 public class AppDetailsFragment extends AppFragment implements AppDetailsView {
 
@@ -180,11 +182,27 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView {
     }
 
     private void updateColorPreview(AppDescriptor descriptor) {
-        buttonChangeColorPreview.setBackgroundColor(descriptor.getVisibleColor());
+        int visibleColor = descriptor.getVisibleColor();
+        Drawable background = buttonChangeColorPreview.getBackground();
+        if (background instanceof CircleDrawable) {
+            ((CircleDrawable) background).setColor(visibleColor);
+        } else {
+            CircleDrawable drawable = new CircleDrawable();
+            drawable.setColor(visibleColor);
+            buttonChangeColorPreview.setBackground(drawable);
+        }
     }
 
     private void updateBadgeColorPreview(AppDescriptor descriptor) {
-        buttonChangeBadgeColorPreview.setBackgroundColor(getCurrentBadgeColor(descriptor));
+        int badgeColor = getCurrentBadgeColor(descriptor);
+        Drawable background = buttonChangeBadgeColorPreview.getBackground();
+        if (background instanceof CircleDrawable) {
+            ((CircleDrawable) background).setColor(badgeColor);
+        } else {
+            CircleDrawable drawable = new CircleDrawable();
+            drawable.setColor(badgeColor);
+            buttonChangeBadgeColorPreview.setBackground(drawable);
+        }
     }
 
     private int getCurrentBadgeColor(AppDescriptor descriptor) {
