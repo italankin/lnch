@@ -27,8 +27,8 @@ public class GsonDescriptorStore implements DescriptorStore {
 
     @Override
     public List<Descriptor> read(InputStream in) {
-        try (InputStream input = in) {
-            return gson.fromJson(new InputStreamReader(input), TYPE);
+        try (InputStreamReader input = new InputStreamReader(in)) {
+            return gson.fromJson(input, TYPE);
         } catch (Exception e) {
             Timber.e(e, "read:");
             return null;
@@ -37,11 +37,9 @@ public class GsonDescriptorStore implements DescriptorStore {
 
     @Override
     public void write(OutputStream out, List<Descriptor> items) {
-        try (OutputStream output = out) {
+        try (OutputStreamWriter output = new OutputStreamWriter(out)) {
             String json = gson.toJson(items, TYPE);
-            OutputStreamWriter writer = new OutputStreamWriter(output);
-            writer.write(json);
-            writer.close();
+            output.write(json);
         } catch (Exception e) {
             throw new RuntimeException("cannot write json", e);
         }
