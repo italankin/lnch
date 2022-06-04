@@ -206,7 +206,7 @@ public final class UserPrefs {
                     ", itemShadowRadius=" + itemShadowRadius +
                     ", itemShadowColor=" +
                     (itemShadowColor != null ? String.format("#%08x", itemShadowColor) : "default") +
-                    ", typeface=" + typeface +
+                    ", itemFont=" + itemFont +
                     ", notificationDotColor=" + notificationDotColor +
                     '}';
         }
