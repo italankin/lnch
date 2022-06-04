@@ -260,12 +260,16 @@ class ProcessingEnv {
     }
 
     /**
-     * Fetch a matching {@link LauncherActivityInfo} for a given {@link AppDescriptor}
+     * Remove from a {@code packagesMap} and return matching {@link LauncherActivityInfo}
+     * for a given {@link AppDescriptor}
      */
     LauncherActivityInfo pollInfo(AppDescriptor app) {
         return packagesMap.poll(app);
     }
 
+    /**
+     * Remaining items in the {@code packagesMap} will be newly installed apps
+     */
     Iterable<List<LauncherActivityInfo>> packages() {
         return packagesMap.items();
     }
