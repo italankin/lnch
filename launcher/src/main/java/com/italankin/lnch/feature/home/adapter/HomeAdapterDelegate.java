@@ -98,11 +98,16 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
             notificationDot.setColor(itemPrefs.notificationDotColor);
         }
         View root = holder.getRoot();
-        ViewGroup.LayoutParams lp = root.getLayoutParams();
+        ViewGroup.LayoutParams rootLp = root.getLayoutParams();
         if (!params.ignoreAlignment && itemPrefs.itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
-            if (lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
-                lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                root.setLayoutParams(lp);
+            if (rootLp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
+                rootLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                root.setLayoutParams(rootLp);
+                if (root != label) {
+                    ViewGroup.LayoutParams labelLp = label.getLayoutParams();
+                    labelLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    label.setLayoutParams(labelLp);
+                }
             }
             switch (itemPrefs.alignment) {
                 case START:
@@ -124,9 +129,14 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                     }
                     break;
             }
-        } else if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            root.setLayoutParams(lp);
+        } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            rootLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            root.setLayoutParams(rootLp);
+            if (root != label) {
+                ViewGroup.LayoutParams llp = label.getLayoutParams();
+                llp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                label.setLayoutParams(llp);
+            }
         }
     }
 
