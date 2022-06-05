@@ -56,4 +56,9 @@
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
     </style>
+
+    <style name="PreferenceSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="searchHintIcon">@null</item>
+        <item name="queryHint">@string/hint_search_preference</item>
+    </style>
 </resources>

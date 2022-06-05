@@ -15,6 +15,7 @@ import com.italankin.lnch.feature.settings.backup.BackupPresenter;
 import com.italankin.lnch.feature.settings.fonts.FontsPresenter;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsPresenter;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelPresenter;
+import com.italankin.lnch.feature.settings.preferencesearch.PreferenceSearchPresenter;
 import com.italankin.lnch.feature.widgets.WidgetsPresenter;
 import com.italankin.lnch.model.backup.BackupReader;
 import com.italankin.lnch.model.backup.BackupWriter;
@@ -47,6 +48,8 @@ public interface PresenterComponent {
     LookAndFeelPresenter lookAndFeel();
 
     BackupPresenter backup();
+
+    PreferenceSearchPresenter preferenceSearch();
 
     WidgetsPresenter widgets();
 

@@ -5,12 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -29,11 +23,23 @@ import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
+import com.italankin.lnch.feature.settings.preferencesearch.PreferenceSearchFragment;
 import com.italankin.lnch.feature.settings.search.SearchFragment;
+import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
+import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -47,6 +53,8 @@ public class SettingsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
 
+    private SettingsStore settingsStore;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Preferences preferences = LauncherApp.daggerService.main().preferences();
@@ -57,6 +65,8 @@ public class SettingsActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this::updateToolbar);
 
+        settingsStore = LauncherApp.daggerService.main().settingsStore();
+
         setContentView(R.layout.activity_settings);
 
         toolbar = findViewById(R.id.toolbar);
@@ -65,6 +75,15 @@ public class SettingsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         new FragmentResultManager(getSupportFragmentManager(), this, REQUEST_KEY_SETTINGS)
+                .register(new SettingsRootFragment.ShowPreferenceSearch(), result -> {
+                    showFragment(PreferenceSearchFragment.newInstance(REQUEST_KEY_SETTINGS));
+                })
+                .register(new PreferenceSearchFragment.ClosePreferenceSearchContract(), result -> {
+                    fragmentManager.popBackStack();
+                })
+                .register(new PreferenceSearchFragment.ShowPreferenceContract(), result -> {
+                    handleShowPreference(result);
+                })
                 .register(new SettingsRootFragment.LaunchEditModeContract(), result -> {
                     finish();
                     startActivity(new Intent(LauncherIntents.ACTION_EDIT_MODE));
@@ -147,6 +166,21 @@ public class SettingsActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    private void handleShowPreference(SettingsEntry.Key key) {
+        SettingsEntry entry = settingsStore.getByKey(key);
+        if (entry == null) {
+            Timber.w("no preference found for key=% in SettingsStore", key);
+            return;
+        }
+        while (fragmentManager.popBackStackImmediate()) {
+            // remove all from backstack
+        }
+        List<Fragment> fragments = entry.stackBuilder().createStack(REQUEST_KEY_SETTINGS);
+        for (Fragment fragment : fragments) {
+            showFragment(fragment);
+        }
     }
 
     private void updateToolbar() {

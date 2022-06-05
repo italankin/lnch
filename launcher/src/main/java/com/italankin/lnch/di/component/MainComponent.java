@@ -6,6 +6,7 @@ import com.italankin.lnch.di.module.BackupModule;
 import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -46,6 +47,8 @@ public interface MainComponent extends PresenterComponent.Dependencies {
     HomeDescriptorsState homeDescriptorState();
 
     FontManager typefaceStorage();
+
+    SettingsStore settingsStore();
 
     @Component.Builder
     interface Builder {

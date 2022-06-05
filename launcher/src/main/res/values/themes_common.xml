@@ -6,6 +6,10 @@
         <item name="android:textColorSecondary">?colorTextSecondary</item>
     </style>
 
+    <style name="AppTheme.Preferences.PreferenceSearch">
+        <item name="searchViewStyle">@style/PreferenceSearchViewStyle</item>
+    </style>
+
     <style name="AppTheme.Overlay" parent="ThemeOverlay.AppCompat.DayNight">
         <item name="android:textColorSecondary">?colorText</item>
     </style>

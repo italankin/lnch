@@ -5,8 +5,5 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_action_search"
         android:title="@string/hint_search"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_system_settings"
-        android:title="@string/settings_system" />
+        app:showAsAction="always|collapseActionView" />
 </menu>

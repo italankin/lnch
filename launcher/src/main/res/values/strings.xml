@@ -22,6 +22,7 @@
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
+    <string name="hint_search_preference">Search preferences…</string>
 
     <string name="new_folder_default_label">New Folder</string>
     <string name="pinned_shortcut_default_label">New Shortcut</string>
