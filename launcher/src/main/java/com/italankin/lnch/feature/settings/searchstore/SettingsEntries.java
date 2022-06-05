@@ -338,14 +338,6 @@ final class SettingsEntries {
                             return Collections.singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
-                new SettingsEntryImpl.Builder(R.string.pref_key_misc_experimental)
-                        .title(R.string.settings_home_misc_experimental)
-                        .summary(R.string.settings_home_misc_experimental_summary)
-                        .category(R.string.settings_home_misc)
-                        .stackBuilder(requestKey -> {
-                            return Arrays.asList(new MiscFragment(), new ExperimentalSettingsFragment());
-                        })
-                        .build(),
 
                 /* --- Experimental --- */
 
