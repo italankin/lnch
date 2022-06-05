@@ -17,14 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat implements FragmentResultSender {
 
-    @SuppressWarnings("unchecked")
     protected <T extends Preference> T findPreference(@StringRes int key) {
-        return (T) findPreference(getString(key));
+        return findPreference(getString(key));
     }
 
-    @SuppressWarnings("unchecked")
     protected <T extends Preference> T findPreference(Preferences.Pref<?> pref) {
-        return (T) findPreference(pref.key());
+        return findPreference(pref.key());
     }
 
     @Override
