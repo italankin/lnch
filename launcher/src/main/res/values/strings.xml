@@ -223,13 +223,13 @@
     <string name="settings_home_laf_other_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_other_large_search_bar_summary">Increase height of the search bar</string>
     <string name="settings_home_laf_other_home">Home</string>
-    <string name="settings_home_laf_other_color_overlay_show">Single items color</string>
+    <string name="settings_home_laf_other_color_overlay_show">One color for items</string>
     <string name="settings_home_laf_other_color_overlay_show_summary">Use the same color for all items</string>
+    <string name="settings_home_laf_other_color_overlay">Items color</string>
     <string name="settings_home_laf_other_apps_list_animate">Animate apps list appearance</string>
     <string name="settings_home_laf_other_hide_status_bar">Hide status bar</string>
     <string name="settings_home_laf_other_hide_status_bar_summary">Do not show status bar on home screen</string>
     <string name="settings_home_laf_other_width">Items width</string>
-    <string name="settings_home_laf_other_color_overlay">Custom color</string>
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
     <string name="settings_home_laf_other_fullscreen_folders">Fullscreen folders</string>
     <string name="settings_home_laf_other_fullscreen_folders_summary">Show folders on full screen instead of popup</string>
