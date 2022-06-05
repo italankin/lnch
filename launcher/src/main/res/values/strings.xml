@@ -272,8 +272,8 @@
     <string name="settings_other_bar_backup_success">Settings backed up successfully</string>
     <string name="settings_other_bar_reset_success">Settings were reset</string>
     <string name="settings_other_bar_reset_dialog_title">Reset</string>
-    <string name="settings_other_bar_reset_dialog_apps_message" tools:ignore="UnusedResources">Do you want to reset all apps settings (custom names, colors, folders, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
-    <string name="settings_other_bar_reset_dialog_lnch_message" tools:ignore="UnusedResources">Do you want to reset all lnch settings (home settings, fonts, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
+    <string name="settings_other_bar_reset_dialog_apps_message">Do you want to reset all apps settings (custom names, colors, folders, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
+    <string name="settings_other_bar_reset_dialog_lnch_message">Do you want to reset all lnch settings (home settings, fonts, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
     <string name="settings_other_bar_reset_dialog_action">Reset</string>
 
     <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
