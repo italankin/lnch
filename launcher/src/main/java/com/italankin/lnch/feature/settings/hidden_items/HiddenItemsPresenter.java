@@ -29,7 +29,6 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
         this.descriptorRepository = descriptorRepository;
     }
 
-
     @Override
     protected void onFirstViewAttach() {
         observeApps();
