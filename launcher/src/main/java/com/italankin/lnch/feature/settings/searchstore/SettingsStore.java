@@ -5,10 +5,10 @@ import android.content.Context;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,7 +38,7 @@ public class SettingsStore {
     public List<SettingsEntry> search(String query, int maxResults) {
         populateCache();
         long start = System.nanoTime();
-        PriorityQueue<EntryMatch> matches = new PriorityQueue<>(10);
+        List<EntryMatch> matches = new ArrayList<>(10);
         Set<Map.Entry<SettingsEntryImpl, SearchToken>> entries = entriesCache.entrySet();
         for (Map.Entry<SettingsEntryImpl, SearchToken> mapEntry : entries) {
             SettingsEntryImpl entry = mapEntry.getKey();
@@ -48,9 +48,13 @@ public class SettingsStore {
                 matches.add(entryMatch);
             }
         }
+        Collections.sort(matches);
         List<SettingsEntry> results = new ArrayList<>(matches.size());
-        while (!matches.isEmpty() && results.size() != maxResults) {
-            results.add(matches.remove().entry);
+        for (EntryMatch match : matches) {
+            results.add(match.entry);
+            if (results.size() == maxResults) {
+                break;
+            }
         }
         Timber.d("search: query='%s', results=%d, done in %.3fms",
                 query, results.size(), (System.nanoTime() - start) / 1_000_000f);
