@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.settings.preferencesearch;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,13 +75,6 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
-
-        new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-
-            }
-        };
     }
 
     @Override
