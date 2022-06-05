@@ -38,11 +38,15 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
         return fragment;
     }
 
+    private static final String STATE_QUERY = "query";
+
     @InjectPresenter
     PreferenceSearchPresenter presenter;
 
     private LceLayout lce;
     private CompositeAdapter<PreferenceSearchItem> adapter;
+
+    private String currentQuery;
 
     @ProvidePresenter
     PreferenceSearchPresenter providePresenter() {
@@ -53,6 +57,7 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        currentQuery = savedInstanceState != null ? savedInstanceState.getString(STATE_QUERY) : null;
     }
 
     @Override
@@ -84,17 +89,18 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
         MenuItem actionSearchItem = menu.findItem(R.id.action_search);
         SearchView searchView = new SearchView(
                 new ContextThemeWrapper(requireContext(), R.style.AppTheme_Preferences_PreferenceSearch));
+        searchView.setQuery(currentQuery, false);
         actionSearchItem.setActionView(searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                presenter.search(query);
+                presenter.search(currentQuery = query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                presenter.search(newText);
+                presenter.search(currentQuery = newText);
                 return true;
             }
         });
@@ -113,6 +119,12 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
             }
         });
         actionSearchItem.expandActionView();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(currentQuery, STATE_QUERY);
     }
 
     @Override
