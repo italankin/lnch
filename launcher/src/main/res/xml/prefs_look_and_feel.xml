@@ -22,7 +22,7 @@
             android:entryValues="@array/pref_values_home_layout_alignment"
             android:key="home_alignment"
             android:summary="%s"
-            android:title="Alignment" />
+            android:title="@string/settings_home_laf_alignment" />
         <ListPreference
             android:defaultValue="manual"
             android:entries="@array/pref_desc_apps_sort_mode"
