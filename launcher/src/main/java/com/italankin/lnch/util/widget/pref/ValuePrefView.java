@@ -21,9 +21,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-/**
- * @author Igor Talankin
- */
 @SuppressWarnings("unchecked")
 public class ValuePrefView extends RelativeLayout {
 

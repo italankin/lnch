@@ -18,9 +18,6 @@ import androidx.annotation.StringRes;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ViewUtils;
 
-/**
- * @author Igor Talankin
- */
 public class SliderPrefView extends RelativeLayout {
 
     private static final String STATE_SUPER = "super";
