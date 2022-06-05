@@ -42,6 +42,7 @@ public class NotificationsFragment extends BasePreferenceFragment implements Set
             notificationDot.setChecked(false);
             notificationPopup.setChecked(false);
         }
+        scrollToTarget();
     }
 
     private void setClickListener(CheckBoxPreference pref) {

@@ -104,6 +104,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             startActivity(Intent.createChooser(intent, ""));
             return true;
         });
+        scrollToTarget();
     }
 
     @Override

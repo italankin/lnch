@@ -27,6 +27,7 @@ import com.italankin.lnch.feature.settings.preferencesearch.PreferenceSearchFrag
 import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
+import com.italankin.lnch.feature.settings.util.TargetPreference;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
@@ -178,9 +179,13 @@ public class SettingsActivity extends AppCompatActivity {
             // remove all from backstack
         }
         List<Fragment> fragments = entry.stackBuilder().createStack(REQUEST_KEY_SETTINGS);
-        for (Fragment fragment : fragments) {
+        for (int i = 0; i < fragments.size() - 1; i++) {
+            Fragment fragment = fragments.get(i);
             showFragment(fragment);
         }
+        Fragment fragment = fragments.get(fragments.size() - 1);
+        TargetPreference.set(this, fragment, key);
+        showFragment(fragment);
     }
 
     private void updateToolbar() {

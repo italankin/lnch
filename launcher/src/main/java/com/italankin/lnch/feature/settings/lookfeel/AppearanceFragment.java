@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +28,7 @@ import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.fonts.FontsFragment;
+import com.italankin.lnch.feature.settings.util.TargetPreference;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
@@ -129,6 +132,21 @@ public class AppearanceFragment extends AppFragment implements
         initShadowColor(view);
 
         updatePreview();
+
+        String target = TargetPreference.get(this);
+        if (target != null) {
+            if (Preferences.ITEM_TEXT_SIZE.key().equals(target)) {
+                highlightTarget(itemTextSize);
+            } else if (Preferences.ITEM_PADDING.key().equals(target)) {
+                highlightTarget(itemPadding);
+            } else if (Preferences.ITEM_SHADOW_RADIUS.key().equals(target)) {
+                highlightTarget(itemShadowRadius);
+            } else if (Preferences.ITEM_SHADOW_COLOR.key().equals(target)) {
+                highlightTarget(itemShadowColor);
+            } else if (Preferences.ITEM_FONT.key().equals(target)) {
+                highlightTarget(itemFont);
+            }
+        }
     }
 
     @Override
@@ -411,6 +429,12 @@ public class AppearanceFragment extends AppFragment implements
         int min = pref.min().intValue();
         prefView.setProgress(preferences.get(pref).intValue() - min);
         prefView.setMax(pref.max().intValue() - min);
+    }
+
+    private void highlightTarget(View view) {
+        new Handler(Looper.getMainLooper()).postDelayed(
+                () -> ViewUtils.setTemporaryPressedState(view, TargetPreference.HIGHLIGHT_DURATION),
+                TargetPreference.HIGHLIGHT_DELAY);
     }
 
     public static class ShowFontSelectContract implements FragmentResultContract<String> {
