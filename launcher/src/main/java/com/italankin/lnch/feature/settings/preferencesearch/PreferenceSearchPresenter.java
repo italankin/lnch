@@ -58,7 +58,7 @@ public class PreferenceSearchPresenter extends AppPresenter<PreferenceSearchView
                 return Collections.emptyList();
             }
             List<SettingsEntry> entries = settingsStore.search(query);
-            LinkedHashMap<Integer, List<PreferenceSearchItem>> byCategories = new LinkedHashMap<>(entries.size() + 5);
+            LinkedHashMap<Integer, List<PreferenceSearchItem>> byCategories = new LinkedHashMap<>(5);
             for (SettingsEntry entry : entries) {
                 List<PreferenceSearchItem> categoryEntries = byCategories.get(entry.category());
                 if (categoryEntries == null) {
