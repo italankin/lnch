@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class WallpaperFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -45,6 +45,8 @@ public class WallpaperFragment extends BasePreferenceFragment implements Setting
             return true;
         });
         setupOverlayColor();
+
+        scrollToTarget();
     }
 
     private void setupOverlayColor() {

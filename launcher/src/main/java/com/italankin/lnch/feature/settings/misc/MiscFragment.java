@@ -43,6 +43,7 @@ public class MiscFragment extends BasePreferenceFragment implements SettingsTool
             sendResult(new ShowHiddenItems().result());
             return true;
         });
+        scrollToTarget();
     }
 
     public static class ShowExperimentalPreferencesContract extends SignalFragmentResultContract {

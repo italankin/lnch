@@ -13,16 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
-
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
 public class SettingsRootFragment extends BasePreferenceFragment {
 
@@ -104,6 +104,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             startActivity(Intent.createChooser(intent, ""));
             return true;
         });
+        scrollToTarget();
     }
 
     @Override
@@ -142,8 +143,17 @@ public class SettingsRootFragment extends BasePreferenceFragment {
                 Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
             }
             return true;
+        } else if (item.getItemId() == R.id.action_search) {
+            sendResult(new ShowPreferenceSearch().result());
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class ShowPreferenceSearch extends SignalFragmentResultContract {
+        public ShowPreferenceSearch() {
+            super("show_preference_search");
+        }
     }
 
     public static class LaunchEditModeContract extends SignalFragmentResultContract {

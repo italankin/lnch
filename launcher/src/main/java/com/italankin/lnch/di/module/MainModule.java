@@ -11,6 +11,7 @@ import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -179,5 +180,11 @@ public class MainModule {
     UsageTracker provideUsageTracker(Context context, DescriptorRepository descriptorRepository,
             GsonBuilder gsonBuilder) {
         return new UsageTrackerImpl(context, descriptorRepository, gsonBuilder.create());
+    }
+
+    @Provides
+    @Singleton
+    SettingsStore provideSettingsStore(Context context) {
+        return new SettingsStore(context);
     }
 }

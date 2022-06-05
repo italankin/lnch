@@ -81,6 +81,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
             showResetLnchDialog();
             return true;
         });
+        scrollToTarget();
     }
 
     @Override

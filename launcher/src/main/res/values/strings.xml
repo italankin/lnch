@@ -22,6 +22,7 @@
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
+    <string name="hint_search_preference">Search preferences…</string>
 
     <string name="new_folder_default_label">New Folder</string>
     <string name="pinned_shortcut_default_label">New Shortcut</string>
@@ -218,16 +219,17 @@
 
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>
+    <string name="settings_home_laf_alignment">Alignment</string>
     <string name="settings_home_laf_other_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_other_large_search_bar_summary">Increase height of the search bar</string>
     <string name="settings_home_laf_other_home">Home</string>
-    <string name="settings_home_laf_other_color_overlay_show">Single items color</string>
+    <string name="settings_home_laf_other_color_overlay_show">One color for items</string>
     <string name="settings_home_laf_other_color_overlay_show_summary">Use the same color for all items</string>
+    <string name="settings_home_laf_other_color_overlay">Items color</string>
     <string name="settings_home_laf_other_apps_list_animate">Animate apps list appearance</string>
     <string name="settings_home_laf_other_hide_status_bar">Hide status bar</string>
     <string name="settings_home_laf_other_hide_status_bar_summary">Do not show status bar on home screen</string>
     <string name="settings_home_laf_other_width">Items width</string>
-    <string name="settings_home_laf_other_color_overlay">Custom color</string>
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
     <string name="settings_home_laf_other_fullscreen_folders">Fullscreen folders</string>
     <string name="settings_home_laf_other_fullscreen_folders_summary">Show folders on full screen instead of popup</string>

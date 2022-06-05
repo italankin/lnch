@@ -28,5 +28,6 @@ public class ShortcutsFragment extends BasePreferenceFragment implements Setting
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(Preferences.MAX_DYNAMIC_SHORTCUTS).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1);
+        scrollToTarget();
     }
 }

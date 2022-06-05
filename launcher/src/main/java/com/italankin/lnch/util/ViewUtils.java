@@ -71,6 +71,11 @@ public final class ViewUtils {
         return rect;
     }
 
+    public static void setTemporaryPressedState(View view, int duration) {
+        view.setPressed(true);
+        view.postDelayed(() -> view.setPressed(false), duration);
+    }
+
     private static class OneTimeListener implements ViewTreeObserver.OnGlobalLayoutListener {
         private final View view;
         private final ViewTreeObserver.OnGlobalLayoutListener delegate;

@@ -81,6 +81,7 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
             return true;
         });
         subscribeForUpdates();
+        scrollToTarget();
     }
 
     @Override

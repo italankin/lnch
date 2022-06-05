@@ -71,6 +71,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setEnabled(preferences.get(Preferences.NOTIFICATION_DOT));
         findPreference(Preferences.APPS_LIST_ANIMATE)
                 .setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        scrollToTarget();
     }
 
     public static class ShowItemLookPreferencesContract extends SignalFragmentResultContract {
