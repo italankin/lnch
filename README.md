@@ -1,4 +1,4 @@
-# lnch
+# lnch [![Latest release](https://img.shields.io/github/v/release/italankin/lnch)](https://github.com/italankin/lnch/releases/latest) 
 
 lnch is Android launcher, focused on effectiveness.
 
