@@ -36,6 +36,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
 
     void onRestoreSettings(Uri uri) {
         backupReader.read(uri)
+                .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
@@ -70,6 +71,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
 
     void resetAppsSettings() {
         descriptorRepository.clear()
+                .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
@@ -91,6 +93,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                     Preferences.Pref<?>[] prefs = Preferences.ALL.toArray(new Preferences.Pref<?>[0]);
                     preferences.reset(prefs);
                 })
+                .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
