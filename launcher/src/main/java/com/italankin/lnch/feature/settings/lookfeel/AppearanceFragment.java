@@ -267,15 +267,18 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void initOverlay(View view) {
+        int overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)
+                ? preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR)
+                : Color.TRANSPARENT;
         overlay = view.findViewById(R.id.overlay);
-        overlay.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
+        overlay.setBackgroundColor(overlayColor);
         overlay.setOnClickListener(v -> {
             Drawable background = v.getBackground();
             int selectedColor;
             if (background instanceof ColorDrawable) {
                 selectedColor = ((ColorDrawable) background).getColor();
             } else {
-                selectedColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
+                selectedColor = overlayColor;
             }
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
