@@ -55,8 +55,9 @@ public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
         }
 
         public void onError(Throwable e) {
-            Timber.e(e, "%s.onError", getClass().getSimpleName());
-            onError(getViewState(), e);
+            V viewState = getViewState();
+            Timber.e(e, "onError(viewState=%s)", viewState.getClass().getSimpleName());
+            onError(viewState, e);
         }
 
         public void onComplete() {
