@@ -13,16 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
 public class SettingsRootFragment extends BasePreferenceFragment {
 
@@ -35,6 +35,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     }
 
     private static final String SOURCE_CODE_URL = "https://github.com/italankin/lnch";
+    private static final String RELEASE_NOTES_FORMAT = "https://github.com/italankin/lnch/releases/tag/%s";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,13 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         });
         Preference version = findPreference(R.string.pref_key_version);
         version.setTitle(getString(R.string.settings_version, BuildConfig.VERSION_NAME));
+        version.setOnPreferenceClickListener(preference -> {
+            String releaseNotesUrl = String.format(RELEASE_NOTES_FORMAT, BuildConfig.VERSION_NAME);
+            Uri uri = Uri.parse(releaseNotesUrl);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(Intent.createChooser(intent, ""));
+            return true;
+        });
         Preference sourceCode = findPreference(R.string.pref_key_source_code);
         sourceCode.setOnPreferenceClickListener(preference -> {
             Uri uri = Uri.parse(SOURCE_CODE_URL);
