@@ -42,6 +42,7 @@ public class LookAndFeelPresenter extends AppPresenter<MvpView> {
                 .subscribe(new CompletableState() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        // do not unsubscribe to get changes saved
                     }
 
                     @Override
