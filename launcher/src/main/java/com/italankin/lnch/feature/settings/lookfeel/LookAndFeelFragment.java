@@ -5,6 +5,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -14,9 +17,6 @@ import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContra
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, SettingsToolbarTitle {
 
@@ -71,7 +71,16 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
                 .setEnabled(preferences.get(Preferences.NOTIFICATION_DOT));
         findPreference(Preferences.APPS_LIST_ANIMATE)
                 .setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        findPreference(Preferences.HIDE_STATUS_BAR).setOnPreferenceChangeListener((preference, newValue) -> {
+            updateStatusBarColorDependency(((Boolean) newValue));
+            return true;
+        });
+        updateStatusBarColorDependency(preferences.get(Preferences.HIDE_STATUS_BAR));
         scrollToTarget();
+    }
+
+    private void updateStatusBarColorDependency(Boolean hideStatusBar) {
+        findPreference(Preferences.STATUS_BAR_COLOR).setEnabled(!hideStatusBar);
     }
 
     public static class ShowItemLookPreferencesContract extends SignalFragmentResultContract {
