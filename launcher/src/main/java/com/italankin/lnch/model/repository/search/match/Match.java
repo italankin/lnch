@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import java.util.Set;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+
+import java.util.Set;
 
 public interface Match {
 
@@ -35,7 +35,7 @@ public interface Match {
     /**
      * @return an intent, if present
      */
-    Intent getIntent();
+    Intent getIntent(Context context);
 
     /**
      * @return kind of a match, e.g. application, shortcut, web result, etc.
@@ -44,12 +44,16 @@ public interface Match {
 
     Set<Action> availableActions();
 
+    @Override
+    int hashCode();
+
     /**
      * Kind of the object this match represents
      */
     enum Kind {
         APP,
         SHORTCUT,
+        PREFERENCE,
         OTHER,
         WEB,
         URL

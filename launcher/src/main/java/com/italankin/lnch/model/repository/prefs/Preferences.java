@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.model.fonts.FontManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 /**
@@ -153,11 +154,11 @@ public interface Preferences {
             null);
 
     /**
-     * Items which will appear in the search results
+     * Items which will be hidden from the search results
      */
-    Pref<EnumSet<SearchTarget>> SEARCH_TARGETS = Prefs.create(
-            "search_targets",
-            SearchTarget.ALL,
+    Pref<EnumSet<SearchTarget>> EXCLUDED_SEARCH_TARGETS = Prefs.create(
+            "excluded_search_targets",
+            EnumSet.noneOf(SearchTarget.class),
             (preferences, key) -> {
                 Set<String> set = preferences.getStringSet(key, null);
                 return set != null ? SearchTarget.fromCollection(set) : null;
@@ -468,7 +469,7 @@ public interface Preferences {
             SEARCH_USE_CUSTOM_TABS,
             SEARCH_ENGINE,
             CUSTOM_SEARCH_ENGINE_FORMAT,
-            SEARCH_TARGETS,
+            EXCLUDED_SEARCH_TARGETS,
             LARGE_SEARCH_BAR,
             WALLPAPER_OVERLAY_SHOW,
             WALLPAPER_OVERLAY_COLOR,
@@ -639,10 +640,11 @@ public interface Preferences {
     enum SearchTarget {
         IGNORED("ignored"),
         SHORTCUT("shortcut"),
+        PREFERENCE("preference"),
         WEB("web"),
         URL("url");
 
-        static final EnumSet<SearchTarget> ALL = EnumSet.allOf(SearchTarget.class);
+        public static final EnumSet<SearchTarget> ALL = EnumSet.allOf(SearchTarget.class);
 
         static SearchTarget from(String s) {
             for (SearchTarget target : values()) {

@@ -500,7 +500,7 @@ final class SettingsEntries {
                             return Collections.singletonList(new SearchFragment());
                         })
                         .build(),
-                new SettingsEntryImpl.Builder(Preferences.SEARCH_TARGETS)
+                new SettingsEntryImpl.Builder(Preferences.EXCLUDED_SEARCH_TARGETS)
                         .title(R.string.settings_search_targets)
                         .summary(R.string.settings_search_targets_summary)
                         .category(R.string.settings_search)

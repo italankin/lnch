@@ -824,7 +824,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             public void onSearchItemPinClick(Match match) {
                 searchOverlayBehavior.hide();
                 Context context = requireContext();
-                presenter.pinIntent(match.getIntent(), match.getLabel(context), match.getColor(context));
+                presenter.pinIntent(match.getIntent(context), match.getLabel(context), match.getColor(context));
             }
 
             @Override

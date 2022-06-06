@@ -1,8 +1,8 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
-import java.io.Serializable;
-
 import androidx.annotation.StringRes;
+
+import java.io.Serializable;
 
 public interface SettingsEntry {
 
@@ -42,6 +42,11 @@ public interface SettingsEntry {
         }
 
         @Override
+        public int hashCode() {
+            return value.hashCode();
+        }
+
+        @Override
         public String toString() {
             return "StringKey(" + value + ')';
         }
@@ -65,6 +70,11 @@ public interface SettingsEntry {
             }
             ResourceKey that = (ResourceKey) o;
             return value == that.value;
+        }
+
+        @Override
+        public int hashCode() {
+            return value;
         }
 
         @Override

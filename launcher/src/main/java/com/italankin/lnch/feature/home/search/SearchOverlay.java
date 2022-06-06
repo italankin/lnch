@@ -267,9 +267,9 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         if (match != null) {
             if (match instanceof DescriptorMatch) {
                 Descriptor descriptor = ((DescriptorMatch) match).getDescriptor();
-                listener.handleDescriptorIntent(match.getIntent(), descriptor);
+                listener.handleDescriptorIntent(match.getIntent(getContext()), descriptor);
             } else {
-                listener.handleIntent(match.getIntent());
+                listener.handleIntent(match.getIntent(getContext()));
             }
         }
         searchEditText.setText("");

@@ -72,7 +72,9 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (query.isEmpty()) {
             return Collections.emptyList();
         }
-        EnumSet<SearchTarget> searchTargets = preferences.get(Preferences.SEARCH_TARGETS);
+        EnumSet<SearchTarget> searchTargets = EnumSet.copyOf(SearchTarget.ALL);
+        EnumSet<SearchTarget> excludedSearchTargets = preferences.get(Preferences.EXCLUDED_SEARCH_TARGETS);
+        searchTargets.removeAll(excludedSearchTargets);
         List<Match> matches = new ArrayList<>(8);
         for (SearchDelegate delegate : delegates) {
             List<Match> list = delegate.search(query, searchTargets);

@@ -43,12 +43,14 @@
     <string-array name="pref_values_search_targets">
         <item>ignored</item>
         <item>shortcut</item>
+        <item>preference</item>
         <item>web</item>
         <item>url</item>
     </string-array>
     <string-array name="pref_desc_search_targets">
         <item>Hidden apps</item>
         <item>Shortcuts</item>
+        <item>Launcher preferences</item>
         <item>Web search</item>
         <item>Detect URLs</item>
     </string-array>

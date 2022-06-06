@@ -5,6 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -35,11 +41,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -47,6 +48,13 @@ public class SettingsActivity extends AppCompatActivity {
     public static ComponentName getComponentName(Context context) {
         return new ComponentName(context, SettingsActivity.class);
     }
+
+    public static Intent createIntent(Context context, SettingsEntry.Key key) {
+        return new Intent(context, SettingsActivity.class)
+                .putExtra(EXTRA_SETTING_KEY, key);
+    }
+
+    private static final String EXTRA_SETTING_KEY = "setting_key";
 
     private static final String REQUEST_KEY_SETTINGS = "settings";
     private static final String REQUEST_KEY_PROXY_PREFIX = "proxy:";
@@ -152,6 +160,14 @@ public class SettingsActivity extends AppCompatActivity {
                     .add(R.id.container, SettingsRootFragment.newInstance(REQUEST_KEY_SETTINGS))
                     .commit();
         }
+
+        handleShowPreferenceIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleShowPreferenceIntent(intent);
     }
 
     @Override
@@ -221,5 +237,13 @@ public class SettingsActivity extends AppCompatActivity {
             fragmentManager.setFragmentResult(targetRequestKey, result);
         });
         showFragment(FontsFragment.newInstance(proxyRequestKey));
+    }
+
+    private void handleShowPreferenceIntent(Intent intent) {
+        if (intent.hasExtra(EXTRA_SETTING_KEY)) {
+            SettingsEntry.Key key = (SettingsEntry.Key) intent.getSerializableExtra(EXTRA_SETTING_KEY);
+            handleShowPreference(key);
+            intent.removeExtra(EXTRA_SETTING_KEY);
+        }
     }
 }

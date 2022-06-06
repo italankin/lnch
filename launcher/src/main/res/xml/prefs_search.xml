@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <MultiSelectListPreference
-        android:defaultValue="@array/pref_values_search_targets"
         android:entries="@array/pref_desc_search_targets"
         android:entryValues="@array/pref_values_search_targets"
-        android:key="search_targets"
+        android:key="excluded_search_targets"
         android:negativeButtonText="@string/cancel"
         android:positiveButtonText="@string/save"
         android:summary="@string/settings_search_targets_summary"
