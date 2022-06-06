@@ -4,10 +4,11 @@ lnch is Android launcher, focused on effectiveness.
 
 ## Features
 
-* Customizable home screen (apps reordering, renaming, color selection, folders and many more)
-* Shortcuts support
-* Widgets support (limited)
+* Customizable home screen (apps reordering, renaming, recoloring, hiding, organizing into folders and many more)
 * Light and dark themes
+* Shortcuts support
+* Notifications support (badges, popups)
+* Widgets support (limited)
 * And many more
 
 ![lnch.jpg](/lnch.jpg)
