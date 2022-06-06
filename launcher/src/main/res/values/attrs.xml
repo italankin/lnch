@@ -36,5 +36,7 @@
     <!-- background color for edit panel (home customization) -->
     <attr name="colorEditPanelBackground" format="color|reference" />
 
+    <attr name="colorPreviewBorder" format="color|reference" />
+
     <attr name="toolbarOverlayTheme" format="reference" />
 </resources>

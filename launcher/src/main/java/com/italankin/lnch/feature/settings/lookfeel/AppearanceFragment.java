@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -18,6 +19,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -39,12 +46,6 @@ import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
-
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class AppearanceFragment extends AppFragment implements
         BackButtonHandler,
@@ -71,6 +72,7 @@ public class AppearanceFragment extends AppFragment implements
     private Preferences preferences;
     private FontManager fontManager;
 
+    private ImageView wallpaper;
     private TextView preview;
     private View overlay;
 
@@ -79,6 +81,8 @@ public class AppearanceFragment extends AppFragment implements
     private SliderPrefView itemPadding;
     private SliderPrefView itemShadowRadius;
     private ValuePrefView itemShadowColor;
+
+    private PreviewBackground previewBackground = PreviewBackground.WALLPAPER;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), this);
@@ -132,6 +136,7 @@ public class AppearanceFragment extends AppFragment implements
         initShadowColor(view);
 
         updatePreview();
+        updatePreviewBackground();
 
         String target = TargetPreference.get(this);
         if (target != null) {
@@ -247,29 +252,18 @@ public class AppearanceFragment extends AppFragment implements
     @Override
     public void onActivityResult(Boolean permissionGranted) {
         if (permissionGranted) {
-            showWallpaper(getView());
+            updatePreviewBackground();
         } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
         }
     }
 
     private void initRoot(View view) {
+        wallpaper = view.findViewById(R.id.wallpaper);
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-            return;
         }
-        showWallpaper(view);
-    }
-
-    private void showWallpaper(View view) {
-        Context context = requireContext();
-        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        view.<ImageView>findViewById(R.id.wallpaper).setImageDrawable(wm.getDrawable());
     }
 
     private void initOverlay(View view) {
@@ -293,9 +287,11 @@ public class AppearanceFragment extends AppFragment implements
 
     private void initPreview(View view) {
         preview = view.findViewById(R.id.item_preview).findViewById(R.id.label);
-        preview.setBackgroundResource(R.drawable.selector_item);
-        preview.setText(R.string.preview);
-        preview.setAllCaps(true);
+        preview.setBackgroundResource(R.drawable.selector_item_appearance);
+        String previewText = LauncherApp.daggerService.main()
+                .nameNormalizer()
+                .normalize(getString(R.string.preview));
+        preview.setText(previewText);
         preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
@@ -303,6 +299,40 @@ public class AppearanceFragment extends AppFragment implements
                     .build()
                     .show(getChildFragmentManager(), TAG_PREVIEW_OVERLAY);
         });
+        View previewBackgroundSwitcher = view.findViewById(R.id.preview_background_switcher);
+        previewBackgroundSwitcher.setOnClickListener(v -> {
+            previewBackground = PreviewBackground.values()[
+                    (previewBackground.ordinal() + 1) % PreviewBackground.values().length];
+            updatePreviewBackground();
+        });
+    }
+
+    private void updatePreviewBackground() {
+        switch (previewBackground) {
+            case WALLPAPER:
+                showWallpaper();
+                overlay.setVisibility(View.VISIBLE);
+                break;
+            case WHITE:
+                wallpaper.setImageDrawable(new ColorDrawable(Color.WHITE));
+                overlay.setVisibility(View.INVISIBLE);
+                break;
+            case BLACK:
+                wallpaper.setImageDrawable(new ColorDrawable(Color.BLACK));
+                overlay.setVisibility(View.INVISIBLE);
+                break;
+        }
+    }
+
+    private void showWallpaper() {
+        Context context = requireContext();
+        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
+        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            wallpaper.setImageDrawable(new ColorDrawable(ResUtils.resolveColor(context, R.attr.colorPrimary)));
+            return;
+        }
+        wallpaper.setImageDrawable(wm.getDrawable());
     }
 
     private void initTextSize(View view) {
@@ -463,5 +493,9 @@ public class AppearanceFragment extends AppFragment implements
         public AppearanceFinishedContract() {
             super("appearance_finished");
         }
+    }
+
+    private enum PreviewBackground {
+        WALLPAPER, WHITE, BLACK
     }
 }

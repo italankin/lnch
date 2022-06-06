@@ -20,6 +20,7 @@
         <item name="colorItemShadowDefault">#60000000</item>
         <item name="colorSearchResultBackground">#afff</item>
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
+        <item name="colorPreviewBorder">#6000</item>
 
         <item name="toolbarOverlayTheme">@style/AppTheme.Overlay</item>
     </style>
