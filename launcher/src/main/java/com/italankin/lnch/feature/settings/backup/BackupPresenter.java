@@ -6,6 +6,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.backup.BackupReader;
 import com.italankin.lnch.model.backup.BackupWriter;
+import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
@@ -21,16 +22,19 @@ public class BackupPresenter extends AppPresenter<BackupView> {
     private final BackupReader backupReader;
     private final BackupWriter backupWriter;
     private final DescriptorRepository descriptorRepository;
+    private final FontManager fontManager;
     private final Preferences preferences;
 
     @Inject
     BackupPresenter(BackupReader backupReader,
             BackupWriter backupWriter,
             DescriptorRepository descriptorRepository,
+            FontManager fontManager,
             Preferences preferences) {
         this.backupReader = backupReader;
         this.backupWriter = backupWriter;
         this.descriptorRepository = descriptorRepository;
+        this.fontManager = fontManager;
         this.preferences = preferences;
     }
 
@@ -93,6 +97,7 @@ public class BackupPresenter extends AppPresenter<BackupView> {
                     Preferences.Pref<?>[] prefs = Preferences.ALL.toArray(new Preferences.Pref<?>[0]);
                     preferences.reset(prefs);
                 })
+                .andThen(fontManager.clear())
                 .andThen(descriptorRepository.update())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

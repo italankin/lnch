@@ -10,6 +10,7 @@ import com.italankin.lnch.util.IOUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -142,16 +143,32 @@ public class FontManager {
                 Timber.w("delete: no filename under key: %s", name);
                 return;
             }
-            File file = new File(fontsDir, filename);
-            if (file.exists()) {
-                if (file.delete()) {
-                    Timber.i("delete: deleted file: %s", file);
-                } else {
-                    Timber.e("delete: cannot file: %s", file);
-                }
-            } else {
-                Timber.w("delete: file does not exist: %s", file);
-            }
+            removeFontFile(filename);
         });
+    }
+
+    public Completable clear() {
+        return Completable.fromRunnable(() -> {
+            Collection<?> filenames = fontsData.getAll().values();
+            for (Object filename : filenames) {
+                removeFontFile((String) filename);
+            }
+            fontsData.edit().clear().apply();
+            fonts.clear();
+            Timber.d("deleted %d fonts", filenames.size());
+        });
+    }
+
+    private void removeFontFile(String filename) {
+        File file = new File(fontsDir, filename);
+        if (file.exists()) {
+            if (file.delete()) {
+                Timber.i("delete: deleted file: %s", file);
+            } else {
+                Timber.e("delete: cannot file: %s", file);
+            }
+        } else {
+            Timber.w("delete: file does not exist: %s", file);
+        }
     }
 }
