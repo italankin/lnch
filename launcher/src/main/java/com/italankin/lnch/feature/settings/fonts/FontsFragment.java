@@ -164,12 +164,12 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     @Override
     public void onAddFontExistsError(String name) {
         String message = getString(R.string.settings_home_laf_appearance_fonts_error_exists, name);
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onAddFontEmptyNameError() {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_LONG).show();
     }
 
     private void showAddDialog(@Nullable Uri result) {
