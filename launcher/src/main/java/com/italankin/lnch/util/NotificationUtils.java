@@ -22,6 +22,9 @@ public final class NotificationUtils {
 
     private static boolean isNotificationAccessGrantedPreO(Context context) {
         String theList = Settings.Secure.getString(context.getContentResolver(), "enabled_notification_listeners");
+        if (theList == null) {
+            return false;
+        }
         String me = new ComponentName(context, NotificationListener.class).flattenToString();
         String[] listeners = theList.split(":");
         for (String next : listeners) {
