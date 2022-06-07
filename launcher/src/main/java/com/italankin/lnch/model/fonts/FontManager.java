@@ -10,6 +10,7 @@ import com.italankin.lnch.util.IOUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ public class FontManager {
 
     private static final String FONTS_DIR_NAME = "fonts";
     private static final String FONTS_PREFERENCES_NAME = "fonts";
+
+    private static final int FONT_MAGIC_NUMBER = 0x00010000;
 
     static {
         HashMap<String, Typeface> defaults = new LinkedHashMap<>(4);
@@ -117,8 +120,21 @@ public class FontManager {
                     String filename = UUID.randomUUID().toString();
                     File fontFile = new File(fontsDir, filename);
                     try (FileOutputStream os = new FileOutputStream(fontFile)) {
-                        int read;
                         byte[] buffer = new byte[IOUtils.DEFAULT_BUFFER_SIZE];
+
+                        // read magic number header
+                        int read = inputStream.read(buffer, 0, 4);
+                        if (read != 4) {
+                            throw new IllegalStateException("File is too short");
+                        }
+                        ByteBuffer b = ByteBuffer.wrap(buffer, 0, 4);
+                        int magicNumber = b.getInt();
+                        if (magicNumber != FONT_MAGIC_NUMBER) {
+                            throw new InvalidFontFormat();
+                        }
+                        os.write(buffer, 0, 4);
+
+                        // read the rest of the file
                         while ((read = inputStream.read(buffer)) != -1) {
                             os.write(buffer, 0, read);
                         }

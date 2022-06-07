@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">lnch</string>
 
     <string name="ok">OK</string>
@@ -254,8 +254,10 @@
     <string name="settings_home_laf_appearance_fonts_deleted">Font deleted</string>
     <string name="settings_home_laf_appearance_fonts_dialog_title">Add font</string>
     <string name="settings_home_laf_appearance_fonts_dialog_hint">Font name</string>
+    <string name="settings_home_laf_appearance_fonts_error_generic">Error: cannot import font</string>
     <string name="settings_home_laf_appearance_fonts_error_empty">Error: name must not be empty</string>
     <string name="settings_home_laf_appearance_fonts_error_exists">Error: font with name \"%1$s\" exists</string>
+    <string name="settings_home_laf_appearance_fonts_error_invalid_format">Error: invalid font format, only ttf/otf are supported</string>
 
     <string name="settings_category_other">Other</string>
     <string name="settings_other_bar">Backup and restore</string>

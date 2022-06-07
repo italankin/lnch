@@ -7,6 +7,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.fonts.FontManager;
+import com.italankin.lnch.model.fonts.InvalidFontFormat;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
@@ -113,7 +114,11 @@ public class FontsPresenter extends AppPresenter<FontsView> {
 
                     @Override
                     protected void onError(FontsView viewState, Throwable e) {
-                        viewState.showError(e);
+                        if (e instanceof InvalidFontFormat) {
+                            viewState.showErrorInvalidFormat();
+                        } else {
+                            viewState.showError();
+                        }
                     }
                 });
     }

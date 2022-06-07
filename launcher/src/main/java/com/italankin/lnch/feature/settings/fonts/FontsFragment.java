@@ -19,6 +19,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -33,14 +41,6 @@ import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 public class FontsFragment extends AppFragment implements FontsView, FontItemAdapter.Listener, SettingsToolbarTitle {
 
     public static FontsFragment newInstance(String requestKey) {
@@ -51,7 +51,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         return fragment;
     }
 
-    private static final String MIME_TYPE_FONT = "font/*";
+    private static final String MIME_TYPE = "*/*";
 
     @InjectPresenter
     FontsPresenter presenter;
@@ -131,8 +131,8 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     }
 
     @Override
-    public void showError(Throwable e) {
-        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+    public void showError() {
+        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_generic, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -144,6 +144,11 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     @Override
     public void onFontAdded() {
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_added, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showErrorInvalidFormat() {
+        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_invalid_format, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -213,7 +218,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         public Intent createIntent(@NonNull Context context, Void input) {
             return new Intent(Intent.ACTION_OPEN_DOCUMENT)
                     .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType(MIME_TYPE_FONT);
+                    .setType(MIME_TYPE);
         }
 
         @Override
