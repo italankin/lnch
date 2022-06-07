@@ -2,6 +2,8 @@ package com.italankin.lnch.feature.home;
 
 import android.graphics.Color;
 
+import androidx.core.util.Pair;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -37,12 +39,22 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        preferences.observeValue(Preferences.STATUS_BAR_COLOR)
+        Observable.combineLatest(
+                        preferences.observeValue(Preferences.STATUS_BAR_COLOR),
+                        preferences.observe(Preferences.HIDE_STATUS_BAR),
+                        Pair::new
+                )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<Preferences.Value<Integer>>() {
+                .subscribe(new State<Pair<Preferences.Value<Integer>, Boolean>>() {
                     @Override
-                    protected void onNext(HomeView viewState, Preferences.Value<Integer> statusBarColor) {
-                        viewState.onStatusBarColorChanged(statusBarColor.get());
+                    protected void onNext(HomeView viewState, Pair<Preferences.Value<Integer>, Boolean> result) {
+                        boolean hideStatusBar = result.second;
+                        if (hideStatusBar) {
+                            viewState.onStatusBarColorChanged(Color.TRANSPARENT);
+                        } else {
+                            Preferences.Value<Integer> statusBarColor = result.first;
+                            viewState.onStatusBarColorChanged(statusBarColor.get());
+                        }
                     }
                 });
 

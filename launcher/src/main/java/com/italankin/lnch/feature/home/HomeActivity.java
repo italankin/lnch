@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -193,10 +194,11 @@ public class HomeActivity extends AppActivity implements HomeView {
     private void setupWindow() {
         Window window = getWindow();
         window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
-            int stableInsetTop = insets.getStableInsetTop();
+            boolean hideStatusBar = preferences.get(Preferences.HIDE_STATUS_BAR);
+            int stableInsetTop = hideStatusBar ? 0 : insets.getStableInsetTop();
             root.setPadding(insets.getStableInsetLeft(), stableInsetTop, insets.getStableInsetRight(), 0);
             FakeStatusBarDrawable foreground = new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop);
-            Integer statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
+            Integer statusBarColor = hideStatusBar ? Color.TRANSPARENT : preferences.get(Preferences.STATUS_BAR_COLOR);
             foreground.setColor(statusBarColor);
             root.setForeground(foreground);
 
