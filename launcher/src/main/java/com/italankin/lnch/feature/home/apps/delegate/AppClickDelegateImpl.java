@@ -34,7 +34,7 @@ public class AppClickDelegateImpl implements AppClickDelegate {
 
     @Override
     public void onAppClick(AppDescriptorUi item, @Nullable View itemView) {
-        ComponentName componentName = DescriptorUtils.getComponentName(context, item.getDescriptor());
+        ComponentName componentName = DescriptorUtils.getLauncherComponentName(context, item.getDescriptor());
         if (componentName != null) {
             usageTracker.trackLaunch(item.getDescriptor());
             if (IntentUtils.safeStartMainActivity(context, componentName, itemView)) {

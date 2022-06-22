@@ -3,6 +3,9 @@ package com.italankin.lnch.util;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
+import android.os.Process;
 import android.text.TextUtils;
 
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
@@ -31,15 +34,21 @@ public final class DescriptorUtils {
     }
 
     @Nullable
-    public static ComponentName getComponentName(Context context, AppDescriptor descriptor) {
+    public static ComponentName getLauncherComponentName(Context context, AppDescriptor descriptor) {
         if (descriptor.componentName != null) {
             ComponentName componentName = descriptor.getComponentName();
             if (componentName != null) {
                 return componentName;
             }
         }
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(descriptor.packageName);
-        return intent != null ? intent.getComponent() : null;
+        LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+        List<LauncherActivityInfo> activityList = launcherApps.getActivityList(descriptor.packageName, Process.myUserHandle());
+        if (activityList.isEmpty()) {
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(descriptor.packageName);
+            return intent != null ? intent.getComponent() : null;
+        }
+        LauncherActivityInfo info = activityList.get(0);
+        return info != null ? info.getComponentName() : null;
     }
 
     public static DeepShortcutDescriptor makeDeepShortcut(Shortcut shortcut, AppDescriptor app,
