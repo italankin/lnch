@@ -117,7 +117,7 @@ public class FontsPresenter extends AppPresenter<FontsView> {
                         if (e instanceof InvalidFontFormat) {
                             viewState.showErrorInvalidFormat();
                         } else {
-                            viewState.showError();
+                            viewState.showError(e);
                         }
                     }
                 });

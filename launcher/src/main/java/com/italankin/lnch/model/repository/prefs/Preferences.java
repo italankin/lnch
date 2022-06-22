@@ -454,6 +454,13 @@ public interface Preferences {
             "destructive_non_edit",
             true);
 
+    /**
+     * Show verbose error messages
+     */
+    Pref<Boolean> VERBOSE_ERRORS = Prefs.createBoolean(
+            "verbose_errors",
+            false);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -501,7 +508,8 @@ public interface Preferences {
             FULLSCREEN_FOLDERS,
             NAME_TRANSFORM,
             HIDE_STATUS_BAR,
-            DESTRUCTIVE_NON_EDIT
+            DESTRUCTIVE_NON_EDIT,
+            VERBOSE_ERRORS
     );
 
     ///////////////////////////////////////////////////////////////////////////

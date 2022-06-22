@@ -13,7 +13,7 @@ interface FontsView extends MvpView {
     void onItemsUpdated(List<FontItem> items);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showError();
+    void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFontDeleted(boolean reset);

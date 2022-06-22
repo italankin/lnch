@@ -40,6 +40,11 @@
         android:key="destructive_non_edit"
         android:summary="@string/settings_home_misc_destructive_non_edit_summary"
         android:title="@string/settings_home_misc_destructive_non_edit" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="verbose_errors"
+        android:summary="@string/settings_home_misc_verbose_errors_summary"
+        android:title="@string/settings_home_misc_verbose_errors" />
     <Preference
         android:key="@string/pref_key_misc_experimental"
         android:summary="@string/settings_home_misc_experimental_summary"

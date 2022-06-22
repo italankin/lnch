@@ -14,13 +14,6 @@ import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.animation.ArgbEvaluatorCompat;
@@ -45,6 +38,13 @@ import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         AppDescriptorUiAdapter.Listener,

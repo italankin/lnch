@@ -19,14 +19,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -35,11 +27,20 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class FontsFragment extends AppFragment implements FontsView, FontItemAdapter.Listener, SettingsToolbarTitle {
 
@@ -55,6 +56,8 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
 
     @InjectPresenter
     FontsPresenter presenter;
+
+    private Preferences preferences;
 
     private LceLayout lce;
     private CompositeAdapter<FontItem> adapter;
@@ -75,6 +78,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = LauncherApp.daggerService.main().preferences();
         setHasOptionsMenu(true);
     }
 
@@ -131,8 +135,12 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_generic, Toast.LENGTH_LONG).show();
+    public void showError(Throwable e) {
+        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
+            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_generic, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

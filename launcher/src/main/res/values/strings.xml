@@ -130,6 +130,8 @@
     <string name="settings_home_misc_expand_status_bar_summary">While search bar is open, swipe down quickly to expand notifications panel.\n\n<i>Note: will not work for some devices and OS versions</i></string>
     <string name="settings_home_misc_destructive_non_edit">Destructive actions without edit mode</string>
     <string name="settings_home_misc_destructive_non_edit_summary">Allow destructive actions (such as remove from folder, unpin shortcuts, delete folders) in non-edit mode</string>
+    <string name="settings_home_misc_verbose_errors">Verbose errors</string>
+    <string name="settings_home_misc_verbose_errors_summary">Show technical information in error messages</string>
 
     <string name="settings_home_misc_shortcuts">Shortcuts</string>
     <string name="settings_home_misc_shortcuts_max_dynamic">Maximum dynamic shortcuts</string>

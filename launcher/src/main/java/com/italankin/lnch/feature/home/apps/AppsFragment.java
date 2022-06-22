@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.italankin.lnch.LauncherApp;
@@ -741,7 +740,11 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void showError(Throwable e) {
-        errorDelegate.showError(getString(R.string.error));
+        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
+            errorDelegate.showError(e.getMessage());
+        } else {
+            errorDelegate.showError(getString(R.string.error));
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

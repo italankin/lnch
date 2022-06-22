@@ -15,6 +15,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -33,6 +34,8 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     @InjectPresenter
     BackupPresenter presenter;
 
+    private Preferences preferences;
+
     private final ActivityResultLauncher<Void> restoreLauncher = registerForActivityResult(
             new OpenDocumentContract(), result -> {
                 if (result != null) {
@@ -50,6 +53,12 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     @ProvidePresenter
     BackupPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().backup();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        preferences = LauncherApp.daggerService.main().preferences();
     }
 
     @Override
@@ -91,7 +100,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     @Override
     public void onRestoreError(Throwable error) {
-        showError();
+        showError(error);
     }
 
     @Override
@@ -101,7 +110,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     @Override
     public void onBackupError(Throwable error) {
-        showError();
+        showError(error);
     }
 
     @Override
@@ -111,7 +120,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
 
     @Override
     public void onResetError(Throwable error) {
-        showError();
+        showError(error);
     }
 
     @Override
@@ -123,15 +132,23 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
         }
     }
 
-    private void showError() {
-        Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
+    private void showError(Throwable e) {
+        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
+            showError(e.getMessage());
+        } else {
+            showError(getString(R.string.error));
+        }
+    }
+
+    private void showError(String error) {
+        Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
     }
 
     private void restoreSettings() {
         try {
             restoreLauncher.launch(null);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
+            showError(e);
         }
     }
 
