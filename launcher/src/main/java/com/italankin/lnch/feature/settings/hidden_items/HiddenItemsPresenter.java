@@ -6,11 +6,9 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
-import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -59,6 +57,9 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
                             }
                         }
                     }
+                    Collections.sort(list, (lhs, rhs) -> {
+                        return lhs.originalLabel.compareTo(rhs.originalLabel);
+                    });
                     return list;
                 })
                 .subscribeOn(Schedulers.io())
