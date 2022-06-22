@@ -1,8 +1,5 @@
 package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
-
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
@@ -31,6 +28,9 @@ import java.util.Set;
 
 import io.reactivex.Maybe;
 import timber.log.Timber;
+
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
 
 public class LoadFromFileInteractor {
 
@@ -119,12 +119,17 @@ public class LoadFromFileInteractor {
         Set<String> itemIds = env.itemIds();
         for (FolderDescriptor folder : env.folders()) {
             Iterator<String> iterator = folder.items.iterator();
+            boolean changed = false;
             while (iterator.hasNext()) {
                 String folderItemId = iterator.next();
                 if (!itemIds.contains(folderItemId)) {
-                    Timber.d("remove deleted '%s' from '%s'", folderItemId, folder.id);
+                    Timber.d("remove unavailable '%s' from '%s'", folderItemId, folder.id);
                     iterator.remove();
+                    changed = true;
                 }
+            }
+            if (changed) {
+                env.markUpdated(folder);
             }
         }
     }
