@@ -24,7 +24,8 @@ public class AppClickDelegateImpl implements AppClickDelegate {
     public AppClickDelegateImpl(Context context,
             Preferences preferences,
             ErrorDelegate errorDelegate,
-            ItemPopupDelegate itemPopupDelegate, UsageTracker usageTracker) {
+            ItemPopupDelegate itemPopupDelegate,
+            UsageTracker usageTracker) {
         this.context = context;
         this.errorDelegate = errorDelegate;
         this.itemPopupDelegate = itemPopupDelegate;
