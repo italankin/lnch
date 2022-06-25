@@ -2,7 +2,10 @@ package com.italankin.lnch.model.repository.search.preference;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+
+import androidx.core.content.ContextCompat;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsActivity;
@@ -12,6 +15,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.icons.BadgedIconDrawable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,8 +63,11 @@ class PreferenceMatch implements Match {
     }
 
     @Override
-    public int getIconResource() {
-        return R.drawable.ic_settings;
+    public Drawable getDrawableIcon(Context context) {
+        return new BadgedIconDrawable(
+                ContextCompat.getDrawable(context, R.drawable.ic_settings),
+                ContextCompat.getDrawable(context, R.mipmap.ic_launcher)
+        );
     }
 
     @Override

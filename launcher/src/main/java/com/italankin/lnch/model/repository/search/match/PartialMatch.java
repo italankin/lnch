@@ -2,15 +2,17 @@ package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
 
 /**
  * Base class for a {@link Match} which ranks matches by {@link PartialMatch.Type}
@@ -34,8 +36,8 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     }
 
     @Override
-    public int getIconResource() {
-        return iconRes;
+    public Drawable getDrawableIcon(Context context) {
+        return ContextCompat.getDrawable(context, iconRes);
     }
 
     @Override

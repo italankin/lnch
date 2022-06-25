@@ -81,7 +81,7 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
                     .into(holder.image);
         } else {
             picasso.cancelRequest(holder.image);
-            holder.image.setImageResource(item.getIconResource());
+            holder.image.setImageDrawable(item.getDrawableIcon(context));
         }
 
         Set<Match.Action> actions = item.availableActions();

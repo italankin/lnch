@@ -2,10 +2,10 @@ package com.italankin.lnch.model.repository.search.match;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import java.util.Set;
@@ -18,10 +18,9 @@ public interface Match {
     Uri getIcon();
 
     /**
-     * @return drawable resource of the match icon
+     * @return a drawable resource icon
      */
-    @DrawableRes
-    int getIconResource();
+    Drawable getDrawableIcon(Context context);
 
     CharSequence getLabel(Context context);
 
