@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <MultiSelectListPreference
-        android:entries="@array/pref_desc_search_targets"
-        android:entryValues="@array/pref_values_search_targets"
+        android:entries="@array/pref_desc_excluded_search_targets"
+        android:entryValues="@array/pref_values_excluded_search_targets"
         android:key="excluded_search_targets"
         android:negativeButtonText="@string/cancel"
         android:positiveButtonText="@string/save"
-        android:summary="@string/settings_search_targets_summary"
-        android:title="@string/settings_search_targets" />
+        android:summary="@string/settings_excluded_search_targets_summary"
+        android:title="@string/settings_excluded_search_targets" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_show_soft_keyboard"

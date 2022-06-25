@@ -501,10 +501,10 @@ final class SettingsEntries {
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.EXCLUDED_SEARCH_TARGETS)
-                        .title(R.string.settings_search_targets)
-                        .summary(R.string.settings_search_targets_summary)
+                        .title(R.string.settings_excluded_search_targets)
+                        .summary(R.string.settings_excluded_search_targets_summary)
                         .category(R.string.settings_search)
-                        .addArraysSearchTokens(R.array.pref_desc_search_targets)
+                        .addArraysSearchTokens(R.array.pref_desc_excluded_search_targets)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(new SearchFragment());
                         })

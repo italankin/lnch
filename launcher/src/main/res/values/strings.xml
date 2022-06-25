@@ -200,8 +200,8 @@
     <string name="settings_search_auto_show_summary_on">Keyboard will open when search bar appears</string>
     <string name="settings_search_auto_show_summary_off">Keyboard will NOT open when search bar appears</string>
     <string name="settings_search_custom_tabs">Use custom tabs</string>
-    <string name="settings_search_targets">Hide in search results</string>
-    <string name="settings_search_targets_summary">What to hide from search results</string>
+    <string name="settings_excluded_search_targets">Hide from search results</string>
+    <string name="settings_excluded_search_targets_summary">What to hide from search results</string>
     <string name="settings_search_custom_tabs_summary">Web search and links will open inside the launcher</string>
     <string name="settings_search_global">Show global search button</string>
     <string name="settings_search_history">Search history</string>
