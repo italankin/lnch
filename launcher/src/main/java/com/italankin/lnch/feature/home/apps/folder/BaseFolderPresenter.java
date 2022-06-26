@@ -36,6 +36,10 @@ abstract class BaseFolderPresenter<V extends BaseFolderView> extends AppPresente
     }
 
     protected void loadFolder(String folderId) {
+        loadFolder(folderId, true);
+    }
+
+    protected void loadFolder(String folderId, boolean animated) {
         Single
                 .fromCallable(() -> {
                     HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(
@@ -57,7 +61,8 @@ abstract class BaseFolderPresenter<V extends BaseFolderView> extends AppPresente
                         folder = folderState.folder;
                         items = folderState.items;
                         viewState.onShowFolder(
-                                folderState.folder.getVisibleLabel(), folderState.items, folderState.userPrefs);
+                                folderState.folder.getVisibleLabel(), folderState.items,
+                                folderState.userPrefs, animated);
                     }
 
                     @Override

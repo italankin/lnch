@@ -13,7 +13,7 @@ import java.util.List;
 interface BaseFolderView extends MvpView {
 
     @StateStrategyType(SingleStateStrategy.class)
-    void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs);
+    void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs, boolean animated);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFolderUpdated(List<DescriptorUi> items);
