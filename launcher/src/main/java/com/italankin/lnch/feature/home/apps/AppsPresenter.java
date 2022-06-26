@@ -1,13 +1,6 @@
 package com.italankin.lnch.feature.home.apps;
 
-import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
-
 import android.content.Intent;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -59,11 +52,18 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
@@ -76,7 +76,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private final NameNormalizer nameNormalizer;
     private final FontManager fontManager;
 
-    private DescriptorRepository.Editor editor;
+    private DescriptorRepository.Editor editor = EmptyEditor.INSTANCE;
 
     @Inject
     AppsPresenter(HomeDescriptorsState homeDescriptorsState,
@@ -106,10 +106,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void startCustomize() {
-        if (editor != null) {
-            throw new IllegalStateException("Editor is not null!");
+        if (editor == EmptyEditor.INSTANCE || editor.isDisposed()) {
+            editor = descriptorRepository.edit();
         }
-        editor = descriptorRepository.edit();
         getViewState().onStartCustomize();
     }
 
@@ -227,7 +226,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void discardChanges() {
         editor.dispose();
-        editor = null;
+        editor = EmptyEditor.INSTANCE;
         getViewState().onChangesDiscarded();
         update();
     }
@@ -260,7 +259,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                         viewState.showError(e);
                     }
                 });
-        editor = null;
+        editor = EmptyEditor.INSTANCE;
     }
 
     void pinShortcut(String packageName, String shortcutId) {
@@ -382,7 +381,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private void observe() {
         Observable.combineLatest(observeApps(), observeUserPrefs(), Update::with)
-                .filter(appItems -> editor == null)
+                .filter(appItems -> editor == EmptyEditor.INSTANCE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Update>() {
                     @Override
@@ -568,6 +567,39 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 }
             }
             return byDescriptorId;
+        }
+    }
+
+    private static class EmptyEditor implements DescriptorRepository.Editor {
+        private static final DescriptorRepository.Editor INSTANCE = new EmptyEditor();
+
+        @Override
+        public DescriptorRepository.Editor enqueue(Action action) {
+            return this;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public DescriptorRepository.Editor clear() {
+            return this;
+        }
+
+        @Override
+        public Completable commit() {
+            return Completable.complete();
+        }
+
+        @Override
+        public void dispose() {
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return true;
         }
     }
 }

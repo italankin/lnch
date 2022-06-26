@@ -79,6 +79,11 @@ public interface DescriptorRepository {
          */
         void dispose();
 
+        /**
+         * @return whenever this editor is disposed
+         */
+        boolean isDisposed();
+
         interface Action {
             void apply(List<Descriptor> items);
         }

@@ -254,6 +254,11 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
         }
 
         @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
         public Completable commit() {
             if (disposed) {
                 throw new IllegalStateException("Editor is disposed");
