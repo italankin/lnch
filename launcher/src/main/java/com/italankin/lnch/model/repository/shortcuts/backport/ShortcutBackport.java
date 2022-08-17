@@ -25,7 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
-import com.italankin.lnch.util.picasso.PackageResourceHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageResourceLoader;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -151,7 +151,7 @@ class ShortcutBackport implements Shortcut {
 
     @Override
     public Uri getIconUri() {
-        return PackageResourceHandler.uriFrom(packageName, iconRes);
+        return PackageResourceLoader.uriFrom(packageName, iconRes);
     }
 
     @Override

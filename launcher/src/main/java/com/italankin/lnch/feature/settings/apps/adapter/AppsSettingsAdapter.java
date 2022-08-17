@@ -7,19 +7,19 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter.ViewHolder, AppDescriptorUi> {
 
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Listener listener;
 
-    public AppsSettingsAdapter(Picasso picasso, Listener listener) {
-        this.picasso = picasso;
+    public AppsSettingsAdapter(ImageLoader imageLoader, Listener listener) {
+        this.imageLoader = imageLoader;
         this.listener = listener;
     }
 
@@ -90,8 +90,7 @@ public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter
                     R.drawable.ic_visibility_on);
             label.setText(item.getVisibleLabel());
             packageName.setText(item.packageName);
-            picasso.load(PackageIconHandler.uriFrom(item.packageName))
-                    .fit()
+            imageLoader.load(PackageIconLoader.uriFrom(item.packageName))
                     .into(icon);
             float alpha = item.isIgnored() ? ALPHA_ITEM_IGNORED : ALPHA_ITEM_VISIBLE;
             label.setAlpha(alpha);

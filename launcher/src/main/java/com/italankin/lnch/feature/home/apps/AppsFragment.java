@@ -101,7 +101,7 @@ import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.StatusBarUtils;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
@@ -858,7 +858,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (searchActivity == null) {
             searchOverlay.hideGlobalSearch();
         } else {
-            Uri icon = PackageIconHandler.uriFrom(searchActivity.getPackageName());
+            Uri icon = PackageIconLoader.uriFrom(searchActivity.getPackageName());
             searchOverlay.setupGlobalSearch(icon, v -> {
                 Intent intent = new Intent().setComponent(searchActivity);
                 if (IntentUtils.safeStartActivity(requireContext(), intent)) {

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ComponentNameAdapter extends RecyclerView.Adapter<ComponentNameAdapter.ViewHolder> {
 
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Listener listener;
     private final List<ComponentNameUi> dataset = new ArrayList<>();
 
-    public ComponentNameAdapter(Picasso picasso, Listener listener) {
-        this.picasso = picasso;
+    public ComponentNameAdapter(ImageLoader imageLoader, Listener listener) {
+        this.imageLoader = imageLoader;
         this.listener = listener;
     }
 
@@ -73,8 +73,7 @@ public class ComponentNameAdapter extends RecyclerView.Adapter<ComponentNameAdap
         void bind(ComponentNameUi componentName) {
             textPackage.setText(componentName.packageName);
             textClass.setText(componentName.className);
-            picasso.load(componentName.iconUri)
-                    .fit()
+            imageLoader.load(componentName.iconUri)
                     .into(imageIcon);
         }
     }

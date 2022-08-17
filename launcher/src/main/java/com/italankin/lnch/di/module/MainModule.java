@@ -41,7 +41,8 @@ import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
 import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.repository.usage.UsageTrackerImpl;
-import com.italankin.lnch.util.picasso.PicassoFactory;
+import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
 
 import java.util.Arrays;
 import java.util.List;
@@ -132,8 +133,10 @@ public class MainModule {
 
     @Provides
     @Singleton
-    PicassoFactory providePicassoFactory(Context context) {
-        return new PicassoFactory(context);
+    ImageLoader provideImageLoader(Context context) {
+        return new ImageLoader.Builder(context)
+                .cache(new LruCache(32))
+                .build();
     }
 
     @Provides

@@ -15,7 +15,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
-import com.italankin.lnch.util.picasso.PicassoFactory;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import javax.inject.Singleton;
 
@@ -32,7 +32,7 @@ public interface MainComponent extends PresenterComponent.Dependencies {
 
     SearchRepository searchRepository();
 
-    PicassoFactory picassoFactory();
+    ImageLoader imageLoader();
 
     ShortcutsRepository shortcutsRepository();
 

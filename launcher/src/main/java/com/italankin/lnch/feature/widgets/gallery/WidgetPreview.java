@@ -5,8 +5,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
-import com.italankin.lnch.util.picasso.WidgetPreviewHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
+import com.italankin.lnch.util.imageloader.resourceloader.WidgetPreviewLoader;
 
 class WidgetPreview {
 
@@ -18,9 +18,9 @@ class WidgetPreview {
 
     WidgetPreview(PackageManager packageManager, AppWidgetProviderInfo info) {
         this.info = info;
-        this.previewUri = WidgetPreviewHandler.uriFrom(info.provider);
+        this.previewUri = WidgetPreviewLoader.uriFrom(info.provider);
         String packageName = info.provider.getPackageName();
-        this.iconUri = PackageIconHandler.uriFrom(packageName);
+        this.iconUri = PackageIconLoader.uriFrom(packageName);
         this.label = info.loadLabel(packageManager);
         CharSequence label = PackageUtils.getPackageLabel(packageManager, packageName);
         this.appName = label != null ? label.toString() : null;

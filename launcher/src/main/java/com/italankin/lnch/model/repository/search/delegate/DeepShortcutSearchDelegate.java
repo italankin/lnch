@@ -14,7 +14,7 @@ import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.util.picasso.ShortcutIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,7 +98,7 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
             match = new PartialDescriptorMatch((DeepShortcutDescriptor) descriptor, shortcut, PartialMatch.Type.CONTAINS);
         } else {
             match = new PartialDescriptorMatch(descriptor, PartialMatch.Type.CONTAINS, Match.Kind.SHORTCUT);
-            match.icon = ShortcutIconHandler.uriFrom(shortcut, true);
+            match.icon = ShortcutIconLoader.uriFrom(shortcut, true);
             match.label = shortcut.getShortLabel();
             match.intent = StartShortcutReceiver.makeStartIntent(shortcut);
         }

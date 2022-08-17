@@ -16,7 +16,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
 
     private static final float DISABLED_ALPHA = 0.33f;
 
-    protected Picasso picasso;
+    protected ImageLoader imageLoader;
 
     protected ViewGroup actionsContainer;
     protected ViewGroup shortcutsContainer;
@@ -44,7 +44,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        imageLoader = LauncherApp.daggerService.main().imageLoader();
     }
 
     @Override
@@ -61,12 +61,6 @@ public abstract class ActionPopupFragment extends PopupFragment {
         super.onViewCreated(view, savedInstanceState);
         actionsContainer = view.findViewById(R.id.action_container);
         shortcutsContainer = view.findViewById(R.id.shortcut_container);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        picasso = null;
     }
 
     protected final void dismissWithResult() {
@@ -122,9 +116,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
             }
             imageView.setImageDrawable(drawable);
         } else if (item.iconUri != null) {
-            ViewUtils.onGlobalLayout(imageView, () -> picasso.load(item.iconUri)
-                    .resizeDimen(R.dimen.popup_action_icon_size, R.dimen.popup_action_icon_size)
-                    .centerInside()
+            ViewUtils.onGlobalLayout(imageView, () -> imageLoader.load(item.iconUri)
                     .into(imageView));
         }
         if (item.onClickListener != null) {
@@ -162,9 +154,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
             iconView.setVisibility(View.VISIBLE);
         } else if (item.iconUri != null) {
             iconView.setVisibility(View.VISIBLE);
-            ViewUtils.onGlobalLayout(labelView, () -> picasso.load(item.iconUri)
-                    .resizeDimen(R.dimen.popup_shortcut_icon_size, R.dimen.popup_shortcut_icon_size)
-                    .centerInside()
+            ViewUtils.onGlobalLayout(labelView, () -> imageLoader.load(item.iconUri)
                     .into(iconView));
         }
         if (item.onClickListener != null) {

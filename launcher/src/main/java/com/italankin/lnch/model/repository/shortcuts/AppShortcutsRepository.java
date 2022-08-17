@@ -20,7 +20,7 @@ import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.ShortcutUtils;
-import com.italankin.lnch.util.picasso.ShortcutIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -197,7 +197,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
         @Override
         public Uri getIconUri() {
-            return ShortcutIconHandler.uriFrom(this);
+            return ShortcutIconLoader.uriFrom(this);
         }
 
         @Override

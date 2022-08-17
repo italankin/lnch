@@ -15,6 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/cd_application_icon"
+        android:scaleType="centerInside"
         tools:src="@tools:sample/avatars" />
 
     <TextView

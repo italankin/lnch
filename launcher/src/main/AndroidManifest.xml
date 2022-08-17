@@ -127,13 +127,5 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
-        <!-- Delete Picasso provider -->
-
-        <provider
-            android:name="com.squareup.picasso.PicassoProvider"
-            android:authorities="${applicationId}.com.squareup.picasso"
-            android:exported="false"
-            tools:node="remove" />
     </application>
 </manifest>

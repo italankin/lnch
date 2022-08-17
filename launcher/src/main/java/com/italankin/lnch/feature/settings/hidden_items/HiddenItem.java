@@ -5,7 +5,7 @@ import android.net.Uri;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.PackageDescriptor;
 import com.italankin.lnch.util.DescriptorUtils;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 
 class HiddenItem {
 
@@ -19,7 +19,7 @@ class HiddenItem {
         this.visibleLabel = DescriptorUtils.getVisibleLabel(descriptor);
         this.originalLabel = descriptor.getOriginalLabel();
         if (descriptor instanceof PackageDescriptor) {
-            this.uri = PackageIconHandler.uriFrom(((PackageDescriptor) descriptor).getPackageName());
+            this.uri = PackageIconLoader.uriFrom(((PackageDescriptor) descriptor).getPackageName());
         } else {
             this.uri = null;
         }

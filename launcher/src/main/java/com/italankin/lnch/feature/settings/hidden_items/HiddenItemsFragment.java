@@ -14,8 +14,8 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -56,9 +56,9 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
         lce = view.findViewById(R.id.lce);
 
         Context context = requireContext();
-        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
         adapter = new CompositeAdapter.Builder<HiddenItem>(context)
-                .add(new HiddenItemAdapter(picasso, item -> presenter.showItem(item.descriptor)))
+                .add(new HiddenItemAdapter(imageLoader, item -> presenter.showItem(item.descriptor)))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();

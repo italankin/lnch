@@ -15,8 +15,8 @@ import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(this);
+        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
         Preferences preferences = LauncherApp.daggerService.main().preferences();
         SupportsOrientationDelegate.attach(this, preferences);
         super.onCreate(savedInstanceState);
@@ -88,7 +88,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         widgetsList.setLayoutManager(layoutManager);
         adapter = new CompositeAdapter.Builder<WidgetPreview>(this)
-                .add(new WidgetPreviewAdapter(picasso, this))
+                .add(new WidgetPreviewAdapter(imageLoader, this))
                 .setHasStableIds(true)
                 .create();
         widgetsList.setAdapter(adapter);

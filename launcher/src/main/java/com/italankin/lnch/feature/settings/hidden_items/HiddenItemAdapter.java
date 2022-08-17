@@ -4,22 +4,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import com.italankin.lnch.util.imageloader.ImageLoader;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
-import com.squareup.picasso.Picasso;
-
 public class HiddenItemAdapter extends BaseAdapterDelegate<HiddenItemAdapter.ViewHolder, HiddenItem> {
 
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Listener listener;
 
-    public HiddenItemAdapter(Picasso picasso, Listener listener) {
-        this.picasso = picasso;
+    public HiddenItemAdapter(ImageLoader imageLoader, Listener listener) {
+        this.imageLoader = imageLoader;
         this.listener = listener;
     }
 
@@ -78,11 +76,10 @@ public class HiddenItemAdapter extends BaseAdapterDelegate<HiddenItemAdapter.Vie
             originalLabel.setText(item.originalLabel);
             label.setText(item.visibleLabel);
             if (item.uri != null) {
-                picasso.load(item.uri)
-                        .fit()
+                imageLoader.load(item.uri)
                         .into(icon);
             } else {
-                picasso.cancelRequest(icon);
+                imageLoader.cancel(icon);
                 icon.setImageResource(R.drawable.ic_settings_apps);
             }
         }

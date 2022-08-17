@@ -14,8 +14,8 @@ import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.picasso.PackageIconHandler;
-import com.italankin.lnch.util.picasso.ShortcutIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
+import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
 
 import java.util.Collections;
 
@@ -43,7 +43,7 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
         if (intent != null && descriptor.componentName != null) {
             intent.setComponent(ComponentName.unflattenFromString(descriptor.componentName));
         }
-        icon = PackageIconHandler.uriFrom(descriptor.packageName);
+        icon = PackageIconLoader.uriFrom(descriptor.packageName);
         label = descriptor.getVisibleLabel();
     }
 
@@ -73,7 +73,7 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
         super(type);
         this.descriptor = descriptor;
         kind = Kind.SHORTCUT;
-        icon = ShortcutIconHandler.uriFrom(shortcut, true);
+        icon = ShortcutIconLoader.uriFrom(shortcut, true);
         label = descriptor.getVisibleLabel();
         intent = StartShortcutReceiver.makeStartIntent(shortcut);
     }

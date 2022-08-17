@@ -20,8 +20,8 @@ import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
-import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +30,7 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResults.Callback {
@@ -37,7 +38,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     private static final float TEXT_SIZE_FACTOR = 3.11f;
 
     private final InputMethodManager inputMethodManager;
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Preferences preferences;
 
     private final EditText searchEditText;
@@ -59,7 +60,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         super(context, attrs);
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        imageLoader = LauncherApp.daggerService.main().imageLoader();
         preferences = LauncherApp.daggerService.main().preferences();
 
         setFocusable(true);
@@ -92,7 +93,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         searchResults = new SearchResults(searchRepository);
 
         searchAdapter = new CompositeAdapter.Builder<Match>(context)
-                .add(new MatchAdapter(picasso, this))
+                .add(new MatchAdapter(imageLoader, this))
                 .recyclerView(searchResultsList)
                 .setHasStableIds(true)
                 .create();
@@ -162,10 +163,8 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         buttonGlobalSearch.setVisibility(VISIBLE);
         buttonGlobalSearch.setOnClickListener(onClickListener);
         buttonGlobalSearch.setOnLongClickListener(onLongClickListener);
-        picasso.load(icon)
-                .resizeDimen(R.dimen.search_icon_size, R.dimen.search_icon_size)
-                .centerInside()
-                .error(R.drawable.ic_action_search)
+        imageLoader.load(icon)
+                .errorPlaceholder(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_search))
                 .into(buttonGlobalSearch);
         ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.search_bar_size);
     }

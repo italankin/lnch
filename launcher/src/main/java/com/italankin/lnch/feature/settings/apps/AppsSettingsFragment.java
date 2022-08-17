@@ -25,8 +25,8 @@ import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -206,9 +206,9 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private void initAdapter() {
         Context context = requireContext();
-        Picasso picasso = LauncherApp.daggerService.main().picassoFactory().create(context);
+        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
         adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
-                .add(new AppsSettingsAdapter(picasso, this))
+                .add(new AppsSettingsAdapter(imageLoader, this))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();

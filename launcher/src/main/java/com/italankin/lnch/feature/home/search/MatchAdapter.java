@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import java.util.Set;
 
@@ -18,11 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Listener listener;
 
-    MatchAdapter(Picasso picasso, Listener listener) {
-        this.picasso = picasso;
+    MatchAdapter(ImageLoader imageLoader, Listener listener) {
+        this.imageLoader = imageLoader;
         this.listener = listener;
     }
 
@@ -75,12 +75,10 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
         Uri icon = item.getIcon();
         if (icon != null) {
-            picasso.load(icon)
-                    .centerInside()
-                    .resizeDimen(R.dimen.search_match_icon_size, R.dimen.search_match_icon_size)
+            imageLoader.load(icon)
                     .into(holder.image);
         } else {
-            picasso.cancelRequest(holder.image);
+            imageLoader.cancel(holder.image);
             holder.image.setImageDrawable(item.getDrawableIcon(context));
         }
 

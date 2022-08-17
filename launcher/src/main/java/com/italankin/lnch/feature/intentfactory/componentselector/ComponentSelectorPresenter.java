@@ -10,7 +10,7 @@ import android.net.Uri;
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
-import com.italankin.lnch.util.picasso.ActivityIconHandler;
+import com.italankin.lnch.util.imageloader.resourceloader.ActivityIconLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ComponentSelectorPresenter extends AppPresenter<ComponentSelectorVi
                             if (activity.name.contains(activity.packageName)) {
                                 visibleName = activity.name.substring(activity.packageName.length());
                             }
-                            Uri iconUri = ActivityIconHandler.uriFrom(activity.packageName, activity.name);
+                            Uri iconUri = ActivityIconLoader.uriFrom(activity.packageName, activity.name);
                             ComponentName componentName = new ComponentName(activity.packageName, activity.name);
                             ComponentNameUi ui = new ComponentNameUi(
                                     activity.packageName, visibleName, componentName, iconUri);

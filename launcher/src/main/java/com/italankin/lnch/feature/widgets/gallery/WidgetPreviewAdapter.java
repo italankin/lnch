@@ -7,18 +7,18 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
-import com.squareup.picasso.Picasso;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapter.ViewHolder, WidgetPreview> {
 
-    private final Picasso picasso;
+    private final ImageLoader imageLoader;
     private final Listener listener;
 
-    public WidgetPreviewAdapter(Picasso picasso, Listener listener) {
-        this.picasso = picasso;
+    public WidgetPreviewAdapter(ImageLoader imageLoader, Listener listener) {
+        this.imageLoader = imageLoader;
         this.listener = listener;
     }
 
@@ -73,10 +73,10 @@ public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapt
 
         void bind(WidgetPreview info) {
             textName.setText(info.label);
-            picasso.load(info.iconUri)
-                    .fit()
+            imageLoader.load(info.iconUri)
                     .into(imageIcon);
-            picasso.load(info.previewUri)
+            imageLoader.load(info.previewUri)
+                    .noCache()
                     .into(imagePreview);
         }
     }

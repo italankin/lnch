@@ -18,8 +18,8 @@ import com.italankin.lnch.feature.intentfactory.componentselector.adapter.Compon
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -66,11 +66,9 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
 
         lce = findViewById(R.id.lce);
 
-        Picasso picasso = LauncherApp.daggerService.main()
-                .picassoFactory()
-                .create(this);
+        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
 
-        adapter = new ComponentNameAdapter(picasso, this);
+        adapter = new ComponentNameAdapter(imageLoader, this);
         RecyclerView list = findViewById(R.id.list);
         list.setAdapter(adapter);
 
