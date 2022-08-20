@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.imageloader.resourceloader.ActivityIconLoader;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
@@ -24,7 +26,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 public class ImageLoader {
@@ -138,7 +139,7 @@ public class ImageLoader {
             cancel(target);
             Request request = new Request(
                     uri,
-                    new WeakTarget(new ImageViewTarget(target)),
+                    new ImageViewTarget(target),
                     errorPlaceholder,
                     callback,
                     noCache);

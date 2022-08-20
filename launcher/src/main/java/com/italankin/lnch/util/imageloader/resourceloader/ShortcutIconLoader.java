@@ -15,6 +15,7 @@ import com.italankin.lnch.util.icons.BadgedIconDrawable;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
@@ -58,6 +59,7 @@ public class ShortcutIconLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
+    @NonNull
     @Override
     public Drawable load(Uri uri) {
         String packageName = uri.getAuthority();

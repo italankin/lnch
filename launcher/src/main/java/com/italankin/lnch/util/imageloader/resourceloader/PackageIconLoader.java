@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 public class PackageIconLoader implements ResourceLoader {
 
     private static final String SCHEME = "package";
@@ -24,6 +26,7 @@ public class PackageIconLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
+    @NonNull
     @Override
     public Drawable load(Uri uri) {
         try {

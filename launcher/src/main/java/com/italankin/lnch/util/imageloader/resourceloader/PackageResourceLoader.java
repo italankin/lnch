@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 public class PackageResourceLoader implements ResourceLoader {
@@ -32,6 +34,7 @@ public class PackageResourceLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
+    @NonNull
     @Override
     public Drawable load(Uri uri) {
         try {
