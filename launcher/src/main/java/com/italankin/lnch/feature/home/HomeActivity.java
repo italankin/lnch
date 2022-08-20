@@ -16,7 +16,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
@@ -26,7 +25,6 @@ import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.PagerIndicatorAnimator;
-import com.italankin.lnch.feature.home.util.SamsungAnrFix;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
@@ -79,10 +77,6 @@ public class HomeActivity extends AppActivity implements HomeView {
         setupPager();
 
         intentQueue.post(getIntent());
-
-        if (BuildConfig.SAMSUNG_ANR_FIX) {
-            SamsungAnrFix.post(this);
-        }
     }
 
     @Override
