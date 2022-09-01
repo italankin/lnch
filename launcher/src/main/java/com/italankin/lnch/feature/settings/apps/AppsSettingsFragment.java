@@ -23,7 +23,7 @@ import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;

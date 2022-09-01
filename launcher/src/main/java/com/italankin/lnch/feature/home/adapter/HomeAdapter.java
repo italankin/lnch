@@ -1,18 +1,19 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.content.Context;
-import android.util.SparseArray;
 
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+
+import androidx.collection.SparseArrayCompat;
+import me.italankin.adapterdelegates.AdapterDelegate;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 @SuppressWarnings("rawtypes")
 public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
     private UserPrefs.ItemPrefs itemPrefs;
 
-    private HomeAdapter(Context context, SparseArray<AdapterDelegate> delegates, boolean hasStableIds) {
+    private HomeAdapter(Context context, SparseArrayCompat<AdapterDelegate> delegates, boolean hasStableIds) {
         super(context, delegates, hasStableIds);
     }
 
@@ -33,7 +34,7 @@ public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
         return true;
     }
 
-    public static class Builder extends BaseBuilder<DescriptorUi, Builder> {
+    public static class Builder extends BaseBuilder<DescriptorUi, Builder, HomeAdapter> {
         public Builder(Context context) {
             super(context);
         }
@@ -44,7 +45,7 @@ public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
         }
 
         @Override
-        protected CompositeAdapter<DescriptorUi> createAdapter() {
+        protected HomeAdapter createAdapter() {
             return new HomeAdapter(context, delegates, hasStableIds);
         }
     }

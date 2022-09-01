@@ -40,7 +40,7 @@ import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.ArrayList;

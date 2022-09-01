@@ -5,7 +5,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

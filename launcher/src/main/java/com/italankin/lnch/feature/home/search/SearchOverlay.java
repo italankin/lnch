@@ -19,7 +19,7 @@ import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
 

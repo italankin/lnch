@@ -80,7 +80,7 @@ public class FolderDescriptorUiAdapter
         }
 
         @Override
-        protected void bind(FolderDescriptorUi item, List<Object> payloads) {
+        protected void bind(FolderDescriptorUi item, List<?> payloads) {
             bindItem(item);
             notificationDot.setBadgeVisible(item.isBadgeVisible(), payloads.contains(FolderDescriptorUi.PAYLOAD_BADGE));
         }

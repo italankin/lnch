@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.match.Match;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import java.util.Set;

@@ -4,7 +4,7 @@ import android.view.View;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.model.NoWidgetsItem;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

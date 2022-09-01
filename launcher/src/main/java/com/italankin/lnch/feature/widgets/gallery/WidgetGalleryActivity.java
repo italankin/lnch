@@ -13,7 +13,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;

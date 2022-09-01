@@ -17,7 +17,7 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;

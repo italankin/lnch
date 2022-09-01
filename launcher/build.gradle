@@ -73,6 +73,7 @@ dependencies {
     implementation preference
     implementation customTabs
     implementation annotation
+    implementation adapterDelegates
 
     implementation flexbox
 

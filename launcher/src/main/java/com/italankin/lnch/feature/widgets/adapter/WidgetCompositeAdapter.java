@@ -1,16 +1,16 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
-import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.collection.SparseArrayCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import me.italankin.adapterdelegates.AdapterDelegate;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 @SuppressWarnings({"rawtypes"})
 public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> {
@@ -20,7 +20,7 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
     private static final int FLAG_WIDGET_TYPE = 1 << 30;
     private static final int WIDGET_POSITION_MASK = 0x0000ffff;
 
-    protected WidgetCompositeAdapter(Context context, SparseArray<AdapterDelegate> delegates, boolean hasStableIds) {
+    protected WidgetCompositeAdapter(Context context, SparseArrayCompat<AdapterDelegate> delegates, boolean hasStableIds) {
         super(context, delegates, hasStableIds);
     }
 
@@ -60,7 +60,7 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
         return (AbstractWidgetAdapter<?>) delegates.get(KEY_WIDGET_ADAPTER);
     }
 
-    public static class Builder extends BaseBuilder<WidgetAdapterItem, Builder> {
+    public static class Builder extends BaseBuilder<WidgetAdapterItem, Builder, WidgetCompositeAdapter> {
 
         public Builder(Context context) {
             super(context);
@@ -81,11 +81,6 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
         @Override
         protected WidgetCompositeAdapter createAdapter() {
             return new WidgetCompositeAdapter(context, delegates, hasStableIds);
-        }
-
-        @Override
-        public WidgetCompositeAdapter create() {
-            return (WidgetCompositeAdapter) super.create();
         }
     }
 }

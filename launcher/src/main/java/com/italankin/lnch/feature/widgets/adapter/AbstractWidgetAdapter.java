@@ -5,8 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.italankin.lnch.feature.widgets.model.AppWidget;
-import com.italankin.lnch.util.adapterdelegate.AdapterDelegate;
-import com.italankin.lnch.util.adapterdelegate.CompositeAdapter;
+import me.italankin.adapterdelegates.AdapterDelegate;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public abstract class AbstractWidgetAdapter<VH extends AbstractWidgetAdapter.Vie
     public abstract VH onCreate(AppWidget item);
 
     @Override
-    public void onBind(VH holder, int position, AppWidget item, List<Object> payloads) {
+    public void onBind(VH holder, int position, AppWidget item, List<?> payloads) {
         onBind(holder, position, item);
     }
 

@@ -17,7 +17,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
     }
 
     @Override
-    public final void onBind(VH holder, int position, T item, List<Object> payloads) {
+    public void onBind(@NonNull VH holder, int position, T item, @NonNull List<?> payloads) {
         updateHolderView(holder);
         holder.bind(item, payloads);
     }
@@ -160,7 +160,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
         protected abstract void bind(T item);
 
-        protected void bind(T item, List<Object> payloads) {
+        protected void bind(T item, List<?> payloads) {
             bind(item);
         }
 

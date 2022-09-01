@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.util.adapterdelegate.BaseAdapterDelegate;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 

@@ -95,7 +95,7 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
         }
 
         @Override
-        protected void bind(AppDescriptorUi item, List<Object> payloads) {
+        protected void bind(AppDescriptorUi item, List<?> payloads) {
             bindItem(item);
             notificationDot.setBadgeVisible(item.isBadgeVisible(), payloads.contains(AppDescriptorUi.PAYLOAD_BADGE));
         }
