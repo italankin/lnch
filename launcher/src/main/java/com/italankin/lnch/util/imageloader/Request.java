@@ -3,9 +3,9 @@ package com.italankin.lnch.util.imageloader;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.Nullable;
 
 class Request {
     final Uri uri;
@@ -16,7 +16,7 @@ class Request {
 
     Request(Uri uri, Target target, Drawable errorPlaceholder, Callback callback, boolean noCache) {
         this.uri = uri;
-        this.target = (target instanceof WeakTarget) ? (WeakTarget) target : new WeakTarget(target);
+        this.target = new WeakTarget(target);
         this.errorPlaceholder = errorPlaceholder;
         this.callback = callback;
         this.noCache = noCache;
