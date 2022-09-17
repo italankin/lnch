@@ -3,7 +3,9 @@ package com.italankin.lnch.model.repository.search.delegate;
 import android.os.Build;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.LabelDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -51,6 +53,9 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
             if (contains(data.shortcut.getShortLabel().toString(), query)) {
                 Match match = createMatch(data.shortcut, data.descriptor);
                 result.add(match);
+            } else if (descriptorContains(query, data.descriptor)) {
+                Match match = createMatch(data.shortcut, data.descriptor);
+                result.add(match);
             }
         }
         return result;
@@ -89,6 +94,21 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         shortcutData = result;
         stateKey = newStateKey;
         return result;
+    }
+
+    private static boolean descriptorContains(String query, Descriptor descriptor) {
+        if (contains(descriptor.getOriginalLabel(), query)) {
+            return true;
+        }
+        if (!(descriptor instanceof LabelDescriptor)) {
+            return false;
+        }
+        LabelDescriptor ld = (LabelDescriptor) descriptor;
+        if (contains(ld.getLabel(), query)) {
+            return true;
+        }
+        return ld instanceof CustomLabelDescriptor &&
+                contains(((CustomLabelDescriptor) ld).getCustomLabel(), query);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
