@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.imageloader.resourceloader.ActivityIconLoader;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
@@ -26,6 +24,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 public class ImageLoader {
@@ -194,6 +193,10 @@ public class ImageLoader {
                     }
                 }
                 Drawable drawable = resourceLoader.load(request.uri);
+                if (drawable == null) {
+                    Timber.tag("ImageLoader").w("%s.load(%s) returned null", resourceLoader, request.uri);
+                    return;
+                }
                 if (!request.noCache) {
                     cache.put(request.uri, drawable);
                 }

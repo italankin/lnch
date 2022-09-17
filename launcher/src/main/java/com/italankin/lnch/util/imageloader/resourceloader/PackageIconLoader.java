@@ -5,7 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PackageIconLoader implements ResourceLoader {
 
@@ -26,7 +26,7 @@ public class PackageIconLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Drawable load(Uri uri) {
         try {

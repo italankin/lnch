@@ -8,7 +8,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class WidgetPreviewLoader implements ResourceLoader {
 
@@ -35,7 +35,7 @@ public class WidgetPreviewLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Drawable load(Uri uri) {
         String packageName = uri.getAuthority();

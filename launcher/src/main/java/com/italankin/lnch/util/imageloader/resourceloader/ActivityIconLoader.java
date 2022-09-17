@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class ActivityIconLoader implements ResourceLoader {
 
@@ -31,7 +31,7 @@ public class ActivityIconLoader implements ResourceLoader {
         return SCHEME.equals(uri.getScheme());
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Drawable load(Uri uri) {
         String packageName = uri.getAuthority();
