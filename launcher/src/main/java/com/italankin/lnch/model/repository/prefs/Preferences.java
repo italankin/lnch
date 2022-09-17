@@ -663,6 +663,9 @@ public interface Preferences {
                     result.add(target);
                 }
             }
+            if (result.isEmpty()) {
+                return EnumSet.noneOf(SearchTarget.class);
+            }
             return EnumSet.copyOf(result);
         }
 
