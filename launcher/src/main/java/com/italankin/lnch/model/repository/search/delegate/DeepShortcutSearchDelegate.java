@@ -3,9 +3,7 @@ package com.italankin.lnch.model.repository.search.delegate;
 import android.os.Build;
 
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.LabelDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -53,9 +51,12 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
             if (contains(data.shortcut.getShortLabel().toString(), query)) {
                 Match match = createMatch(data.shortcut, data.descriptor);
                 result.add(match);
-            } else if (descriptorContains(query, data.descriptor)) {
-                Match match = createMatch(data.shortcut, data.descriptor);
-                result.add(match);
+            } else {
+                PartialMatch.Type type = DescriptorSearchUtils.test(data.descriptor, query);
+                if (type != null) {
+                    Match match = createMatch(data.shortcut, data.descriptor, type);
+                    result.add(match);
+                }
             }
         }
         return result;
@@ -66,28 +67,24 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         if (shortcutData != null && stateKey == newStateKey) {
             return shortcutData;
         }
-        List<Descriptor> descriptors = descriptorRepository.items();
-        Set<ShortcutData> result = new LinkedHashSet<>(descriptors.size() * 2);
-        for (Descriptor descriptor : descriptors) {
-            if (descriptor instanceof AppDescriptor) {
-                AppDescriptor appDescriptor = (AppDescriptor) descriptor;
-                if ((appDescriptor.searchFlags & AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE) == 0) {
-                    continue;
-                }
-                List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(appDescriptor);
-                if (shortcuts == null || shortcuts.isEmpty()) {
-                    continue;
-                }
-                for (Shortcut shortcut : shortcuts) {
-                    if (shortcut.isEnabled()) {
-                        result.add(new ShortcutData(shortcut, descriptor));
-                    }
-                }
-            } else if (descriptor instanceof DeepShortcutDescriptor) {
-                DeepShortcutDescriptor dsd = (DeepShortcutDescriptor) descriptor;
-                Shortcut shortcut = shortcutsRepository.getShortcut(dsd.packageName, dsd.id);
-                if (shortcut != null && shortcut.isEnabled()) {
-                    result.add(new ShortcutData(shortcut, dsd));
+        Set<ShortcutData> result = new LinkedHashSet<>(64);
+        for (DeepShortcutDescriptor descriptor : descriptorRepository.itemsOfType(DeepShortcutDescriptor.class)) {
+            Shortcut shortcut = shortcutsRepository.getShortcut(descriptor.packageName, descriptor.id);
+            if (shortcut != null && shortcut.isEnabled()) {
+                result.add(new ShortcutData(shortcut, descriptor));
+            }
+        }
+        for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {
+            if ((descriptor.searchFlags & AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE) == 0) {
+                continue;
+            }
+            List<Shortcut> shortcuts = shortcutsRepository.getShortcuts(descriptor);
+            if (shortcuts == null) {
+                continue;
+            }
+            for (Shortcut shortcut : shortcuts) {
+                if (shortcut.isEnabled()) {
+                    result.add(new ShortcutData(shortcut, descriptor));
                 }
             }
         }
@@ -96,26 +93,16 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
         return result;
     }
 
-    private static boolean descriptorContains(String query, Descriptor descriptor) {
-        if (contains(descriptor.getOriginalLabel(), query)) {
-            return true;
-        }
-        if (!(descriptor instanceof LabelDescriptor)) {
-            return false;
-        }
-        LabelDescriptor ld = (LabelDescriptor) descriptor;
-        if (contains(ld.getLabel(), query)) {
-            return true;
-        }
-        return ld instanceof CustomLabelDescriptor &&
-                contains(((CustomLabelDescriptor) ld).getCustomLabel(), query);
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    private static Match createMatch(Shortcut shortcut, Descriptor descriptor) {
+        return createMatch(shortcut, descriptor, PartialMatch.Type.CONTAINS);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private static Match createMatch(Shortcut shortcut, Descriptor descriptor) {
+    private static Match createMatch(Shortcut shortcut, Descriptor descriptor, PartialMatch.Type type) {
         PartialDescriptorMatch match;
         if (descriptor instanceof DeepShortcutDescriptor) {
-            match = new PartialDescriptorMatch((DeepShortcutDescriptor) descriptor, shortcut, PartialMatch.Type.CONTAINS);
+            match = new PartialDescriptorMatch((DeepShortcutDescriptor) descriptor, shortcut, type);
         } else {
             match = new PartialDescriptorMatch(descriptor, PartialMatch.Type.CONTAINS, Match.Kind.SHORTCUT);
             match.icon = ShortcutIconLoader.uriFrom(shortcut, true);
@@ -152,6 +139,14 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
                         && this.shortcut.getId().equals(that.shortcut.getId());
             }
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "ShortcutData{" +
+                    "shortcut=" + shortcut.getId() +
+                    ", descriptor=" + descriptor.getId() +
+                    '}';
         }
     }
 }
