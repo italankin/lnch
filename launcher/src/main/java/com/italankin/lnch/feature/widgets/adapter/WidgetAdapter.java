@@ -1,10 +1,12 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
+import androidx.annotation.NonNull;
+
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 
-import androidx.annotation.NonNull;
+import timber.log.Timber;
 
 public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetViewHolder> {
 
@@ -24,10 +26,12 @@ public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetVie
 
     @Override
     public void onBind(WidgetViewHolder holder, int position, AppWidget item) {
-        holder.hostView.setDimensionsConstraints(
-                item.minWidth, item.minHeight, item.maxWidth, item.maxHeight
-        );
-        holder.hostView.updateAppWidgetOptions(item.options);
+        holder.hostView.setDimensionsConstraints(item.minWidth, item.minHeight, item.maxWidth, item.maxHeight);
+        try {
+            holder.hostView.updateAppWidgetOptions(item.options);
+        } catch (Exception e) {
+            Timber.e(e, "failed AppWidget options update:");
+        }
         holder.hostView.setOnLongClickListener(v -> {
             return longClickListener.onWidgetLongClick(item.appWidgetId, holder.hostView);
         });
