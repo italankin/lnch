@@ -2,16 +2,16 @@ package com.italankin.lnch.feature.base;
 
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
+import com.italankin.lnch.util.rxjava.DisposablesList;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
-    private final CompositeDisposable subs = new CompositeDisposable();
+    private final DisposablesList subs = new DisposablesList();
 
     @Override
     public void onDestroy() {
