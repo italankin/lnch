@@ -193,6 +193,7 @@
 
     <string name="settings_home_hidden_items">Hidden items</string>
     <string name="settings_home_hidden_items_empty">No hidden items</string>
+    <string name="settings_home_hidden_items_filter_empty">No items found</string>
 
     <string name="settings_category_search">Search</string>
     <string name="settings_search">Search settings</string>

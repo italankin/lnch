@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,7 +15,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import me.italankin.adapterdelegates.CompositeAdapter;
+import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -22,16 +24,21 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
-public class HiddenItemsFragment extends AppFragment implements HiddenItemsView, SettingsToolbarTitle {
+public class HiddenItemsFragment extends AppFragment implements HiddenItemsView, SettingsToolbarTitle,
+        ListFilter.OnFilterResult<HiddenItem> {
 
     @InjectPresenter
     HiddenItemsPresenter presenter;
 
     private LceLayout lce;
     private CompositeAdapter<HiddenItem> adapter;
+
+    private final HiddenItemsFilter filter = new HiddenItemsFilter(this);
 
     @ProvidePresenter
     HiddenItemsPresenter providePresenter() {
@@ -41,6 +48,12 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
     @Override
     public CharSequence getToolbarTitle(Context context) {
         return context.getString(R.string.settings_home_hidden_items);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -70,21 +83,33 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.settings_hidden, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setQueryHint(getString(R.string.hint_search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filter.filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter.filter(newText);
+                return false;
+            }
+        });
+    }
+
+    @Override
     public void showLoading() {
         lce.showLoading();
     }
 
     @Override
     public void onItemsUpdated(List<HiddenItem> items) {
-        adapter.setDataset(items);
-        adapter.notifyDataSetChanged();
-        if (items.isEmpty()) {
-            lce.empty()
-                    .message(R.string.settings_home_hidden_items_empty)
-                    .show();
-        } else {
-            lce.showContent();
-        }
+        filter.setDataset(items);
     }
 
     @Override
@@ -93,5 +118,18 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
                 .button(v -> presenter.observeApps())
                 .message(e.getMessage())
                 .show();
+    }
+
+    @Override
+    public void onFilterResult(String query, List<HiddenItem> items) {
+        adapter.setDataset(items);
+        adapter.notifyDataSetChanged();
+        if (items.isEmpty()) {
+            lce.empty()
+                    .message(R.string.settings_home_hidden_items_filter_empty)
+                    .show();
+        } else {
+            lce.showContent();
+        }
     }
 }
