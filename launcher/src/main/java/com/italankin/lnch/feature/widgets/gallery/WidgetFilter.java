@@ -16,9 +16,6 @@ class WidgetFilter extends ListFilter<WidgetPreview> {
 
     @Override
     protected FilterResults performFiltering(String query, List<WidgetPreview> unfiltered) {
-        if (query.isEmpty()) {
-            return of(unfiltered);
-        }
         List<WidgetPreview> result = new ArrayList<>(unfiltered.size());
         for (WidgetPreview preview : unfiltered) {
             if (SearchUtils.contains(preview.appName, query)) {

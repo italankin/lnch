@@ -17,9 +17,6 @@ public class ComponentNameFilter extends ListFilter<ComponentNameUi> {
 
     @Override
     protected FilterResults performFiltering(String query, List<ComponentNameUi> unfiltered) {
-        if (query.isEmpty()) {
-            return of(unfiltered);
-        }
         List<ComponentNameUi> result = new ArrayList<>(unfiltered.size());
         for (ComponentNameUi item : unfiltered) {
             if (item.packageName.toLowerCase(Locale.ROOT).contains(query) ||

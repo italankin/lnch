@@ -47,6 +47,9 @@ public abstract class ListFilter<T> extends Filter {
         if (constraint != null) {
             query = constraint.toString().trim().toLowerCase(Locale.getDefault());
         }
+        if (query.isEmpty()) {
+            return of(unfiltered);
+        }
         return performFiltering(query, unfiltered);
     }
 
