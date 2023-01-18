@@ -30,6 +30,7 @@
         <activity
             android:name=".feature.home.HomeActivity"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
             android:theme="@style/AppTheme.Launcher">
@@ -52,6 +53,7 @@
         <activity
             android:name=".feature.settings.SettingsActivity"
             android:autoRemoveFromRecents="true"
+            android:exported="true"
             android:label="@string/settings_title"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Preferences"
@@ -73,6 +75,7 @@
             android:name=".feature.pin.PinItemActivity"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:label="@string/pin_item_title"
             android:taskAffinity=".pinitem"
             android:theme="@android:style/Theme.Translucent">
@@ -105,6 +108,7 @@
 
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"
+            android:exported="true"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
             <intent-filter>
                 <action android:name="com.android.launcher.action.INSTALL_SHORTCUT" />
@@ -121,6 +125,7 @@
 
         <service
             android:name=".NotificationListener"
+            android:exported="true"
             android:label="@string/notification_service_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
