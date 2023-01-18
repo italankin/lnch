@@ -14,10 +14,11 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.intentfactory.componentselector.adapter.ComponentNameAdapter;
-import com.italankin.lnch.feature.intentfactory.componentselector.adapter.ComponentNameFilter;
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -46,7 +47,9 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
     private LceLayout lce;
     private ComponentNameAdapter adapter;
 
-    private final ComponentNameFilter filter = new ComponentNameFilter(this);
+    private final SimpleListFilter<ComponentNameUi> filter = new SimpleListFilter<>(this, (query, item) -> {
+        return SearchUtils.contains(item.packageName, query) || SearchUtils.contains(item.className, query);
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
