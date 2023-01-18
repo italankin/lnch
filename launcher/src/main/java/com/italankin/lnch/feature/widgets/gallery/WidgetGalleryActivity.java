@@ -13,8 +13,9 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import me.italankin.adapterdelegates.CompositeAdapter;
+import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -31,6 +32,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetGalleryActivity extends AppCompatActivity implements
@@ -43,7 +45,9 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
 
     private AppWidgetManager appWidgetManager;
     private LceLayout lce;
-    private final WidgetFilter filter = new WidgetFilter(this);
+    private final SimpleListFilter<WidgetPreview> filter = new SimpleListFilter<>(this, (query, item) -> {
+        return SearchUtils.contains(item.appName, query);
+    });
     private int appWidgetId;
 
     private final ActivityResultLauncher<Input> bindWidgetLauncher = registerForActivityResult(
