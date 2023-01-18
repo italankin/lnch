@@ -15,7 +15,9 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 
@@ -38,7 +40,9 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
     private LceLayout lce;
     private CompositeAdapter<HiddenItem> adapter;
 
-    private final HiddenItemsFilter filter = new HiddenItemsFilter(this);
+    private final SimpleListFilter<HiddenItem> filter = new SimpleListFilter<>(this, (query, item) -> {
+        return SearchUtils.contains(item.visibleLabel, query) || SearchUtils.contains(item.originalLabel, query);
+    });
 
     @ProvidePresenter
     HiddenItemsPresenter providePresenter() {
