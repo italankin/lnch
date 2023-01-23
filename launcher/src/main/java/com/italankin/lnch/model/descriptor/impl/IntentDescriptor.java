@@ -127,6 +127,7 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         copy.intentUri = intentUri;
         copy.originalLabel = originalLabel;
         copy.label = label;
+        copy.ignored = ignored;
         copy.customLabel = customLabel;
         copy.color = color;
         copy.customColor = customColor;
