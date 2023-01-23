@@ -120,6 +120,7 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         copy.originalLabel = originalLabel;
         copy.label = label;
         copy.color = color;
+        copy.ignored = ignored;
         copy.customLabel = customLabel;
         copy.customColor = customColor;
         return copy;
