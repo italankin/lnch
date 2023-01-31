@@ -433,11 +433,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             return items;
         }
         List<DescriptorUi> result = new ArrayList<>(items.size());
+        boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
         for (DescriptorUi item : items) {
             if (item instanceof AppDescriptorUi) {
                 AppDescriptorUi app = (AppDescriptorUi) item;
                 NotificationBag bag = notificationBagContainer.get(app.getDescriptor());
-                result.add(concatAppNotifications(app, bag));
+                result.add(concatAppNotifications(app, bag, showOngoing));
             } else if (item instanceof FolderDescriptorUi) {
                 FolderDescriptorUi folder = (FolderDescriptorUi) item;
                 result.add(concatFolderNotifications(notificationBagContainer, folder));
@@ -449,8 +450,8 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     private AppDescriptorUi concatAppNotifications(
-            AppDescriptorUi item, @Nullable NotificationBag bag) {
-        boolean badgeVisible = isBadgeVisible(bag);
+            AppDescriptorUi item, @Nullable NotificationBag bag, boolean showOngoing) {
+        boolean badgeVisible = isBadgeVisible(bag, showOngoing);
         if (badgeVisible != item.isBadgeVisible()) {
             // create a copy of AppDescriptorUi to update state correctly
             AppDescriptorUi newApp = new AppDescriptorUi(item);
@@ -475,9 +476,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
         boolean badgeVisible = false;
         AppDescriptor descriptor = null;
+        boolean showOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
         for (String descriptorId : item.items) {
             NotificationBag bag = notificationBagContainer.get(descriptorId);
-            badgeVisible = isBadgeVisible(bag);
+            badgeVisible = isBadgeVisible(bag, showOngoing);
             if (badgeVisible) {
                 descriptor = bag.getDescriptor();
                 break;
@@ -496,11 +498,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
-    private boolean isBadgeVisible(@Nullable NotificationBag bag) {
+    private boolean isBadgeVisible(@Nullable NotificationBag bag, boolean showOngoing) {
         if (bag != null) {
             // bag will never be empty here
-            boolean showDotOngoing = preferences.get(Preferences.NOTIFICATION_DOT_ONGOING);
-            return showDotOngoing || bag.getClearableCount() > 0;
+            return showOngoing || bag.getClearableCount() > 0;
         }
         return false;
     }
