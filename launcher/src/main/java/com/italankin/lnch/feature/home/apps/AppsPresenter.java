@@ -1,6 +1,13 @@
 package com.italankin.lnch.feature.home.apps;
 
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
+
 import android.content.Intent;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
@@ -52,18 +59,12 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
@@ -80,11 +81,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @Inject
     AppsPresenter(HomeDescriptorsState homeDescriptorsState,
-            DescriptorRepository descriptorRepository,
-            ShortcutsRepository shortcutsRepository,
-            NotificationsRepository notificationsRepository,
-            Preferences preferences, NameNormalizer nameNormalizer,
-            FontManager fontManager) {
+                  DescriptorRepository descriptorRepository,
+                  ShortcutsRepository shortcutsRepository,
+                  NotificationsRepository notificationsRepository,
+                  Preferences preferences, NameNormalizer nameNormalizer,
+                  FontManager fontManager) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
@@ -462,6 +463,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private FolderDescriptorUi concatFolderNotifications(
             NotificationBagContainer notificationBagContainer, FolderDescriptorUi item) {
+        boolean showOnFolders = preferences.get(Preferences.NOTIFICATION_DOT_FOLDERS);
+        if (!showOnFolders) {
+            if (item.isBadgeVisible()) {
+                FolderDescriptorUi newItem = new FolderDescriptorUi(item);
+                newItem.setBadgeVisible(false);
+                return newItem;
+            } else {
+                return item;
+            }
+        }
         boolean badgeVisible = false;
         AppDescriptor descriptor = null;
         for (String descriptorId : item.items) {

@@ -11,6 +11,11 @@
             android:dependency="notification_dot"
             android:key="notification_dot_ongoing"
             android:title="@string/settings_home_misc_notifications_dot_ongoing" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notification_dot"
+            android:key="notification_dot_folders"
+            android:title="@string/settings_home_misc_notifications_dot_folders" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_misc_notifications_popup">
         <CheckBoxPreference

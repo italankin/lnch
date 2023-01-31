@@ -384,6 +384,13 @@ public interface Preferences {
             false);
 
     /**
+     * Enable notification dots for folders
+     */
+    Pref<Boolean> NOTIFICATION_DOT_FOLDERS = Prefs.createBoolean(
+            "notification_dot_folders",
+            true);
+
+    /**
      * Color of {@link #NOTIFICATION_DOT}
      */
     Pref<Integer> NOTIFICATION_DOT_COLOR = Prefs.createInteger(
@@ -500,6 +507,7 @@ public interface Preferences {
             APPS_LIST_ANIMATE,
             SHORTCUTS_SORT_MODE,
             NOTIFICATION_DOT,
+            NOTIFICATION_DOT_FOLDERS,
             NOTIFICATION_DOT_COLOR,
             NOTIFICATION_DOT_SIZE,
             NOTIFICATION_DOT_ONGOING,

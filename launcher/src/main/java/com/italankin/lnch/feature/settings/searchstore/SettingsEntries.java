@@ -420,6 +420,13 @@ final class SettingsEntries {
                             return Collections.singletonList(new NotificationsFragment());
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_FOLDERS)
+                        .title(R.string.settings_home_misc_notifications_dot_folders)
+                        .category(R.string.settings_home_misc_notifications)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(new NotificationsFragment());
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_ONGOING)
                         .title(R.string.settings_home_misc_notifications_dot_ongoing)
                         .category(R.string.settings_home_misc_notifications)

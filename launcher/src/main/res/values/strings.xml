@@ -144,6 +144,7 @@
     <string name="settings_home_misc_notifications_dot">Notification dots</string>
     <string name="settings_home_misc_notifications_dot_summary">Show a badge on apps which have active notifications</string>
     <string name="settings_home_misc_notifications_dot_ongoing">Show for ongoing notifications</string>
+    <string name="settings_home_misc_notifications_dot_folders">Show dots on folders</string>
     <string name="settings_home_misc_notifications_popup">Notifications popup</string>
     <string name="settings_home_misc_notifications_popup_show">Show notifications in popup</string>
     <string name="settings_home_misc_notifications_permissions_dialog_title">Notification access required</string>
