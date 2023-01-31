@@ -3,12 +3,13 @@ package com.italankin.lnch.feature.intentfactory.componenteditor;
 import android.content.ComponentName;
 import android.widget.TextView;
 
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorActivity;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorActivity;
 
 public class PackageEditor extends AbstractIntentEditor implements ActivityResultCallback<ComponentName> {
 
@@ -49,8 +50,10 @@ public class PackageEditor extends AbstractIntentEditor implements ActivityResul
     }
 
     @Override
-    public void onActivityResult(ComponentName componentName) {
-        result.setComponent(componentName);
-        host.requestUpdate();
+    public void onActivityResult(@Nullable ComponentName componentName) {
+        if (componentName != null) {
+            result.setComponent(componentName);
+            host.requestUpdate();
+        }
     }
 }
