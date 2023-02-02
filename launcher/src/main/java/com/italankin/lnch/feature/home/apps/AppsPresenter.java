@@ -416,8 +416,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         return Observable.combineLatest(
                 notificationsRepository.observe(),
                 preferences.observe(Preferences.NOTIFICATION_DOT),
+                preferences.observe(Preferences.NOTIFICATION_DOT_FOLDERS),
                 preferences.observe(Preferences.NOTIFICATION_DOT_ONGOING),
-                (notifications, showNotificationDots, showOngoing) -> {
+                (notifications, showNotificationDots, showFolderNotificationDots, showOngoing) -> {
                     if (showNotificationDots && !notifications.isEmpty()) {
                         return new NotificationBagContainer(notifications);
                     } else {
