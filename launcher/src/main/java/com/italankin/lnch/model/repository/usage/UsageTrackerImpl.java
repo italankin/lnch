@@ -107,8 +107,9 @@ public class UsageTrackerImpl implements UsageTracker {
                     }
                 }
                 Timber.d("read: %s", stats);
-            } catch (IOException e) {
-                Timber.e(e, "sync:");
+            } catch (Throwable e) {
+                usageJson.delete();
+                Timber.e(e, "read:");
             }
         }
     }
