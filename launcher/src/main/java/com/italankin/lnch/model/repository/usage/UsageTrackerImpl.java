@@ -47,20 +47,11 @@ public class UsageTrackerImpl implements UsageTracker {
 
     @Override
     public void trackLaunch(Descriptor descriptor) {
-        readState();
-        String id = descriptor.getId();
-        Integer value = launches.get(id);
-        if (value == null) {
-            launches.put(id, 1);
-        } else {
-            launches.replace(id, value + 1);
-        }
-        writeState();
+        executor.execute(new TrackLaunch(descriptor));
     }
 
     @Override
     public void trackShortcut(Shortcut shortcut) {
-        readState();
         // TODO track shortcuts
     }
 
@@ -116,6 +107,28 @@ public class UsageTrackerImpl implements UsageTracker {
 
     private void writeState() {
         executor.execute(new WriteRunnable(usageJson, new HashMap<>(this.launches)));
+    }
+
+    private class TrackLaunch implements Runnable {
+
+        private final Descriptor descriptor;
+
+        TrackLaunch(Descriptor descriptor) {
+            this.descriptor = descriptor;
+        }
+
+        @Override
+        public void run() {
+            readState();
+            String id = descriptor.getId();
+            Integer value = launches.get(id);
+            if (value == null) {
+                launches.put(id, 1);
+            } else {
+                launches.replace(id, value + 1);
+            }
+            writeState();
+        }
     }
 
     private class WriteRunnable implements Runnable {
