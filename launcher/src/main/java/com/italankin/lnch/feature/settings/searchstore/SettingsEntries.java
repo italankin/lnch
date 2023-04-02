@@ -163,8 +163,22 @@ final class SettingsEntries {
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FULLSCREEN_FOLDERS)
-                        .title(R.string.settings_home_laf_other_fullscreen_folders)
-                        .summary(R.string.settings_home_laf_other_fullscreen_folders_summary)
+                        .title(R.string.settings_home_laf_folders_fullscreen_folders)
+                        .summary(R.string.settings_home_laf_folders_fullscreen_folders_summary)
+                        .category(R.string.settings_home_laf)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.FOLDER_SHOW_OVERLAY)
+                        .title(R.string.settings_home_laf_folders_show_overlay)
+                        .category(R.string.settings_home_laf)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.FOLDER_OVERLAY_COLOR)
+                        .title(R.string.settings_home_laf_folders_overlay_color)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));

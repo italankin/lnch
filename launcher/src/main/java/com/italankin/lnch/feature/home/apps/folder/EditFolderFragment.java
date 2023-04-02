@@ -84,7 +84,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
                 .register(new CustomizeDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     presenter.removeFromFolder(result.descriptorId, result.folderId);
                 });
-        darkBackground = true;
+        drawOverlay = true;
     }
 
     @Override

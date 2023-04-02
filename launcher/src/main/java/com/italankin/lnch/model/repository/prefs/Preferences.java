@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.fonts.FontManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 /**
@@ -441,6 +440,20 @@ public interface Preferences {
             false);
 
     /**
+     * Show {@link #FOLDER_OVERLAY_COLOR} for non-fullscreen folders
+     */
+    Pref<Boolean> FOLDER_SHOW_OVERLAY = Prefs.createBoolean(
+            "folder_show_overlay",
+            false);
+
+    /**
+     * Folder overlay color (e.g. for {@link #FULLSCREEN_FOLDERS})
+     */
+    Pref<Integer> FOLDER_OVERLAY_COLOR = Prefs.createInteger(
+            "folder_overlay_color",
+            null);
+
+    /**
      * Show/hide status bar on home screen
      */
     Pref<Boolean> HIDE_STATUS_BAR = Prefs.createBoolean(
@@ -515,6 +528,8 @@ public interface Preferences {
             EXPERIMENTAL_INTENT_FACTORY,
             HOME_PAGER_INDICATOR,
             FULLSCREEN_FOLDERS,
+            FOLDER_SHOW_OVERLAY,
+            FOLDER_OVERLAY_COLOR,
             NAME_TRANSFORM,
             HIDE_STATUS_BAR,
             DESTRUCTIVE_NON_EDIT,

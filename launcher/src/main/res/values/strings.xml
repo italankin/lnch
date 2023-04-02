@@ -221,6 +221,12 @@
     <string name="settings_home_laf_notification_dot_color">Notification dot color</string>
     <string name="settings_home_laf_notification_dot_size">Notification dot size</string>
 
+    <string name="settings_home_laf_folders">Folders</string>
+    <string name="settings_home_laf_folders_fullscreen_folders">Fullscreen folders</string>
+    <string name="settings_home_laf_folders_show_overlay">Show overlay on non-fullscreen folders</string>
+    <string name="settings_home_laf_folders_fullscreen_folders_summary">Show folders on full screen instead of popup</string>
+    <string name="settings_home_laf_folders_overlay_color">Folder overlay color</string>
+
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>
     <string name="settings_home_laf_alignment">Alignment</string>
@@ -235,8 +241,6 @@
     <string name="settings_home_laf_other_hide_status_bar_summary">Do not show status bar on home screen</string>
     <string name="settings_home_laf_other_width">Items width</string>
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
-    <string name="settings_home_laf_other_fullscreen_folders">Fullscreen folders</string>
-    <string name="settings_home_laf_other_fullscreen_folders_summary">Show folders on full screen instead of popup</string>
     <string name="settings_home_laf_other_home_pager_indicator">Home pager indicator</string>
     <string name="settings_home_laf_other_home_pager_indicator_summary">Display little dots on bottom of the home screen, indicating current page</string>
 

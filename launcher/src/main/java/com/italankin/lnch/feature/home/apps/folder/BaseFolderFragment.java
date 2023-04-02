@@ -14,13 +14,6 @@ import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.animation.ArgbEvaluatorCompat;
@@ -45,6 +38,13 @@ import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         AppDescriptorUiAdapter.Listener,
@@ -85,9 +85,10 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     protected HomeAdapter adapter;
 
     protected ErrorDelegate errorDelegate;
+    protected Preferences preferences;
 
     protected String folderId;
-    protected boolean darkBackground;
+    protected boolean drawOverlay;
 
     private boolean isFullscreen;
     private int backstackId = -1;
@@ -97,10 +98,9 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isFullscreen = LauncherApp.daggerService.main()
-                .preferences()
-                .get(Preferences.FULLSCREEN_FOLDERS);
-        darkBackground = isFullscreen;
+        preferences = LauncherApp.daggerService.main().preferences();
+        isFullscreen = preferences.get(Preferences.FULLSCREEN_FOLDERS);
+        drawOverlay = isFullscreen || preferences.get(Preferences.FOLDER_SHOW_OVERLAY);
         folderId = requireArguments().getString(ARG_FOLDER_ID);
         if (savedInstanceState != null) {
             backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID);
@@ -244,9 +244,12 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
                 })
                 .start();
 
-        if (darkBackground) {
-            int bgColor = ContextCompat.getColor(requireContext(), R.color.dark_folder_background);
-            ValueAnimator animator = ValueAnimator.ofInt(Color.TRANSPARENT, bgColor);
+        if (drawOverlay) {
+            Integer overlayColor = preferences.get(Preferences.FOLDER_OVERLAY_COLOR);
+            if (overlayColor == null) {
+                overlayColor = ContextCompat.getColor(requireContext(), R.color.fullscreen_folder_overlay);
+            }
+            ValueAnimator animator = ValueAnimator.ofInt(Color.TRANSPARENT, overlayColor);
             animator.setEvaluator(new ArgbEvaluatorCompat());
             animator.addUpdateListener(animation -> {
                 alignFrameView.setBackgroundColor((int) animation.getAnimatedValue());

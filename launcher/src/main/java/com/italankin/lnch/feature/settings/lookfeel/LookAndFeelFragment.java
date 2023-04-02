@@ -5,9 +5,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
@@ -17,6 +14,10 @@ import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContra
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
 public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, SettingsToolbarTitle {
 
@@ -65,6 +66,22 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_appearance).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowItemLookPreferencesContract().result());
+            return true;
+        });
+
+        Preference folderOverlayColor = findPreference(Preferences.FOLDER_OVERLAY_COLOR);
+        folderOverlayColor.setEnabled(
+                preferences.get(Preferences.FULLSCREEN_FOLDERS) || preferences.get(Preferences.FOLDER_SHOW_OVERLAY));
+        Preference folderShowOverlay = findPreference(Preferences.FOLDER_SHOW_OVERLAY);
+        folderShowOverlay.setEnabled(!preferences.get(Preferences.FULLSCREEN_FOLDERS));
+        folderShowOverlay.setOnPreferenceChangeListener((preference, newValue) -> {
+            folderOverlayColor.setEnabled(preferences.get(Preferences.FULLSCREEN_FOLDERS) || (boolean) newValue);
+            return true;
+        });
+        findPreference(Preferences.FULLSCREEN_FOLDERS).setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean isEnabled = (boolean) newValue;
+            folderOverlayColor.setEnabled(isEnabled || preferences.get(Preferences.FOLDER_SHOW_OVERLAY));
+            folderShowOverlay.setEnabled(!isEnabled);
             return true;
         });
         findPreference(Preferences.NOTIFICATION_DOT_COLOR)

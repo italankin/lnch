@@ -60,6 +60,24 @@
             app:colorpref_defaultColor="#fff"
             tools:ignore="PrefsDetector" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_home_laf_folders">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="fullscreen_folders"
+            android:summary="@string/settings_home_laf_folders_fullscreen_folders_summary"
+            android:title="@string/settings_home_laf_folders_fullscreen_folders" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="folder_show_overlay"
+            android:title="@string/settings_home_laf_folders_show_overlay"
+            app:singleLineTitle="false" />
+        <com.italankin.lnch.util.widget.ColorPreference
+            android:key="folder_overlay_color"
+            android:title="@string/settings_home_laf_folders_overlay_color"
+            app:colorpref_colorModel="argb"
+            app:colorpref_defaultColor="@color/fullscreen_folder_overlay"
+            tools:ignore="PrefsDetector" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_notification">
         <com.italankin.lnch.util.widget.ColorPreference
             android:key="notification_dot_color"
@@ -91,11 +109,6 @@
             app:colorpref_colorModel="argb"
             app:colorpref_defaultColor="@color/status_bar"
             tools:ignore="PrefsDetector" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="fullscreen_folders"
-            android:summary="@string/settings_home_laf_other_fullscreen_folders_summary"
-            android:title="@string/settings_home_laf_other_fullscreen_folders" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="home_pager_indicator"
