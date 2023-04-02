@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 /**
  * Base class for a {@link Match} which ranks matches by {@link PartialMatch.Type}
@@ -43,6 +44,12 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
     @Override
     public CharSequence getLabel(Context context) {
         return label;
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getSubtext(Context context) {
+        return null;
     }
 
     @Override

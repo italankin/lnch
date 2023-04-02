@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.repository.search.match;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -19,6 +20,7 @@ import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
 
 import java.util.Collections;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 public class PartialDescriptorMatch extends PartialMatch implements DescriptorMatch {
@@ -81,6 +83,12 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
     @Override
     public Descriptor getDescriptor() {
         return descriptor;
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getSubtext(Context context) {
+        return null;
     }
 
     @Override

@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import androidx.core.content.ContextCompat;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
@@ -22,6 +20,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 public class PreferenceSearchDelegate implements SearchDelegate {
 
@@ -73,6 +74,12 @@ class PreferenceMatch implements Match {
     @Override
     public CharSequence getLabel(Context context) {
         return context.getString(entry.title());
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getSubtext(Context context) {
+        return context.getString(entry.category());
     }
 
     @Override

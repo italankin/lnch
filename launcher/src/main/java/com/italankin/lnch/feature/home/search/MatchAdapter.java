@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.match.Match;
-import me.italankin.adapterdelegates.BaseAdapterDelegate;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
@@ -73,6 +73,14 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
         holder.text.setText(item.getLabel(context));
         holder.text.setTextColor(item.getColor(context));
 
+        CharSequence subtext = item.getSubtext(context);
+        if (subtext != null) {
+            holder.subtext.setVisibility(View.VISIBLE);
+            holder.subtext.setText(subtext);
+        } else {
+            holder.subtext.setVisibility(View.GONE);
+        }
+
         Uri icon = item.getIcon();
         if (icon != null) {
             imageLoader.load(icon)
@@ -97,12 +105,14 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView text;
+        final TextView subtext;
         final ImageView image;
         final ImageView pin;
 
         ViewHolder(View itemView) {
             super(itemView);
             this.text = itemView.findViewById(R.id.text);
+            this.subtext = itemView.findViewById(R.id.subtext);
             this.image = itemView.findViewById(R.id.image);
             this.pin = itemView.findViewById(R.id.pin);
         }

@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import java.util.Set;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-
-import java.util.Set;
+import androidx.annotation.Nullable;
 
 public interface Match {
 
@@ -23,6 +24,9 @@ public interface Match {
     Drawable getDrawableIcon(Context context);
 
     CharSequence getLabel(Context context);
+
+    @Nullable
+    CharSequence getSubtext(Context context);
 
     @ColorInt
     int getColor(Context context);
