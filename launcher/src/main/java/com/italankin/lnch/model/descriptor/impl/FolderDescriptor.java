@@ -1,7 +1,5 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -12,6 +10,8 @@ import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
 
 /**
  * A home screen folder
@@ -68,6 +68,8 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
 
     @Override
     public void setCustomLabel(String label) {
+        this.label = label;
+        this.originalLabel = label;
         this.customLabel = label;
     }
 

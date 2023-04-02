@@ -3,8 +3,6 @@ package com.italankin.lnch.model.descriptor.impl;
 import android.content.Intent;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -14,6 +12,8 @@ import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
 
 /**
  * Custom intent descriptor (e.g., search intent)
@@ -79,6 +79,8 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
 
     @Override
     public void setCustomLabel(String label) {
+        this.label = label;
+        this.originalLabel = label;
         this.customLabel = label;
     }
 

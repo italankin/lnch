@@ -40,7 +40,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(
                 uri, label, context.getColor(R.color.pinned_shortcut_default));
         NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-        descriptor.label = nameNormalizer.normalize(label);
+        descriptor.originalLabel = descriptor.label = nameNormalizer.normalize(label);
 
         DescriptorRepository apps = LauncherApp.daggerService
                 .main()

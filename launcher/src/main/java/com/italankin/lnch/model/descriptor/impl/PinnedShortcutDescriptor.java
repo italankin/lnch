@@ -1,8 +1,5 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -12,6 +9,9 @@ import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescri
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 
 import java.util.UUID;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 /**
  * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
@@ -71,7 +71,9 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
 
     @Override
     public void setCustomLabel(String label) {
-        customLabel = label;
+        this.label = label;
+        this.originalLabel = label;
+        this.customLabel = label;
     }
 
     @Override
