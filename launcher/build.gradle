@@ -7,8 +7,8 @@ android {
         applicationId "com.italankin.lnch"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
-        versionCode 13
-        versionName "1.9.1"
+        versionCode 14
+        versionName "1.9.2"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
