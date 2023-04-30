@@ -2,11 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.italankin.lnch">
 
-    <permission
-        android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="normal" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
