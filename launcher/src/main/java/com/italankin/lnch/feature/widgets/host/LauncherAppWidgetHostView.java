@@ -18,8 +18,10 @@ package com.italankin.lnch.feature.widgets.host;
 
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -44,6 +46,8 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
     private float mStartX;
     private float mStartY;
 
+    private final Bundle widgetOptions = new Bundle();
+
     LauncherAppWidgetHostView(Context context) {
         super(context);
     }
@@ -62,6 +66,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
         } else {
             this.maxHeight = maxHeight;
         }
+        widgetOptions.clear();
         requestLayout();
         invalidate();
     }
@@ -141,6 +146,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
                 constrainWidth(maxWidth),
                 constrainHeight(heightMeasureSpec, maxHeight)
         );
+        if (widgetOptions.isEmpty()) {
+            widgetOptions.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, getMeasuredWidth());
+            widgetOptions.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, getMeasuredHeight());
+            updateAppWidgetOptions(widgetOptions);
+        }
     }
 
     @Override

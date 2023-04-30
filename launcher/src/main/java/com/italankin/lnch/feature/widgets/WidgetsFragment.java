@@ -266,14 +266,27 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
                 getResources().getDimensionPixelSize(R.dimen.widget_min_height),
                 options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
         );
-        int size = getResources().getDimensionPixelSize(R.dimen.widget_max_height);
-        int maxHeight = Math.max(size, Math.min(size, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)));
+        int widgetMaxHeight = getResources().getDimensionPixelSize(R.dimen.widget_max_height);
+        int widgetMaxWidth = getResources().getDisplayMetrics().widthPixels;
         options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, minWidth);
         options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, minHeight);
-        options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeight);
+        int maxHeight = Math.max(widgetMaxHeight,
+                Math.min(widgetMaxHeight, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)));
+        if (maxHeight > 0) {
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeight);
+        } else {
+            options.remove(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+        }
+        int maxWidth = Math.max(widgetMaxWidth,
+                Math.min(widgetMaxWidth, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH)));
+        if (maxWidth > 0) {
+            options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, maxWidth);
+        } else {
+            options.remove(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+        }
 
         widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options,
-                minWidth, minHeight, getResources().getDisplayMetrics().widthPixels, maxHeight));
+                minWidth, minHeight, widgetMaxWidth, maxHeight));
     }
 
     private void cancelAddNewWidget(int appWidgetId) {
