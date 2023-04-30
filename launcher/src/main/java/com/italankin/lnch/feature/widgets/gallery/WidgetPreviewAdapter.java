@@ -1,16 +1,18 @@
 package com.italankin.lnch.feature.widgets.gallery;
 
 import android.appwidget.AppWidgetProviderInfo;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.italankin.lnch.R;
-import me.italankin.adapterdelegates.BaseAdapterDelegate;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapter.ViewHolder, WidgetPreview> {
 
@@ -75,7 +77,11 @@ public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapt
             textName.setText(info.label);
             imageLoader.load(info.iconUri)
                     .into(imageIcon);
+            Drawable placeholder = ContextCompat.getDrawable(
+                    imagePreview.getContext(), R.drawable.ic_widget_no_preview);
             imageLoader.load(info.previewUri)
+                    .errorPlaceholder(placeholder)
+                    .placeholder(placeholder)
                     .noCache()
                     .into(imagePreview);
         }
