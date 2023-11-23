@@ -1,16 +1,13 @@
 package com.italankin.lnch.feature.home.model;
 
-import com.italankin.lnch.model.ui.DescriptorUi;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.model.ui.DescriptorUi;
+
+import java.util.Collections;
+import java.util.List;
 
 public final class Update {
     public static final Update EMPTY = new Update(Collections.emptyList(), null);
@@ -18,14 +15,14 @@ public final class Update {
     public final List<DescriptorUi> items;
     public UserPrefs userPrefs;
     @Nullable
-    private final DiffUtil.DiffResult diffResult;
+    private DiffUtil.DiffResult diffResult;
 
     public Update(List<DescriptorUi> items, @Nullable DiffUtil.DiffResult diffResult) {
         this.items = items;
         this.diffResult = diffResult;
     }
 
-    @NotNull
+    @NonNull
     public Update with(UserPrefs userPrefs) {
         this.userPrefs = userPrefs;
         return this;
@@ -34,6 +31,7 @@ public final class Update {
     public void dispatchTo(RecyclerView.Adapter<?> adapter) {
         if (diffResult != null) {
             diffResult.dispatchUpdatesTo(adapter);
+            diffResult = null;
         } else {
             adapter.notifyDataSetChanged();
         }
