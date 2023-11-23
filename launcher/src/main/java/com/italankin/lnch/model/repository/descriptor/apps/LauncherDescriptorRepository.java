@@ -5,7 +5,6 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.os.Process;
-
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -18,22 +17,14 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class LauncherDescriptorRepository implements DescriptorRepository {
 
@@ -49,7 +40,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private final Completable updater;
     private final BehaviorSubject<List<Descriptor>> updatesSubject = BehaviorSubject.create();
 
-    private volatile int stateKey = 0;
     private volatile Editor currentEditor;
 
     public LauncherDescriptorRepository(Context context, PackageManager packageManager,
@@ -87,11 +77,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     public List<Descriptor> items() {
         List<Descriptor> value = updatesSubject.getValue();
         return value != null ? value : Collections.emptyList();
-    }
-
-    @Override
-    public int stateKey() {
-        return stateKey;
     }
 
     @Override
@@ -172,10 +157,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                     }
                 })
                 .map(appsData -> Collections.unmodifiableList(appsData.items))
-                .doOnSuccess(descriptors -> {
-                    stateKey = computeStateKey(descriptors);
-                    updatesSubject.onNext(descriptors);
-                })
+                .doOnSuccess(updatesSubject::onNext)
                 .doOnError(e -> Timber.e(e, "updater:"))
                 .ignoreElement();
     }
@@ -205,14 +187,6 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void writeToDisk(List<Descriptor> items) {
         descriptorStore.write(packagesStore.output(), items);
-    }
-
-    private static int computeStateKey(List<Descriptor> descriptors) {
-        int key = 0;
-        for (Descriptor descriptor : descriptors) {
-            key = key * 31 + System.identityHashCode(descriptor);
-        }
-        return key;
     }
 
     final class Editor implements DescriptorRepository.Editor {

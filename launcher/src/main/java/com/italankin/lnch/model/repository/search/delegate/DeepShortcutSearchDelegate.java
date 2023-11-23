@@ -1,7 +1,7 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
 import android.os.Build;
-
+import androidx.annotation.RequiresApi;
 import com.italankin.lnch.feature.receiver.StartShortcutReceiver;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -16,14 +16,7 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import androidx.annotation.RequiresApi;
+import java.util.*;
 
 import static com.italankin.lnch.util.SearchUtils.contains;
 
@@ -31,9 +24,6 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
 
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
-
-    private volatile int stateKey = 0;
-    private volatile Set<ShortcutData> shortcutData;
 
     public DeepShortcutSearchDelegate(DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
         this.descriptorRepository = descriptorRepository;
@@ -63,10 +53,6 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     }
 
     private Set<ShortcutData> getAllShortcuts() {
-        int newStateKey = descriptorRepository.stateKey();
-        if (shortcutData != null && stateKey == newStateKey) {
-            return shortcutData;
-        }
         Set<ShortcutData> result = new LinkedHashSet<>(64);
         for (DeepShortcutDescriptor descriptor : descriptorRepository.itemsOfType(DeepShortcutDescriptor.class)) {
             Shortcut shortcut = shortcutsRepository.getShortcut(descriptor.packageName, descriptor.id);
@@ -88,8 +74,6 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
                 }
             }
         }
-        shortcutData = result;
-        stateKey = newStateKey;
         return result;
     }
 

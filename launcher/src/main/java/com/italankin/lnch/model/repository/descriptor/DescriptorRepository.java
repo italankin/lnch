@@ -1,11 +1,10 @@
 package com.italankin.lnch.model.repository.descriptor;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
-
-import java.util.List;
-
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+
+import java.util.List;
 
 public interface DescriptorRepository {
 
@@ -33,11 +32,6 @@ public interface DescriptorRepository {
      * @return current state of descriptors
      */
     List<Descriptor> items();
-
-    /**
-     * @return a unique state key of current items
-     */
-    int stateKey();
 
     /**
      * @return descriptors list of a given {@code klass}
