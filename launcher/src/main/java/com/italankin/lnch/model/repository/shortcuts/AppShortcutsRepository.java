@@ -50,6 +50,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
     @Override
     public Completable loadShortcuts() {
         if (!launcherApps.hasShortcutHostPermission()) {
+            shortcutsCache.clear();
             return Completable.complete();
         }
         return Completable.fromRunnable(() -> {
@@ -118,6 +119,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
 
     private List<Shortcut> queryShortcuts(AppDescriptor descriptor) {
         if (!launcherApps.hasShortcutHostPermission()) {
+            shortcutsCache.clear();
             return Collections.emptyList();
         }
         ShortcutQuery query = new ShortcutQuery();
