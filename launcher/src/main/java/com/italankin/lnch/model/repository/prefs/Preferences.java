@@ -6,8 +6,6 @@ import android.graphics.Color;
 
 import com.italankin.lnch.model.fonts.FontManager;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -563,7 +561,7 @@ public interface Preferences {
             this.key = key;
         }
 
-        @NotNull
+        @NonNull
         @Override
         public String toString() {
             return key;
@@ -698,7 +696,7 @@ public interface Preferences {
             this.key = key;
         }
 
-        @NotNull
+        @NonNull
         @Override
         public String toString() {
             return key;

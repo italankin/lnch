@@ -48,8 +48,6 @@ import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -427,7 +425,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 });
     }
 
-    @NotNull
+    @NonNull
     private List<DescriptorUi> concatNotifications(
             List<DescriptorUi> items, NotificationBagContainer notificationBagContainer) {
         if (notificationBagContainer.isEmpty()) {
