@@ -11,7 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.UserHandle;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -21,23 +22,13 @@ import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import dagger.Lazy;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 public class AppShortcutsRepository implements ShortcutsRepository {
@@ -61,15 +52,13 @@ public class AppShortcutsRepository implements ShortcutsRepository {
         if (!launcherApps.hasShortcutHostPermission()) {
             return Completable.complete();
         }
-        return Observable
-                .defer(() -> Observable.fromIterable(descriptorRepository.get().itemsOfType(AppDescriptor.class)))
-                .collectInto(new HashMap<Descriptor, List<Shortcut>>(),
-                        (map, descriptor) -> map.put(descriptor, queryShortcuts(descriptor)))
-                .doOnSuccess(result -> {
-                    shortcutsCache.clear();
-                    shortcutsCache.putAll(result);
-                })
-                .ignoreElement();
+        return Completable.fromRunnable(() -> {
+            shortcutsCache.clear();
+            List<AppDescriptor> appDescriptors = descriptorRepository.get().itemsOfType(AppDescriptor.class);
+            for (AppDescriptor descriptor : appDescriptors) {
+                shortcutsCache.put(descriptor, queryShortcuts(descriptor));
+            }
+        });
     }
 
     @Override
