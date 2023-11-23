@@ -140,7 +140,9 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     @Override
     public int hashCode() {
         int result = packageName.hashCode();
-        result = 31 * result + (componentName != null ? componentName.hashCode() : 0);
+        if (componentName != null) {
+            result = 31 * result + componentName.hashCode();
+        }
         return result;
     }
 
