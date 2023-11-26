@@ -121,6 +121,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void subscribeForUpdates() {
         new LauncherAppsObservable(launcherApps)
+                .filter(event -> event != LauncherAppsObservable.Event.SHORTCUTS_CHANGED)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .flatMapCompletable(event -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
