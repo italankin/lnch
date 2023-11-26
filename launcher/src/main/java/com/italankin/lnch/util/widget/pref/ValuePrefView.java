@@ -54,7 +54,7 @@ public class ValuePrefView extends RelativeLayout {
         icon.setImageDrawable(drawable);
         a.recycle();
 
-        TypedValue attribute = ResUtils.resolveAttribute(context, R.attr.selectableItemBackground);
+        TypedValue attribute = ResUtils.resolveAttribute(context, android.R.attr.selectableItemBackground);
         if (attribute != null) {
             setBackgroundResource(attribute.resourceId);
         }

@@ -198,7 +198,7 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
                         removeFromFolder(item, folderId);
                     });
             if (shortcuts.isEmpty()) {
-                addShortcut(removeFromFolderItem.setIconDrawableTintAttr(R.attr.colorAccent));
+                addShortcut(removeFromFolderItem.setIconDrawableTintAttr(android.R.attr.colorAccent));
             } else {
                 addAction(removeFromFolderItem);
             }

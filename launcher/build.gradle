@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 33
+    compileSdk 34
+    namespace "com.italankin.lnch"
     defaultConfig {
         applicationId "com.italankin.lnch"
         minSdkVersion 23
-        targetSdk 33
+        targetSdk 34
         versionCode 15
         versionName "1.9.3"
+    }
+    buildFeatures {
+        buildConfig true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -62,16 +66,16 @@ dependencies {
 
     implementation libs.timber
 
-    implementation libs.appCompat
-    implementation libs.fragment
-    implementation libs.constraintLayout
-    implementation libs.recyclerView
+    implementation libs.androidx.appCompat
+    implementation libs.androidx.fragment
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.recyclerView
     implementation libs.scrollingPagerIndicator
-    implementation libs.palette
+    implementation libs.androidx.palette
     implementation libs.material
-    implementation libs.preference
-    implementation libs.customTabs
-    implementation libs.annotation
+    implementation libs.androidx.preference
+    implementation libs.androidx.customTabs
+    implementation libs.androidx.annotation
     implementation libs.adapterDelegates
 
     implementation libs.flexbox

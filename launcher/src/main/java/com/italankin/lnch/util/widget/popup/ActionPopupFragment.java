@@ -81,7 +81,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
     protected final void createItemViews() {
         if (shortcuts.isEmpty()) {
             for (ItemBuilder action : actions) {
-                addShortcutInternal(action.setIconDrawableTintAttr(R.attr.colorAccent));
+                addShortcutInternal(action.setIconDrawableTintAttr(android.R.attr.colorAccent));
             }
         } else {
             for (ItemBuilder action : actions) {

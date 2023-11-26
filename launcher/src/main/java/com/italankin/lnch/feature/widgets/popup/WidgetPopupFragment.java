@@ -3,13 +3,11 @@ package com.italankin.lnch.feature.widgets.popup;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class WidgetPopupFragment extends ActionPopupFragment {
 
@@ -52,7 +50,7 @@ public class WidgetPopupFragment extends ActionPopupFragment {
                     dismiss();
                     sendResult(AppInfoContract.result(appWidgetId));
                 })
-                .setIconDrawableTintAttr(R.attr.colorAccent)
+                .setIconDrawableTintAttr(android.R.attr.colorAccent)
                 .setIcon(R.drawable.ic_app_info));
         addShortcut(new ItemBuilder()
                 .setLabel(R.string.widgets_remove)
@@ -60,7 +58,7 @@ public class WidgetPopupFragment extends ActionPopupFragment {
                     dismiss();
                     sendResult(RemoveWidgetContract.result(appWidgetId));
                 })
-                .setIconDrawableTintAttr(R.attr.colorAccent)
+                .setIconDrawableTintAttr(android.R.attr.colorAccent)
                 .setIcon(R.drawable.ic_action_delete));
 
         createItemViews();

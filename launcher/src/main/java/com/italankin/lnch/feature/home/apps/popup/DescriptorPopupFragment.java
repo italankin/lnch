@@ -107,7 +107,7 @@ public class DescriptorPopupFragment extends ActionPopupFragment {
         if (destructiveNonEdit && item instanceof InFolderDescriptorUi && folderId != null) {
             addShortcut(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_remove_from_folder)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
                     .setLabel(R.string.customize_item_remove_from_folder)
                     .setOnClickListener(v -> {
                         removeFromFolder((InFolderDescriptorUi) item, folderId);

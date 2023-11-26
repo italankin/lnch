@@ -97,7 +97,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             addShortcut(new ItemBuilder()
                     .setLabel(R.string.customize_item_rename)
                     .setIcon(R.drawable.ic_action_rename)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
                     .setOnClickListener(v -> setRenameResult((CustomLabelDescriptorUi) item))
             );
         }
@@ -106,7 +106,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                     .setLabel(R.string.customize_item_color)
                     .setEnabled(!preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW))
                     .setIcon(R.drawable.ic_action_color)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
                     .setOnClickListener(v -> setColorResult((CustomColorDescriptorUi) item))
             );
         }
@@ -114,7 +114,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             addShortcut(new ItemBuilder()
                     .setLabel(R.string.customize_item_edit_intent)
                     .setIcon(R.drawable.ic_action_intent_edit)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
                     .setOnClickListener(v -> sendEditIntentResult((IntentDescriptorUi) item))
             );
         }
@@ -123,14 +123,14 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                 addShortcut(new ItemBuilder()
                         .setLabel(R.string.customize_item_remove_from_folder)
                         .setIcon(R.drawable.ic_action_remove_from_folder)
-                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setIconDrawableTintAttr(android.R.attr.colorAccent)
                         .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId))
                 );
             } else {
                 addShortcut(new ItemBuilder()
                         .setLabel(R.string.customize_item_add_to_folder)
                         .setIcon(R.drawable.ic_folder)
-                        .setIconDrawableTintAttr(R.attr.colorAccent)
+                        .setIconDrawableTintAttr(android.R.attr.colorAccent)
                         .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item))
                 );
             }
@@ -145,7 +145,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             addShortcut(new ItemBuilder()
                     .setLabel(R.string.customize_item_edit_folder)
                     .setIcon(R.drawable.ic_folder)
-                    .setIconDrawableTintAttr(R.attr.colorAccent)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
                     .setOnClickListener(v -> sendOpenFolderResult((FolderDescriptorUi) item))
             );
         }

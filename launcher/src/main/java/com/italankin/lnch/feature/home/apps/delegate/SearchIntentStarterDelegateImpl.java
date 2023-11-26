@@ -46,7 +46,7 @@ public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDeleg
                 && !isCustom) {
             CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
                     .setDefaultColorSchemeParams(new CustomTabColorSchemeParams.Builder()
-                            .setToolbarColor(ResUtils.resolveColor(context, R.attr.colorPrimary))
+                            .setToolbarColor(ResUtils.resolveColor(context, android.R.attr.colorPrimary))
                             .build())
                     .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                     .setShowTitle(true)

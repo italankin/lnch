@@ -295,7 +295,7 @@ public class AppearanceFragment extends AppFragment implements
                 .nameNormalizer()
                 .normalize(getString(R.string.preview));
         preview.setText(previewText);
-        preview.setTextColor(ResUtils.resolveColor(requireContext(), R.attr.colorAccent));
+        preview.setTextColor(ResUtils.resolveColor(requireContext(), android.R.attr.colorAccent));
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setSelectedColor(preview.getCurrentTextColor())
@@ -332,7 +332,7 @@ public class AppearanceFragment extends AppFragment implements
         WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
         if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            wallpaper.setImageDrawable(new ColorDrawable(ResUtils.resolveColor(context, R.attr.colorPrimary)));
+            wallpaper.setImageDrawable(new ColorDrawable(ResUtils.resolveColor(context, android.R.attr.colorPrimary)));
             return;
         }
         wallpaper.setImageDrawable(wm.getDrawable());
