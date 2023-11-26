@@ -95,7 +95,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                             return Single.just(false);
                         }
                     }
-                    List<AppDescriptor> appDescriptors = this.descriptorRepository.get().itemsOfType(AppDescriptor.class);
+                    List<AppDescriptor> appDescriptors = descriptorRepository.itemsOfType(AppDescriptor.class);
                     AppDescriptor app = DescriptorUtils.findAppByPackageName(appDescriptors, packageName);
                     if (app == null) {
                         throw new IllegalArgumentException("Cannot find app with packageName=" + packageName);
