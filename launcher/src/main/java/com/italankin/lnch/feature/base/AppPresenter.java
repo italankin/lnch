@@ -2,7 +2,7 @@ package com.italankin.lnch.feature.base;
 
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
-import com.italankin.lnch.util.rxjava.DisposablesList;
+import com.italankin.lnch.util.rxjava.WeakDisposableList;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observer;
@@ -11,7 +11,7 @@ import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public abstract class AppPresenter<V extends MvpView> extends MvpPresenter<V> {
-    private final DisposablesList subs = new DisposablesList();
+    private final WeakDisposableList subs = new WeakDisposableList();
 
     @Override
     public void onDestroy() {
