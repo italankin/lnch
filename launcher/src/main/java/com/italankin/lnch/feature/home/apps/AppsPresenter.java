@@ -1,14 +1,10 @@
 package com.italankin.lnch.feature.home.apps;
 
-import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
-
 import android.content.Intent;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
@@ -22,47 +18,29 @@ import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
-import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
-import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
-import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
-import com.italankin.lnch.model.repository.descriptor.actions.MoveAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
+import com.italankin.lnch.model.repository.descriptor.actions.*;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.*;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import javax.inject.Inject;
+import java.util.*;
+
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
 public class AppsPresenter extends AppPresenter<AppsView> {
@@ -79,11 +57,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     @Inject
     AppsPresenter(HomeDescriptorsState homeDescriptorsState,
-                  DescriptorRepository descriptorRepository,
-                  ShortcutsRepository shortcutsRepository,
-                  NotificationsRepository notificationsRepository,
-                  Preferences preferences, NameNormalizer nameNormalizer,
-                  FontManager fontManager) {
+            DescriptorRepository descriptorRepository,
+            ShortcutsRepository shortcutsRepository,
+            NotificationsRepository notificationsRepository,
+            Preferences preferences, NameNormalizer nameNormalizer,
+            FontManager fontManager) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
@@ -358,6 +336,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     @Override
                     public void onComplete() {
                         Timber.d("Apps updated");
+                        updateShortcuts();
                     }
                 });
     }
@@ -388,7 +367,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                         Timber.d("Update: %s", update);
                         homeDescriptorsState.setItems(update.items);
                         viewState.onReceiveUpdate(update);
-                        updateShortcuts();
                     }
 
                     @Override
