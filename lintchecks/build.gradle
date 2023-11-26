@@ -1,10 +1,9 @@
 apply plugin: 'kotlin'
-apply from: '../gradle/versions.gradle'
 
 dependencies {
-    compileOnly kotlin
-    compileOnly lintApi
-    testImplementation lintTests
+    compileOnly libs.kotlin
+    compileOnly libs.lint.api
+    testImplementation libs.lint.tests
 }
 
 jar {

@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
-apply from: '../gradle/versions.gradle'
 
 android {
-    compileSdkVersion rootProject.compileSdk
+    compileSdk 33
     defaultConfig {
         applicationId "com.italankin.lnch"
-        minSdkVersion rootProject.minSdk
-        targetSdkVersion rootProject.targetSdk
+        minSdkVersion 23
+        targetSdk 33
         versionCode 15
         versionName "1.9.3"
     }
@@ -49,33 +48,33 @@ android {
 }
 
 dependencies {
-    implementation moxy
-    annotationProcessor moxyCompiler
+    implementation libs.moxy.api
+    annotationProcessor libs.moxy.compiler
 
-    implementation dagger
-    annotationProcessor daggerCompiler
-    compileOnly javaxAnnotation
+    implementation libs.dagger.api
+    annotationProcessor libs.dagger.compiler
+    compileOnly libs.javax.annotation
 
-    implementation rxJava
-    implementation rxAndroid
+    implementation libs.rxJava
+    implementation libs.rxAndroid
 
-    implementation gson
+    implementation libs.gson
 
-    implementation timber
+    implementation libs.timber
 
-    implementation appCompat
-    implementation fragment
-    implementation constraintLayout
-    implementation recyclerView
-    implementation scrollingPagerIndicator
-    implementation palette
-    implementation material
-    implementation preference
-    implementation customTabs
-    implementation annotation
-    implementation adapterDelegates
+    implementation libs.appCompat
+    implementation libs.fragment
+    implementation libs.constraintLayout
+    implementation libs.recyclerView
+    implementation libs.scrollingPagerIndicator
+    implementation libs.palette
+    implementation libs.material
+    implementation libs.preference
+    implementation libs.customTabs
+    implementation libs.annotation
+    implementation libs.adapterDelegates
 
-    implementation flexbox
+    implementation libs.flexbox
 
     lintChecks project(':lintchecks')
 }
