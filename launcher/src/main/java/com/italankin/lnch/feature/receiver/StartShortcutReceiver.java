@@ -46,7 +46,7 @@ public class StartShortcutReceiver extends BroadcastReceiver {
             return;
         }
         List<ShortcutInfo> shortcuts = ShortcutUtils.findById(launcherApps, packageName, shortcutId);
-        if (shortcuts == null || shortcuts.isEmpty()) {
+        if (shortcuts.isEmpty()) {
             return;
         }
         ShortcutInfo shortcut = shortcuts.get(0);
