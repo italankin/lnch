@@ -3,12 +3,13 @@ package com.italankin.lnch.feature.settings.hidden_items;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import android.view.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -19,17 +20,12 @@ import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.cache.Cache;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.LceLayout;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-import me.italankin.adapterdelegates.CompositeAdapter;
 
 public class HiddenItemsFragment extends AppFragment implements HiddenItemsView, SettingsToolbarTitle,
         ListFilter.OnFilterResult<HiddenItem> {
@@ -43,6 +39,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
     private final SimpleListFilter<HiddenItem> filter = new SimpleListFilter<>(this, (query, item) -> {
         return SearchUtils.contains(item.visibleLabel, query) || SearchUtils.contains(item.originalLabel, query);
     });
+    private final Cache imageLoaderCache = new LruCache(48);
 
     @ProvidePresenter
     HiddenItemsPresenter providePresenter() {
@@ -73,7 +70,9 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
         lce = view.findViewById(R.id.lce);
 
         Context context = requireContext();
-        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
+        ImageLoader imageLoader = new ImageLoader.Builder(context)
+                .cache(imageLoaderCache)
+                .build();
         adapter = new CompositeAdapter.Builder<HiddenItem>(context)
                 .add(new HiddenItemAdapter(imageLoader, item -> presenter.showItem(item.descriptor)))
                 .recyclerView(list)

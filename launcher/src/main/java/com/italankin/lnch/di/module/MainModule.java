@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
-
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
@@ -25,12 +24,7 @@ import com.italankin.lnch.model.repository.prefs.WidgetsStateImpl;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
-import com.italankin.lnch.model.repository.search.delegate.AppSearchDelegate;
-import com.italankin.lnch.model.repository.search.delegate.DeepShortcutSearchDelegate;
-import com.italankin.lnch.model.repository.search.delegate.IntentSearchDelegate;
-import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchDelegate;
-import com.italankin.lnch.model.repository.search.delegate.UrlSearchDelegate;
-import com.italankin.lnch.model.repository.search.delegate.WebSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.*;
 import com.italankin.lnch.model.repository.search.preference.PreferenceSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -41,17 +35,13 @@ import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
 import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.repository.usage.UsageTrackerImpl;
-import com.italankin.lnch.util.imageloader.ImageLoader;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.inject.Singleton;
-
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+
+import javax.inject.Singleton;
+import java.util.Arrays;
+import java.util.List;
 
 @Module
 public class MainModule {
@@ -129,14 +119,6 @@ public class MainModule {
         );
         return new SearchRepositoryImpl(packageManager, delegates, additionalDelegates, preferences, usageTracker,
                 descriptorRepository, shortcutsRepository);
-    }
-
-    @Provides
-    @Singleton
-    ImageLoader provideImageLoader(Context context) {
-        return new ImageLoader.Builder(context)
-                .cache(new LruCache(32))
-                .build();
     }
 
     @Provides

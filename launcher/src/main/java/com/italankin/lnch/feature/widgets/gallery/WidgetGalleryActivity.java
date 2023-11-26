@@ -8,20 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
-
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.SearchUtils;
-import com.italankin.lnch.util.filter.ListFilter;
-import com.italankin.lnch.util.filter.SimpleListFilter;
-import com.italankin.lnch.util.imageloader.ImageLoader;
-import com.italankin.lnch.util.widget.LceLayout;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -32,7 +18,20 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.SearchUtils;
+import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.filter.SimpleListFilter;
+import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
+import com.italankin.lnch.util.widget.LceLayout;
 import me.italankin.adapterdelegates.CompositeAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetGalleryActivity extends AppCompatActivity implements
@@ -62,7 +61,9 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
+        ImageLoader imageLoader = new ImageLoader.Builder(this)
+                .cache(new LruCache(32))
+                .build();
         Preferences preferences = LauncherApp.daggerService.main().preferences();
         SupportsOrientationDelegate.attach(this, preferences);
         super.onCreate(savedInstanceState);

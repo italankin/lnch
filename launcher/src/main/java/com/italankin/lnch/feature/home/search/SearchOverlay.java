@@ -10,7 +10,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-
+import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -19,19 +24,13 @@ import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ViewUtils;
-import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.Collections;
 import java.util.List;
-
-import androidx.annotation.DimenRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResults.Callback {
 
@@ -60,7 +59,9 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         super(context, attrs);
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imageLoader = LauncherApp.daggerService.main().imageLoader();
+        imageLoader = new ImageLoader.Builder(context)
+                .cache(new LruCache(32))
+                .build();
         preferences = LauncherApp.daggerService.main().preferences();
 
         setFocusable(true);

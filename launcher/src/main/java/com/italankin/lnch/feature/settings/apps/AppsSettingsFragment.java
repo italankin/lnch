@@ -23,6 +23,8 @@ import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsFilter;
 import com.italankin.lnch.feature.settings.apps.dialog.FilterFlagsDialogFragment;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.util.imageloader.cache.Cache;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
 import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
@@ -64,6 +66,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     private CompositeAdapter<AppDescriptorUi> adapter;
 
     private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
+    private final Cache imageLoaderCache = new LruCache(48);
 
     @ProvidePresenter
     AppsSettingsPresenter providePresenter() {
@@ -206,7 +209,9 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private void initAdapter() {
         Context context = requireContext();
-        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
+        ImageLoader imageLoader = new ImageLoader.Builder(context)
+                .cache(imageLoaderCache)
+                .build();
         adapter = new CompositeAdapter.Builder<AppDescriptorUi>(context)
                 .add(new AppsSettingsAdapter(imageLoader, this))
                 .recyclerView(list)

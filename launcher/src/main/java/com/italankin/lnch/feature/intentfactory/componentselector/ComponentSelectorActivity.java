@@ -6,7 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -20,16 +25,10 @@ import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
-
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class ComponentSelectorActivity extends AppActivity implements ComponentSelectorView,
         ComponentNameAdapter.Listener, ListFilter.OnFilterResult<ComponentNameUi> {
@@ -69,7 +68,9 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
 
         lce = findViewById(R.id.lce);
 
-        ImageLoader imageLoader = LauncherApp.daggerService.main().imageLoader();
+        ImageLoader imageLoader = new ImageLoader.Builder(this)
+                .cache(new LruCache(48))
+                .build();
 
         adapter = new ComponentNameAdapter(imageLoader, this);
         RecyclerView list = findViewById(R.id.list);
