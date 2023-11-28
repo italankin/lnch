@@ -3,7 +3,6 @@ package com.italankin.lnch.model.backup;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -11,17 +10,17 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.util.IOUtils;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-import timber.log.Timber;
 
 public class BackupReaderImpl implements BackupReader {
 
@@ -93,8 +92,14 @@ public class BackupReaderImpl implements BackupReader {
         if (descriptors == null) {
             return Completable.error(new NullPointerException("descriptors are null"));
         }
+        List<Descriptor> notNullDescriptors = new ArrayList<>(descriptors.size());
+        for (Descriptor descriptor : descriptors) {
+            if (descriptor != null) {
+                notNullDescriptors.add(descriptor);
+            }
+        }
         return descriptorRepository.edit()
-                .enqueue(new ReplaceAction(descriptors))
+                .enqueue(new ReplaceAction(notNullDescriptors))
                 .commit();
     }
 

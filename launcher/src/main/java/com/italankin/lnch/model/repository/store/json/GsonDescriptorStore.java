@@ -5,15 +5,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
+import timber.log.Timber;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class GsonDescriptorStore implements DescriptorStore {
 
@@ -28,7 +28,14 @@ public class GsonDescriptorStore implements DescriptorStore {
     @Override
     public List<Descriptor> read(InputStream in) {
         try (InputStreamReader input = new InputStreamReader(in)) {
-            return gson.fromJson(input, TYPE);
+            List<Descriptor> descriptors = gson.fromJson(input, TYPE);
+            List<Descriptor> notNullDescriptors = new ArrayList<>(descriptors.size());
+            for (Descriptor descriptor : descriptors) {
+                if (descriptor != null) {
+                    notNullDescriptors.add(descriptor);
+                }
+            }
+            return notNullDescriptors;
         } catch (Exception e) {
             Timber.e(e, "read:");
             return null;
