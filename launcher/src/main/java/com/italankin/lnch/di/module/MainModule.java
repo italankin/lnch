@@ -11,6 +11,7 @@ import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
+import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -31,6 +32,7 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.backport.BackportShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
+import com.italankin.lnch.model.repository.store.json.DescriptorJsonTypeAdapter;
 import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
 import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
@@ -86,6 +88,7 @@ public class MainModule {
         if (BuildConfig.DEBUG) {
             gsonBuilder.setPrettyPrinting();
         }
+        gsonBuilder.registerTypeAdapter(Descriptor.class, new DescriptorJsonTypeAdapter());
         return gsonBuilder;
     }
 
