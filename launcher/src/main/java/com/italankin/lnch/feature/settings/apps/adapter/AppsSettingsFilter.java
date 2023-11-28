@@ -1,19 +1,14 @@
 package com.italankin.lnch.feature.settings.apps.adapter;
 
 import android.text.TextUtils;
-
+import androidx.annotation.Nullable;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import androidx.annotation.Nullable;
+import java.util.*;
 
 import static java.util.Collections.synchronizedSet;
 import static java.util.Collections.unmodifiableSet;
@@ -45,23 +40,7 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
 
     @Override
     protected FilterResults performFiltering(String query, List<AppDescriptorUi> unfiltered) {
-        boolean includeVisible = flags.contains(FilterFlag.VISIBLE);
-        boolean includeIgnored = flags.contains(FilterFlag.IGNORED);
-
-        List<AppDescriptorUi> result = new ArrayList<>(unfiltered.size());
-
-        for (AppDescriptorUi item : unfiltered) {
-            if (!item.isIgnored() && !includeVisible) {
-                continue;
-            }
-            if (item.isIgnored() && !includeIgnored) {
-                continue;
-            }
-            result.add(item);
-        }
-        if (TextUtils.isEmpty(constraint)) {
-            return of(result);
-        }
+        List<AppDescriptorUi> result = filterByFlags(unfiltered);
         Iterator<AppDescriptorUi> iterator = result.iterator();
         while (iterator.hasNext()) {
             AppDescriptorUi item = iterator.next();
@@ -72,6 +51,28 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
             }
         }
         return of(result);
+    }
+
+    @NotNull
+    private List<AppDescriptorUi> filterByFlags(List<AppDescriptorUi> unfiltered) {
+        boolean includeVisible = flags.contains(FilterFlag.VISIBLE);
+        boolean includeIgnored = flags.contains(FilterFlag.IGNORED);
+        List<AppDescriptorUi> result = new ArrayList<>(unfiltered.size());
+        for (AppDescriptorUi item : unfiltered) {
+            if (!item.isIgnored() && !includeVisible) {
+                continue;
+            }
+            if (item.isIgnored() && !includeIgnored) {
+                continue;
+            }
+            result.add(item);
+        }
+        return result;
+    }
+
+    @Override
+    protected FilterResults emptyConstraintResults() {
+        return of(filterByFlags(unfiltered));
     }
 
     protected void fireFilter() {

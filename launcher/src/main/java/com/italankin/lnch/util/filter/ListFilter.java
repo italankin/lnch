@@ -2,14 +2,13 @@ package com.italankin.lnch.util.filter;
 
 import android.text.TextUtils;
 import android.widget.Filter;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static java.util.Collections.emptyList;
 
@@ -48,9 +47,13 @@ public abstract class ListFilter<T> extends Filter {
             query = constraint.toString().trim().toLowerCase(Locale.getDefault());
         }
         if (query.isEmpty()) {
-            return of(unfiltered);
+            return emptyConstraintResults();
         }
         return performFiltering(query, unfiltered);
+    }
+
+    protected FilterResults emptyConstraintResults() {
+        return of(unfiltered);
     }
 
     @SuppressWarnings("unchecked")
