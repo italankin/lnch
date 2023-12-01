@@ -14,8 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.view.*;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -71,6 +73,7 @@ import com.italankin.lnch.model.ui.*;
 import com.italankin.lnch.model.ui.impl.*;
 import com.italankin.lnch.util.*;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
@@ -303,11 +306,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .register(new SelectFolderFragment.AddToFolderContract(), result -> {
                     presenter.addToFolder(result.descriptorId, result.folderId, result.move);
                 })
-                .register(new EditModePopupFragment.AddFolderContract(), ignored -> {
-                    String label = getString(R.string.new_folder_default_label);
-                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
-                    presenter.addFolder(label, color);
-                })
+                .register(new EditModePopupFragment.AddFolderContract(), result -> showCreateFolderDialog())
                 .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
                     createIntentLauncher.launch(null);
                 })
@@ -968,5 +967,24 @@ public class AppsFragment extends AppFragment implements AppsView,
         if (insets != null) {
             list.setBottomInset(insets.getStableInsetBottom());
         }
+    }
+
+    private void showCreateFolderDialog() {
+        EditTextAlertDialog.builder(requireContext())
+                .setTitle(R.string.folder_new_title)
+                .customizeEditText(editText -> {
+                    String visibleLabel = getString(R.string.new_folder_default_label);
+                    editText.setText(visibleLabel);
+                    editText.setSingleLine(true);
+                    editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                })
+                .setPositiveButton(R.string.ok, (dialog, editText) -> {
+                    String folderName = editText.getText().toString().trim();
+                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
+                    presenter.addFolder(folderName, color);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 }
