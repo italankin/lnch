@@ -144,6 +144,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         IgnorableDescriptorUi item = entry.item;
         item.setIgnored(false);
         homeDescriptorsState.updateItem(item);
+        moveItem(entry.position, homeDescriptorsState.items().size() - 1);
     }
 
     void addFolder(String label, @ColorInt int color) {
