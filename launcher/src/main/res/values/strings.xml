@@ -52,7 +52,7 @@
     <string name="customize_discard_message">Discard changes?</string>
     <string name="customize_discard">Discard</string>
     <string name="customize_item_rename">Rename</string>
-    <string name="customize_item_color">Color</string>
+    <string name="customize_item_change_color">Change color</string>
     <string name="customize_item_add_to_folder">Add to folder</string>
     <string name="customize_item_move_to_folder">Move to folder</string>
     <string name="customize_item_edit_intent">Edit Intent</string>

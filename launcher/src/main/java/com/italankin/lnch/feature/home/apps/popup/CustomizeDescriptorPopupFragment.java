@@ -96,7 +96,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         }
         if (item instanceof CustomColorDescriptorUi) {
             addShortcut(new ItemBuilder()
-                    .setLabel(R.string.customize_item_color)
+                    .setLabel(R.string.customize_item_change_color)
                     .setEnabled(!preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW))
                     .setIcon(R.drawable.ic_action_color)
                     .setIconDrawableTintAttr(android.R.attr.colorAccent)
