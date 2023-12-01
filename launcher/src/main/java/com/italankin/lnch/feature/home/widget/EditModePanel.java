@@ -9,24 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class EditModePanel extends LinearLayout {
 
     private static final int ANIM_DURATION = 300;
     private static final float ALPHA_DISABLED = 0.25f;
 
-    private final TextView message;
     private final View undo;
     private final View save;
     private final View add;
+    private final View hidden;
 
     private CoordinatorLayout parent;
     private boolean dismissed = false;
@@ -43,20 +39,10 @@ public class EditModePanel extends LinearLayout {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorEditPanelBackground));
-        message = findViewById(R.id.message);
         undo = findViewById(R.id.undo);
         save = findViewById(R.id.save);
         add = findViewById(R.id.add);
-    }
-
-    public EditModePanel setMessage(CharSequence text) {
-        message.setText(text);
-        return this;
-    }
-
-    public EditModePanel setMessage(@StringRes int text) {
-        message.setText(text);
-        return this;
+        hidden = findViewById(R.id.hidden);
     }
 
     public EditModePanel setOnAddActionClickListener(OnClickListener listener) {
@@ -67,6 +53,12 @@ public class EditModePanel extends LinearLayout {
 
     public EditModePanel setOnSaveActionClickListener(OnClickListener listener) {
         save.setOnClickListener(listener);
+        return this;
+    }
+
+    public EditModePanel setOnHiddenItemsClickListener(OnClickListener listener) {
+        hidden.setOnClickListener(listener);
+        hidden.setVisibility(listener == null ? GONE : VISIBLE);
         return this;
     }
 

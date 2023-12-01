@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-
 import androidx.annotation.Nullable;
 
 public class ActivityIconLoader implements ResourceLoader {
 
     private static final String SCHEME = "activity";
+
+    public static Uri uriFrom(ComponentName componentName) {
+        return uriFrom(componentName.getPackageName(), componentName.getClassName());
+    }
 
     public static Uri uriFrom(String packageName, String className) {
         return new Uri.Builder()

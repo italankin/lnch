@@ -135,6 +135,17 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.updateItem(item);
     }
 
+    void showItem(String id) {
+        HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, id);
+        if (entry == null) {
+            return;
+        }
+        editor.enqueue(new SetIgnoreAction(id, false));
+        IgnorableDescriptorUi item = entry.item;
+        item.setIgnored(false);
+        homeDescriptorsState.updateItem(item);
+    }
+
     void addFolder(String label, @ColorInt int color) {
         FolderDescriptor item = new FolderDescriptor(label, color);
         item.label = nameNormalizer.normalize(label);

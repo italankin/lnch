@@ -43,10 +43,7 @@ import com.italankin.lnch.feature.home.adapter.*;
 import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
-import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
-import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
-import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
-import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.*;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
@@ -331,6 +328,9 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .register(new CustomizeDescriptorPopupFragment.EditFolderContract(), folderId -> {
                     presenter.showFolder(folderId);
                 })
+                .register(new HiddenItemsPopupFragment.ShowContract(), descriptorId -> {
+                    presenter.showItem(descriptorId);
+                })
                 .register(new ActionPopupFragment.ActionDoneContract(), ignored -> {
                     // empty
                 })
@@ -545,12 +545,16 @@ public class AppsFragment extends AppFragment implements AppsView,
             dismissPopups();
             searchOverlay.hideSoftKeyboard();
             EditModePanel panel = new EditModePanel(requireContext())
-                    .setMessage(R.string.customize_hint)
                     .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
                         if (this.editModePanel != null && this.editModePanel.isShown()) {
                             presenter.stopCustomize();
                         }
+                    })
+                    .setOnHiddenItemsClickListener(v -> {
+                        Rect bounds = ViewUtils.getViewBoundsInsetPadding(v);
+                        HiddenItemsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
+                                .show(getParentFragmentManager());
                     });
             editModePanel = panel.show(coordinator);
         } else if (editModePanel != null) {

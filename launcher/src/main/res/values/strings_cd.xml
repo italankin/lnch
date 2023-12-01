@@ -16,4 +16,5 @@
     <string name="cd_delete_alias">Delete application alias</string>
     <string name="cd_widget_preview">Widget preview</string>
     <string name="cd_add_item">Add item</string>
+    <string name="cd_hidden_items">Hidden items</string>
 </resources>
