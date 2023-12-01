@@ -13,19 +13,19 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.animation.ArgbEvaluatorCompat;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.HomeAdapter;
-import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
-import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.*;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUiAdapter;
@@ -38,13 +38,6 @@ import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
-
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         AppDescriptorUiAdapter.Listener,
@@ -181,6 +174,8 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         onFolderUpdated(items);
         if (animated) {
             animatePopupAppearance();
+        } else {
+            container.setVisibility(View.VISIBLE);
         }
     }
 
