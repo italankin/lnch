@@ -493,6 +493,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onItemChanged(int position, DescriptorUi item) {
         adapter.notifyItemChanged(position);
+        if (editModePanel != null && editModePanel.isShown() && item instanceof IgnorableDescriptorUi) {
+            editModePanel.setHiddenItemsActionEnabled(hasHiddenItems());
+        }
     }
 
     @Override
@@ -555,7 +558,8 @@ public class AppsFragment extends AppFragment implements AppsView,
                         Rect bounds = ViewUtils.getViewBoundsInsetPadding(v);
                         HiddenItemsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
                                 .show(getParentFragmentManager());
-                    });
+                    })
+                    .setHiddenItemsActionEnabled(hasHiddenItems());
             editModePanel = panel.show(coordinator);
         } else if (editModePanel != null) {
             editModePanel.dismiss();
@@ -990,5 +994,14 @@ public class AppsFragment extends AppFragment implements AppsView,
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
+    }
+
+    private boolean hasHiddenItems() {
+        for (IgnorableDescriptorUi descriptorUi : homeDescriptorsState.allByType(IgnorableDescriptorUi.class)) {
+            if (descriptorUi.isIgnored()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

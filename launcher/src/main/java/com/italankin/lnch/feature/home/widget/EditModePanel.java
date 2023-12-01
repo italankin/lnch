@@ -80,6 +80,12 @@ public class EditModePanel extends LinearLayout {
         return this;
     }
 
+    public EditModePanel setHiddenItemsActionEnabled(boolean enabled) {
+        hidden.setAlpha(enabled ? 1 : ALPHA_DISABLED);
+        hidden.setEnabled(enabled);
+        return this;
+    }
+
     public EditModePanel show(CoordinatorLayout layout) {
         if (dismissed) {
             return this;
