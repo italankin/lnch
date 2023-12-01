@@ -12,6 +12,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -141,19 +142,29 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.insertItem(new FolderDescriptorUi(item));
     }
 
-    void addToFolder(String descriptorId, String folderId) {
+    void addToFolder(String descriptorId, String folderId, boolean move) {
         HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
         if (entry == null) {
             return;
         }
         FolderDescriptorUi folder = entry.item;
         if (folder.items.contains(descriptorId)) {
-            getViewState().onFolderUpdated(folder, false);
+            getViewState().onFolderUpdated(folder, false, false);
             return;
         }
-        editor.enqueue(new AddToFolderAction(folderId, descriptorId));
+        if (move) {
+            editor.enqueue(new AddToFolderAction(folderId, descriptorId, true));
+            HomeEntry<IgnorableDescriptorUi> ignorableEntry = homeDescriptorsState.find(
+                    IgnorableDescriptorUi.class, descriptorId);
+            if (ignorableEntry != null) {
+                ignorableEntry.item.setIgnored(true);
+                homeDescriptorsState.updateItem(ignorableEntry.item);
+            }
+        } else {
+            editor.enqueue(new AddToFolderAction(folderId, descriptorId, false));
+        }
         folder.items.add(descriptorId);
-        getViewState().onFolderUpdated(folder, true);
+        getViewState().onFolderUpdated(folder, true, move);
     }
 
     void showFolder(String folderId) {
@@ -208,13 +219,13 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         update();
     }
 
-    void selectFolder(String descriptorId) {
+    void selectFolder(String descriptorId, boolean move) {
         HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class, descriptorId);
         if (entry == null) {
             return;
         }
         List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
-        getViewState().showSelectFolderDialog(entry.position, entry.item, folders);
+        getViewState().showSelectFolderDialog(entry.position, entry.item, folders, move);
     }
 
     void stopCustomize() {
@@ -505,10 +516,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
         private final String folderId;
         private final String descriptorId;
+        private final boolean move;
 
-        private AddToFolderAction(String folderId, String descriptorId) {
+        private AddToFolderAction(String folderId, String descriptorId, boolean move) {
             this.folderId = folderId;
             this.descriptorId = descriptorId;
+            this.move = move;
         }
 
         @Override
@@ -516,6 +529,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             FolderDescriptor descriptor = findById(items, folderId);
             if (descriptor != null) {
                 descriptor.items.add(descriptorId);
+                if (move) {
+                    IgnorableDescriptor item = findById(items, descriptorId);
+                    if (item != null) {
+                        item.setIgnored(true);
+                    }
+                }
             }
         }
     }

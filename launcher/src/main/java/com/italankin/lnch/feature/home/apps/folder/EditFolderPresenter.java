@@ -1,29 +1,23 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
 import android.content.Intent;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
-import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
-import com.italankin.lnch.model.repository.descriptor.actions.FolderMoveAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
-import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
-import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
+import com.italankin.lnch.model.repository.descriptor.actions.*;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.Iterator;
-
 import javax.inject.Inject;
+import java.util.Iterator;
 
 @InjectViewState
 public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
@@ -97,13 +91,20 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         getViewState().onFolderItemMove(from, to);
     }
 
-    void removeFromFolder(String descriptorId, String folderId) {
+    void removeFromFolder(String descriptorId, String folderId, boolean moveToDesktop) {
         if (!folder.getDescriptor().getId().equals(folderId)) {
             return;
         }
         descriptorRepository.edit()
-                .enqueue(new RemoveFromFolderAction(folderId, descriptorId));
+                .enqueue(new RemoveFromFolderAction(folderId, descriptorId, moveToDesktop));
         removeFromFolder(descriptorId);
+        if (moveToDesktop) {
+            HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, descriptorId);
+            if (entry != null) {
+                entry.item.setIgnored(false);
+                homeDescriptorsState.updateItem(entry.item);
+            }
+        }
         if (items.isEmpty()) {
             items.add(new EmptyFolderDescriptorUi());
         }

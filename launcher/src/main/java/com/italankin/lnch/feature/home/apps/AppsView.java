@@ -36,7 +36,7 @@ interface AppsView extends MvpView {
     void showError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders);
+    void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders, boolean move);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showItemRenameDialog(int position, CustomLabelDescriptorUi item);
@@ -51,7 +51,7 @@ interface AppsView extends MvpView {
     void showFolder(int position, FolderDescriptor descriptor);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFolderUpdated(FolderDescriptorUi item, boolean added);
+    void onFolderUpdated(FolderDescriptorUi item, boolean added, boolean moved);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
     void onStartCustomize();

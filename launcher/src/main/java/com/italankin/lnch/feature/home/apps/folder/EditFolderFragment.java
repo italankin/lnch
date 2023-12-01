@@ -4,7 +4,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -25,12 +29,6 @@ import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class EditFolderFragment extends BaseFolderFragment implements EditFolderView, MoveItemHelper.Callback {
 
@@ -82,7 +80,7 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
                     presenter.startEditIntent(descriptorId);
                 })
                 .register(new CustomizeDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
-                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                    presenter.removeFromFolder(result.descriptorId, result.folderId, result.moveToDesktop);
                 });
         drawOverlay = true;
     }

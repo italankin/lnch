@@ -3,25 +3,18 @@ package com.italankin.lnch.feature.home.apps.popup;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.*;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
 
@@ -124,15 +117,31 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                         .setLabel(R.string.customize_item_remove_from_folder)
                         .setIcon(R.drawable.ic_action_remove_from_folder)
                         .setIconDrawableTintAttr(android.R.attr.colorAccent)
-                        .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId))
+                        .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId, false))
                 );
+                if (item instanceof IgnorableDescriptorUi && ((IgnorableDescriptorUi) item).isIgnored()) {
+                    addShortcut(new ItemBuilder()
+                            .setLabel(R.string.customize_item_move_to_desktop)
+                            .setIcon(R.drawable.ic_action_remove_from_folder)
+                            .setIconDrawableTintAttr(android.R.attr.colorAccent)
+                            .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId, true))
+                    );
+                }
             } else {
                 addShortcut(new ItemBuilder()
                         .setLabel(R.string.customize_item_add_to_folder)
                         .setIcon(R.drawable.ic_folder)
                         .setIconDrawableTintAttr(android.R.attr.colorAccent)
-                        .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item))
+                        .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item, false))
                 );
+                if (item instanceof IgnorableDescriptorUi) {
+                    addShortcut(new ItemBuilder()
+                            .setLabel(R.string.customize_item_move_to_folder)
+                            .setIcon(R.drawable.ic_folder)
+                            .setIconDrawableTintAttr(android.R.attr.colorAccent)
+                            .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item, true))
+                    );
+                }
             }
         }
         if (item instanceof RemovableDescriptorUi) {
@@ -157,15 +166,15 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         sendResult(result);
     }
 
-    private void sendSelectFolderResult(InFolderDescriptorUi item) {
+    private void sendSelectFolderResult(InFolderDescriptorUi item, boolean move) {
         dismiss();
-        Bundle result = new ShowSelectFolderContract().result(item.getDescriptor().getId());
+        Bundle result = ShowSelectFolderContract.result(item.getDescriptor().getId(), move);
         sendResult(result);
     }
 
-    private void sendRemoveFromFolderResult(InFolderDescriptorUi item, String folderId) {
+    private void sendRemoveFromFolderResult(InFolderDescriptorUi item, String folderId, boolean moveToDesktop) {
         dismiss();
-        Bundle result = RemoveFromFolderContract.result(item.getDescriptor().getId(), folderId);
+        Bundle result = RemoveFromFolderContract.result(item.getDescriptor().getId(), folderId, moveToDesktop);
         sendResult(result);
     }
 
@@ -199,22 +208,16 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
         sendResult(result);
     }
 
-    public static class ShowSelectFolderContract extends DescriptorFragmentResultContract {
-        public ShowSelectFolderContract() {
-            super("customize_show_select_folder");
-        }
-    }
-
-    public static class RemoveFromFolderContract implements FragmentResultContract<RemoveFromFolderContract.Result> {
-        private static final String KEY = "customize_remove_from_folder";
+    public static class ShowSelectFolderContract implements FragmentResultContract<ShowSelectFolderContract.Result> {
+        private static final String KEY = "customize_show_select_folder";
         private static final String DESCRIPTOR_ID = "descriptor_id";
-        private static final String FOLDER_ID = "folder_id";
+        private static final String MOVE = "move";
 
-        private static Bundle result(String descriptorId, String folderId) {
+        private static Bundle result(String descriptorId, boolean move) {
             Bundle result = new Bundle();
-            result.putString(RESULT_KEY, KEY);
             result.putSerializable(DESCRIPTOR_ID, descriptorId);
-            result.putSerializable(FOLDER_ID, folderId);
+            result.putBoolean(MOVE, move);
+            result.putString(RESULT_KEY, KEY);
             return result;
         }
 
@@ -225,16 +228,54 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
 
         @Override
         public Result parseResult(Bundle result) {
-            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+            return new Result(result.getString(DESCRIPTOR_ID), result.getBoolean(MOVE));
+        }
+
+        public static class Result {
+            public final String descriptorId;
+            public final boolean move;
+
+            Result(String descriptorId, boolean move) {
+                this.descriptorId = descriptorId;
+                this.move = move;
+            }
+        }
+    }
+
+    public static class RemoveFromFolderContract implements FragmentResultContract<RemoveFromFolderContract.Result> {
+        private static final String KEY = "customize_remove_from_folder";
+        private static final String DESCRIPTOR_ID = "descriptor_id";
+        private static final String FOLDER_ID = "folder_id";
+        private static final String MOVE_TO_DESKTOP = "move_to_desktop";
+
+        private static Bundle result(String descriptorId, String folderId, boolean moveToDesktop) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, KEY);
+            result.putSerializable(DESCRIPTOR_ID, descriptorId);
+            result.putSerializable(FOLDER_ID, folderId);
+            result.putBoolean(MOVE_TO_DESKTOP, moveToDesktop);
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return KEY;
+        }
+
+        @Override
+        public Result parseResult(Bundle result) {
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID), result.getBoolean(MOVE_TO_DESKTOP));
         }
 
         public static class Result {
             public final String descriptorId;
             public final String folderId;
+            public final boolean moveToDesktop;
 
-            Result(String descriptorId, String folderId) {
+            Result(String descriptorId, String folderId, boolean moveToDesktop) {
                 this.descriptorId = descriptorId;
                 this.folderId = folderId;
+                this.moveToDesktop = moveToDesktop;
             }
         }
     }

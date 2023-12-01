@@ -14,14 +14,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
+import android.view.*;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
@@ -34,29 +37,8 @@ import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
-import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.FolderDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.HomeAdapter;
-import com.italankin.lnch.feature.home.adapter.IgnorableDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
-import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.adapter.*;
+import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
@@ -85,36 +67,14 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
-import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
-import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
-import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
-import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
-import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
-import com.italankin.lnch.util.DescriptorUtils;
-import com.italankin.lnch.util.IntentUtils;
-import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.StatusBarUtils;
-import com.italankin.lnch.util.ViewUtils;
+import com.italankin.lnch.model.ui.*;
+import com.italankin.lnch.model.ui.impl.*;
+import com.italankin.lnch.util.*;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class AppsFragment extends AppFragment implements AppsView,
         BackButtonHandler,
@@ -341,7 +301,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                     presenter.removeFromFolder(result.descriptorId, result.folderId);
                 })
                 .register(new SelectFolderFragment.AddToFolderContract(), result -> {
-                    presenter.addToFolder(result.descriptorId, result.folderId);
+                    presenter.addToFolder(result.descriptorId, result.folderId, result.move);
                 })
                 .register(new EditModePopupFragment.AddFolderContract(), ignored -> {
                     String label = getString(R.string.new_folder_default_label);
@@ -351,8 +311,8 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
                     createIntentLauncher.launch(null);
                 })
-                .register(new CustomizeDescriptorPopupFragment.ShowSelectFolderContract(), descriptorId -> {
-                    presenter.selectFolder(descriptorId);
+                .register(new CustomizeDescriptorPopupFragment.ShowSelectFolderContract(), result -> {
+                    presenter.selectFolder(result.descriptorId, result.move);
                 })
                 .register(new CustomizeDescriptorPopupFragment.IgnoreContract(), descriptorId -> {
                     presenter.ignoreItem(descriptorId);
@@ -693,22 +653,26 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders) {
+    public void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders, boolean move) {
         if (folders.isEmpty()) {
             errorDelegate.showError(R.string.folder_select_no_folders);
             return;
         }
         View view = list.findViewForAdapterPosition(position);
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
-        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, item, folders, bounds)
+        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, item, folders, move, bounds)
                 .show(getParentFragmentManager());
     }
 
     @Override
-    public void onFolderUpdated(FolderDescriptorUi item, boolean added) {
+    public void onFolderUpdated(FolderDescriptorUi item, boolean added, boolean moved) {
         String text;
         if (added) {
-            text = getString(R.string.folder_select_selected, item.getVisibleLabel());
+            if (moved) {
+                text = getString(R.string.folder_select_item_moved, item.getVisibleLabel());
+            } else {
+                text = getString(R.string.folder_select_item_added, item.getVisibleLabel());
+            }
         } else {
             text = getString(R.string.folder_select_already_in_folder, item.getVisibleLabel());
         }

@@ -6,12 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
@@ -28,6 +26,7 @@ public class SelectFolderFragment extends PopupFragment {
     public static SelectFolderFragment newInstance(String requestKey,
             InFolderDescriptorUi item,
             List<FolderDescriptorUi> folders,
+            boolean move,
             @Nullable Rect anchor) {
         SelectFolderFragment fragment = new SelectFolderFragment();
         Bundle args = new Bundle();
@@ -39,12 +38,14 @@ public class SelectFolderFragment extends PopupFragment {
         args.putString(ARG_REQUEST_KEY, requestKey);
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_DESCRIPTOR_ID, item.getDescriptor().getId());
+        args.putBoolean(ARG_MOVE, move);
         fragment.setArguments(args);
         return fragment;
     }
 
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
     private static final String ARG_FOLDERS = "folders";
+    private static final String ARG_MOVE = "move";
 
     private static final String BACKSTACK_NAME = "folder_select";
     private static final String TAG = "folder_select";
@@ -79,7 +80,7 @@ public class SelectFolderFragment extends PopupFragment {
             folderView.setText(folder.label);
             folderView.setOnClickListener(v -> {
                 dismiss();
-                Bundle result = AddToFolderContract.result(args.getString(ARG_DESCRIPTOR_ID), folder.id);
+                Bundle result = AddToFolderContract.result(args.getString(ARG_DESCRIPTOR_ID), folder.id, args.getBoolean(ARG_MOVE));
                 sendResult(result);
             });
             TextViewCompat.setCompoundDrawableTintList(folderView, ColorStateList.valueOf(folder.color));
@@ -101,15 +102,17 @@ public class SelectFolderFragment extends PopupFragment {
     }
 
     public static class AddToFolderContract implements FragmentResultContract<AddToFolderContract.Result> {
-        private static final String KEY = "add_to_folder";
+        private static final String KEY = "select_folder";
         private static final String DESCRIPTOR_ID = "descriptor_id";
         private static final String FOLDER_ID = "folder_id";
+        private static final String MOVE = "move";
 
-        static Bundle result(String descriptorId, String folderId) {
+        static Bundle result(String descriptorId, String folderId, boolean move) {
             Bundle result = new Bundle();
             result.putString(RESULT_KEY, KEY);
             result.putString(DESCRIPTOR_ID, descriptorId);
             result.putString(FOLDER_ID, folderId);
+            result.putBoolean(MOVE, move);
             return result;
         }
 
@@ -120,16 +123,18 @@ public class SelectFolderFragment extends PopupFragment {
 
         @Override
         public Result parseResult(Bundle result) {
-            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID));
+            return new Result(result.getString(DESCRIPTOR_ID), result.getString(FOLDER_ID), result.getBoolean(MOVE));
         }
 
         public static class Result {
             public final String descriptorId;
             public final String folderId;
+            public final boolean move;
 
-            public Result(String descriptorId, String folderId) {
+            public Result(String descriptorId, String folderId, boolean move) {
                 this.descriptorId = descriptorId;
                 this.folderId = folderId;
+                this.move = move;
             }
         }
     }
