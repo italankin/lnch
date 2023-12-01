@@ -122,7 +122,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                 if (item instanceof IgnorableDescriptorUi && ((IgnorableDescriptorUi) item).isIgnored()) {
                     addShortcut(new ItemBuilder()
                             .setLabel(R.string.customize_item_move_to_desktop)
-                            .setIcon(R.drawable.ic_action_remove_from_folder)
+                            .setIcon(R.drawable.ic_action_move_to_desktop)
                             .setIconDrawableTintAttr(android.R.attr.colorAccent)
                             .setOnClickListener(v -> sendRemoveFromFolderResult((InFolderDescriptorUi) item, folderId, true))
                     );
@@ -137,7 +137,7 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                 if (item instanceof IgnorableDescriptorUi) {
                     addShortcut(new ItemBuilder()
                             .setLabel(R.string.customize_item_move_to_folder)
-                            .setIcon(R.drawable.ic_folder)
+                            .setIcon(R.drawable.ic_action_move_to_folder)
                             .setIconDrawableTintAttr(android.R.attr.colorAccent)
                             .setOnClickListener(v -> sendSelectFolderResult((InFolderDescriptorUi) item, true))
                     );
