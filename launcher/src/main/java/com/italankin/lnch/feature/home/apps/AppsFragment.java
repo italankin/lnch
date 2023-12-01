@@ -74,6 +74,7 @@ import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AppsFragment extends AppFragment implements AppsView,
@@ -662,7 +663,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders, boolean move) {
         if (folders.isEmpty()) {
-            errorDelegate.showError(R.string.folder_select_no_folders);
+            showCreateFolderDialog(Collections.singletonList(item.getDescriptor().getId()), move);
             return;
         }
         View view = list.findViewForAdapterPosition(position);
@@ -978,6 +979,10 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void showCreateFolderDialog() {
+        showCreateFolderDialog(Collections.emptyList(), false);
+    }
+
+    private void showCreateFolderDialog(List<String> descriptors, boolean move) {
         EditTextAlertDialog.builder(requireContext())
                 .setTitle(R.string.folder_new_title)
                 .customizeEditText(editText -> {
@@ -990,7 +995,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String folderName = editText.getText().toString().trim();
                     int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
-                    presenter.addFolder(folderName, color);
+                    presenter.addFolder(folderName, color, descriptors, move);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();

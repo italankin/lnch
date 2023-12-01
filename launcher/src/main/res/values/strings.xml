@@ -66,7 +66,6 @@
     <string name="folder_select_item_added">Added to %1$s</string>
     <string name="folder_select_item_moved">Moved to %1$s</string>
     <string name="folder_select_already_in_folder">Already in %1$s</string>
-    <string name="folder_select_no_folders">No folders created</string>
     <string name="folder_new_title">Folder name</string>
 
     <string name="popup_app_info">App info</string>

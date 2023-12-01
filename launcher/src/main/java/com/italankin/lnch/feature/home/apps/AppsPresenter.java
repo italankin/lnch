@@ -161,11 +161,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         moveItem(entry.position, homeDescriptorsState.items().size() - 1);
     }
 
-    void addFolder(String label, @ColorInt int color) {
+    void addFolder(String label, @ColorInt int color, List<String> descriptors, boolean move) {
         FolderDescriptor item = new FolderDescriptor(label, color);
         item.label = nameNormalizer.normalize(label);
         editor.enqueue(new AddAction(item));
-        homeDescriptorsState.insertItem(new FolderDescriptorUi(item));
+        FolderDescriptorUi folderUi = new FolderDescriptorUi(item);
+        homeDescriptorsState.insertItem(folderUi);
+
+        for (String descriptorId : descriptors) {
+            addToFolder(descriptorId, item.id, move);
+        }
     }
 
     void addToFolder(String descriptorId, String folderId, boolean move) {
