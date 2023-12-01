@@ -74,6 +74,14 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     }
 
     @Override
+    public Observable<List<Descriptor>> observe(boolean updateIfEmpty) {
+        if (updateIfEmpty && !updatesSubject.hasValue()) {
+            return update().andThen(observe());
+        }
+        return observe();
+    }
+
+    @Override
     public List<Descriptor> items() {
         List<Descriptor> value = updatesSubject.getValue();
         return value != null ? value : Collections.emptyList();

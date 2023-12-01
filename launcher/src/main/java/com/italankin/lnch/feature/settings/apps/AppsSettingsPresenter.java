@@ -7,16 +7,14 @@ import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @InjectViewState
 public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
@@ -47,7 +45,7 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
 
     void observeApps() {
         getViewState().showLoading();
-        descriptorRepository.observe()
+        descriptorRepository.observe(true)
                 .map(descriptors -> {
                     ArrayList<AppDescriptorUi> list = new ArrayList<>();
                     for (Descriptor descriptor : descriptors) {

@@ -13,6 +13,8 @@ public interface DescriptorRepository {
      */
     Observable<List<Descriptor>> observe();
 
+    Observable<List<Descriptor>> observe(boolean updateIfEmpty);
+
     /**
      * Update descriptor data, reflecting (possible) external changes
      */
