@@ -95,14 +95,18 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         if (!folder.getDescriptor().getId().equals(folderId)) {
             return;
         }
-        descriptorRepository.edit()
-                .enqueue(new RemoveFromFolderAction(folderId, descriptorId, moveToDesktop));
+        DescriptorRepository.Editor editor = descriptorRepository.edit();
+        editor.enqueue(new RemoveFromFolderAction(folderId, descriptorId, moveToDesktop));
         removeFromFolder(descriptorId);
         if (moveToDesktop) {
             HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, descriptorId);
             if (entry != null) {
                 entry.item.setIgnored(false);
                 homeDescriptorsState.updateItem(entry.item);
+
+                int last = homeDescriptorsState.items().size() - 1;
+                editor.enqueue(new MoveAction(entry.position, last));
+                homeDescriptorsState.moveItem(entry.position, last);
             }
         }
         if (items.isEmpty()) {
