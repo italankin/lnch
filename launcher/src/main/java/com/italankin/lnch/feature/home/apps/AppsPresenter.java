@@ -40,6 +40,7 @@ import timber.log.Timber;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
@@ -84,6 +85,19 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void startCustomize() {
+        if (descriptorRepository.items().isEmpty()) {
+            descriptorRepository.update()
+                    .delay(1, TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new CompletableState() {
+                        @Override
+                        public void onComplete() {
+                            startCustomize();
+                        }
+                    });
+            return;
+        }
         if (editor == EmptyEditor.INSTANCE || editor.isDisposed()) {
             editor = descriptorRepository.edit();
         }
