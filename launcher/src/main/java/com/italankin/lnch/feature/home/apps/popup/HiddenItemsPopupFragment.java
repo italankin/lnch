@@ -2,6 +2,7 @@ package com.italankin.lnch.feature.home.apps.popup;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
@@ -83,8 +86,13 @@ public class HiddenItemsPopupFragment extends PopupFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        list = new RecyclerView(requireContext());
-        list.setLayoutManager(new LinearLayoutManager(requireContext()));
+        Context context = requireContext();
+        list = new RecyclerView(context);
+        list.setLayoutManager(new LinearLayoutManager(context));
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.settings_list_divider);
+        DividerItemDecoration decoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
+        decoration.setDrawable(drawable);
+        list.addItemDecoration(decoration);
         itemsContainer.addView(list);
         return view;
     }
