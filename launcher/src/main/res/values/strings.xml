@@ -125,7 +125,7 @@
     <string name="settings_home_misc">Miscellaneous</string>
     <string name="settings_home_misc_scrollbar">Show scroll indicator</string>
     <string name="settings_home_misc_scroll_top">Scroll to top</string>
-    <string name="settings_home_misc_scroll_top_summary">Scroll apps list to top when then launcher becomes visible</string>
+    <string name="settings_home_misc_scroll_top_summary">Scroll apps list to top when launcher becomes visible</string>
     <string name="settings_home_misc_smooth_scroll_top">Smooth scroll to top</string>
     <string name="settings_home_misc_long_action">App long click action</string>
     <string name="settings_home_misc_orientation">Screen orientation</string>
