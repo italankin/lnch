@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
+    <View
+        android:id="@+id/search_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/search_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="#2000"
+        tools:visibility="visible" />
+
     <AutoCompleteTextView
         android:id="@+id/search_edit_text"
         android:layout_width="match_parent"

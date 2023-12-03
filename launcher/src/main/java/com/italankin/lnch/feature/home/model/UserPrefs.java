@@ -1,17 +1,15 @@
 package com.italankin.lnch.feature.home.model;
 
 import android.graphics.Typeface;
-
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public final class UserPrefs {
 
@@ -24,6 +22,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_SHOW);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
+        PREFERENCES.add(Preferences.SEARCH_BACKGROUND);
         PREFERENCES.add(Preferences.LARGE_SEARCH_BAR);
         PREFERENCES.add(Preferences.STATUS_BAR_COLOR);
         PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
@@ -42,6 +41,8 @@ public final class UserPrefs {
     public final int overlayColor;
     public final boolean showScrollbar;
     public final boolean globalSearch;
+    @ColorInt
+    public final int searchBackground;
     public final boolean largeSearchBar;
     @ColorInt
     public final Integer statusBarColor;
@@ -55,6 +56,7 @@ public final class UserPrefs {
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
+        searchBackground = preferences.get(Preferences.SEARCH_BACKGROUND);
         itemPrefs = new UserPrefs.ItemPrefs(preferences, fontManager);
     }
 
@@ -85,6 +87,9 @@ public final class UserPrefs {
         if (homeAlignment != userPrefs.homeAlignment) {
             return false;
         }
+        if (searchBackground != userPrefs.searchBackground) {
+            return false;
+        }
         if (!Objects.equals(statusBarColor, userPrefs.statusBarColor)) {
             return false;
         }
@@ -96,6 +101,7 @@ public final class UserPrefs {
         int result = homeLayout.hashCode();
         result = 31 * result + homeAlignment.hashCode();
         result = 31 * result + overlayColor;
+        result = 31 * result + searchBackground;
         result = 31 * result + (showScrollbar ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
         result = 31 * result + (globalSearch ? 1 : 0);
@@ -113,6 +119,7 @@ public final class UserPrefs {
                 "homeLayout=" + homeLayout +
                 ", homeAlignment=" + homeAlignment +
                 ", overlayColor=" + String.format("#%08x", overlayColor) +
+                ", searchBackground=" + String.format("#%08x", searchBackground) +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
                 ", largeSearchBar=" + largeSearchBar +

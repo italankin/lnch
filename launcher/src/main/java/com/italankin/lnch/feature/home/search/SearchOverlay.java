@@ -2,14 +2,18 @@ package com.italankin.lnch.feature.home.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.WindowInsets;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,11 +42,11 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
     private final InputMethodManager inputMethodManager;
     private final ImageLoader imageLoader;
-    private final Preferences preferences;
 
     private final EditText searchEditText;
     private final ImageView buttonGlobalSearch;
     private final ImageView buttonSettings;
+    private final View background;
 
     private final RecyclerView searchResultsList;
     private final CompositeAdapter<Match> searchAdapter;
@@ -59,10 +63,16 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         super(context, attrs);
 
         inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imageLoader = new ImageLoader.Builder(context)
-                .cache(new LruCache(32))
-                .build();
-        preferences = LauncherApp.daggerService.main().preferences();
+        SearchRepository searchRepository;
+        if (isInEditMode()) {
+            imageLoader = null;
+            searchRepository = null;
+        } else {
+            imageLoader = new ImageLoader.Builder(context)
+                    .cache(new LruCache(32))
+                    .build();
+            searchRepository = LauncherApp.daggerService.main().searchRepository();
+        }
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -74,6 +84,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         buttonGlobalSearch = findViewById(R.id.search_global);
         buttonSettings = findViewById(R.id.search_settings);
         searchResultsList = findViewById(R.id.search_results);
+        background = findViewById(R.id.search_background);
 
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
@@ -90,7 +101,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
             }
         });
 
-        SearchRepository searchRepository = LauncherApp.daggerService.main().searchRepository();
         searchResults = new SearchResults(searchRepository);
 
         searchAdapter = new CompositeAdapter.Builder<Match>(context)
@@ -120,6 +130,17 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         searchResults.unsubscribe();
     }
 
+    public void setSearchBarBackground(@ColorInt int background) {
+        if (background == Color.TRANSPARENT) {
+            this.background.setVisibility(View.GONE);
+        } else {
+            this.background.setVisibility(View.VISIBLE);
+            GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{Color.TRANSPARENT, background});
+            this.background.setBackground(drawable);
+        }
+    }
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }
@@ -137,7 +158,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         if (searchResultsList.getVisibility() == VISIBLE) {
             return;
         }
-        boolean showMostUsed = preferences.get(Preferences.SEARCH_SHOW_MOST_USED);
+        boolean showMostUsed = LauncherApp.daggerService.main().preferences().get(Preferences.SEARCH_SHOW_MOST_USED);
         if (searchResultsList.getAdapter() == null) {
             if (!showMostUsed) {
                 searchAdapter.setDataset(Collections.emptyList());

@@ -155,6 +155,13 @@ final class SettingsEntries {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.SEARCH_BACKGROUND)
+                        .title(R.string.settings_home_laf_other_search_bar_background)
+                        .category(R.string.settings_home_laf)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(Preferences.STATUS_BAR_COLOR)
                         .title(R.string.settings_home_laf_other_status_bar_color)
                         .category(R.string.settings_home_laf)

@@ -3,18 +3,11 @@ package com.italankin.lnch.model.repository.prefs;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-
-import com.italankin.lnch.model.fonts.FontManager;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import androidx.annotation.NonNull;
+import com.italankin.lnch.model.fonts.FontManager;
 import io.reactivex.Observable;
+
+import java.util.*;
 
 /**
  * A base interface for interacting with user preferences
@@ -113,6 +106,10 @@ public interface Preferences {
     Pref<Boolean> SEARCH_SHOW_SOFT_KEYBOARD = Prefs.createBoolean(
             "search_show_soft_keyboard",
             true);
+
+    Pref<Integer> SEARCH_BACKGROUND = Prefs.createInteger(
+            "search_background",
+            Color.TRANSPARENT);
 
     /**
      * Show 'global search' button in the search bar
@@ -485,6 +482,7 @@ public interface Preferences {
             SEARCH_SHOW_GLOBAL_SEARCH,
             SEARCH_SHOW_MOST_USED,
             SEARCH_USE_CUSTOM_TABS,
+            SEARCH_BACKGROUND,
             SEARCH_ENGINE,
             CUSTOM_SEARCH_ENGINE_FORMAT,
             EXCLUDED_SEARCH_TARGETS,

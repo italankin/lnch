@@ -915,6 +915,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         searchOverlay.setSearchBarSizeDimen(userPrefs.largeSearchBar
                 ? R.dimen.search_bar_size_large
                 : R.dimen.search_bar_size);
+        searchOverlay.setSearchBarBackground(userPrefs.searchBackground);
         setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
     }

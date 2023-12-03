@@ -235,6 +235,7 @@
     <string name="settings_home_laf_alignment">Alignment</string>
     <string name="settings_home_laf_other_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_other_large_search_bar_summary">Increase height of the search bar</string>
+    <string name="settings_home_laf_other_search_bar_background">Search bar background</string>
     <string name="settings_home_laf_other_home">Home</string>
     <string name="settings_home_laf_other_color_overlay_show">One color for items</string>
     <string name="settings_home_laf_other_color_overlay_show_summary">Use the same color for all items</string>
