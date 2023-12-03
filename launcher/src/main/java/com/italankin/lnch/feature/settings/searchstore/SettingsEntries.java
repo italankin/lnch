@@ -490,6 +490,13 @@ final class SettingsEntries {
                             return Collections.singletonList(new SearchFragment());
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.SEARCH_SHOW_CUSTOMIZE)
+                        .title(R.string.settings_search_customize)
+                        .category(R.string.settings_search)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(new SearchFragment());
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_USE_CUSTOM_TABS)
                         .title(R.string.settings_search_custom_tabs)
                         .summary(R.string.settings_search_custom_tabs_summary)

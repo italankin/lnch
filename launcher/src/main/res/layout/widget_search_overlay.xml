@@ -47,6 +47,18 @@
         app:layout_constraintTop_toTopOf="@id/search_edit_text">
 
         <ImageView
+            android:id="@+id/search_customize"
+            android:layout_width="@dimen/search_bar_size"
+            android:layout_height="@dimen/search_bar_size"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_customize"
+            android:padding="16dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_action_rename"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <ImageView
             android:id="@+id/search_settings"
             android:layout_width="@dimen/search_bar_size"
             android:layout_height="@dimen/search_bar_size"

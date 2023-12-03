@@ -122,6 +122,13 @@ public interface Preferences {
             true);
 
     /**
+     * Show customize action in the search bar
+     */
+    Pref<Boolean> SEARCH_SHOW_CUSTOMIZE = Prefs.createBoolean(
+            "search_show_customize",
+            false);
+
+    /**
      * Show most used items in search
      */
     Pref<Boolean> SEARCH_SHOW_MOST_USED = Prefs.createBoolean(
@@ -483,6 +490,7 @@ public interface Preferences {
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
+            SEARCH_SHOW_CUSTOMIZE,
             SEARCH_SHOW_MOST_USED,
             SEARCH_USE_CUSTOM_TABS,
             SEARCH_BACKGROUND,

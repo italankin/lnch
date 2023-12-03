@@ -43,6 +43,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     private final EditText searchEditText;
     private final ImageView buttonGlobalSearch;
     private final ImageView buttonSettings;
+    private final ImageView buttonCustomize;
     private final View background;
 
     private final RecyclerView searchResultsList;
@@ -80,6 +81,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         searchEditText = findViewById(R.id.search_edit_text);
         buttonGlobalSearch = findViewById(R.id.search_global);
         buttonSettings = findViewById(R.id.search_settings);
+        buttonCustomize = findViewById(R.id.search_customize);
         searchResultsList = findViewById(R.id.search_results);
         background = findViewById(R.id.search_background);
 
@@ -166,6 +168,15 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         if (showMostUsed) {
             // fire initial search to show/hide recent items
             searchEditText.setText("");
+        }
+    }
+
+    public void setupCustomizeButton(OnClickListener onClickListener) {
+        if (onClickListener != null) {
+            buttonCustomize.setOnClickListener(onClickListener);
+            buttonCustomize.setVisibility(VISIBLE);
+        } else {
+            buttonCustomize.setVisibility(GONE);
         }
     }
 

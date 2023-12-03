@@ -23,6 +23,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         PREFERENCES.add(Preferences.SEARCH_BACKGROUND);
+        PREFERENCES.add(Preferences.SEARCH_SHOW_CUSTOMIZE);
         PREFERENCES.add(Preferences.LARGE_SEARCH_BAR);
         PREFERENCES.add(Preferences.STATUS_BAR_COLOR);
         PREFERENCES.add(Preferences.ITEM_TEXT_SIZE);
@@ -40,13 +41,14 @@ public final class UserPrefs {
     @ColorInt
     public final int overlayColor;
     public final boolean showScrollbar;
+    @ColorInt
+    public final Integer statusBarColor;
+    public final ItemPrefs itemPrefs;
     public final boolean globalSearch;
     @ColorInt
     public final int searchBackground;
     public final boolean largeSearchBar;
-    @ColorInt
-    public final Integer statusBarColor;
-    public final ItemPrefs itemPrefs;
+    public final boolean searchBarShowCustomize;
 
     public UserPrefs(Preferences preferences, FontManager fontManager) {
         homeLayout = preferences.get(Preferences.HOME_LAYOUT);
@@ -57,6 +59,7 @@ public final class UserPrefs {
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
         searchBackground = preferences.get(Preferences.SEARCH_BACKGROUND);
+        searchBarShowCustomize = preferences.get(Preferences.SEARCH_SHOW_CUSTOMIZE);
         itemPrefs = new UserPrefs.ItemPrefs(preferences, fontManager);
     }
 
@@ -90,6 +93,9 @@ public final class UserPrefs {
         if (searchBackground != userPrefs.searchBackground) {
             return false;
         }
+        if (searchBarShowCustomize != userPrefs.searchBarShowCustomize) {
+            return false;
+        }
         if (!Objects.equals(statusBarColor, userPrefs.statusBarColor)) {
             return false;
         }
@@ -103,6 +109,7 @@ public final class UserPrefs {
         result = 31 * result + overlayColor;
         result = 31 * result + searchBackground;
         result = 31 * result + (showScrollbar ? 1 : 0);
+        result = 31 * result + (searchBarShowCustomize ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
         result = 31 * result + (globalSearch ? 1 : 0);
         result = 31 * result + (largeSearchBar ? 1 : 0);
@@ -122,6 +129,7 @@ public final class UserPrefs {
                 ", searchBackground=" + String.format("#%08x", searchBackground) +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
+                ", globalSearch=" + searchBarShowCustomize +
                 ", largeSearchBar=" + largeSearchBar +
                 ", statusBarColor=" + statusBarColor +
                 ", itemPrefs=" + itemPrefs +

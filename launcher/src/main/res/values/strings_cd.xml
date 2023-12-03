@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cd_settings">Settings</string>
+    <string name="cd_customize">Customize</string>
     <string name="cd_application_icon">Application icon</string>
     <string name="cd_application_visibility">Application visibility</string>
     <string name="cd_search">Search</string>
