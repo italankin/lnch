@@ -2,18 +2,16 @@ package com.italankin.lnch.model.repository.prefs;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
-import timber.log.Timber;
 
 public class UserPreferences implements Preferences {
 
@@ -57,7 +55,7 @@ public class UserPreferences implements Preferences {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Pref<T> find(String key) {
-        return (Pref<T>) PREFS.get(key);
+        return (Pref<T>) findByKey(key);
     }
 
     @Override
@@ -83,7 +81,7 @@ public class UserPreferences implements Preferences {
 
     @Override
     public Observable<Pref<?>> observe() {
-        return updates.map(PREFS::get);
+        return updates.map(this::findByKey);
     }
 
     @Override
@@ -98,5 +96,13 @@ public class UserPreferences implements Preferences {
         return updates
                 .filter(pref.key()::equals)
                 .map(key -> new Value<>(get(pref)));
+    }
+
+    private Pref<?> findByKey(String key) {
+        Pref<?> pref = PREFS.get(key);
+        if (pref == null) {
+            throw new NullPointerException("No pref found for key=" + key + ", is it registered in Preferences.ALL?");
+        }
+        return pref;
     }
 }
