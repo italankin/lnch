@@ -79,6 +79,14 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     }
 
     private void buildItemPopup(DescriptorUi item) {
+        if (item instanceof FolderDescriptorUi) {
+            addShortcut(new ItemBuilder()
+                    .setLabel(R.string.customize_item_edit_folder)
+                    .setIcon(R.drawable.ic_folder)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
+                    .setOnClickListener(v -> sendOpenFolderResult((FolderDescriptorUi) item))
+            );
+        }
         String folderId = item instanceof InFolderDescriptorUi ? requireArguments().getString(ARG_FOLDER_ID) : null;
         if (item instanceof IgnorableDescriptorUi && folderId == null) {
             addAction(new ItemBuilder()
@@ -148,14 +156,6 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
             addAction(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_delete)
                     .setOnClickListener(v -> sendRemoveResult((RemovableDescriptorUi) item))
-            );
-        }
-        if (item instanceof FolderDescriptorUi) {
-            addShortcut(new ItemBuilder()
-                    .setLabel(R.string.customize_item_edit_folder)
-                    .setIcon(R.drawable.ic_folder)
-                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
-                    .setOnClickListener(v -> sendOpenFolderResult((FolderDescriptorUi) item))
             );
         }
     }
