@@ -301,6 +301,14 @@ public interface Preferences {
             ItemWidth::from);
 
     /**
+     * Item's width inside folder
+     */
+    Pref<ItemWidth> FOLDER_ITEM_WIDTH = Prefs.create(
+            "folder_item_width",
+            ItemWidth.WRAP,
+            ItemWidth::from);
+
+    /**
      * Home screen items sorting mode
      */
     Pref<AppsSortMode> APPS_SORT_MODE = Prefs.create(
@@ -514,6 +522,7 @@ public interface Preferences {
             ITEM_SHADOW_COLOR,
             ITEM_FONT,
             ITEM_WIDTH,
+            FOLDER_ITEM_WIDTH,
             APPS_SORT_MODE,
             APPS_COLOR_OVERLAY_SHOW,
             APPS_COLOR_OVERLAY,

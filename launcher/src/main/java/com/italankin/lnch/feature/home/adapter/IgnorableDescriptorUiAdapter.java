@@ -4,10 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.widget.StubView;
 
@@ -17,7 +15,7 @@ public class IgnorableDescriptorUiAdapter
     private static final int IGNORED_FLAG = 1 << 22;
 
     public IgnorableDescriptorUiAdapter() {
-        super(new Params(true, true));
+        super(new Params(true, Params.ITEM_WIDTH_WRAP, Params.ALIGNMENT_FROM_PREFS));
     }
 
     @NonNull

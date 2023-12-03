@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -145,7 +146,10 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         });
         alignFrameView.setOnClickListener(v -> dismiss());
 
-        HomeAdapterDelegate.Params params = new HomeAdapterDelegate.Params(true, true);
+        Preferences.ItemWidth folderItemWidth = preferences.get(Preferences.FOLDER_ITEM_WIDTH);
+        HomeAdapterDelegate.Params params = new HomeAdapterDelegate.Params(true,
+                itemPrefs -> folderItemWidth,
+                itemPrefs -> Preferences.HomeAlignment.START);
         adapter = new HomeAdapter.Builder(requireContext())
                 .add(new AppDescriptorUiAdapter(this, params))
                 .add(new PinnedShortcutDescriptorUiAdapter(this, params))
@@ -154,7 +158,11 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
                 .add(new EmptyFolderDescriptorUiAdapter())
                 .setHasStableIds(true)
                 .create();
-        list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
+        if (folderItemWidth == Preferences.ItemWidth.WRAP) {
+            list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
+        } else {
+            list.setLayoutManager(new LinearLayoutManager(requireContext()));
+        }
         list.setAdapter(adapter);
 
         initDelegates(requireContext());

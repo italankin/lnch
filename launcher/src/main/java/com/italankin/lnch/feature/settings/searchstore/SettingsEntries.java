@@ -107,7 +107,7 @@ final class SettingsEntries {
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_WIDTH)
-                        .title(R.string.settings_home_laf_other_width)
+                        .title(R.string.settings_home_laf_other_item_width)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
@@ -196,6 +196,13 @@ final class SettingsEntries {
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FOLDER_OVERLAY_COLOR)
                         .title(R.string.settings_home_laf_folders_overlay_color)
+                        .category(R.string.settings_home_laf)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.FOLDER_ITEM_WIDTH)
+                        .title(R.string.settings_home_laf_other_folder_item_width)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));

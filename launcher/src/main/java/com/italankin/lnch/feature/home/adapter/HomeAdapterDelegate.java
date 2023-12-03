@@ -5,11 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
@@ -110,7 +108,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
         View root = holder.getRoot();
         ViewGroup.LayoutParams rootLp = root.getLayoutParams();
-        if (!params.ignoreAlignment && itemPrefs.itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
+        if (params.itemWidthProvider.get(itemPrefs) == Preferences.ItemWidth.MATCH_PARENT) {
             if (rootLp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
                 rootLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 root.setLayoutParams(rootLp);
@@ -120,7 +118,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                     label.setLayoutParams(labelLp);
                 }
             }
-            switch (itemPrefs.alignment) {
+            switch (params.itemAlignmentProvider.get(itemPrefs)) {
                 case START:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
                     if (notificationDot != null) {
@@ -177,14 +175,26 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
     public static class Params {
 
-        public static final Params DEFAULT = new Params(false, false);
+        public static final Params DEFAULT = new Params(false,
+                itemPrefs -> itemPrefs.itemWidth,
+                itemPrefs -> itemPrefs.alignment);
+        public static final Provider<Preferences.ItemWidth> ITEM_WIDTH_WRAP = itemPrefs -> Preferences.ItemWidth.WRAP;
+        public static final Provider<Preferences.HomeAlignment> ALIGNMENT_FROM_PREFS = itemPrefs -> itemPrefs.alignment;
 
         final boolean ignoreVisibility;
-        final boolean ignoreAlignment;
+        final Provider<Preferences.ItemWidth> itemWidthProvider;
+        final Provider<Preferences.HomeAlignment> itemAlignmentProvider;
 
-        public Params(boolean ignoreVisibility, boolean ignoreAlignment) {
+        public Params(boolean ignoreVisibility,
+                Provider<Preferences.ItemWidth> itemWidthProvider,
+                Provider<Preferences.HomeAlignment> itemAlignmentProvider) {
             this.ignoreVisibility = ignoreVisibility;
-            this.ignoreAlignment = ignoreAlignment;
+            this.itemWidthProvider = itemWidthProvider;
+            this.itemAlignmentProvider = itemAlignmentProvider;
+        }
+
+        public interface Provider<T> {
+            T get(UserPrefs.ItemPrefs itemPrefs);
         }
     }
 }

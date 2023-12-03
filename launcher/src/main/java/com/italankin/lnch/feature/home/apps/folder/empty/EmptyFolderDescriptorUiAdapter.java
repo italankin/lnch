@@ -2,10 +2,8 @@ package com.italankin.lnch.feature.home.apps.folder.empty;
 
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
 
@@ -13,7 +11,7 @@ public class EmptyFolderDescriptorUiAdapter extends
         HomeAdapterDelegate<EmptyFolderDescriptorUiAdapter.ViewHolder, EmptyFolderDescriptorUi> {
 
     public EmptyFolderDescriptorUiAdapter() {
-        super(new Params(false, true));
+        super(new Params(false, Params.ITEM_WIDTH_WRAP, Params.ALIGNMENT_FROM_PREFS));
     }
 
     @Override

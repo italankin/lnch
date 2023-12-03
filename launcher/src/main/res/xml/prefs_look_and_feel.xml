@@ -43,7 +43,7 @@
             android:entryValues="@array/pref_values_item_width"
             android:key="item_width"
             android:summary="%s"
-            android:title="@string/settings_home_laf_other_width" />
+            android:title="@string/settings_home_laf_other_item_width" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="apps_list_animate"
@@ -77,6 +77,13 @@
             app:colorpref_colorModel="argb"
             app:colorpref_defaultColor="@color/fullscreen_folder_overlay"
             tools:ignore="PrefsDetector" />
+        <ListPreference
+            android:defaultValue="wrap"
+            android:entries="@array/pref_desc_item_width"
+            android:entryValues="@array/pref_values_item_width"
+            android:key="folder_item_width"
+            android:summary="%s"
+            android:title="@string/settings_home_laf_other_folder_item_width" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_notification">
         <com.italankin.lnch.util.widget.ColorPreference
