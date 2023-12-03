@@ -7,25 +7,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
-
+import androidx.annotation.NonNull;
 import com.italankin.lnch.util.imageloader.cache.Cache;
-import com.italankin.lnch.util.imageloader.resourceloader.ActivityIconLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.PackageResourceLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.ResourceLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.WidgetPreviewLoader;
+import com.italankin.lnch.util.imageloader.resourceloader.*;
+import timber.log.Timber;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import androidx.annotation.NonNull;
-import timber.log.Timber;
 
 public class ImageLoader {
 
@@ -180,12 +169,14 @@ public class ImageLoader {
         public void run() {
             try {
                 if (isCancelled()) {
+                    Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
                     return;
                 }
                 if (!request.noCache) {
                     Drawable cached = cache.get(request.uri);
                     if (cached != null) {
                         handler.post(() -> {
+                            Timber.tag("ImageLoader").d("onImageLoaded: uri=%s cached=%b", request.uri, true);
                             request.target.onImageLoaded(cached);
                             request.callback.onSuccess();
                         });
@@ -201,18 +192,22 @@ public class ImageLoader {
                     cache.put(request.uri, drawable);
                 }
                 if (isCancelled()) {
+                    Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
                     return;
                 }
                 handler.post(() -> {
+                    Timber.tag("ImageLoader").d("onImageLoaded: uri=%s cached=%b", request.uri, false);
                     request.target.onImageLoaded(drawable);
                     request.callback.onSuccess();
                 });
             } catch (Exception e) {
                 Timber.tag("ImageLoader").e(e, "LoadTask failed: %s", e.getMessage());
                 if (isCancelled()) {
+                    Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
                     return;
                 }
                 handler.post(() -> {
+                    Timber.tag("ImageLoader").d("onImageFailed: uri=%s placeholder=%b", request.uri, request.errorPlaceholder != null);
                     request.target.onImageFailed(e, request.errorPlaceholder);
                     request.callback.onError(e);
                 });
