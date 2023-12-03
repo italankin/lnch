@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -29,15 +27,14 @@ import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
 import com.italankin.lnch.util.ResUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class HomeActivity extends AppActivity implements HomeView {
 
@@ -114,6 +111,19 @@ public class HomeActivity extends AppActivity implements HomeView {
             }
         }
         intentQueue.post(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && requestCode == WidgetsFragment.REQUEST_CODE_CONFIGURE) {
+            int index = pagerAdapter.indexOfFragment(WidgetsFragment.class);
+            if (index >= 0) {
+                ((WidgetsFragment) pagerAdapter.getFragmentAt(index))
+                        .onActivityResult(WidgetsFragment.REQUEST_CODE_CONFIGURE, resultCode, data);
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

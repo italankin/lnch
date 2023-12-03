@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.widgets;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
@@ -16,7 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -34,16 +37,9 @@ import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.popup.WidgetPopupFragment;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ViewUtils;
+import timber.log.Timber;
 
 import java.util.List;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.RecyclerView;
-import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQueue.OnIntentAction {
@@ -52,6 +48,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     private static final int APP_WIDGET_HOST_ID = 101;
 
     private static final String REQUEST_KEY_WIDGETS = "widgets";
+    public static final int REQUEST_CODE_CONFIGURE = 133;
 
     @InjectPresenter
     WidgetsPresenter presenter;
@@ -76,10 +73,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     private final ActivityResultLauncher<Integer> addWidgetLauncher = registerForActivityResult(
             new WidgetGalleryActivity.Contract(),
             this::onNewWidgetSelected);
-
-    private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher = registerForActivityResult(
-            new ConfigureWidgetContract(),
-            this::onNewWidgetConfigured);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -168,6 +161,15 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE_CONFIGURE) {
+            onNewWidgetConfigured(resultCode == Activity.RESULT_OK);
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         intentQueue.unregisterOnIntentAction(this);
@@ -222,7 +224,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     private void configureWidget(AppWidgetProviderInfo info) {
         if (info.configure != null) {
             try {
-                configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
+                appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), newAppWidgetId, 0, REQUEST_CODE_CONFIGURE, null);
             } catch (Exception e) {
                 Timber.e(e, "configureWidget: %s", e.getMessage());
                 cancelAddNewWidget(newAppWidgetId);
@@ -260,11 +262,11 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         }
         int minWidth = Math.max(
                 getResources().getDimensionPixelSize(R.dimen.widget_min_width),
-                options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+                info.minWidth
         );
         int minHeight = Math.max(
                 getResources().getDimensionPixelSize(R.dimen.widget_min_height),
-                options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+                info.minHeight
         );
         int widgetMaxHeight = getResources().getDimensionPixelSize(R.dimen.widget_max_height);
         int widgetMaxWidth = getResources().getDisplayMetrics().widthPixels;
@@ -312,31 +314,5 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     private void updateWidgets() {
         adapter.setDataset(widgetItemsState.getItems());
         adapter.notifyDataSetChanged();
-    }
-
-    private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Boolean> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull Context context, Input input) {
-            return new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-                    .setComponent(input.configure)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, input.appWidgetId);
-        }
-
-        @Override
-        public Boolean parseResult(int resultCode, @Nullable Intent intent) {
-            return resultCode == Activity.RESULT_OK;
-        }
-
-        static class Input {
-            final int appWidgetId;
-            final ComponentName configure;
-
-            Input(int appWidgetId, ComponentName configure) {
-                this.appWidgetId = appWidgetId;
-                this.configure = configure;
-            }
-        }
     }
 }
