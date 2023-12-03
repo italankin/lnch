@@ -1,13 +1,13 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.ArrayRes;
-import androidx.annotation.StringRes;
 
 class SettingsEntryImpl implements SettingsEntry {
 
@@ -20,15 +20,19 @@ class SettingsEntryImpl implements SettingsEntry {
     final int category;
     final List<SearchTokens> searchTokens;
     final SettingStackBuilder stackBuilder;
+    @Nullable
+    final Preferences.Pref<?> pref;
 
     SettingsEntryImpl(
             Key key,
+            @Nullable Preferences.Pref<?> pref,
             @StringRes int title,
             @StringRes int summary,
             @StringRes int category,
             List<SearchTokens> searchTokens,
             SettingStackBuilder stackBuilder) {
         this.key = key;
+        this.pref = pref;
         this.title = title;
         this.summary = summary;
         this.category = category;
@@ -39,6 +43,12 @@ class SettingsEntryImpl implements SettingsEntry {
     @Override
     public Key key() {
         return key;
+    }
+
+    @Nullable
+    @Override
+    public Preferences.Pref<?> preference() {
+        return pref;
     }
 
     @Override
@@ -63,6 +73,8 @@ class SettingsEntryImpl implements SettingsEntry {
 
     static class Builder {
         private final Key key;
+        @Nullable
+        private final Preferences.Pref<?> pref;
         @StringRes
         private int title;
         @StringRes
@@ -74,10 +86,12 @@ class SettingsEntryImpl implements SettingsEntry {
 
         Builder(@StringRes int key) {
             this.key = new ResourceKey(key);
+            this.pref = null;
         }
 
         Builder(Preferences.Pref<?> pref) {
             key = new StringKey(pref.key());
+            this.pref = pref;
         }
 
         Builder title(@StringRes int title) {
@@ -127,7 +141,7 @@ class SettingsEntryImpl implements SettingsEntry {
             if (stackBuilder == null) {
                 throw new IllegalArgumentException(key + " has no stackBuilder");
             }
-            return new SettingsEntryImpl(key, title, summary, category, searchTokens, stackBuilder);
+            return new SettingsEntryImpl(key, pref, title, summary, category, searchTokens, stackBuilder);
         }
     }
 }

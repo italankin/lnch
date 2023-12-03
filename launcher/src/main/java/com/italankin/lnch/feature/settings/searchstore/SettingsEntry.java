@@ -1,12 +1,17 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.io.Serializable;
 
 public interface SettingsEntry {
 
     Key key();
+
+    @Nullable
+    Preferences.Pref<?> preference();
 
     @StringRes
     int title();

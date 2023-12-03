@@ -1,23 +1,15 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
 import android.content.Context;
-
-import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
 
-import static com.italankin.lnch.util.SearchUtils.contains;
-import static com.italankin.lnch.util.SearchUtils.containsWord;
-import static com.italankin.lnch.util.SearchUtils.startsWith;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.italankin.lnch.util.SearchUtils.*;
 
 public class SettingsStore {
 
@@ -59,6 +51,16 @@ public class SettingsStore {
         Timber.d("search: query='%s', results=%d, done in %.3fms",
                 query, results.size(), (System.nanoTime() - start) / 1_000_000f);
         return results;
+    }
+
+    @Nullable
+    public SettingsEntry find(@NonNull Preferences.Pref<?> pref) {
+        for (SettingsEntryImpl settingsEntry : entriesCache.keySet()) {
+            if (pref.equals(settingsEntry.pref)) {
+                return settingsEntry;
+            }
+        }
+        return null;
     }
 
     @Nullable
