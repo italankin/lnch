@@ -13,6 +13,11 @@ public interface DescriptorRepository {
      */
     Observable<List<Descriptor>> observe();
 
+    /**
+     * Observe changes in descriptors data
+     *
+     * @param updateIfEmpty when {@code true}, perform an update if state is empty
+     */
     Observable<List<Descriptor>> observe(boolean updateIfEmpty);
 
     /**
