@@ -1,31 +1,17 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
-import android.Manifest;
-import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -42,6 +28,7 @@ import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
+import com.italankin.lnch.util.widget.colorpicker.BackdropDrawable;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.pref.SliderPrefView;
@@ -49,7 +36,6 @@ import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
 public class AppearanceFragment extends AppFragment implements
         BackButtonHandler,
-        ActivityResultCallback<Boolean>,
         ColorPickerDialogFragment.Listener,
         SimpleDialogFragment.Listener,
         SettingsToolbarTitle {
@@ -83,9 +69,6 @@ public class AppearanceFragment extends AppFragment implements
     private ValuePrefView itemShadowColor;
 
     private PreviewBackground previewBackground = PreviewBackground.WALLPAPER;
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), this);
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -124,7 +107,7 @@ public class AppearanceFragment extends AppFragment implements
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initRoot(view);
+        wallpaper = view.findViewById(R.id.wallpaper);
 
         initOverlay(view);
         initPreview(view);
@@ -249,23 +232,6 @@ public class AppearanceFragment extends AppFragment implements
         }
     }
 
-    @Override
-    public void onActivityResult(Boolean permissionGranted) {
-        if (permissionGranted) {
-            updatePreviewBackground();
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void initRoot(View view) {
-        wallpaper = view.findViewById(R.id.wallpaper);
-        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
-    }
-
     private void initOverlay(View view) {
         int overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)
                 ? preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR)
@@ -313,7 +279,7 @@ public class AppearanceFragment extends AppFragment implements
     private void updatePreviewBackground() {
         switch (previewBackground) {
             case WALLPAPER:
-                showWallpaper();
+                wallpaper.setImageDrawable(new BackdropDrawable(requireContext()));
                 overlay.setVisibility(View.VISIBLE);
                 break;
             case WHITE:
@@ -325,17 +291,6 @@ public class AppearanceFragment extends AppFragment implements
                 overlay.setVisibility(View.INVISIBLE);
                 break;
         }
-    }
-
-    private void showWallpaper() {
-        Context context = requireContext();
-        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            wallpaper.setImageDrawable(new ColorDrawable(ResUtils.resolveColor(context, android.R.attr.colorPrimary)));
-            return;
-        }
-        wallpaper.setImageDrawable(wm.getDrawable());
     }
 
     private void initTextSize(View view) {

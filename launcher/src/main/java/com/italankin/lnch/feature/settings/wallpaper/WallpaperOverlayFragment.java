@@ -1,22 +1,13 @@
 package com.italankin.lnch.feature.settings.wallpaper;
 
-import android.Manifest;
-import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -26,17 +17,11 @@ import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
+import com.italankin.lnch.util.widget.colorpicker.BackdropDrawable;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class WallpaperOverlayFragment extends AppFragment implements ActivityResultCallback<Boolean>,
-        SettingsToolbarTitle {
+public class WallpaperOverlayFragment extends AppFragment implements SettingsToolbarTitle {
 
     public static WallpaperOverlayFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -50,9 +35,6 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
     private FontManager fontManager;
     private ColorPickerView colorPicker;
     private ImageView wallpaper;
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), this);
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -79,13 +61,15 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         initItemPreview(view);
 
         wallpaper = view.findViewById(R.id.wallpaper);
-        initWallpaper();
+        BackdropDrawable drawable = new BackdropDrawable(requireContext());
+        drawable.setColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
+        wallpaper.setImageDrawable(drawable);
 
         colorPicker = view.findViewById(R.id.color_picker);
         colorPicker.setColorChangedListener(color -> {
             Drawable background = wallpaper.getDrawable();
-            if (background != null) {
-                background.setTint(color);
+            if (background instanceof BackdropDrawable) {
+                ((BackdropDrawable) background).setColor(color);
             }
         });
         colorPicker.setSelectedColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
@@ -113,24 +97,6 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         wallpaper = null;
     }
 
-    @Override
-    public void onActivityResult(Boolean permissionGranted) {
-        if (permissionGranted) {
-            showWallpaper();
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Toast.makeText(requireContext(), R.string.error_no_wallpaper_permission, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void initWallpaper() {
-        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_GRANTED) {
-            showWallpaper();
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
-    }
-
     private void initItemPreview(View view) {
         TextView itemPreview = view.findViewById(R.id.item_preview).findViewById(R.id.label);
         itemPreview.setText(R.string.preview);
@@ -153,22 +119,6 @@ public class WallpaperOverlayFragment extends AppFragment implements ActivityRes
         itemPreview.setShadowLayer(preferences.get(Preferences.ITEM_SHADOW_RADIUS),
                 itemPreview.getShadowDx(), itemPreview.getShadowDy(), shadowColor);
         itemPreview.setTypeface(fontManager.getTypeface(preferences.get(Preferences.ITEM_FONT)));
-    }
-
-    private void showWallpaper() {
-        Context context = requireContext();
-        WallpaperManager wm = (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm == null || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        Drawable drawable = wm.getDrawable();
-        if (drawable == null) {
-            return;
-        }
-        drawable.setTintMode(PorterDuff.Mode.SRC_ATOP);
-        drawable.setTint(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
-        wallpaper.setImageDrawable(drawable);
     }
 
     public static class WallpaperOverlayFinishContract extends SignalFragmentResultContract {
