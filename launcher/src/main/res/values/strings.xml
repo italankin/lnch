@@ -212,6 +212,7 @@
     <string name="settings_search_customize">Show Customize button</string>
     <string name="settings_search_customize_summary">Customization can be also started by long-pressing Settings button</string>
     <string name="settings_search_history">Search history</string>
+    <string name="settings_search_bar">Search bar</string>
     <string name="settings_search_history_most_used">Show most used apps</string>
     <string name="settings_search_history_most_used_summary">Display most used apps when search opens</string>
     <string name="settings_search_history_most_used_reset">Reset usage statistics</string>
@@ -247,7 +248,7 @@
     <string name="settings_home_laf_other_home_pager_indicator">Home pager indicator</string>
     <string name="settings_home_laf_other_home_pager_indicator_summary">Display little dots on bottom of the home screen, indicating current page</string>
 
-    <string name="settings_home_laf_search">Search</string>
+    <string name="settings_home_laf_search_bar">Search bar</string>
     <string name="settings_home_laf_search_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_search_large_search_bar_summary">Increase height of the search bar</string>
     <string name="settings_home_laf_search_search_bar_background">Search bar background</string>

@@ -92,7 +92,7 @@
             android:summary="%s"
             android:title="@string/settings_home_laf_notification_dot_size" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_home_laf_search">
+    <PreferenceCategory android:title="@string/settings_home_laf_search_bar">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="large_search_bar"

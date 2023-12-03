@@ -19,15 +19,17 @@
         android:key="search_use_custom_tabs"
         android:summary="@string/settings_search_custom_tabs_summary"
         android:title="@string/settings_search_custom_tabs" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="search_show_global_search"
-        android:title="@string/settings_search_global" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="search_show_customize"
-        android:summary="@string/settings_search_customize_summary"
-        android:title="@string/settings_search_customize" />
+    <PreferenceCategory android:title="@string/settings_search_bar">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="search_show_global_search"
+            android:title="@string/settings_search_global" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="search_show_customize"
+            android:summary="@string/settings_search_customize_summary"
+            android:title="@string/settings_search_customize" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_search_history">
         <CheckBoxPreference
             android:defaultValue="true"
