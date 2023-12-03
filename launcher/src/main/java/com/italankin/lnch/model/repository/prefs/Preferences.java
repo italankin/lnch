@@ -107,6 +107,9 @@ public interface Preferences {
             "search_show_soft_keyboard",
             true);
 
+    /**
+     * Background for the search bar
+     */
     Pref<Integer> SEARCH_BACKGROUND = Prefs.createInteger(
             "search_background",
             Color.TRANSPARENT);
