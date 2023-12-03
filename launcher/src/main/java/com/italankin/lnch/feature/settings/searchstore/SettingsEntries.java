@@ -148,15 +148,15 @@ final class SettingsEntries {
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.LARGE_SEARCH_BAR)
-                        .title(R.string.settings_home_laf_other_large_search_bar)
-                        .summary(R.string.settings_home_laf_other_large_search_bar_summary)
+                        .title(R.string.settings_home_laf_search_large_search_bar)
+                        .summary(R.string.settings_home_laf_search_large_search_bar_summary)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_BACKGROUND)
-                        .title(R.string.settings_home_laf_other_search_bar_background)
+                        .title(R.string.settings_home_laf_search_search_bar_background)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
