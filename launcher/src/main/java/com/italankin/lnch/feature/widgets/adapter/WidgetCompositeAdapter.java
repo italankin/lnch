@@ -2,13 +2,11 @@ package com.italankin.lnch.feature.widgets.adapter;
 
 import android.content.Context;
 import android.view.ViewGroup;
-
-import com.italankin.lnch.feature.widgets.model.AppWidget;
-import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
-
 import androidx.annotation.NonNull;
 import androidx.collection.SparseArrayCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import me.italankin.adapterdelegates.AdapterDelegate;
 import me.italankin.adapterdelegates.CompositeAdapter;
 
@@ -32,7 +30,7 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
         } else {
             int position = viewType & WIDGET_POSITION_MASK;
             AppWidget item = (AppWidget) getItem(position);
-            return getWidgetAdapterDelegate().onCreate(item);
+            return getWidgetAdapterDelegate().onCreate(item, parent);
         }
     }
 

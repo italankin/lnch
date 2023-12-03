@@ -1,11 +1,13 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
-import androidx.annotation.NonNull;
-
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
-
+import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import timber.log.Timber;
 
 public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetViewHolder> {
@@ -19,9 +21,13 @@ public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetVie
     }
 
     @Override
-    public WidgetViewHolder onCreate(AppWidget item) {
-        LauncherAppWidgetHostView view = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
-        return new WidgetViewHolder(view);
+    public WidgetViewHolder onCreate(AppWidget item, ViewGroup parent) {
+        LauncherAppWidgetHostView hostView = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
+        WidgetResizeFrame root = new WidgetResizeFrame(parent.getContext());
+        root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        root.addView(hostView, new WidgetResizeFrame.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER_HORIZONTAL));
+        return new WidgetViewHolder(root, hostView);
     }
 
     @Override
@@ -41,9 +47,9 @@ public class WidgetAdapter extends AbstractWidgetAdapter<WidgetAdapter.WidgetVie
 
         final LauncherAppWidgetHostView hostView;
 
-        WidgetViewHolder(@NonNull LauncherAppWidgetHostView itemView) {
+        WidgetViewHolder(View itemView, LauncherAppWidgetHostView hostView) {
             super(itemView);
-            this.hostView = itemView;
+            this.hostView = hostView;
         }
     }
 
