@@ -6,16 +6,14 @@ import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @InjectViewState
 public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
@@ -46,7 +44,7 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
 
     void observeApps() {
         getViewState().showLoading();
-        descriptorRepository.observe()
+        descriptorRepository.observe(true)
                 .map(descriptors -> {
                     ArrayList<HiddenItem> list = new ArrayList<>();
                     for (Descriptor descriptor : descriptors) {
