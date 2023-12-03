@@ -1,10 +1,9 @@
 package com.italankin.lnch.model.repository.prefs;
 
 import android.content.SharedPreferences;
+import androidx.annotation.Nullable;
 
 import java.util.Map;
-
-import androidx.annotation.Nullable;
 
 /**
  * Factory for {@link com.italankin.lnch.model.repository.prefs.Preferences.Pref}
@@ -94,6 +93,19 @@ final class Prefs {
         @Override
         public Updater<T> updater() {
             return updater;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (obj instanceof Preferences.Pref) {
+                return key.equals(((Preferences.Pref<?>) obj).key());
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
         }
     }
 
