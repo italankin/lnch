@@ -20,8 +20,6 @@ import com.italankin.lnch.model.repository.notifications.NotificationsRepository
 import com.italankin.lnch.model.repository.notifications.NotificationsRepositoryImpl;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.UserPreferences;
-import com.italankin.lnch.model.repository.prefs.WidgetsState;
-import com.italankin.lnch.model.repository.prefs.WidgetsStateImpl;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
@@ -145,12 +143,6 @@ public class MainModule {
     @Singleton
     IntentQueue provideIntentQueue() {
         return new IntentQueue();
-    }
-
-    @Provides
-    @Singleton
-    WidgetsState provideWidgetsState(Context context, GsonBuilder gsonBuilder) {
-        return new WidgetsStateImpl(context, gsonBuilder.create());
     }
 
     @Provides

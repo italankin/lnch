@@ -19,12 +19,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
@@ -39,24 +37,14 @@ import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ViewUtils;
 import timber.log.Timber;
 
-import java.util.List;
-
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQueue.OnIntentAction {
+public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction {
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
 
     private static final String REQUEST_KEY_WIDGETS = "widgets";
     public static final int REQUEST_CODE_CONFIGURE = 133;
-
-    @InjectPresenter
-    WidgetsPresenter presenter;
-
-    @ProvidePresenter
-    WidgetsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().widgets();
-    }
 
     private IntentQueue intentQueue;
 
@@ -157,7 +145,7 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
 
         registerWindowInsets(view);
 
-        presenter.loadWidgets();
+        bindWidgets();
     }
 
     @Override
@@ -176,23 +164,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
     }
 
     @Override
-    public void onBindWidgets(List<Integer> appWidgetIds) {
-        widgetItemsState.clearWidgets();
-        for (int appWidgetId : appWidgetIds) {
-            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
-            if (info != null) {
-                addWidget(appWidgetId, info, true);
-            } else {
-                appWidgetHost.deleteAppWidgetId(appWidgetId);
-                presenter.removeWidget(appWidgetId);
-            }
-        }
-        updateWidgets();
-
-        intentQueue.registerOnIntentAction(this);
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         appWidgetHost.startListening();
@@ -206,6 +177,21 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
         } catch (Exception e) {
             Timber.w(e, "onStop:");
         }
+    }
+
+    private void bindWidgets() {
+        widgetItemsState.clearWidgets();
+        for (int appWidgetId : appWidgetHost.getAppWidgetIds()) {
+            AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            if (info != null) {
+                addWidget(appWidgetId, info, true);
+            } else {
+                appWidgetHost.deleteAppWidgetId(appWidgetId);
+            }
+        }
+        updateWidgets();
+
+        intentQueue.registerOnIntentAction(this);
     }
 
     private void startAddNewWidget() {
@@ -250,7 +236,6 @@ public class WidgetsFragment extends AppFragment implements WidgetsView, IntentQ
 
     private void addWidget(AppWidgetProviderInfo info) {
         addWidget(newAppWidgetId, info, false);
-        presenter.addWidget(newAppWidgetId);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         updateWidgets();
     }
