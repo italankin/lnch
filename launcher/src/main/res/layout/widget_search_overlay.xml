@@ -11,60 +11,67 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/search_settings"
+        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="#2000"
         tools:visibility="visible" />
 
-    <AutoCompleteTextView
+    <EditText
         android:id="@+id/search_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="#0000"
-        android:completionThreshold="1"
         android:hint="@string/hint_search"
         android:imeOptions="actionGo|flagNoExtractUi"
+        android:importantForAutofill="no"
         android:inputType="textAutoComplete"
-        android:paddingStart="@dimen/search_padding_start"
-        android:paddingTop="16dp"
-        android:paddingEnd="@dimen/search_bar_size"
-        android:paddingBottom="16dp"
+        android:minHeight="@dimen/search_bar_size"
         android:selectAllOnFocus="true"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="@dimen/search_bar_text_size"
+        app:layout_constraintEnd_toStartOf="@id/actions"
+        app:layout_constraintHeight_min="56dp"
+        app:layout_constraintStart_toEndOf="@id/search_global"
         app:layout_constraintTop_toTopOf="parent"
-        tools:paddingStart="@dimen/search_bar_size" />
+        app:layout_goneMarginStart="16dp" />
+
+    <LinearLayout
+        android:id="@+id/actions"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/search_edit_text">
+
+        <ImageView
+            android:id="@+id/search_settings"
+            android:layout_width="@dimen/search_bar_size"
+            android:layout_height="@dimen/search_bar_size"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_settings"
+            android:padding="16dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_settings" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/search_global"
         android:layout_width="@dimen/search_bar_size"
         android:layout_height="@dimen/search_bar_size"
-        android:layout_gravity="start|center_vertical"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/cd_search"
         android:padding="16dp"
         android:scaleType="centerInside"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/search_edit_text"
         tools:src="@drawable/ic_action_search"
         tools:visibility="visible" />
-
-    <ImageView
-        android:id="@+id/search_settings"
-        android:layout_width="@dimen/search_bar_size"
-        android:layout_height="@dimen/search_bar_size"
-        android:layout_gravity="end|center_vertical"
-        android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/cd_settings"
-        android:padding="16dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_results"

@@ -14,8 +14,9 @@
     <dimen name="pref_view_padding">16dp</dimen>
     <dimen name="default_right_panel_width">320dp</dimen>
     <dimen name="search_bar_size">56dp</dimen>
+    <dimen name="search_bar_text_size">18sp</dimen>
     <dimen name="search_bar_size_large">80dp</dimen>
-    <dimen name="search_padding_start">16dp</dimen>
+    <dimen name="search_bar_text_size_large">24sp</dimen>
     <dimen name="appearance_overlay_container_height">200dp</dimen>
     <dimen name="widget_min_width">128dp</dimen>
     <dimen name="widget_min_height">128dp</dimen>

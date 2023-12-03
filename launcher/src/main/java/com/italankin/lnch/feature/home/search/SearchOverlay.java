@@ -13,10 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -188,7 +185,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         imageLoader.load(icon)
                 .errorPlaceholder(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_search))
                 .into(buttonGlobalSearch);
-        ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.search_bar_size);
     }
 
     public void setupSettings(OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
@@ -215,19 +211,21 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void setSearchBarSize(int size) {
-        if (getMinimumHeight() != size) {
-            setMinimumHeight(size);
-            float density = getResources().getDisplayMetrics().density;
-            float textSize = (size / density) / TEXT_SIZE_FACTOR;
-            searchEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-        }
+        searchEditText.setMinimumHeight(size);
+    }
+
+    public void setSearchBarTextSizeDimen(@DimenRes int size) {
+        setSearchBarTextSize(getResources().getDimension(size));
+    }
+
+    public void setSearchBarTextSize(@Dimension float size) {
+        searchEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
 
     public void hideGlobalSearch() {
         buttonGlobalSearch.setVisibility(GONE);
         buttonGlobalSearch.setOnClickListener(null);
         buttonGlobalSearch.setOnLongClickListener(null);
-        ViewUtils.setPaddingStartDimen(searchEditText, R.dimen.search_padding_start);
     }
 
     public boolean isGlobalSearchVisible() {

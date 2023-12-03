@@ -912,9 +912,13 @@ public class AppsFragment extends AppFragment implements AppsView,
         } else if (!userPrefs.globalSearch && searchOverlay.isGlobalSearchVisible()) {
             searchOverlay.hideGlobalSearch();
         }
-        searchOverlay.setSearchBarSizeDimen(userPrefs.largeSearchBar
-                ? R.dimen.search_bar_size_large
-                : R.dimen.search_bar_size);
+        if (userPrefs.largeSearchBar) {
+            searchOverlay.setSearchBarSizeDimen(R.dimen.search_bar_size_large);
+            searchOverlay.setSearchBarTextSizeDimen(R.dimen.search_bar_text_size_large);
+        } else {
+            searchOverlay.setSearchBarSizeDimen(R.dimen.search_bar_size);
+            searchOverlay.setSearchBarTextSizeDimen(R.dimen.search_bar_text_size);
+        }
         searchOverlay.setSearchBarBackground(userPrefs.searchBackground);
         setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
