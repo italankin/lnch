@@ -12,15 +12,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 
@@ -90,6 +89,10 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         });
         findPreference(R.string.pref_key_home_widgets).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowWidgetPreferences().result());
+            return true;
+        });
+        findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
+            sendResult(new MiscFragment.ShowHiddenItems().result());
             return true;
         });
         findPreference(R.string.pref_key_backups).setOnPreferenceClickListener(preference -> {

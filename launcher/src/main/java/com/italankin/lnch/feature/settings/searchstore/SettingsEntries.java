@@ -23,6 +23,16 @@ final class SettingsEntries {
 
     static SettingsEntryImpl[] entries() {
         return new SettingsEntryImpl[]{
+                /* --- Home --- */
+
+                new SettingsEntryImpl.Builder(R.string.pref_key_home_hidden_items)
+                        .title(R.string.settings_home_hidden_items)
+                        .category(R.string.settings_category_home)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(new HiddenItemsFragment());
+                        })
+                        .build(),
+
                 /* --- Wallpaper --- */
 
                 new SettingsEntryImpl.Builder(R.string.pref_key_wallpaper)
@@ -293,13 +303,6 @@ final class SettingsEntries {
 
                 new SettingsEntryImpl.Builder(R.string.pref_key_home_misc)
                         .title(R.string.settings_home_misc)
-                        .category(R.string.settings_home_misc)
-                        .stackBuilder(requestKey -> {
-                            return Arrays.asList(MiscFragment.newInstance(requestKey), new HiddenItemsFragment());
-                        })
-                        .build(),
-                new SettingsEntryImpl.Builder(R.string.pref_key_home_hidden_items)
-                        .title(R.string.settings_home_hidden_items)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
                             return Arrays.asList(MiscFragment.newInstance(requestKey), new HiddenItemsFragment());

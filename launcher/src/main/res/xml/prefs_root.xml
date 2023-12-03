@@ -27,6 +27,10 @@
             android:key="@string/pref_key_home_widgets"
             android:title="@string/settings_home_widgets" />
         <Preference
+            android:icon="@drawable/ic_action_hide"
+            android:key="@string/pref_key_home_hidden_items"
+            android:title="@string/settings_home_hidden_items" />
+        <Preference
             android:icon="@drawable/ic_settings_home_misc"
             android:key="@string/pref_key_home_misc"
             android:title="@string/settings_home_misc" />

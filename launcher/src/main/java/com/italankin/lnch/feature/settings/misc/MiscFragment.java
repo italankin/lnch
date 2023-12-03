@@ -3,14 +3,12 @@ package com.italankin.lnch.feature.settings.misc;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class MiscFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -37,10 +35,6 @@ public class MiscFragment extends BasePreferenceFragment implements SettingsTool
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_misc_experimental).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowExperimentalPreferencesContract().result());
-            return true;
-        });
-        findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
-            sendResult(new ShowHiddenItems().result());
             return true;
         });
         scrollToTarget();
