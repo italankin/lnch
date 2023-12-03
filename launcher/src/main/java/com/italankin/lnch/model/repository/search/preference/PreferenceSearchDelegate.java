@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
@@ -15,14 +16,7 @@ import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.icons.BadgedIconDrawable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import java.util.*;
 
 public class PreferenceSearchDelegate implements SearchDelegate {
 
@@ -79,6 +73,9 @@ class PreferenceMatch implements Match {
     @Nullable
     @Override
     public CharSequence getSubtext(Context context) {
+        if (entry.category() == 0) {
+            return null;
+        }
         return context.getString(entry.category());
     }
 

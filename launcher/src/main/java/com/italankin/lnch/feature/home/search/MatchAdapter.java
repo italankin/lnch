@@ -5,16 +5,14 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.imageloader.ImageLoader;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
 
@@ -74,7 +72,7 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
         holder.text.setTextColor(item.getColor(context));
 
         CharSequence subtext = item.getSubtext(context);
-        if (subtext != null) {
+        if (subtext != null && subtext.length() > 0) {
             holder.subtext.setVisibility(View.VISIBLE);
             holder.subtext.setText(subtext);
         } else {
