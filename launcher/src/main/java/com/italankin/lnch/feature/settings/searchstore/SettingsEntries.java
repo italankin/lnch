@@ -305,7 +305,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_misc)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(MiscFragment.newInstance(requestKey), new HiddenItemsFragment());
+                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SCREEN_ORIENTATION)
