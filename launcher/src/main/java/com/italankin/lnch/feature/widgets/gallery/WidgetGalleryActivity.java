@@ -157,7 +157,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
         filter.setDataset(items);
     }
 
-    public static class Contract extends ActivityResultContract<Integer, AppWidgetProviderInfo> {
+    public static class SelectContract extends ActivityResultContract<Integer, AppWidgetProviderInfo> {
 
         @NonNull
         @Override

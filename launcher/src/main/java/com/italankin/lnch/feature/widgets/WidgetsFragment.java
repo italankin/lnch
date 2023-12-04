@@ -59,7 +59,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private final WidgetItemsState widgetItemsState = new WidgetItemsState();
 
     private final ActivityResultLauncher<Integer> addWidgetLauncher = registerForActivityResult(
-            new WidgetGalleryActivity.Contract(),
+            new WidgetGalleryActivity.SelectContract(),
             this::onNewWidgetSelected);
 
     @Override
