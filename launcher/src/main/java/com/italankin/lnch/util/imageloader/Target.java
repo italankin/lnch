@@ -2,7 +2,6 @@ package com.italankin.lnch.util.imageloader;
 
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
-
 import androidx.annotation.Nullable;
 
 public interface Target {
@@ -32,15 +31,11 @@ class ImageViewTarget implements Target {
 
     @Override
     public void onImageFailed(Exception e, @Nullable Drawable placeholder) {
-        if (placeholder != null) {
-            target.setImageDrawable(placeholder);
-        }
+        target.setImageDrawable(placeholder);
     }
 
     @Override
     public void onPrepareLoad(@Nullable Drawable placeholder) {
-        if (placeholder != null) {
-            target.setImageDrawable(placeholder);
-        }
+        target.setImageDrawable(placeholder);
     }
 }
