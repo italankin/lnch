@@ -25,8 +25,8 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.widgets.adapter.AddWidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
+import com.italankin.lnch.feature.widgets.adapter.WidgetActionsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
@@ -133,7 +133,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                             .show(getParentFragmentManager());
                     return true;
                 }))
-                .add(new AddWidgetAdapter(
+                .add(new WidgetActionsAdapter(
                         v -> startAddNewWidget(),
                         v -> {
                             Toast.makeText(requireContext(), R.string.widgets_add, Toast.LENGTH_SHORT).show();

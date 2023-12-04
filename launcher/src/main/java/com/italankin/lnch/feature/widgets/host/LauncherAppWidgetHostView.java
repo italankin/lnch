@@ -26,11 +26,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.RemoteViews;
-
 import com.italankin.lnch.feature.widgets.util.CheckLongPressHelper;
-
 import timber.log.Timber;
 
 public class LauncherAppWidgetHostView extends AppWidgetHostView implements View.OnLongClickListener {
@@ -213,8 +210,8 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
     }
 
     private boolean checkScrollableRecursively(ViewGroup viewGroup) {
-        if (viewGroup instanceof AdapterView) {
-            return viewGroup.canScrollVertically(1) || viewGroup.canScrollVertically(-1);
+        if (viewGroup.canScrollVertically(1) || viewGroup.canScrollVertically(-1)) {
+            return true;
         } else {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);

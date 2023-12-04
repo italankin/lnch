@@ -10,4 +10,4 @@
     android:overScrollMode="ifContentScrolls"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:itemCount="1"
-    tools:listitem="@layout/item_add_widget" />
+    tools:listitem="@layout/item_widget_actions" />
