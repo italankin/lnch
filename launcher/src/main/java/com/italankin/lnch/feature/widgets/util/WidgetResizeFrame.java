@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.util.ResUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,9 +40,11 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final int handleRadius;
     private final int drawFrameInset;
     private final int handleTouchRadius;
+    private final int resizeElevation;
+    private int cellSize;
+
     private final int frameColor;
     private final int frameOverlayColor;
-    private int cellSize;
 
     private final GestureDetector gestureDetector;
 
@@ -76,6 +79,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 ContextCompat.getColor(context, R.color.widget_resize_frame_shadow));
         handleRadius = res.getDimensionPixelSize(R.dimen.widget_resize_frame_handle_radius);
         drawFrameInset = res.getDimensionPixelSize(R.dimen.widget_resize_frame_inset);
+        resizeElevation = ResUtils.px2dp(getContext(), 10);
         handleTouchRadius = handleRadius * 3;
         handlePaint.setStyle(Paint.Style.FILL);
         handlePaint.setColor(frameColor);
@@ -145,6 +149,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             handle = null;
             if (!resizeMode) {
                 gestureDetector.setIsLongpressEnabled(false);
+                setElevation(0f);
             }
             setWillNotDraw(!resizeMode);
             invalidate();
@@ -221,6 +226,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 }
             }
             if (handle != null) {
+                setElevation(resizeElevation);
                 gestureDetector.setIsLongpressEnabled(false);
                 getParent().requestDisallowInterceptTouchEvent(true);
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -302,6 +308,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             handle = null;
             updateFrame();
             invalidate();
+            setElevation(0f);
             if (triggerCommitAction && commitAction != null) {
                 commitAction.run();
             }
