@@ -178,7 +178,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             onNewWidgetConfigured(resultCode == Activity.RESULT_OK);
             return;
         } else if (requestCode == REQUEST_CODE_RECONFIGURE) {
-            // TODO
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -236,7 +235,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         for (int appWidgetId : appWidgetHost.getAppWidgetIds()) {
             AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
             if (info != null) {
-                addWidget(appWidgetId, info);
+                addWidget(appWidgetId, info, false);
             } else {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
             }
@@ -290,12 +289,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void addWidget(AppWidgetProviderInfo info) {
-        addWidget(newAppWidgetId, info);
+        addWidget(newAppWidgetId, info, true);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         updateWidgets();
     }
 
-    private void addWidget(int appWidgetId, AppWidgetProviderInfo info) {
+    private void addWidget(int appWidgetId, AppWidgetProviderInfo info, boolean isNew) {
         Bundle options = new Bundle(appWidgetManager.getAppWidgetOptions(appWidgetId));
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
         int maxAvailWidth = cellSize * gridSize;
@@ -303,9 +302,21 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         Size minSize = widgetSizeHelper.getMinSize(info, options);
         int width = cellSize(cellSize, minSize.getWidth(), maxAvailWidth);
         int height = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
-        int minWidth = cellSize(cellSize, info.minWidth, maxAvailWidth);
-        int minHeight = cellSize(cellSize, info.minHeight, maxAvailHeight);
-        AppWidget.Size size = new AppWidget.Size(minWidth, minHeight, width, height, maxAvailWidth, maxAvailHeight);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isNew) {
+            if (info.targetCellWidth > 0) {
+                width = cellSize * Math.min(gridSize, info.targetCellWidth);
+            }
+            if (info.targetCellHeight > 0) {
+                height = cellSize * Math.min(gridSize, info.targetCellHeight);
+            }
+        }
+        Size minSizeFromInfo = widgetSizeHelper.getMinSizeFromInfo(info);
+        int minWidth = cellSize(cellSize, minSizeFromInfo.getWidth(), maxAvailHeight);
+        int minHeight = cellSize(cellSize, minSizeFromInfo.getHeight(), maxAvailHeight);
+        AppWidget.Size size = new AppWidget.Size(
+                minWidth, minHeight,
+                width, height,
+                maxAvailWidth, maxAvailHeight);
         widgetSizeHelper.resize(appWidgetId, options, width, height);
         widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options, size));
     }
