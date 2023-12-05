@@ -211,6 +211,9 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!resizeModeActive) {
+            return super.onTouchEvent(event);
+        }
         resetFrame(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             handle = null;
