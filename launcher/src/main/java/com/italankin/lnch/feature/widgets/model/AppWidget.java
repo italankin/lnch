@@ -3,7 +3,7 @@ package com.italankin.lnch.feature.widgets.model;
 import android.appwidget.AppWidgetProviderInfo;
 import android.os.Bundle;
 
-public class AppWidget implements WidgetAdapterItem {
+public class AppWidget {
 
     public final int appWidgetId;
     public final AppWidgetProviderInfo providerInfo;

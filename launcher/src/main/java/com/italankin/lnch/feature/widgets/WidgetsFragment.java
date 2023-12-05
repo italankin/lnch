@@ -29,20 +29,18 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.widgets.adapter.NoWidgetsAdapter;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
-import com.italankin.lnch.feature.widgets.adapter.WidgetCompositeAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
-import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, BackButtonHandler, WidgetAdapter.Listener {
+public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, BackButtonHandler,
+        WidgetAdapter.WidgetActionListener {
 
     public static final int REQUEST_CODE_CONFIGURE = 133;
     public static final int REQUEST_CODE_RECONFIGURE = 173;
@@ -72,7 +70,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
-    private WidgetCompositeAdapter adapter;
+    private WidgetAdapter adapter;
     private final WidgetItemsState widgetItemsState = new WidgetItemsState();
 
     private final ActivityResultLauncher<Integer> addWidgetLauncher = registerForActivityResult(
@@ -138,27 +136,14 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         actionCommit.setOnClickListener(v -> exitEditMode());
 
         widgetsList = view.findViewById(R.id.widgets_list);
-        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                WidgetAdapterItem item = adapter.getItem(viewHolder.getBindingAdapterPosition());
-                if (item instanceof AppWidget) {
-                    int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-                    return makeMovementFlags(dragFlags, 0);
-                }
-                return 0;
-            }
-
+        int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(dragDirs, 0) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView,
                     @NonNull RecyclerView.ViewHolder viewHolder,
                     @NonNull RecyclerView.ViewHolder target) {
                 int from = viewHolder.getBindingAdapterPosition();
-                WidgetAdapterItem itemFrom = widgetItemsState.getItems().get(from);
-                if (!(itemFrom instanceof AppWidget)) return false;
                 int to = target.getBindingAdapterPosition();
-                WidgetAdapterItem itemTo = widgetItemsState.getItems().get(to);
-                if (!(itemTo instanceof AppWidget)) return false;
                 widgetItemsState.swapWidgets(from, to);
                 adapter.notifyItemMoved(from, to);
                 return true;
@@ -181,11 +166,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 itemTouchHelper.startDrag(holder);
             }
         };
-        adapter = new WidgetCompositeAdapter.Builder(requireContext())
-                .add(new WidgetAdapter(appWidgetHost, cellSize, widgetLongClickListener, this))
-                .add(new NoWidgetsAdapter())
-                .recyclerView(widgetsList)
-                .create();
+        adapter = new WidgetAdapter(appWidgetHost, cellSize, widgetLongClickListener, this);
+        widgetsList.setAdapter(adapter);
         registerWindowInsets(view);
         bindWidgets();
     }
@@ -289,6 +271,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
         } else {
             addWidget(info);
+            widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
     }
 
@@ -300,6 +283,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 return;
             }
             addWidget(info);
+            widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         } else {
             cancelAddNewWidget(newAppWidgetId);
         }
@@ -349,7 +333,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private void exitEditMode() {
         preferences.set(Preferences.WIDGETS_ORDER, widgetItemsState.getWidgetsOrder());
-        widgetItemsState.setResizeMode(false, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
+        widgetItemsState.setResizeMode(false, false);
         updateWidgets();
     }
 
@@ -361,7 +345,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             actionCommit.setVisibility(View.GONE);
             actionEdit.setVisibility(View.VISIBLE);
         }
-        adapter.setDataset(widgetItemsState.getItems());
+        adapter.setItems(widgetItemsState.getItems());
         adapter.notifyDataSetChanged();
     }
 
@@ -376,12 +360,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                WidgetAdapterItem item = adapter.getItem(position);
-                if (item instanceof AppWidget) {
-                    AppWidget.Size size = ((AppWidget) item).size;
-                    return Math.min(size.width / cellSize, gridSize);
-                }
-                return gridSize;
+                AppWidget item = adapter.getItem(position);
+                return Math.min(item.size.width / cellSize, gridSize);
             }
         });
         widgetsList.setLayoutManager(layoutManager);

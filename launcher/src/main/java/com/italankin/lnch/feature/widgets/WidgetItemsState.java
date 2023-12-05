@@ -1,36 +1,30 @@
 package com.italankin.lnch.feature.widgets;
 
 import com.italankin.lnch.feature.widgets.model.AppWidget;
-import com.italankin.lnch.feature.widgets.model.NoWidgetsItem;
-import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import com.italankin.lnch.util.ListUtils;
 
 import java.util.*;
 
 class WidgetItemsState {
 
-    private final NoWidgetsItem noWidgetsItem = new NoWidgetsItem();
     private final List<AppWidget> appWidgets = new ArrayList<>();
     private boolean resizeMode = false;
-    private final List<WidgetAdapterItem> items = new ArrayList<>();
 
     public void setResizeMode(boolean resizeMode, boolean forceResize) {
         this.resizeMode = resizeMode;
         for (AppWidget appWidget : appWidgets) {
             appWidget.resizeMode = resizeMode;
-            appWidget.forceResize = forceResize;
+            appWidget.forceResize = resizeMode && forceResize;
         }
     }
 
     public void addWidget(AppWidget appWidget) {
         appWidget.resizeMode = resizeMode;
         appWidgets.add(appWidget);
-        rebuild();
     }
 
     public void clearWidgets() {
         appWidgets.clear();
-        rebuild();
     }
 
     public void removeWidgetById(int appWidgetId) {
@@ -38,27 +32,21 @@ class WidgetItemsState {
         while (iterator.hasNext()) {
             if (iterator.next().appWidgetId == appWidgetId) {
                 iterator.remove();
-                rebuild();
                 break;
             }
         }
     }
 
     public void swapWidgets(int from, int to) {
-        AppWidget widgetFrom = (AppWidget) items.get(from);
-        AppWidget widgetTo = (AppWidget) items.get(to);
-        int fromIndex = appWidgets.indexOf(widgetFrom);
-        int toIndex = appWidgets.indexOf(widgetTo);
-        ListUtils.move(appWidgets, fromIndex, toIndex);
-        ListUtils.move(items, from, to);
+        ListUtils.move(appWidgets, from, to);
     }
 
     public boolean isResizeMode() {
         return resizeMode;
     }
 
-    public List<WidgetAdapterItem> getItems() {
-        return items;
+    public List<AppWidget> getItems() {
+        return appWidgets;
     }
 
     public void setWidgetsOrder(List<Integer> order) {
@@ -77,7 +65,6 @@ class WidgetItemsState {
             }
         }
         appWidgets.addAll(map.values());
-        rebuild();
     }
 
     public List<Integer> getWidgetsOrder() {
@@ -86,15 +73,5 @@ class WidgetItemsState {
             result.add(appWidget.appWidgetId);
         }
         return result;
-    }
-
-    private void rebuild() {
-        int size = appWidgets.size();
-        items.clear();
-        if (size > 0) {
-            items.addAll(appWidgets);
-        } else {
-            items.add(noWidgetsItem);
-        }
     }
 }
