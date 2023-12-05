@@ -6,6 +6,7 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import com.italankin.lnch.model.fonts.FontManager;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import java.util.*;
 
@@ -374,6 +375,57 @@ public interface Preferences {
             WidgetsPosition::from);
 
     /**
+     * Current order of the widgets
+     */
+    Pref<List<Integer>> WIDGETS_ORDER = Prefs.create(
+            "widgets_order",
+            Collections.emptyList(),
+            (preferences, key) -> {
+                String value = preferences.getString(key, null);
+                if (value == null || value.isEmpty()) {
+                    return null;
+                }
+                String[] split = value.split(",");
+                ArrayList<Integer> result = new ArrayList<>(split.length);
+                for (String s : split) {
+                    try {
+                        result.add(Integer.parseInt(s));
+                    } catch (NumberFormatException e) {
+                        Timber.e(e, "widgets_order:");
+                    }
+                }
+                return result;
+            },
+            (preferences, key, newValue) -> {
+                if (newValue.isEmpty()) {
+                    preferences.edit().remove(key).apply();
+                    return;
+                }
+                StringBuilder result = new StringBuilder(newValue.size() * 2);
+                result.append(newValue.get(0));
+                for (int i = 1; i < newValue.size(); i++) {
+                    result.append(',');
+                    result.append(newValue.get(i));
+                }
+                preferences.edit().putString(key, result.toString()).apply();
+            }
+    );
+
+    /**
+     * Horizontal grid size for widgets
+     */
+    Pref<Integer> WIDGETS_HORIZONTAL_GRID_SIZE = Prefs.createInteger(
+            "widgets_horizontal_grid_size",
+            5);
+
+    /**
+     * Horizontal grid size for widgets
+     */
+    Pref<Boolean> WIDGETS_FORCE_RESIZE = Prefs.createBoolean(
+            "widgets_force_resize",
+            false);
+
+    /**
      * Animate home screen list appearance
      */
     Pref<Boolean> APPS_LIST_ANIMATE = Prefs.createBoolean(
@@ -533,6 +585,9 @@ public interface Preferences {
             STATUS_BAR_COLOR,
             ENABLE_WIDGETS,
             WIDGETS_POSITION,
+            WIDGETS_ORDER,
+            WIDGETS_HORIZONTAL_GRID_SIZE,
+            WIDGETS_FORCE_RESIZE,
             APPS_LIST_ANIMATE,
             SHORTCUTS_SORT_MODE,
             NOTIFICATION_DOT,

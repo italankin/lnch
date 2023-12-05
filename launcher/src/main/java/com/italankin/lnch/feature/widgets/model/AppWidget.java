@@ -8,22 +8,18 @@ public class AppWidget implements WidgetAdapterItem {
     public final int appWidgetId;
     public final AppWidgetProviderInfo providerInfo;
     public final Bundle options;
-    public final int minWidth, minHeight, maxWidth, maxHeight;
+    public final Size size;
+    public boolean resizeMode = false;
+    public boolean forceResize = false;
 
     public AppWidget(int appWidgetId,
             AppWidgetProviderInfo providerInfo,
             Bundle options,
-            int minWidth,
-            int minHeight,
-            int maxWidth,
-            int maxHeight) {
+            Size size) {
         this.appWidgetId = appWidgetId;
         this.providerInfo = providerInfo;
         this.options = options;
-        this.minWidth = minWidth;
-        this.minHeight = minHeight;
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
+        this.size = size;
     }
 
     @Override
@@ -34,39 +30,31 @@ public class AppWidget implements WidgetAdapterItem {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         AppWidget appWidget = (AppWidget) o;
-
-        if (appWidgetId != appWidget.appWidgetId) {
-            return false;
-        }
-        if (minWidth != appWidget.minWidth) {
-            return false;
-        }
-        if (minHeight != appWidget.minHeight) {
-            return false;
-        }
-        if (maxWidth != appWidget.maxWidth) {
-            return false;
-        }
-        if (maxHeight != appWidget.maxHeight) {
-            return false;
-        }
-        if (!options.equals(appWidget.options)) {
-            return false;
-        }
-        return providerInfo.provider.equals(appWidget.providerInfo.provider);
+        return appWidgetId == appWidget.appWidgetId;
     }
 
     @Override
     public int hashCode() {
-        int result = appWidgetId;
-        result = 31 * result + providerInfo.provider.hashCode();
-        result = 31 * result + options.hashCode();
-        result = 31 * result + minWidth;
-        result = 31 * result + minHeight;
-        result = 31 * result + maxWidth;
-        result = 31 * result + maxHeight;
-        return result;
+        return appWidgetId;
+    }
+
+    public static class Size {
+
+        public final int minWidth;
+        public final int minHeight;
+        public int width;
+        public int height;
+        public final int maxWidth;
+        public final int maxHeight;
+
+        public Size(int minWidth, int minHeight, int width, int height, int maxWidth, int maxHeight) {
+            this.minWidth = minWidth;
+            this.minHeight = minHeight;
+            this.width = width;
+            this.height = height;
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+        }
     }
 }

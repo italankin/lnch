@@ -14,8 +14,11 @@ import java.util.List;
 public abstract class AbstractWidgetAdapter<VH extends AbstractWidgetAdapter.ViewHolder>
         implements AdapterDelegate<VH, AppWidget> {
 
+    protected CompositeAdapter<?> adapter;
+
     @Override
     public void onAttached(CompositeAdapter<AppWidget> adapter) {
+        this.adapter = adapter;
     }
 
     @NonNull
@@ -47,7 +50,7 @@ public abstract class AbstractWidgetAdapter<VH extends AbstractWidgetAdapter.Vie
 
     @Override
     public long getItemId(int position, AppWidget item) {
-        return item.appWidgetId;
+        return item.hashCode();
     }
 
     abstract static class ViewHolder extends RecyclerView.ViewHolder {

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@tools:sample/backgrounds/scenic"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_resize_frame_inset"
+        android:clipChildren="false">
+
+        <ImageView
+            android:id="@+id/widget_delete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start|top"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:src="@drawable/ic_widget_delete"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/widget_configure"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start|top"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:src="@drawable/ic_widget_configure"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</merge>

@@ -1,13 +1,11 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.model.NoWidgetsItem;
 import me.italankin.adapterdelegates.BaseAdapterDelegate;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class NoWidgetsAdapter extends BaseAdapterDelegate<NoWidgetsAdapter.NoWidgetsViewHolder, NoWidgetsItem> {
 
@@ -33,6 +31,11 @@ public class NoWidgetsAdapter extends BaseAdapterDelegate<NoWidgetsAdapter.NoWid
     @Override
     public boolean isType(int position, Object item) {
         return item instanceof NoWidgetsItem;
+    }
+
+    @Override
+    public long getItemId(int position, NoWidgetsItem item) {
+        return item.hashCode();
     }
 
     static class NoWidgetsViewHolder extends RecyclerView.ViewHolder {

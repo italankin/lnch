@@ -16,150 +16,37 @@
 
 package com.italankin.lnch.feature.widgets.host;
 
-import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHostView;
-import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
-import com.italankin.lnch.feature.widgets.util.CheckLongPressHelper;
+import com.italankin.lnch.R;
 import timber.log.Timber;
 
-public class LauncherAppWidgetHostView extends AppWidgetHostView implements View.OnLongClickListener {
-
-    private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this, this);
+public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     private boolean mIsScrollable;
-    private float mSlop;
-
-    private int maxWidth;
-    private int maxHeight;
-
-    private float mStartX;
-    private float mStartY;
-
-    private final Bundle widgetOptions = new Bundle();
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
-    }
-
-    public void setDimensionsConstraints(int minWidth, int minHeight, int maxWidth, int maxHeight) {
-        AppWidgetProviderInfo info = getAppWidgetInfo();
-        setMinimumWidth(Math.max(minWidth, info.minWidth));
-        setMinimumHeight(Math.max(minHeight, info.minHeight));
-        if ((info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) == 0) {
-            this.maxWidth = Math.min(getMinimumWidth(), maxWidth);
-        } else {
-            this.maxWidth = maxWidth;
-        }
-        if ((info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) == 0) {
-            this.maxHeight = Math.min(getMinimumHeight(), maxHeight);
-        } else {
-            this.maxHeight = maxHeight;
-        }
-        widgetOptions.clear();
-        requestLayout();
-        invalidate();
+        setClipToPadding(false);
     }
 
     @Override
-    public boolean onLongClick(View view) {
-        if (mIsScrollable) {
-            getParent().requestDisallowInterceptTouchEvent(false);
-        }
-        view.performLongClick();
-        return true;
+    public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
+        super.setAppWidget(appWidgetId, info);
+        int p = getResources().getDimensionPixelSize(R.dimen.widget_padding);
+        setPadding(p, p, p, p);
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // Just in case the previous long press hasn't been cleared, we make sure to start fresh
-        // on touch down.
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            mLongPressHelper.cancelLongPress();
-        }
-
-        // Consume any touch events for ourselves after longpress is triggered
-        if (mLongPressHelper.hasPerformedLongPress()) {
-            mLongPressHelper.cancelLongPress();
-            return true;
-        }
-
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mStartX = ev.getX();
-                mStartY = ev.getY();
-                if (mIsScrollable) {
-                    getParent().requestDisallowInterceptTouchEvent(true);
-                }
-                mLongPressHelper.postCheckForLongPress();
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                mLongPressHelper.cancelLongPress();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float x = ev.getX();
-                float y = ev.getY();
-                if (!pointInView(this, x, y, mSlop) || Math.abs(x - mStartX) >= mSlop || Math.abs(y - mStartY) >= mSlop) {
-                    mLongPressHelper.cancelLongPress();
-                }
-                break;
-        }
-
-        // Otherwise continue letting touch events fall through to children
-        return false;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        // If the widget does not handle touch, then cancel
-        // long press when we release the touch
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                mLongPressHelper.cancelLongPress();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float x = ev.getX();
-                float y = ev.getY();
-                if (!pointInView(this, x, y, mSlop) || Math.abs(x - mStartX) >= mSlop || Math.abs(y - mStartY) >= mSlop) {
-                    mLongPressHelper.cancelLongPress();
-                }
-                break;
+        if (ev.getAction() == MotionEvent.ACTION_DOWN && mIsScrollable) {
+            getParent().requestDisallowInterceptTouchEvent(true);
         }
         return false;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(
-                constrainWidth(maxWidth),
-                constrainHeight(heightMeasureSpec, maxHeight)
-        );
-        if (widgetOptions.isEmpty()) {
-            widgetOptions.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, getMeasuredWidth());
-            widgetOptions.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, getMeasuredHeight());
-            updateAppWidgetOptions(widgetOptions);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-    }
-
-    @Override
-    public void cancelLongPress() {
-        super.cancelLongPress();
-        mLongPressHelper.cancelLongPress();
     }
 
     @Override
@@ -184,31 +71,6 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
         mIsScrollable = checkScrollableRecursively(this);
     }
 
-    private int constrainWidth(int max) {
-        if ((getAppWidgetInfo().resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) == 0) {
-            return MeasureSpec.makeMeasureSpec(getMinimumWidth(), MeasureSpec.EXACTLY);
-        } else {
-            return MeasureSpec.makeMeasureSpec(max, MeasureSpec.EXACTLY);
-        }
-    }
-
-    private int constrainHeight(int spec, int max) {
-        if ((getAppWidgetInfo().resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) == 0) {
-            return MeasureSpec.makeMeasureSpec(getMinimumHeight(), MeasureSpec.EXACTLY);
-        }
-        int mode = MeasureSpec.getMode(spec);
-        int size = MeasureSpec.getSize(spec);
-        switch (mode) {
-            case MeasureSpec.AT_MOST:
-                return MeasureSpec.makeMeasureSpec(Math.min(size, max), MeasureSpec.AT_MOST);
-            case MeasureSpec.EXACTLY:
-                return MeasureSpec.makeMeasureSpec(Math.min(size, max), MeasureSpec.EXACTLY);
-            default:
-            case MeasureSpec.UNSPECIFIED:
-                return MeasureSpec.makeMeasureSpec(max, MeasureSpec.AT_MOST);
-        }
-    }
-
     private boolean checkScrollableRecursively(ViewGroup viewGroup) {
         if (viewGroup.canScrollVertically(1) || viewGroup.canScrollVertically(-1)) {
             return true;
@@ -223,9 +85,5 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements View
             }
         }
         return false;
-    }
-
-    private static boolean pointInView(View v, float localX, float localY, float slop) {
-        return localX >= -slop && localY >= -slop && localX < (v.getWidth() + slop) && localY < (v.getHeight() + slop);
     }
 }

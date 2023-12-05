@@ -115,11 +115,10 @@ public class HomeActivity extends AppActivity implements HomeView {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && requestCode == WidgetsFragment.REQUEST_CODE_CONFIGURE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && WidgetsFragment.isWidgetRequestCode(requestCode)) {
             int index = pagerAdapter.indexOfFragment(WidgetsFragment.class);
             if (index >= 0) {
-                ((WidgetsFragment) pagerAdapter.getFragmentAt(index))
-                        .onActivityResult(WidgetsFragment.REQUEST_CODE_CONFIGURE, resultCode, data);
+                ((WidgetsFragment) pagerAdapter.getFragmentAt(index)).onActivityResult(requestCode, resultCode, data);
                 return;
             }
         }

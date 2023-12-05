@@ -6,4 +6,7 @@
     <color name="notification_dot">#ff2600</color>
     <color name="pinned_shortcut_default">#ffffff</color>
     <color name="fullscreen_folder_overlay">#d0000000</color>
+    <color name="widget_resize_frame">#fff</color>
+    <color name="widget_resize_frame_overlay">#4fff</color>
+    <color name="widget_resize_frame_shadow">#4000</color>
 </resources>
