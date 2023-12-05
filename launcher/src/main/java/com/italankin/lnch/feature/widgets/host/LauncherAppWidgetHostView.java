@@ -28,11 +28,14 @@ import timber.log.Timber;
 
 public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
-    private boolean mIsScrollable;
+    private static final int[] LOC = new int[2];
+
+    private View scrollableView;
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
         setClipToPadding(false);
+        setClipChildren(false);
     }
 
     @Override
@@ -43,8 +46,13 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN && mIsScrollable) {
-            getParent().requestDisallowInterceptTouchEvent(true);
+        if (ev.getAction() == MotionEvent.ACTION_DOWN && scrollableView != null) {
+            int x = (int) ev.getRawX();
+            int y = (int) ev.getRawY();
+            scrollableView.getLocationOnScreen(LOC);
+            if (x >= LOC[0] && y >= LOC[1] && x <= (LOC[0] + scrollableView.getWidth()) && y <= (LOC[1] + scrollableView.getHeight())) {
+                getParent().requestDisallowInterceptTouchEvent(true);
+            }
         }
         return false;
     }
@@ -68,22 +76,23 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             Timber.e(e);
             post(this::switchToErrorView);
         }
-        mIsScrollable = checkScrollableRecursively(this);
+        scrollableView = checkScrollableRecursively(this);
     }
 
-    private boolean checkScrollableRecursively(ViewGroup viewGroup) {
+    private View checkScrollableRecursively(ViewGroup viewGroup) {
         if (viewGroup.canScrollVertically(1) || viewGroup.canScrollVertically(-1)) {
-            return true;
+            return viewGroup;
         } else {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
                 if (child instanceof ViewGroup) {
-                    if (checkScrollableRecursively((ViewGroup) child)) {
-                        return true;
+                    View scrollableView = checkScrollableRecursively((ViewGroup) child);
+                    if (scrollableView != null) {
+                        return scrollableView;
                     }
                 }
             }
         }
-        return false;
+        return null;
     }
 }
