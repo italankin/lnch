@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:background="@tools:sample/backgrounds/scenic">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/widgets_list"
@@ -22,9 +23,14 @@
         tools:layout_width="300dp" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
         android:animateLayoutChanges="true"
+        android:background="@drawable/bg_widget_actions"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -34,7 +40,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/cd_add_widget_button"
             android:foreground="?selectableItemBackgroundBorderless"
-            android:padding="16dp"
+            android:padding="12dp"
             android:src="@drawable/ic_add_widget" />
 
         <ImageView
@@ -42,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:foreground="?selectableItemBackgroundBorderless"
-            android:padding="16dp"
+            android:padding="12dp"
             android:src="@drawable/ic_action_rename" />
 
         <ImageView
@@ -50,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:foreground="?selectableItemBackgroundBorderless"
-            android:padding="16dp"
+            android:padding="12dp"
             android:src="@drawable/ic_customize_save" />
 
     </LinearLayout>

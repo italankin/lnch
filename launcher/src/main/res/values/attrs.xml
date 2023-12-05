@@ -38,5 +38,8 @@
 
     <attr name="colorPreviewBorder" format="color|reference" />
 
+    <!-- background for widget actions bar -->
+    <attr name="colorWidgetActions" format="color|reference" />
+
     <attr name="toolbarOverlayTheme" format="reference" />
 </resources>
