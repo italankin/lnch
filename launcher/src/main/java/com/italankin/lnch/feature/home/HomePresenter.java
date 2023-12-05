@@ -1,17 +1,14 @@
 package com.italankin.lnch.feature.home;
 
 import android.graphics.Color;
-
 import androidx.core.util.Pair;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import javax.inject.Inject;
 
 @InjectViewState
 public class HomePresenter extends AppPresenter<HomeView> {
@@ -67,7 +64,12 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        Observable.merge(preferences.observeValue(Preferences.ENABLE_WIDGETS), preferences.observeValue(Preferences.WIDGETS_POSITION))
+        preferences.observe()
+                .filter(pref -> {
+                    return pref == Preferences.ENABLE_WIDGETS ||
+                            pref == Preferences.WIDGETS_POSITION ||
+                            pref == Preferences.WIDGETS_HORIZONTAL_GRID_SIZE;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Object>() {
                     @Override

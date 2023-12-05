@@ -18,7 +18,7 @@
     <dimen name="search_bar_size_large">80dp</dimen>
     <dimen name="search_bar_text_size_large">24sp</dimen>
     <dimen name="appearance_overlay_container_height">200dp</dimen>
-    <dimen name="widget_max_cell_size">80dp</dimen>
+    <dimen name="widget_max_cell_size">120dp</dimen>
     <dimen name="widget_min_width">64dp</dimen>
     <dimen name="widget_list_padding_bottom_extra">96dp</dimen>
     <dimen name="widget_padding">8dp</dimen>

@@ -54,7 +54,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
-    private static final int DEFAULT_HEIGHT_MAX_CELLS = 6;
+    private static final float MAX_HEIGHT_FACTOR = .75f;
 
     private IntentQueue intentQueue;
     private Preferences preferences;
@@ -69,6 +69,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private AppWidgetManager appWidgetManager;
     private WidgetSizeHelper widgetSizeHelper;
     private int cellSize;
+    private int maxHeightCells;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
@@ -315,7 +316,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         Bundle options = new Bundle(appWidgetManager.getAppWidgetOptions(appWidgetId));
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
         int maxAvailWidth = cellSize * gridSize;
-        int maxAvailHeight = cellSize * DEFAULT_HEIGHT_MAX_CELLS;
+        int maxAvailHeight = cellSize * maxHeightCells;
         Size minSize = widgetSizeHelper.getMinSize(info, options);
         int width = cellSize(cellSize, minSize.getWidth(), maxAvailWidth);
         int height = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
@@ -368,6 +369,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private void recalculateCellSize() {
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
         cellSize = calculateCellSize(gridSize);
+        maxHeightCells = calculateMaxHeightCells(cellSize);
         ViewGroup.LayoutParams wlp = widgetsList.getLayoutParams();
         wlp.width = cellSize * gridSize;
         widgetsList.setLayoutParams(wlp);
@@ -392,6 +394,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         int size = Math.min(dm.widthPixels, dm.heightPixels) / gridSize;
         int maxCellSize = res.getDimensionPixelSize(R.dimen.widget_max_cell_size);
         return Math.min(size, maxCellSize);
+    }
+
+    private int calculateMaxHeightCells(int cellSize) {
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int maxSize = (int) (dm.heightPixels * MAX_HEIGHT_FACTOR);
+        return maxSize / cellSize;
     }
 
     private static int cellSize(int cellSize, int size, int max) {

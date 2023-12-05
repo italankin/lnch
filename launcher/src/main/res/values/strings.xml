@@ -192,7 +192,10 @@
     <string name="settings_home_widgets">Widgets</string>
     <string name="settings_home_widgets_enable">Enable widgets</string>
     <string name="settings_home_widgets_enable_summary">Add a page with widgets on home screen</string>
+    <string name="settings_home_widgets_force_resize">Force resize</string>
+    <string name="settings_home_widgets_force_resize_summary">Allow changing size of the widgets even when they do not support resize</string>
     <string name="settings_home_widgets_position">Widgets page position</string>
+    <string name="settings_home_widgets_grid_size">Grid size</string>
 
     <string name="settings_home_hidden_items">Hidden items</string>
     <string name="settings_home_hidden_items_empty">No hidden items</string>

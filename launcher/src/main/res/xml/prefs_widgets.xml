@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="enable_widgets"
@@ -12,4 +13,14 @@
         android:key="widgets_position"
         android:summary="%s"
         android:title="@string/settings_home_widgets_position" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="widgets_force_resize"
+        android:summary="@string/settings_home_widgets_force_resize_summary"
+        android:title="@string/settings_home_widgets_force_resize" />
+    <SeekBarPreference
+        android:defaultValue="5"
+        android:key="widgets_horizontal_grid_size"
+        android:title="@string/settings_home_widgets_grid_size"
+        app:showSeekBarValue="true" />
 </PreferenceScreen>

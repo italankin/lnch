@@ -305,6 +305,21 @@ final class SettingsEntries {
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.WIDGETS_FORCE_RESIZE)
+                        .title(R.string.settings_home_widgets_force_resize)
+                        .summary(R.string.settings_home_widgets_force_resize_summary)
+                        .category(R.string.settings_home_widgets)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
+                        .title(R.string.settings_home_widgets_grid_size)
+                        .category(R.string.settings_home_widgets)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
 
                 /* --- Miscellaneous --- */
 

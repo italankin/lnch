@@ -414,9 +414,9 @@ public interface Preferences {
     /**
      * Horizontal grid size for widgets
      */
-    Pref<Integer> WIDGETS_HORIZONTAL_GRID_SIZE = Prefs.createInteger(
+    RangePref<Integer> WIDGETS_HORIZONTAL_GRID_SIZE = Prefs.createIntegerRange(
             "widgets_horizontal_grid_size",
-            5);
+            5, 4, 8);
 
     /**
      * Horizontal grid size for widgets

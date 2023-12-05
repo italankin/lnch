@@ -3,13 +3,13 @@ package com.italankin.lnch.feature.settings.widgets;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.SeekBarPreference;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public class WidgetsSettingsFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -21,6 +21,9 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_widgets);
+        SeekBarPreference seekBarPreference = findPreference(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
+        seekBarPreference.setMin(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.min());
+        seekBarPreference.setMax(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.max());
     }
 
     @Override
