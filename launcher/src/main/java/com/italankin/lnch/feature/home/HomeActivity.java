@@ -6,12 +6,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -21,22 +21,21 @@ import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
+import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.IntentQueue;
-import com.italankin.lnch.feature.home.util.PagerIndicatorAnimator;
+import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
-import com.italankin.lnch.util.ResUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class HomeActivity extends AppActivity implements HomeView {
+public class HomeActivity extends AppActivity implements HomeView, HomePagerHost {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -45,9 +44,8 @@ public class HomeActivity extends AppActivity implements HomeView {
     private IntentQueue intentQueue;
 
     private View root;
-    private ViewPager pager;
-    private ScrollingPagerIndicator pagerIndicator;
-    private HomePagerAdapter pagerAdapter;
+    private ViewPager2 viewPager;
+    private HomePagerAdapter homePagerAdapter;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -68,8 +66,7 @@ public class HomeActivity extends AppActivity implements HomeView {
         setupWindow();
         setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
-        pager = findViewById(R.id.pager);
-        pagerIndicator = findViewById(R.id.pager_indicator);
+        viewPager = findViewById(R.id.pager);
         setupRoot();
         setupPager();
 
@@ -80,11 +77,11 @@ public class HomeActivity extends AppActivity implements HomeView {
     protected void onResume() {
         super.onResume();
         if (isWidgetsEnabled()) {
-            int currentItem = pager.getCurrentItem();
-            if (currentItem == -1 || currentItem == pagerAdapter.indexOfFragment(AppsFragment.class)) {
+            int currentItem = viewPager.getCurrentItem();
+            if (currentItem == -1 || currentItem == homePagerAdapter.indexOfFragment(AppsFragment.class)) {
                 return;
             }
-            AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+            AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
             if (appsFragment != null) {
                 appsFragment.setAnimateOnResume(false);
             }
@@ -94,7 +91,7 @@ public class HomeActivity extends AppActivity implements HomeView {
     @Override
     protected void onRestart() {
         super.onRestart();
-        AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+        AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
         if (appsFragment != null) {
             appsFragment.onRestart();
         }
@@ -104,9 +101,13 @@ public class HomeActivity extends AppActivity implements HomeView {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-            int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
-            if (pager.getCurrentItem() != appsPosition) {
-                pager.setCurrentItem(appsPosition, true);
+            Fragment current = homePagerAdapter.getFragmentAt(viewPager.getCurrentItem());
+            if (current instanceof MainActionHandler && ((MainActionHandler) current).handle()) {
+                return;
+            }
+            int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
+            if (viewPager.getCurrentItem() != appsPosition) {
+                viewPager.setCurrentItem(appsPosition, true);
                 return;
             }
         }
@@ -116,9 +117,9 @@ public class HomeActivity extends AppActivity implements HomeView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && WidgetsFragment.isWidgetRequestCode(requestCode)) {
-            int index = pagerAdapter.indexOfFragment(WidgetsFragment.class);
+            int index = homePagerAdapter.indexOfFragment(WidgetsFragment.class);
             if (index >= 0) {
-                ((WidgetsFragment) pagerAdapter.getFragmentAt(index)).onActivityResult(requestCode, resultCode, data);
+                ((WidgetsFragment) homePagerAdapter.getFragmentAt(index)).onActivityResult(requestCode, resultCode, data);
                 return;
             }
         }
@@ -130,18 +131,23 @@ public class HomeActivity extends AppActivity implements HomeView {
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return;
         }
-        int currentItem = pager.getCurrentItem();
-        Fragment fragment = pagerAdapter.getFragmentAt(currentItem);
+        int currentItem = viewPager.getCurrentItem();
+        Fragment fragment = homePagerAdapter.getFragmentAt(currentItem);
         boolean handled = false;
         if (fragment instanceof BackButtonHandler) {
             handled = ((BackButtonHandler) fragment).onBackPressed();
         }
         if (!handled) {
-            int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
+            int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
             if (currentItem != appsPosition) {
-                pager.setCurrentItem(appsPosition, true);
+                viewPager.setCurrentItem(appsPosition, true);
             }
         }
+    }
+
+    @Override
+    public void setPagerEnabled(boolean enabled) {
+        viewPager.setUserInputEnabled(enabled);
     }
 
     @Override
@@ -155,27 +161,6 @@ public class HomeActivity extends AppActivity implements HomeView {
         if (foreground instanceof FakeStatusBarDrawable) {
             FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
             drawable.setColor(color);
-        }
-    }
-
-    @Override
-    public void onHomePagerIndicatorVisibilityChanged(boolean visible) {
-        updatePagerIndicatorState(visible);
-    }
-
-    private void updatePagerIndicatorState() {
-        updatePagerIndicatorState(preferences.get(Preferences.HOME_PAGER_INDICATOR));
-    }
-
-    private void updatePagerIndicatorState(boolean visible) {
-        boolean pages = pagerAdapter.getCount() > 1;
-        if (visible && pages) {
-            pagerIndicator.setVisibility(View.VISIBLE);
-            pagerIndicator.setAlpha(0);
-            pagerIndicator.attachToPager(pager);
-        } else {
-            pagerIndicator.detachFromPager();
-            pagerIndicator.setVisibility(View.GONE);
         }
     }
 
@@ -205,11 +190,6 @@ public class HomeActivity extends AppActivity implements HomeView {
             foreground.setColor(statusBarColor);
             root.setForeground(foreground);
 
-            MarginLayoutParams layoutParams = (MarginLayoutParams) pagerIndicator.getLayoutParams();
-            layoutParams.bottomMargin = insets.getStableInsetBottom() + ResUtils.px2dp(this, 22);
-            pagerIndicator.requestLayout();
-            pagerIndicator.invalidate();
-
             return insets;
         });
         Disposable disposable = preferences.observe(Preferences.HIDE_STATUS_BAR)
@@ -227,14 +207,13 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     private void setupPager() {
-        pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        homePagerAdapter = new HomePagerAdapter(this);
         updateAdapter();
-        pager.addOnPageChangeListener(new PagerIndicatorAnimator(pagerIndicator));
-        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrollStateChanged(int state) {
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    AppsFragment appsFragment = pagerAdapter.getAppsFragment();
+                    AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
                     if (appsFragment != null) {
                         appsFragment.dismissPopups();
                     }
@@ -244,16 +223,11 @@ public class HomeActivity extends AppActivity implements HomeView {
     }
 
     private void updateAdapter() {
-        if (pagerIndicator.getVisibility() == View.VISIBLE) {
-            // detach pager indicator, because it does not handle adapter changes correctly
-            pagerIndicator.detachFromPager();
-        }
         List<Class<? extends Fragment>> pages = getPages();
-        pagerAdapter.setPages(pages);
-        pager.setAdapter(pagerAdapter);
-        int appsPosition = pagerAdapter.indexOfFragment(AppsFragment.class);
-        pager.setCurrentItem(appsPosition, false);
-        updatePagerIndicatorState();
+        homePagerAdapter.setPages(pages);
+        viewPager.setAdapter(homePagerAdapter);
+        int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
+        viewPager.setCurrentItem(appsPosition, false);
     }
 
     private void setupRoot() {

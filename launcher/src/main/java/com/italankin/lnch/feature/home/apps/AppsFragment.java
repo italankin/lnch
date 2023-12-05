@@ -51,6 +51,7 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
+import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
@@ -97,6 +98,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     private Preferences preferences;
     private HomeDescriptorsState homeDescriptorsState;
     private IntentQueue intentQueue;
+    private HomePagerHost homePagerHost;
 
     private LceLayout lce;
     private HomeRecyclerView list;
@@ -145,6 +147,16 @@ public class AppsFragment extends AppFragment implements AppsView,
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 
         registerFragmentResultListeners();
+
+        if (context instanceof HomePagerHost) {
+            homePagerHost = (HomePagerHost) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        homePagerHost = null;
     }
 
     @Override
@@ -566,6 +578,9 @@ public class AppsFragment extends AppFragment implements AppsView,
             editModePanel.dismiss();
             editModePanel = null;
         }
+        if (homePagerHost != null) {
+            homePagerHost.setPagerEnabled(!value);
+        }
     }
 
     private void showCustomizePopup(int position, DescriptorUi item) {
@@ -747,11 +762,17 @@ public class AppsFragment extends AppFragment implements AppsView,
                 if (preferences.get(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)) {
                     searchOverlay.focusEditText();
                 }
+                if (homePagerHost != null) {
+                    homePagerHost.setPagerEnabled(false);
+                }
             }
 
             @Override
             public void onHide() {
                 searchOverlay.onSearchHidden();
+                if (homePagerHost != null) {
+                    homePagerHost.setPagerEnabled(!editMode);
+                }
             }
 
             @Override

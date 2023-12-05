@@ -123,10 +123,5 @@
             app:colorpref_colorModel="argb"
             app:colorpref_defaultColor="@color/status_bar"
             tools:ignore="PrefsDetector" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="home_pager_indicator"
-            android:summary="@string/settings_home_laf_other_home_pager_indicator_summary"
-            android:title="@string/settings_home_laf_other_home_pager_indicator" />
     </PreferenceCategory>
 </PreferenceScreen>

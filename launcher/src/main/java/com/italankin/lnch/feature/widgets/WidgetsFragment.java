@@ -28,7 +28,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.BackButtonHandler;
+import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.IntentQueue;
+import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
@@ -40,7 +42,7 @@ import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, BackButtonHandler,
-        WidgetAdapter.WidgetActionListener {
+        WidgetAdapter.WidgetActionListener, MainActionHandler {
 
     public static final int REQUEST_CODE_CONFIGURE = 133;
     public static final int REQUEST_CODE_RECONFIGURE = 173;
@@ -67,6 +69,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private WidgetSizeHelper widgetSizeHelper;
     private int cellSize;
     private int maxHeightCells;
+    private HomePagerHost homePagerHost;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
@@ -90,6 +93,15 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
         widgetSizeHelper = new WidgetSizeHelper(context);
+        if (context instanceof HomePagerHost) {
+            homePagerHost = (HomePagerHost) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        homePagerHost = null;
     }
 
     @Override
@@ -131,6 +143,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         actionEdit.setOnClickListener(v -> {
             widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
             updateWidgets();
+            if (homePagerHost != null) {
+                homePagerHost.setPagerEnabled(false);
+            }
         });
         actionCommit = view.findViewById(R.id.commit);
         actionCommit.setOnClickListener(v -> exitEditMode());
@@ -212,6 +227,11 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean handle() {
+        return widgetItemsState.isResizeMode();
     }
 
     @Override
@@ -346,6 +366,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         preferences.set(Preferences.WIDGETS_ORDER, widgetItemsState.getWidgetsOrder());
         widgetItemsState.setResizeMode(false, false);
         updateWidgets();
+        if (homePagerHost != null) {
+            homePagerHost.setPagerEnabled(true);
+        }
     }
 
     private void updateWidgets() {

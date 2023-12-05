@@ -6,6 +6,7 @@ appCompat = "1.6.1"
 androidXAnnotation = "1.7.0"
 fragment = "1.6.2"
 recyclerView = "1.2.1"
+viewPager2 = "1.0.0"
 preference = "1.2.1"
 material = "1.10.0"
 adapterDelegates = "1.0.0"
@@ -40,10 +41,10 @@ androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayo
 adapterDelegates = { module = "me.italankin:adapter-delegates", version.ref = "adapterDelegates" }
 androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 androidx-recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
+androidx-viewPager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewPager2" }
 androidx-palette = { module = "androidx.palette:palette", version.ref = "palette" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
 androidx-customTabs = { module = "androidx.browser:browser", version.ref = "browser" }
-scrollingPagerIndicator = { module = "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator", version.ref = "scrollingPagerIndicator" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidXAnnotation" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }

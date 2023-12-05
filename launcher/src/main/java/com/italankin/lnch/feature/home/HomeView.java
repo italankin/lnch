@@ -13,9 +13,6 @@ public interface HomeView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void onStatusBarColorChanged(Integer color);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
-    void onHomePagerIndicatorVisibilityChanged(boolean visible);
-
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onWidgetPreferencesUpdated();
 }

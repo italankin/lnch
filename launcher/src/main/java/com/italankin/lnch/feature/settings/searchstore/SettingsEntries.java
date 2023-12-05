@@ -208,14 +208,6 @@ final class SettingsEntries {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
-                new SettingsEntryImpl.Builder(Preferences.HOME_PAGER_INDICATOR)
-                        .title(R.string.settings_home_laf_other_home_pager_indicator)
-                        .summary(R.string.settings_home_laf_other_home_pager_indicator_summary)
-                        .category(R.string.settings_home_laf)
-                        .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
-                        })
-                        .build(),
 
                 /* --- Appearance --- */
 

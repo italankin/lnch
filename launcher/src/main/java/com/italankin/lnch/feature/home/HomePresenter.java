@@ -55,15 +55,6 @@ public class HomePresenter extends AppPresenter<HomeView> {
                     }
                 });
 
-        preferences.observeValue(Preferences.HOME_PAGER_INDICATOR)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<Preferences.Value<Boolean>>() {
-                    @Override
-                    protected void onNext(HomeView viewState, Preferences.Value<Boolean> visible) {
-                        viewState.onHomePagerIndicatorVisibilityChanged(visible.get());
-                    }
-                });
-
         preferences.observe()
                 .filter(pref -> {
                     return pref == Preferences.ENABLE_WIDGETS ||

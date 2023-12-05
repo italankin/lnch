@@ -70,7 +70,7 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.androidx.constraintLayout
     implementation libs.androidx.recyclerView
-    implementation libs.scrollingPagerIndicator
+    implementation libs.androidx.viewPager2
     implementation libs.androidx.palette
     implementation libs.material
     implementation libs.androidx.preference
