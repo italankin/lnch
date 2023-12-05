@@ -89,13 +89,14 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
         throw new IllegalArgumentException("No item found for id=" + id);
     }
 
-    public static class WidgetViewHolder extends AbstractWidgetAdapter.ViewHolder {
+    public static class WidgetViewHolder extends RecyclerView.ViewHolder {
 
         final WidgetResizeFrame resizeFrame;
 
         WidgetViewHolder(WidgetResizeFrame resizeFrame) {
             super(resizeFrame);
             this.resizeFrame = resizeFrame;
+            setIsRecyclable(false);
         }
     }
 
