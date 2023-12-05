@@ -391,7 +391,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private int calculateCellSize(int gridSize) {
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
-        int size = Math.min(dm.widthPixels, dm.heightPixels) / gridSize;
+        int margins = res.getDimensionPixelSize(R.dimen.widget_list_margin) * 2;
+        int size = Math.min(dm.widthPixels - margins, dm.heightPixels) / gridSize;
         int maxCellSize = res.getDimensionPixelSize(R.dimen.widget_max_cell_size);
         return Math.min(size, maxCellSize);
     }
