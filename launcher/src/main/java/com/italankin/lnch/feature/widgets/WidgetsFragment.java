@@ -39,7 +39,6 @@ import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import org.jetbrains.annotations.NotNull;
 import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -141,7 +140,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         widgetsList = view.findViewById(R.id.widgets_list);
         itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
-            public int getMovementFlags(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 WidgetAdapterItem item = adapter.getItem(viewHolder.getBindingAdapterPosition());
                 if (item instanceof AppWidget) {
                     int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
@@ -151,9 +150,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
 
             @Override
-            public boolean onMove(@NonNull @NotNull RecyclerView recyclerView,
-                    @NonNull @NotNull RecyclerView.ViewHolder viewHolder,
-                    @NonNull @NotNull RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
                 int from = viewHolder.getBindingAdapterPosition();
                 WidgetAdapterItem itemFrom = widgetItemsState.getItems().get(from);
                 if (!(itemFrom instanceof AppWidget)) return false;
@@ -171,7 +170,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
 
             @Override
-            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             }
         });
         itemTouchHelper.attachToRecyclerView(widgetsList);
