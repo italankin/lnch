@@ -9,6 +9,7 @@ import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.model.WidgetAdapterItem;
 import me.italankin.adapterdelegates.AdapterDelegate;
 import me.italankin.adapterdelegates.CompositeAdapter;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"rawtypes"})
 public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> {
@@ -52,6 +53,15 @@ public class WidgetCompositeAdapter extends CompositeAdapter<WidgetAdapterItem> 
         } else {
             return super.getDelegate(position);
         }
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull @NotNull RecyclerView.ViewHolder holder) {
+    }
+
+    @Override
+    public boolean onFailedToRecycleView(@NonNull @NotNull RecyclerView.ViewHolder holder) {
+        return true;
     }
 
     private AbstractWidgetAdapter<?> getWidgetAdapterDelegate() {
