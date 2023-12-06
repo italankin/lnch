@@ -42,6 +42,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final int drawFrameInset;
     private final int handleTouchRadius;
     private final int resizeElevation;
+    private final int dragElevation;
     private int cellSize;
 
     private final int frameColor;
@@ -81,6 +82,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         handleRadius = res.getDimensionPixelSize(R.dimen.widget_resize_frame_handle_radius);
         drawFrameInset = res.getDimensionPixelSize(R.dimen.widget_resize_frame_inset);
         resizeElevation = ResUtils.px2dp(getContext(), 10);
+        dragElevation = ResUtils.px2dp(getContext(), 16);
         handleTouchRadius = handleRadius * 3;
         handlePaint.setStyle(Paint.Style.FILL);
         handlePaint.setColor(frameColor);
@@ -303,6 +305,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     public void onLongPress(@NonNull MotionEvent e) {
         if (startDragListener != null) {
             performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            setElevation(dragElevation);
             startDragListener.onStartDrag(this);
         }
     }

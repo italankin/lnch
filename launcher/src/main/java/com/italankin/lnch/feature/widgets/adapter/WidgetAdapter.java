@@ -91,7 +91,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
 
     public static class WidgetViewHolder extends RecyclerView.ViewHolder {
 
-        final WidgetResizeFrame resizeFrame;
+        public final WidgetResizeFrame resizeFrame;
 
         WidgetViewHolder(WidgetResizeFrame resizeFrame) {
             super(resizeFrame);

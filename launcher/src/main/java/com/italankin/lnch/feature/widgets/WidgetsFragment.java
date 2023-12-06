@@ -172,6 +172,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
 
             @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                ((WidgetAdapter.WidgetViewHolder) viewHolder).resizeFrame.setElevation(0f);
+            }
+
+            @Override
             public boolean isLongPressDragEnabled() {
                 return false;
             }
