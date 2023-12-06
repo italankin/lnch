@@ -47,6 +47,9 @@ public class WidgetSizeHelper {
     }
 
     public Size getMinSize(AppWidgetProviderInfo info, Bundle options) {
+        if (info.resizeMode == AppWidgetProviderInfo.RESIZE_NONE) {
+            return getMinSizeFromInfo(info);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             float density = displayMetrics.density;
             ArrayList<SizeF> sizes = options.getParcelableArrayList(OPTION_APPWIDGET_SIZES);
