@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.FrameLayout;
@@ -145,7 +146,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         if (resizeModeActive != resizeMode) {
             resizeModeActive = resizeMode;
             deleteAction.setVisibility(resizeMode ? View.VISIBLE : View.INVISIBLE);
-            configureAction.setVisibility(resizeMode && hostView.getAppWidgetInfo().configure != null ? VISIBLE : GONE);
+            configureAction.setVisibility(resizeMode && isReconfigurable() ? VISIBLE : GONE);
             handle = null;
             if (!resizeMode) {
                 gestureDetector.setIsLongpressEnabled(false);
@@ -304,6 +305,17 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             startDragListener.onStartDrag(this);
         }
+    }
+
+    private boolean isReconfigurable() {
+        AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
+        if (info.configure == null) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return (info.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE) != 0;
+        }
+        return false;
     }
 
     private void resetFrame(MotionEvent event) {

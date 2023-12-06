@@ -3,6 +3,7 @@ package com.italankin.lnch.feature.widgets;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -80,6 +82,10 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             new WidgetGalleryActivity.SelectContract(),
             this::onNewWidgetSelected);
 
+    private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher = registerForActivityResult(
+            new ConfigureWidgetContract(),
+            this::onNewWidgetConfigured);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +124,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         AppWidgetProviderInfo info = request.getAppWidgetProviderInfo(context);
         if (info != null) {
             newAppWidgetId = appWidgetHost.allocateAppWidgetId();
+            Timber.d("allocate: %d", newAppWidgetId);
             Bundle options = new Bundle();
             options.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId);
             if (request.accept(options)) {
@@ -238,11 +245,18 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     public void onWidgetDelete(AppWidget appWidget) {
         widgetItemsState.removeWidgetById(appWidget.appWidgetId);
         appWidgetHost.deleteAppWidgetId(appWidget.appWidgetId);
+        Timber.d("deallocate: %d", appWidget.appWidgetId);
         updateWidgets();
     }
 
     @Override
     public void onWidgetConfigure(AppWidget appWidget) {
+        try {
+            configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidget.appWidgetId, appWidget.providerInfo.configure));
+            return;
+        } catch (Exception e) {
+            Timber.e(e, "onWidgetConfigure: %s", e.getMessage());
+        }
         try {
             appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), appWidget.appWidgetId, 0, REQUEST_CODE_RECONFIGURE, null);
         } catch (Exception e) {
@@ -258,6 +272,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 addWidget(appWidgetId, info, false);
             } else {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
+                Timber.d("deallocate: %d", appWidgetId);
             }
         }
         widgetItemsState.setWidgetsOrder(preferences.get(Preferences.WIDGETS_ORDER));
@@ -268,6 +283,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
+        Timber.d("allocate: %d", newAppWidgetId);
         addWidgetLauncher.launch(newAppWidgetId);
     }
 
@@ -280,11 +296,17 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void configureWidget(AppWidgetProviderInfo info) {
-        if (info.configure != null) {
+        if (requiresConfiguration(info)) {
+            try {
+                configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
+                return;
+            } catch (Exception e) {
+                Timber.e(e, "ConfigureWidgetContract.launch: %s", e.getMessage());
+            }
             try {
                 appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), newAppWidgetId, 0, REQUEST_CODE_CONFIGURE, null);
             } catch (Exception e) {
-                Timber.e(e, "configureWidget: %s", e.getMessage());
+                Timber.e(e, "startAppWidgetConfigureActivityForResult: %s", e.getMessage());
                 cancelAddNewWidget(newAppWidgetId);
                 Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
             }
@@ -292,6 +314,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             addWidget(info);
             widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
+    }
+
+    private boolean requiresConfiguration(AppWidgetProviderInfo info) {
+        if (info.configure == null) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return (info.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0;
+        }
+        return true;
     }
 
     private void onNewWidgetConfigured(boolean configured) {
@@ -346,6 +378,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             return;
         }
         appWidgetHost.deleteAppWidgetId(newAppWidgetId);
+        Timber.d("deallocate: %d", newAppWidgetId);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     }
 
@@ -424,5 +457,31 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             return Math.min(size, max);
         }
         return Math.min(size + (cellSize - (size % cellSize)), max);
+    }
+
+    private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Boolean> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Input input) {
+            return new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+                    .setComponent(input.configure)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, input.appWidgetId);
+        }
+
+        @Override
+        public Boolean parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode == Activity.RESULT_OK;
+        }
+
+        static class Input {
+            final int appWidgetId;
+            final ComponentName configure;
+
+            Input(int appWidgetId, ComponentName configure) {
+                this.appWidgetId = appWidgetId;
+                this.configure = configure;
+            }
+        }
     }
 }
