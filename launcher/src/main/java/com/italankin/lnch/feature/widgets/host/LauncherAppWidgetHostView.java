@@ -49,7 +49,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (scrollableView != null)
+        if (scrollableView != null) {
             if (ev.getAction() == MotionEvent.ACTION_DOWN) {
                 touchStartX = ev.getX();
                 touchStartY = ev.getY();
@@ -71,10 +71,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
                     }
                     return false;
                 } else {
-                    //
+                    // gesture is not within scrollable view bounds, intercept events
                     return true;
                 }
             }
+        }
         return false;
     }
 
