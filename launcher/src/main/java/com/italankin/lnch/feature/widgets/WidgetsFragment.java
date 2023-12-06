@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -65,8 +66,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private RecyclerView widgetsList;
     private ItemTouchHelper itemTouchHelper;
 
-    private View actionEdit;
-    private View actionCommit;
+    private ImageView actionEditMode;
 
     private LauncherAppWidgetHost appWidgetHost;
     private AppWidgetManager appWidgetManager;
@@ -152,17 +152,19 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         View actionAddWidget = view.findViewById(R.id.add_widget);
         actionAddWidget.setOnClickListener(v -> startAddNewWidget());
-        actionEdit = view.findViewById(R.id.edit);
-        actionEdit.setOnClickListener(v -> {
-            widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
-            updateActionsState();
-            adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
-            if (homePagerHost != null) {
-                homePagerHost.setPagerEnabled(false);
+        actionEditMode = view.findViewById(R.id.edit_mode);
+        actionEditMode.setOnClickListener(v -> {
+            if (widgetItemsState.isResizeMode()) {
+                exitEditMode();
+            } else {
+                widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
+                updateActionsState();
+                adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
+                if (homePagerHost != null) {
+                    homePagerHost.setPagerEnabled(false);
+                }
             }
         });
-        actionCommit = view.findViewById(R.id.commit);
-        actionCommit.setOnClickListener(v -> exitEditMode());
 
         widgetsList = view.findViewById(R.id.widgets_list);
         int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
@@ -439,11 +441,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private void updateActionsState() {
         if (widgetItemsState.isResizeMode()) {
-            actionCommit.setVisibility(View.VISIBLE);
-            actionEdit.setVisibility(View.GONE);
+            actionEditMode.setImageResource(R.drawable.ic_customize_save);
         } else {
-            actionCommit.setVisibility(View.GONE);
-            actionEdit.setVisibility(View.VISIBLE);
+            actionEditMode.setImageResource(R.drawable.ic_action_rename);
         }
     }
 

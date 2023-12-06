@@ -29,7 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
-        android:animateLayoutChanges="true"
         android:background="@drawable/bg_widget_actions"
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -46,20 +45,12 @@
             android:src="@drawable/ic_add_widget" />
 
         <ImageView
-            android:id="@+id/edit"
+            android:id="@+id/edit_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:foreground="?selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:src="@drawable/ic_action_rename" />
-
-        <ImageView
-            android:id="@+id/commit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:foreground="?selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_customize_save" />
 
     </LinearLayout>
 
