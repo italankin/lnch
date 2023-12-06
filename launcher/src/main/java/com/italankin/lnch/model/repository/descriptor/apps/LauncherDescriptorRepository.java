@@ -233,7 +233,9 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 return;
             }
             disposed = true;
+            clear();
             currentEditor = null;
+            Timber.d("dispose");
         }
 
         @Override
@@ -251,18 +253,21 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 return Completable.complete()
                         .doFinally(this::dispose);
             }
-            Timber.d("commit: apply actions");
             return Single
                     .fromCallable(() -> {
+                        long start = System.nanoTime();
                         List<Descriptor> result = new ArrayList<>(items.size());
                         for (Descriptor item : items) {
                             result.add(item.copy());
                         }
+                        int actionsSize = actions.size();
                         Iterator<Action> iter = actions.iterator();
                         while (iter.hasNext()) {
                             iter.next().apply(result);
                             iter.remove();
                         }
+                        Timber.d("commit: applied %d actions in %.3fms",
+                                actionsSize, (System.nanoTime() - start) / 1_000_000f);
                         return result;
                     })
                     .doFinally(this::dispose)

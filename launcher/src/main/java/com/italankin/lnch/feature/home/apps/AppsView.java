@@ -63,7 +63,7 @@ interface AppsView extends MvpView {
     void onConfirmDiscardChanges();
 
     @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
-    void onChangesDiscarded();
+    void onChangesSaveStarted();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showDeleteDialog(RemovableDescriptorUi item);

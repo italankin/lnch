@@ -246,7 +246,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     void discardChanges() {
         editor.dispose();
         editor = EmptyEditor.INSTANCE;
-        getViewState().onChangesDiscarded();
+        getViewState().onStopCustomize();
         update();
     }
 
@@ -269,16 +269,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
-                    protected void onComplete(AppsView viewState) {
-                        viewState.onStopCustomize();
-                    }
-
-                    @Override
                     protected void onError(AppsView viewState, Throwable e) {
                         viewState.showError(e);
                     }
                 });
         editor = EmptyEditor.INSTANCE;
+        getViewState().onChangesSaveStarted();
     }
 
     void pinShortcut(String packageName, String shortcutId) {
