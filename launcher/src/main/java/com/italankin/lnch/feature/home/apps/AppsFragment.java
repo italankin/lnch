@@ -638,7 +638,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onChangesSaveStarted() {
         setEditMode(false);
-        Toast.makeText(requireContext(), R.string.customize_saving, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override

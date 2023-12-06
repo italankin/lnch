@@ -47,7 +47,7 @@
     <string name="shortcut_set_default_launcher_hint">Set home app</string>
 
     <string name="customize_hint">Customize</string>
-    <string name="customize_saving">Saving…</string>
+    <string name="customize_saved">Saved</string>
     <string name="customize_discard_message">Discard changes?</string>
     <string name="customize_discard">Discard</string>
     <string name="customize_item_rename">Rename</string>
