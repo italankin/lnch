@@ -1,9 +1,7 @@
 package com.italankin.lnch.util.filter;
 
-import android.text.TextUtils;
 import android.widget.Filter;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +20,25 @@ public abstract class ListFilter<T> extends Filter {
     }
 
     protected final List<T> unfiltered = new CopyOnWriteArrayList<>();
-    @Nullable
     protected final OnFilterResult<T> onFilterResult;
+    protected final boolean caseSensitive;
 
-    protected volatile CharSequence constraint;
+    /**
+     * Unmodified user input
+     */
+    protected volatile CharSequence rawConstraint;
+    /**
+     * Sanitized (no whitespace, lowercase if not {@link #caseSensitive}) user input
+     */
+    protected volatile CharSequence constraint = "";
 
-    public ListFilter(@Nullable OnFilterResult<T> onFilterResult) {
+    public ListFilter(OnFilterResult<T> onFilterResult) {
+        this(onFilterResult, false);
+    }
+
+    public ListFilter(OnFilterResult<T> onFilterResult, boolean caseSensitive) {
         this.onFilterResult = onFilterResult;
+        this.caseSensitive = caseSensitive;
     }
 
     public void setDataset(@NonNull List<T> dataset) {
@@ -37,19 +47,24 @@ public abstract class ListFilter<T> extends Filter {
         fireFilter();
     }
 
-    protected abstract FilterResults performFiltering(String query, List<T> unfiltered);
+    protected abstract FilterResults performFiltering(String query, boolean caseSensitive, List<T> unfiltered);
 
     @Override
     protected final FilterResults performFiltering(CharSequence constraint) {
-        this.constraint = constraint;
+        this.rawConstraint = constraint;
         String query = "";
         if (constraint != null) {
-            query = constraint.toString().trim().toLowerCase(Locale.getDefault());
+            if (caseSensitive) {
+                query = constraint.toString().trim();
+            } else {
+                query = constraint.toString().trim().toLowerCase(Locale.getDefault());
+            }
         }
+        this.constraint = query;
         if (query.isEmpty()) {
             return emptyConstraintResults();
         }
-        return performFiltering(query, unfiltered);
+        return performFiltering(query, caseSensitive, unfiltered);
     }
 
     protected FilterResults emptyConstraintResults() {
@@ -59,14 +74,11 @@ public abstract class ListFilter<T> extends Filter {
     @SuppressWarnings("unchecked")
     @Override
     protected final void publishResults(CharSequence constraint, FilterResults filterResults) {
-        if (onFilterResult != null) {
-            onFilterResult.onFilterResult(constraint == null ? null : constraint.toString(),
-                    (List<T>) filterResults.values);
-        }
+        onFilterResult.onFilterResult(constraint == null ? null : constraint.toString(), (List<T>) filterResults.values);
     }
 
     protected void fireFilter() {
-        if (!TextUtils.isEmpty(constraint)) {
+        if (constraint.length() > 0) {
             filter(constraint);
         } else {
             publishResults(null, of(new ArrayList<>(unfiltered)));
@@ -74,7 +86,7 @@ public abstract class ListFilter<T> extends Filter {
     }
 
     protected static <T> FilterResults of(List<T> items) {
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return EMPTY;
         }
         FilterResults results = new FilterResults();

@@ -1,4 +1,4 @@
-package com.italankin.lnch.model.repository.search.preference;
+package com.italankin.lnch.model.repository.search.delegate;
 
 import android.content.Context;
 import android.content.Intent;

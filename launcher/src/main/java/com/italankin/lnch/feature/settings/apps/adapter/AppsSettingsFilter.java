@@ -1,11 +1,10 @@
 package com.italankin.lnch.feature.settings.apps.adapter;
 
 import android.text.TextUtils;
-import androidx.annotation.Nullable;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
+import com.italankin.lnch.util.search.Searchable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -18,7 +17,7 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
 
     private final Set<FilterFlag> flags = synchronizedSet(EnumSet.copyOf(DEFAULT_FLAGS));
 
-    public AppsSettingsFilter(@Nullable OnFilterResult<AppDescriptorUi> onFilterResult) {
+    public AppsSettingsFilter(OnFilterResult<AppDescriptorUi> onFilterResult) {
         super(onFilterResult);
     }
 
@@ -39,14 +38,17 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
     }
 
     @Override
-    protected FilterResults performFiltering(String query, List<AppDescriptorUi> unfiltered) {
+    protected FilterResults performFiltering(String query, boolean caseSensitive, List<AppDescriptorUi> unfiltered) {
         List<AppDescriptorUi> result = filterByFlags(unfiltered);
         Iterator<AppDescriptorUi> iterator = result.iterator();
         while (iterator.hasNext()) {
             AppDescriptorUi item = iterator.next();
-            if (!SearchUtils.contains(item.getDescriptor().label, query) &&
-                    !SearchUtils.contains(item.getCustomLabel(), query) &&
-                    !SearchUtils.contains(item.packageName, query)) {
+            Searchable searchable = () -> Searchable.createTokens(
+                    item.getLabel(),
+                    item.getCustomLabel(),
+                    item.packageName
+            );
+            if (!searchable.matches(query)) {
                 iterator.remove();
             }
         }

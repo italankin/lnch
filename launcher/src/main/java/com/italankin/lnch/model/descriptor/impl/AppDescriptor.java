@@ -1,22 +1,14 @@
 package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.ComponentName;
-
-import com.italankin.lnch.model.descriptor.AliasDescriptor;
-import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.DescriptorModels;
-import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
-import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import androidx.annotation.NonNull;
+import com.italankin.lnch.model.descriptor.*;
 import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
 
 /**
  * Application (each {@link ComponentName} will have its own {@link AppDescriptor})

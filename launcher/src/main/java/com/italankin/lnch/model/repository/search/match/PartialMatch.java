@@ -4,16 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.util.ResUtils;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.ResUtils;
+import com.italankin.lnch.util.search.Searchable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base class for a {@link Match} which ranks matches by {@link PartialMatch.Type}
@@ -83,6 +82,25 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
         STARTS_WITH,
         CONTAINS_WORD,
         CONTAINS,
-        OTHER,
+        OTHER;
+
+        @Nullable
+        public static PartialMatch.Type fromSearchable(@Nullable Searchable.Match match) {
+            if (match == null) {
+                return null;
+            }
+            switch (match) {
+                case EXACT:
+                    return PartialMatch.Type.EXACT;
+                case START:
+                    return PartialMatch.Type.STARTS_WITH;
+                case WORD:
+                    return PartialMatch.Type.CONTAINS_WORD;
+                case SUBSTRING:
+                    return PartialMatch.Type.CONTAINS;
+                default:
+                    return null;
+            }
+        }
     }
 }

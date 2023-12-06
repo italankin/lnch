@@ -7,21 +7,14 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.os.Process;
 import android.text.TextUtils;
-
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.LabelDescriptor;
-import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import androidx.annotation.Nullable;
+import com.italankin.lnch.model.descriptor.*;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import androidx.annotation.Nullable;
+import java.util.*;
 
 public final class DescriptorUtils {
 
@@ -94,6 +87,27 @@ public final class DescriptorUtils {
             map.put(descriptor.getId(), descriptor);
         }
         return map;
+    }
+
+    public static Set<String> createSearchTokens(Descriptor descriptor) {
+        Set<String> result = new HashSet<>(4);
+        result.add(descriptor.getOriginalLabel());
+        if (descriptor instanceof CustomLabelDescriptor) {
+            String customLabel = ((CustomLabelDescriptor) descriptor).getCustomLabel();
+            if (customLabel != null) {
+                result.add(customLabel);
+            }
+        }
+        if (descriptor instanceof LabelDescriptor) {
+            String label = ((LabelDescriptor) descriptor).getLabel();
+            if (label != null) {
+                result.add(label);
+            }
+        }
+        if (descriptor instanceof AliasDescriptor) {
+            result.addAll(((AliasDescriptor) descriptor).getAliases());
+        }
+        return result;
     }
 
     private DescriptorUtils() {

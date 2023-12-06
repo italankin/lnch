@@ -15,10 +15,12 @@ import com.italankin.lnch.model.repository.search.match.PartialMatch;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.util.imageloader.resourceloader.ShortcutIconLoader;
+import com.italankin.lnch.util.search.SearchUtils;
+import com.italankin.lnch.util.search.Searchable;
 
 import java.util.*;
 
-import static com.italankin.lnch.util.SearchUtils.contains;
+import static com.italankin.lnch.util.search.SearchUtils.contains;
 
 public class DeepShortcutSearchDelegate implements SearchDelegate {
 
@@ -42,10 +44,9 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
                 Match match = createMatch(data.shortcut, data.descriptor);
                 result.add(match);
             } else {
-                PartialMatch.Type type = DescriptorSearchUtils.test(data.descriptor, query);
-                if (type != null) {
-                    Match match = createMatch(data.shortcut, data.descriptor, type);
-                    result.add(match);
+                Searchable.Match match = SearchUtils.match(data.descriptor, query);
+                if (match != null) {
+                    result.add(createMatch(data.shortcut, data.descriptor, PartialMatch.Type.fromSearchable(match)));
                 }
             }
         }

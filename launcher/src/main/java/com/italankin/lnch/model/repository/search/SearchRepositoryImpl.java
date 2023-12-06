@@ -2,7 +2,6 @@ package com.italankin.lnch.model.repository.search;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
-
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -17,14 +16,9 @@ import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.DescriptorUtils;
+import timber.log.Timber;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static com.italankin.lnch.model.repository.prefs.Preferences.SEARCH_SHOW_MOST_USED;
 import static com.italankin.lnch.model.repository.prefs.Preferences.SearchTarget;
@@ -53,7 +47,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             List<SearchDelegate> additionalDelegates,
             Preferences preferences,
             UsageTracker usageTracker,
-            DescriptorRepository descriptorRepository, ShortcutsRepository shortcutsRepository) {
+            DescriptorRepository descriptorRepository,
+            ShortcutsRepository shortcutsRepository) {
         this.packageManager = packageManager;
         this.delegates = delegates;
         this.additionalDelegates = additionalDelegates;
@@ -72,6 +67,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (query.isEmpty()) {
             return Collections.emptyList();
         }
+        long start = System.nanoTime();
         EnumSet<SearchTarget> searchTargets = EnumSet.copyOf(SearchTarget.ALL);
         EnumSet<SearchTarget> excludedSearchTargets = preferences.get(Preferences.EXCLUDED_SEARCH_TARGETS);
         searchTargets.removeAll(excludedSearchTargets);
@@ -88,6 +84,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             List<Match> list = delegate.search(query, searchTargets);
             matches.addAll(list);
         }
+        Timber.d("search: query='%s', results=%d, done in %.3fms",
+                query, matches.size(), (System.nanoTime() - start) / 1_000_000f);
         return matches;
     }
 

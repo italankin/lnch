@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.search.delegate;
 
 import android.content.pm.PackageManager;
-
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -9,6 +8,8 @@ import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.model.repository.search.match.PartialDescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.PartialMatch;
+import com.italankin.lnch.util.search.SearchUtils;
+import com.italankin.lnch.util.search.Searchable;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -32,10 +33,9 @@ public class AppSearchDelegate implements SearchDelegate {
             if (descriptor.ignored && skipIgnored || (descriptor.searchFlags & AppDescriptor.FLAG_SEARCH_VISIBLE) == 0) {
                 continue;
             }
-            PartialMatch.Type matchType = DescriptorSearchUtils.test(descriptor, query);
-            if (matchType != null) {
-                Match match = new PartialDescriptorMatch(descriptor, packageManager, matchType);
-                matches.add(match);
+            Searchable.Match match = SearchUtils.match(descriptor, query);
+            if (match != null) {
+                matches.add(new PartialDescriptorMatch(descriptor, packageManager, PartialMatch.Type.fromSearchable(match)));
             }
         }
         return matches;

@@ -22,7 +22,6 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.util.SearchUtils;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
@@ -44,9 +43,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
 
     private AppWidgetManager appWidgetManager;
     private LceLayout lce;
-    private final SimpleListFilter<WidgetPreview> filter = new SimpleListFilter<>(this, (query, item) -> {
-        return SearchUtils.contains(item.appName, query);
-    });
+    private final SimpleListFilter<WidgetPreview> filter = SimpleListFilter.createSearchable(this);
     private int appWidgetId;
 
     private final ActivityResultLauncher<Input> bindWidgetLauncher = registerForActivityResult(

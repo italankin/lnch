@@ -24,7 +24,6 @@ import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
 import com.italankin.lnch.model.repository.search.delegate.*;
-import com.italankin.lnch.model.repository.search.preference.PreferenceSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.backport.BackportShortcutsRepository;
