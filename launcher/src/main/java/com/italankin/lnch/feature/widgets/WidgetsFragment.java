@@ -389,15 +389,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void registerWindowInsets(View view) {
-        int extraPadding = getResources().getDimensionPixelSize(R.dimen.widget_list_padding_bottom_extra);
+        int extraBottom = getResources().getDimensionPixelSize(R.dimen.widget_list_padding_bottom_extra);
+        int extraTop = getResources().getDimensionPixelSize(R.dimen.widget_list_padding_top_extra);
         view.setOnApplyWindowInsetsListener((v, insets) -> {
-            widgetsList.setPadding(0, 0, 0, insets.getStableInsetBottom() + extraPadding);
+            widgetsList.setPadding(0, extraTop, 0, insets.getStableInsetBottom() + extraBottom);
             return insets;
         });
 
         WindowInsets insets = view.getRootWindowInsets();
         if (insets != null) {
-            widgetsList.setPadding(0, 0, 0, insets.getStableInsetBottom() + extraPadding);
+            widgetsList.setPadding(0, extraTop, 0, insets.getStableInsetBottom() + extraBottom);
         }
     }
 

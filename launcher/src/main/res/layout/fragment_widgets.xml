@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:orientation="vertical"
     tools:background="@tools:sample/backgrounds/scenic">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -14,12 +13,12 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_marginHorizontal="@dimen/widget_list_margin"
-        android:layout_marginTop="56dp"
         android:clickable="true"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:focusable="true"
         android:overScrollMode="ifContentScrolls"
+        android:paddingTop="@dimen/widget_list_padding_top_extra"
         tools:layout_width="300dp" />
 
     <LinearLayout
