@@ -31,6 +31,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final Paint framePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint handlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final Rect frameMin = new Rect();
     private final Rect frameMax = new Rect();
@@ -41,9 +42,6 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final int drawFrameInset;
     private final int handleTouchRadius;
     private int cellSize;
-
-    private final int frameColor;
-    private final int frameOverlayColor;
 
     private final GestureDetector gestureDetector;
 
@@ -68,23 +66,25 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         super(context);
         widgetSizeHelper = new WidgetSizeHelper(context);
         Resources res = context.getResources();
-        frameColor = ContextCompat.getColor(context, R.color.widget_resize_frame);
-        frameOverlayColor = ContextCompat.getColor(context, R.color.widget_resize_frame_overlay);
+        int frameColor = ContextCompat.getColor(context, R.color.widget_resize_frame);
         framePaint.setColor(frameColor);
         framePaint.setStyle(Paint.Style.STROKE);
         int frameStrokeSize = res.getDimensionPixelSize(R.dimen.widget_resize_frame_stroke);
         framePaint.setStrokeWidth(frameStrokeSize);
         framePaint.setShadowLayer(frameStrokeSize / 2f, 0, 0,
                 ContextCompat.getColor(context, R.color.widget_resize_frame_shadow));
+        handlePaint.setStyle(Paint.Style.FILL);
+        handlePaint.setColor(frameColor);
+        handlePaint.setShadowLayer(frameStrokeSize / 2f, 0, 0,
+                ContextCompat.getColor(context, R.color.widget_resize_frame_shadow));
+        gridPaint.setStyle(Paint.Style.STROKE);
+        gridPaint.setStrokeWidth(frameStrokeSize);
+        gridPaint.setColor(ContextCompat.getColor(context, R.color.widget_resize_frame_grid));
+        overlayPaint.setColor(ContextCompat.getColor(context, R.color.widget_resize_frame_overlay));
+        overlayPaint.setStyle(Paint.Style.FILL);
         handleRadius = res.getDimensionPixelSize(R.dimen.widget_resize_frame_handle_radius);
         drawFrameInset = res.getDimensionPixelSize(R.dimen.widget_resize_frame_inset);
         handleTouchRadius = handleRadius * 3;
-        handlePaint.setStyle(Paint.Style.FILL);
-        handlePaint.setColor(frameColor);
-        gridPaint.setStyle(Paint.Style.STROKE);
-        gridPaint.setStrokeWidth(frameStrokeSize);
-        gridPaint.setColor(frameColor);
-        gridPaint.setAlpha(80);
 
         gestureDetector = new GestureDetector(context, this);
         gestureDetector.setIsLongpressEnabled(false);
@@ -168,8 +168,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
         if (resizeModeActive && !visualFrame.isEmpty()) {
-            handlePaint.setColor(frameOverlayColor);
-            canvas.drawRect(visualFrame, handlePaint);
+            canvas.drawRect(visualFrame, overlayPaint);
             if (cellSize > 0) {
                 int l = frame.left + cellSize;
                 while (l < frame.right) {
@@ -183,7 +182,6 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 }
             }
             canvas.drawRect(visualFrame, framePaint);
-            handlePaint.setColor(frameColor);
             if (resizeVertically) {
                 canvas.drawCircle(visualFrame.centerX(), visualFrame.bottom, handleRadius, handlePaint);
             }
