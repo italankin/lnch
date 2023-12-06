@@ -154,7 +154,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         actionEdit = view.findViewById(R.id.edit);
         actionEdit.setOnClickListener(v -> {
             widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
-            updateWidgets();
+            updateActionsState();
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
             if (homePagerHost != null) {
                 homePagerHost.setPagerEnabled(false);
             }
@@ -410,13 +411,20 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private void exitEditMode() {
         preferences.set(Preferences.WIDGETS_ORDER, widgetItemsState.getWidgetsOrder());
         widgetItemsState.setResizeMode(false, false);
-        updateWidgets();
+        updateActionsState();
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
         if (homePagerHost != null) {
             homePagerHost.setPagerEnabled(true);
         }
     }
 
     private void updateWidgets() {
+        updateActionsState();
+        adapter.setItems(widgetItemsState.getItems());
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateActionsState() {
         if (widgetItemsState.isResizeMode()) {
             actionCommit.setVisibility(View.VISIBLE);
             actionEdit.setVisibility(View.GONE);
@@ -424,8 +432,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             actionCommit.setVisibility(View.GONE);
             actionEdit.setVisibility(View.VISIBLE);
         }
-        adapter.setItems(widgetItemsState.getItems());
-        adapter.notifyDataSetChanged();
     }
 
     private void recalculateCellSize() {
