@@ -31,6 +31,9 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     private static final int[] LOC = new int[2];
 
     private View scrollableView;
+    private float touchStartX;
+    private float touchStartY;
+    private boolean handleNextMoveAction;
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
@@ -46,14 +49,32 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN && scrollableView != null) {
-            int x = (int) ev.getRawX();
-            int y = (int) ev.getRawY();
-            scrollableView.getLocationOnScreen(LOC);
-            if (x >= LOC[0] && y >= LOC[1] && x <= (LOC[0] + scrollableView.getWidth()) && y <= (LOC[1] + scrollableView.getHeight())) {
-                getParent().requestDisallowInterceptTouchEvent(true);
+        if (scrollableView != null)
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                touchStartX = ev.getX();
+                touchStartY = ev.getY();
+                handleNextMoveAction = true;
+            } else if (ev.getAction() == MotionEvent.ACTION_MOVE && handleNextMoveAction) {
+                handleNextMoveAction = false;
+                float rawX = ev.getRawX(), rawY = ev.getRawY();
+                scrollableView.getLocationOnScreen(LOC);
+                if (rawX >= LOC[0] && rawY >= LOC[1] && rawX <= (LOC[0] + scrollableView.getWidth()) && rawY <= (LOC[1] + scrollableView.getHeight())) {
+                    float dx = touchStartX - ev.getX();
+                    float dy = touchStartY - ev.getY();
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // horizontal scroll, do not pass to widget
+                        return true;
+                    }
+                    if (scrollableView.canScrollVertically((int) dy)) {
+                        // do not intercept further events, widget can scroll
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
+                    return false;
+                } else {
+                    //
+                    return true;
+                }
             }
-        }
         return false;
     }
 
