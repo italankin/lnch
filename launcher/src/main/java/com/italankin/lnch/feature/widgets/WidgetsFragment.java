@@ -238,6 +238,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         super.onStop();
         if (exitEditModeOnStop) {
             exitEditMode();
+        } else {
             exitEditModeOnStop = true;
         }
         try {
