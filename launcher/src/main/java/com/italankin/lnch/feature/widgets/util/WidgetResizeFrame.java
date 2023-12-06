@@ -24,7 +24,7 @@ import java.util.List;
 
 public class WidgetResizeFrame extends FrameLayout implements GestureDetector.OnGestureListener {
 
-    private static final float EXTEND_THRESHOLD = .90f;
+    private static final float EXTEND_THRESHOLD = .80f;
     private static final float SHRINK_THRESHOLD = .5f;
 
     private final WidgetSizeHelper widgetSizeHelper;
