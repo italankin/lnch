@@ -21,6 +21,7 @@
     <SeekBarPreference
         android:defaultValue="5"
         android:key="widgets_horizontal_grid_size"
+        android:summary="@string/settings_home_widgets_grid_size_summary"
         android:title="@string/settings_home_widgets_grid_size"
         app:showSeekBarValue="true" />
     <Preference

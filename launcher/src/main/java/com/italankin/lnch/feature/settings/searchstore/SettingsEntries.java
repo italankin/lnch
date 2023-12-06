@@ -316,6 +316,7 @@ final class SettingsEntries {
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
                         .title(R.string.settings_home_widgets_grid_size)
+                        .summary(R.string.settings_home_widgets_grid_size_summary)
                         .category(R.string.settings_home_widgets)
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
