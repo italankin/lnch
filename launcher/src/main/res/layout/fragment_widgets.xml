@@ -19,7 +19,10 @@
         android:focusable="true"
         android:overScrollMode="ifContentScrolls"
         android:paddingTop="@dimen/widget_list_padding_top_extra"
-        tools:layout_width="300dp" />
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:layout_width="300dp"
+        tools:listitem="@layout/item_widget_preview"
+        tools:spanCount="2" />
 
     <LinearLayout
         android:layout_width="wrap_content"
