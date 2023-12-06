@@ -8,6 +8,7 @@
         android:title="@string/settings_home_widgets_enable" />
     <ListPreference
         android:defaultValue="left"
+        android:dependency="enable_widgets"
         android:entries="@array/pref_desc_home_widgets_position"
         android:entryValues="@array/pref_values_home_widgets_position"
         android:key="widgets_position"
@@ -15,16 +16,19 @@
         android:title="@string/settings_home_widgets_position" />
     <CheckBoxPreference
         android:defaultValue="false"
+        android:dependency="enable_widgets"
         android:key="widgets_force_resize"
         android:summary="@string/settings_home_widgets_force_resize_summary"
         android:title="@string/settings_home_widgets_force_resize" />
     <SeekBarPreference
         android:defaultValue="5"
+        android:dependency="enable_widgets"
         android:key="widgets_horizontal_grid_size"
         android:summary="@string/settings_home_widgets_grid_size_summary"
         android:title="@string/settings_home_widgets_grid_size"
         app:showSeekBarValue="true" />
     <Preference
+        android:dependency="enable_widgets"
         android:key="@string/pref_key_widgets_remove"
         android:summary="@string/settings_home_widgets_remove_summary"
         android:title="@string/settings_home_widgets_remove" />
