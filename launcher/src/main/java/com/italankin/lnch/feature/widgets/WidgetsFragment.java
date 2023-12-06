@@ -425,6 +425,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void exitEditMode() {
+        if (!widgetItemsState.isResizeMode()) {
+            return;
+        }
         preferences.set(Preferences.WIDGETS_ORDER, widgetItemsState.getWidgetsOrder());
         widgetItemsState.setResizeMode(false, false);
         updateActionsState();
