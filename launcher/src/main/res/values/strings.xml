@@ -196,6 +196,12 @@
     <string name="settings_home_widgets_force_resize_summary">Allow changing size of the widgets even when they do not support resize</string>
     <string name="settings_home_widgets_position">Widgets page position</string>
     <string name="settings_home_widgets_grid_size">Grid size</string>
+    <string name="settings_home_widgets_remove">Remove widgets</string>
+    <string name="settings_home_widgets_remove_summary">Remove all currently pinned widgets</string>
+    <string name="settings_home_widgets_remove_dialog_title">Remove all widgets?</string>
+    <string name="settings_home_widgets_remove_dialog_message">This action cannot be undone</string>
+    <string name="settings_home_widgets_remove_dialog_confirm">Remove all</string>
+    <string name="settings_home_widgets_remove_dialog_removed">All widgets removed</string>
 
     <string name="settings_home_hidden_items">Hidden items</string>
     <string name="settings_home_hidden_items_empty">No hidden items</string>

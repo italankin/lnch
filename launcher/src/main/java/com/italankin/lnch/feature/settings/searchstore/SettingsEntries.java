@@ -14,6 +14,7 @@ import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
+import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.Arrays;
@@ -278,7 +279,9 @@ final class SettingsEntries {
                 new SettingsEntryImpl.Builder(R.string.pref_key_home_widgets)
                         .title(R.string.settings_home_widgets)
                         .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
+                            // noinspection NewApi
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
@@ -286,14 +289,18 @@ final class SettingsEntries {
                         .title(R.string.settings_home_widgets_enable)
                         .summary(R.string.settings_home_widgets_enable_summary)
                         .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
+                            // noinspection NewApi
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_POSITION)
                         .title(R.string.settings_home_widgets_position)
                         .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
+                            // noinspection NewApi
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
@@ -301,14 +308,27 @@ final class SettingsEntries {
                         .title(R.string.settings_home_widgets_force_resize)
                         .summary(R.string.settings_home_widgets_force_resize_summary)
                         .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
+                            // noinspection NewApi
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
                         .title(R.string.settings_home_widgets_grid_size)
                         .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
+                            // noinspection NewApi
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(R.string.pref_key_widgets_remove)
+                        .title(R.string.settings_home_widgets_remove)
+                        .category(R.string.settings_home_widgets_remove_summary)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
+                        .stackBuilder(requestKey -> {
+                            // noinspection NewApi
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),

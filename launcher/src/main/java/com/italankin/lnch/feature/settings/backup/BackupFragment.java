@@ -8,20 +8,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class BackupFragment extends AppPreferenceFragment implements BackupView, SimpleDialogFragment.Listener,
         SettingsToolbarTitle {
@@ -129,6 +128,7 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
             presenter.resetAppsSettings();
         } else if (TAG_RESET_DIALOG_LNCH.equals(tag)) {
             presenter.resetLnchSettings();
+            WidgetHelper.resetAllWidgets();
         }
     }
 

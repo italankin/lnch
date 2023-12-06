@@ -23,4 +23,8 @@
         android:key="widgets_horizontal_grid_size"
         android:title="@string/settings_home_widgets_grid_size"
         app:showSeekBarValue="true" />
+    <Preference
+        android:key="@string/pref_key_widgets_remove"
+        android:summary="@string/settings_home_widgets_remove_summary"
+        android:title="@string/settings_home_widgets_remove" />
 </PreferenceScreen>

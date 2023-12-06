@@ -69,6 +69,9 @@ public class SettingsStore {
         }
         long start = System.nanoTime();
         for (SettingsEntryImpl entry : SettingsEntries.entries()) {
+            if (!entry.isAvailable) {
+                continue;
+            }
             List<SearchToken> settingsTokens = new ArrayList<>(1);
             settingsTokens.add(new SearchToken(
                     EntryMatch.Field.TITLE,

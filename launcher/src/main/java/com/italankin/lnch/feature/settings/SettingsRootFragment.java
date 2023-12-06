@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -14,12 +15,14 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
+import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 
@@ -45,6 +48,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_root);
+        findPreference(R.string.pref_key_home_widgets).setVisible(WidgetHelper.areWidgetsAvailable());
     }
 
     @Override
@@ -87,10 +91,12 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             sendResult(new ShowMiscPreferences().result());
             return true;
         });
-        findPreference(R.string.pref_key_home_widgets).setOnPreferenceClickListener(preference -> {
-            sendResult(new ShowWidgetPreferences().result());
-            return true;
-        });
+        if (WidgetHelper.areWidgetsAvailable()) {
+            findPreference(R.string.pref_key_home_widgets).setOnPreferenceClickListener(preference -> {
+                sendResult(new ShowWidgetPreferences().result());
+                return true;
+            });
+        }
         findPreference(R.string.pref_key_home_hidden_items).setOnPreferenceClickListener(preference -> {
             sendResult(new MiscFragment.ShowHiddenItems().result());
             return true;
@@ -209,6 +215,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     public static class ShowWidgetPreferences extends SignalFragmentResultContract {
         public ShowWidgetPreferences() {
             super("show_widget_preferences");

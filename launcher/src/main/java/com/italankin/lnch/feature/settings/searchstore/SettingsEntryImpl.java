@@ -20,6 +20,7 @@ class SettingsEntryImpl implements SettingsEntry {
     final int category;
     final List<SearchTokens> searchTokens;
     final SettingStackBuilder stackBuilder;
+    final boolean isAvailable;
     @Nullable
     final Preferences.Pref<?> pref;
 
@@ -30,7 +31,8 @@ class SettingsEntryImpl implements SettingsEntry {
             @StringRes int summary,
             @StringRes int category,
             List<SearchTokens> searchTokens,
-            SettingStackBuilder stackBuilder) {
+            SettingStackBuilder stackBuilder,
+            boolean isAvailable) {
         this.key = key;
         this.pref = pref;
         this.title = title;
@@ -38,6 +40,7 @@ class SettingsEntryImpl implements SettingsEntry {
         this.category = category;
         this.searchTokens = searchTokens;
         this.stackBuilder = stackBuilder;
+        this.isAvailable = isAvailable;
     }
 
     @Override
@@ -81,6 +84,7 @@ class SettingsEntryImpl implements SettingsEntry {
         private int summary;
         @StringRes
         private int category;
+        private boolean available = true;
         private final List<SearchTokens> searchTokens = new ArrayList<>(1);
         private SettingStackBuilder stackBuilder;
 
@@ -107,6 +111,11 @@ class SettingsEntryImpl implements SettingsEntry {
         Builder category(@StringRes int category) {
             this.category = category;
             return addResourcesSearchTokens(category);
+        }
+
+        Builder setAvailable(boolean available) {
+            this.available = available;
+            return this;
         }
 
         Builder stackBuilder(SettingStackBuilder stackBuilder) {
@@ -141,7 +150,7 @@ class SettingsEntryImpl implements SettingsEntry {
             if (stackBuilder == null) {
                 throw new IllegalArgumentException(key + " has no stackBuilder");
             }
-            return new SettingsEntryImpl(key, pref, title, summary, category, searchTokens, stackBuilder);
+            return new SettingsEntryImpl(key, pref, title, summary, category, searchTokens, stackBuilder, available);
         }
     }
 }

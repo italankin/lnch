@@ -49,6 +49,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     public static final int REQUEST_CODE_CONFIGURE = 133;
     public static final int REQUEST_CODE_RECONFIGURE = 173;
 
+    public static final String ACTION_RELOAD_WIDGETS = "com.italankin.lnch.widgets.RELOAD";
+
     public static boolean isWidgetRequestCode(int requestCode) {
         return requestCode == REQUEST_CODE_CONFIGURE || requestCode == REQUEST_CODE_RECONFIGURE;
     }
@@ -112,7 +114,10 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     @Override
     public boolean onIntent(Intent intent) {
-        if (!ACTION_PIN_APPWIDGET.equals(intent.getAction())) {
+        if (ACTION_RELOAD_WIDGETS.equals(intent.getAction())) {
+            bindWidgets();
+            return true;
+        } else if (!ACTION_PIN_APPWIDGET.equals(intent.getAction())) {
             return false;
         }
         Context context = requireContext();

@@ -25,7 +25,8 @@
         <Preference
             android:icon="@drawable/ic_widgets"
             android:key="@string/pref_key_home_widgets"
-            android:title="@string/settings_home_widgets" />
+            android:title="@string/settings_home_widgets"
+            app:isPreferenceVisible="false" />
         <Preference
             android:icon="@drawable/ic_action_hide"
             android:key="@string/pref_key_home_hidden_items"

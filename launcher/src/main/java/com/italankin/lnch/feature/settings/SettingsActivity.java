@@ -4,13 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -37,11 +35,11 @@ import com.italankin.lnch.feature.settings.util.TargetPreference;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
+import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import timber.log.Timber;
 
 import java.util.List;
-
-import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -83,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        new FragmentResultManager(getSupportFragmentManager(), this, REQUEST_KEY_SETTINGS)
+        FragmentResultManager fragmentResultManager = new FragmentResultManager(getSupportFragmentManager(), this, REQUEST_KEY_SETTINGS)
                 .register(new SettingsRootFragment.ShowPreferenceSearch(), result -> {
                     showFragment(PreferenceSearchFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
@@ -114,9 +112,6 @@ public class SettingsActivity extends AppCompatActivity {
                 })
                 .register(new SettingsRootFragment.ShowMiscPreferences(), result -> {
                     showFragment(MiscFragment.newInstance(REQUEST_KEY_SETTINGS));
-                })
-                .register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
-                    showFragment(new WidgetsSettingsFragment());
                 })
                 .register(new SettingsRootFragment.ShowWallpaperPreferences(), result -> {
                     showFragment(WallpaperFragment.newInstance(REQUEST_KEY_SETTINGS));
@@ -151,8 +146,13 @@ public class SettingsActivity extends AppCompatActivity {
                 })
                 .register(new AppDetailsFragment.AppDetailsErrorContract(), result -> {
                     fragmentManager.popBackStack();
-                })
-                .attach();
+                });
+        if (WidgetHelper.areWidgetsAvailable()) {
+            fragmentResultManager.register(new SettingsRootFragment.ShowWidgetPreferences(), result -> {
+                showFragment(new WidgetsSettingsFragment());
+            });
+        }
+        fragmentResultManager.attach();
 
         if (savedInstanceState == null) {
             fragmentManager
