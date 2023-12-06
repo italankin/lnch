@@ -82,7 +82,6 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         handlePaint.setStyle(Paint.Style.FILL);
         handlePaint.setColor(frameColor);
         gridPaint.setStyle(Paint.Style.STROKE);
-        gridPaint.setPathEffect(new DashPathEffect(new float[]{frameStrokeSize, frameStrokeSize}, 0));
         gridPaint.setStrokeWidth(frameStrokeSize);
         gridPaint.setColor(frameColor);
         gridPaint.setAlpha(80);
@@ -101,6 +100,8 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     public void setCellSize(int cellSize) {
         this.cellSize = cellSize;
+        float interval = cellSize / 16f;
+        gridPaint.setPathEffect(new DashPathEffect(new float[]{interval, interval}, drawFrameInset / 2f));
         invalidate();
     }
 
