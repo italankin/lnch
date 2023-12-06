@@ -76,6 +76,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private HomePagerHost homePagerHost;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private boolean exitEditModeOnStop = true;
 
     private WidgetAdapter adapter;
     private final WidgetItemsState widgetItemsState = new WidgetItemsState();
@@ -133,7 +134,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             Bundle options = new Bundle();
             options.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId);
             if (request.accept(options)) {
-                addWidget(info);
+                addNewWidget(info);
             } else {
                 cancelAddNewWidget(newAppWidgetId);
             }
@@ -212,6 +213,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             onNewWidgetConfigured(resultCode == Activity.RESULT_OK);
             return;
         } else if (requestCode == REQUEST_CODE_RECONFIGURE) {
+            exitEditModeOnStop = true;
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -232,6 +234,10 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     @Override
     public void onStop() {
         super.onStop();
+        if (exitEditModeOnStop) {
+            exitEditMode();
+            exitEditModeOnStop = true;
+        }
         try {
             appWidgetHost.stopListening();
         } catch (Exception e) {
@@ -265,12 +271,14 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     public void onWidgetConfigure(AppWidget appWidget) {
         try {
             configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidget.appWidgetId, appWidget.providerInfo.configure));
+            exitEditModeOnStop = false;
             return;
         } catch (Exception e) {
             Timber.e(e, "onWidgetConfigure: %s", e.getMessage());
         }
         try {
             appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), appWidget.appWidgetId, 0, REQUEST_CODE_RECONFIGURE, null);
+            exitEditModeOnStop = false;
         } catch (Exception e) {
             Timber.e(e, "onWidgetConfigure: %s", e.getMessage());
         }
@@ -281,7 +289,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         for (int appWidgetId : appWidgetHost.getAppWidgetIds()) {
             AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
             if (info != null) {
-                addWidget(appWidgetId, info, false);
+                addWidgetToScreen(appWidgetId, info, false);
             } else {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
                 Timber.d("deallocate: %d", appWidgetId);
@@ -291,12 +299,14 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         updateWidgets();
 
         intentQueue.registerOnIntentAction(this);
+        exitEditModeOnStop = true;
     }
 
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
         Timber.d("allocate: %d", newAppWidgetId);
         addWidgetLauncher.launch(newAppWidgetId);
+        exitEditModeOnStop = false;
     }
 
     private void onNewWidgetSelected(AppWidgetProviderInfo info) {
@@ -311,19 +321,21 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         if (requiresConfiguration(info)) {
             try {
                 configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
+                exitEditModeOnStop = false;
                 return;
             } catch (Exception e) {
                 Timber.e(e, "ConfigureWidgetContract.launch: %s", e.getMessage());
             }
             try {
                 appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), newAppWidgetId, 0, REQUEST_CODE_CONFIGURE, null);
+                exitEditModeOnStop = false;
             } catch (Exception e) {
                 Timber.e(e, "startAppWidgetConfigureActivityForResult: %s", e.getMessage());
                 cancelAddNewWidget(newAppWidgetId);
                 Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
             }
         } else {
-            addWidget(info);
+            addNewWidget(info);
             widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
     }
@@ -339,26 +351,27 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void onNewWidgetConfigured(boolean configured) {
+        exitEditModeOnStop = true;
         if (configured) {
             AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(newAppWidgetId);
             if (info == null) {
                 cancelAddNewWidget(newAppWidgetId);
                 return;
             }
-            addWidget(info);
+            addNewWidget(info);
             widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         } else {
             cancelAddNewWidget(newAppWidgetId);
         }
     }
 
-    private void addWidget(AppWidgetProviderInfo info) {
-        addWidget(newAppWidgetId, info, true);
+    private void addNewWidget(AppWidgetProviderInfo info) {
+        addWidgetToScreen(newAppWidgetId, info, true);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         updateWidgets();
     }
 
-    private void addWidget(int appWidgetId, AppWidgetProviderInfo info, boolean isNew) {
+    private void addWidgetToScreen(int appWidgetId, AppWidgetProviderInfo info, boolean isNew) {
         Bundle options = new Bundle(appWidgetManager.getAppWidgetOptions(appWidgetId));
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
         int maxAvailWidth = cellSize * gridSize;

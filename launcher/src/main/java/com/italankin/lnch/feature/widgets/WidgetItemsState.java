@@ -25,6 +25,7 @@ class WidgetItemsState {
 
     public void clearWidgets() {
         appWidgets.clear();
+        resizeMode = false;
     }
 
     public void removeWidgetById(int appWidgetId) {
