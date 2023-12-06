@@ -14,8 +14,6 @@ import static com.italankin.lnch.util.search.SearchUtils.match;
 
 public class SettingsStore {
 
-    public static final char SEARCH_TOKEN_DELIMITER = '\n';
-
     private final Context context;
 
     private final Map<SettingsEntryImpl, List<SearchToken>> entriesCache = new ConcurrentHashMap<>(Preferences.ALL.size());
