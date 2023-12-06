@@ -38,6 +38,8 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final Rect frame = new Rect();
     private final Rect visualFrame = new Rect();
 
+    private final int frameColor;
+    private final int frameActiveColor;
     private final int handleRadius;
     private final int drawFrameInset;
     private final int handleTouchRadius;
@@ -66,7 +68,8 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         super(context);
         widgetSizeHelper = new WidgetSizeHelper(context);
         Resources res = context.getResources();
-        int frameColor = ContextCompat.getColor(context, R.color.widget_resize_frame);
+        frameColor = ContextCompat.getColor(context, R.color.widget_resize_frame);
+        frameActiveColor = ContextCompat.getColor(context, R.color.widget_resize_frame_active);
         framePaint.setColor(frameColor);
         framePaint.setStyle(Paint.Style.STROKE);
         int frameStrokeSize = res.getDimensionPixelSize(R.dimen.widget_resize_frame_stroke);
@@ -181,6 +184,13 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                     t += cellSize;
                 }
             }
+            if (activeDragHandle != null) {
+                framePaint.setColor(frameActiveColor);
+                handlePaint.setColor(frameActiveColor);
+            } else {
+                framePaint.setColor(frameColor);
+                handlePaint.setColor(frameColor);
+            }
             canvas.drawRect(visualFrame, framePaint);
             if (resizeVertically) {
                 canvas.drawCircle(visualFrame.centerX(), visualFrame.bottom, handleRadius, handlePaint);
@@ -227,6 +237,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             }
             if (activeDragHandle != null) {
                 setElevation(1f);
+                invalidate();
                 gestureDetector.setIsLongpressEnabled(false);
                 getParent().requestDisallowInterceptTouchEvent(true);
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -288,8 +299,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 return true;
             }
         }
-        setHostViewSize(new Bundle(), width, height);
-        triggerCommitAction = true;
+        triggerCommitAction = setHostViewSize(new Bundle(), width, height);
         appWidget.size.width = width;
         appWidget.size.height = height;
         return true;
@@ -332,7 +342,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         visualFrame.inset(drawFrameInset, drawFrameInset);
     }
 
-    private void setHostViewSize(Bundle options, int width, int height) {
+    private boolean setHostViewSize(Bundle options, int width, int height) {
         ViewGroup.LayoutParams lp = hostView.getLayoutParams();
         if (width != lp.width || height != lp.height) {
             lp.width = width;
@@ -348,7 +358,9 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             invalidate();
 
             widgetSizeHelper.resize(hostView.getAppWidgetId(), options, width, height);
+            return true;
         }
+        return false;
     }
 
     @Override
