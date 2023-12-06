@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.widgets.adapter;
 
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
@@ -42,8 +41,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
         LauncherAppWidgetHostView hostView = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
         WidgetResizeFrame resizeFrame = new WidgetResizeFrame(parent.getContext());
         resizeFrame.setCellSize(cellSize);
-        MarginLayoutParams lp = new MarginLayoutParams(item.size.width, item.size.height);
-        resizeFrame.setLayoutParams(lp);
+        resizeFrame.setLayoutParams(new RecyclerView.LayoutParams(item.size.width, item.size.height));
         resizeFrame.addView(hostView, 0, new LayoutParams(item.size.width, item.size.height));
         resizeFrame.setDeleteAction(v -> widgetActionListener.onWidgetDelete(item));
         resizeFrame.setConfigureAction(v -> widgetActionListener.onWidgetConfigure(item));
