@@ -64,7 +64,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private OnStartDragListener startDragListener;
 
     private boolean resizeModeActive = false;
-    private Handle handle = null;
+    private Handle activeDragHandle = null;
 
     public WidgetResizeFrame(@NonNull Context context) {
         super(context);
@@ -147,7 +147,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             resizeModeActive = resizeMode;
             deleteAction.setVisibility(resizeMode ? View.VISIBLE : View.INVISIBLE);
             configureAction.setVisibility(resizeMode && isReconfigurable() ? VISIBLE : GONE);
-            handle = null;
+            activeDragHandle = null;
             if (!resizeMode) {
                 gestureDetector.setIsLongpressEnabled(false);
                 setElevation(0f);
@@ -160,7 +160,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (handle != null) {
+        if (activeDragHandle != null) {
             return;
         }
         updateFrame();
@@ -217,19 +217,19 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         }
         resetFrame(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            handle = null;
+            activeDragHandle = null;
             float x = event.getX(), y = event.getY();
             if (resizeVertically) {
                 if (euclidean(x, y, visualFrame.centerX(), visualFrame.bottom) <= handleTouchRadius) {
-                    handle = Handle.BOTTOM;
+                    activeDragHandle = Handle.BOTTOM;
                 }
             }
-            if (handle == null && resizeHorizontally) {
+            if (activeDragHandle == null && resizeHorizontally) {
                 if (euclidean(x, y, visualFrame.right, visualFrame.centerY()) <= handleTouchRadius) {
-                    handle = Handle.RIGHT;
+                    activeDragHandle = Handle.RIGHT;
                 }
             }
-            if (handle != null) {
+            if (activeDragHandle != null) {
                 setElevation(resizeElevation);
                 gestureDetector.setIsLongpressEnabled(false);
                 getParent().requestDisallowInterceptTouchEvent(true);
@@ -249,10 +249,10 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     @Override
     public boolean onScroll(@Nullable MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
-        if (handle == null) {
+        if (activeDragHandle == null) {
             return false;
         }
-        switch (handle) {
+        switch (activeDragHandle) {
             case RIGHT:
                 frame.right = (int) e2.getX();
                 if (frame.right > frameMax.right) {
@@ -320,7 +320,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     private void resetFrame(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP) {
-            handle = null;
+            activeDragHandle = null;
             updateFrame();
             invalidate();
             setElevation(0f);
