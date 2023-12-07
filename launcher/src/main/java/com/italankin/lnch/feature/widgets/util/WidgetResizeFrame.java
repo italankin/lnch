@@ -91,7 +91,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         handlePaint.setShadowLayer(frameStrokeSize / 2f, 0, 0,
                 ContextCompat.getColor(context, R.color.widget_resize_frame_shadow));
         gridPaint.setStyle(Paint.Style.STROKE);
-        gridPaint.setStrokeWidth(frameStrokeSize);
+        gridPaint.setStrokeWidth(frameStrokeSize / 2f);
         gridPaint.setColor(ContextCompat.getColor(context, R.color.widget_resize_frame_grid));
         overlayPaint.setColor(ContextCompat.getColor(context, R.color.widget_resize_frame_overlay));
         overlayPaint.setStyle(Paint.Style.FILL);
