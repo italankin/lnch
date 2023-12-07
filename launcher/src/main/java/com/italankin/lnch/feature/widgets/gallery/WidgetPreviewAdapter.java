@@ -5,13 +5,11 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.util.imageloader.ImageLoader;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.imageloader.ImageLoader;
 import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapter.ViewHolder, WidgetPreview> {
@@ -82,7 +80,6 @@ public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapt
             imageLoader.load(info.previewUri)
                     .errorPlaceholder(placeholder)
                     .placeholder(placeholder)
-                    .noCache()
                     .into(imagePreview);
         }
     }
