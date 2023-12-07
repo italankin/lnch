@@ -8,13 +8,11 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultSender;
 
@@ -52,7 +50,11 @@ public abstract class PopupFragment extends Fragment implements FragmentResultSe
         Rect anchor = requireArguments().getParcelable(ARG_ANCHOR);
         root.setAnchor(anchor);
         applyInsets();
-        root.setOnClickListener(v -> dismiss());
+        root.setOnClickListener(v -> {
+            if (dismissOnTouchOutside()) {
+                dismiss();
+            }
+        });
     }
 
     public void show(FragmentManager fragmentManager) {
@@ -83,6 +85,10 @@ public abstract class PopupFragment extends Fragment implements FragmentResultSe
         } else {
             showAfterInsetsApplied = true;
         }
+    }
+
+    protected boolean dismissOnTouchOutside() {
+        return true;
     }
 
     private void applyInsets() {
