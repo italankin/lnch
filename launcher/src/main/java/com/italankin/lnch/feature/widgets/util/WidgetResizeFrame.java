@@ -20,11 +20,12 @@ import androidx.core.content.ContextCompat;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.util.ResUtils;
 
 public class WidgetResizeFrame extends FrameLayout implements GestureDetector.OnGestureListener {
 
-    private static final float EXTEND_THRESHOLD = .80f;
-    private static final float SHRINK_THRESHOLD = .5f;
+    private static final float EXTEND_THRESHOLD = .7f;
+    private static final float SHRINK_THRESHOLD = .4f;
     private static final int SWITCH_MODE_ANIM_DURATION = 250;
 
     private final WidgetSizeHelper widgetSizeHelper;
@@ -44,6 +45,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final int handleRadius;
     private final int drawFrameInset;
     private final int handleTouchRadius;
+    private final int resizeElevation;
     private int cellSize;
 
     private final GestureDetector gestureDetector;
@@ -90,6 +92,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         overlayPaint.setStyle(Paint.Style.FILL);
         handleRadius = res.getDimensionPixelSize(R.dimen.widget_resize_frame_handle_radius);
         drawFrameInset = res.getDimensionPixelSize(R.dimen.widget_resize_frame_inset);
+        resizeElevation = ResUtils.px2dp(context, 20);
         handleTouchRadius = handleRadius * 3;
 
         gestureDetector = new GestureDetector(context, this);
@@ -255,7 +258,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 }
             }
             if (activeDragHandle != null) {
-                setElevation(1f);
+                setElevation(resizeElevation);
                 frameView.invalidate();
                 gestureDetector.setIsLongpressEnabled(false);
                 getParent().requestDisallowInterceptTouchEvent(true);
@@ -355,6 +358,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             activeDragHandle = null;
             updateFrame();
             frameView.invalidate();
+            setElevation(0f);
             if (triggerCommitAction && commitAction != null) {
                 commitAction.run();
             }
