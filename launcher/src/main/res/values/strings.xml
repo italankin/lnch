@@ -195,7 +195,7 @@
     <string name="settings_home_widgets_force_resize">Force resize</string>
     <string name="settings_home_widgets_force_resize_summary">Allow changing size of the widgets even when they do not support resize</string>
     <string name="settings_home_widgets_position">Widgets page position</string>
-    <string name="settings_home_widgets_grid_size">Grid size</string>
+    <string name="settings_home_widgets_grid_size">Home grid cells</string>
     <string name="settings_home_widgets_grid_size_summary">Number of cells in widgets grid</string>
     <string name="settings_home_widgets_remove">Remove widgets</string>
     <string name="settings_home_widgets_remove_summary">Remove all currently pinned widgets</string>
