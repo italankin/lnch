@@ -380,26 +380,26 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         int maxAvailWidth = cellSize * gridSize;
         int maxAvailHeight = cellSize * maxHeightCells;
         Size size = widgetSizeHelper.getSize(info, options, true);
-        int width = cellSize(cellSize, size.getWidth(), maxAvailWidth);
-        int height = cellSize(cellSize, size.getHeight(), maxAvailHeight);
+        int width = minMultipleOfCellSize(cellSize, size.getWidth(), maxAvailWidth);
+        int height = minMultipleOfCellSize(cellSize, size.getHeight(), maxAvailHeight);
+        Size minSize = widgetSizeHelper.getMinSize(info, true);
+        int minWidth = minMultipleOfCellSize(cellSize, minSize.getWidth(), maxAvailHeight);
+        int minHeight = minMultipleOfCellSize(cellSize, minSize.getHeight(), maxAvailHeight);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isNew) {
             if (info.targetCellWidth > 0) {
-                width = cellSize * Math.min(gridSize, info.targetCellWidth);
+                width = Math.max(cellSize * Math.min(gridSize, info.targetCellWidth), minWidth);
             }
             if (info.targetCellHeight > 0) {
-                height = cellSize * Math.min(gridSize, info.targetCellHeight);
+                height = Math.max(cellSize * Math.min(gridSize, info.targetCellHeight), minHeight);
             }
         }
-        Size minSize = widgetSizeHelper.getMinSize(info, true);
-        int minWidth = cellSize(cellSize, minSize.getWidth(), maxAvailHeight);
-        int minHeight = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
         int maxWidth = maxAvailWidth, maxHeight = maxAvailHeight;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (info.maxResizeWidth > minWidth) {
-                maxWidth = Math.min(maxAvailWidth, info.maxResizeWidth);
+                maxWidth = minMultipleOfCellSize(cellSize, info.maxResizeWidth, maxAvailWidth);
             }
             if (info.maxResizeHeight > minHeight) {
-                maxHeight = Math.min(maxAvailHeight, info.maxResizeHeight);
+                maxHeight = minMultipleOfCellSize(cellSize, info.maxResizeHeight, maxAvailHeight);
             }
         }
         AppWidget.Size widgetSize = new AppWidget.Size(
@@ -493,7 +493,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         return maxSize / cellSize;
     }
 
-    private static int cellSize(int cellSize, int size, int max) {
+    private static int minMultipleOfCellSize(int cellSize, int size, int max) {
         if (size <= cellSize) {
             return cellSize;
         }
