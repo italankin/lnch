@@ -21,7 +21,7 @@
         <item name="colorSearchResultBackground">#afff</item>
         <item name="colorEditPanelBackground">?colorPrimaryDark</item>
         <item name="colorPreviewBorder">#6000</item>
-        <item name="colorWidgetActions">#4fff</item>
+        <item name="colorWidgetActions">#8fff</item>
 
         <item name="toolbarOverlayTheme">@style/AppTheme.Overlay</item>
     </style>
