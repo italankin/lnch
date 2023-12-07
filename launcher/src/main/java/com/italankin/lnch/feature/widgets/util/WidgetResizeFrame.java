@@ -384,7 +384,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             invalidate();
             frameView.invalidate();
 
-            widgetSizeHelper.resize(hostView.getAppWidgetId(), options, width, height);
+            widgetSizeHelper.resize(hostView.getAppWidgetId(), options, width, height, true);
             return true;
         }
         return false;

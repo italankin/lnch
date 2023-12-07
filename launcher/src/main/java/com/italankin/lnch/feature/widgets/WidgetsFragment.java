@@ -379,9 +379,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
         int maxAvailWidth = cellSize * gridSize;
         int maxAvailHeight = cellSize * maxHeightCells;
-        Size minSize = widgetSizeHelper.getMinSize(info, options);
-        int width = cellSize(cellSize, minSize.getWidth(), maxAvailWidth);
-        int height = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
+        Size size = widgetSizeHelper.getSize(info, options, true);
+        int width = cellSize(cellSize, size.getWidth(), maxAvailWidth);
+        int height = cellSize(cellSize, size.getHeight(), maxAvailHeight);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isNew) {
             if (info.targetCellWidth > 0) {
                 width = cellSize * Math.min(gridSize, info.targetCellWidth);
@@ -390,15 +390,15 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 height = cellSize * Math.min(gridSize, info.targetCellHeight);
             }
         }
-        Size minSizeFromInfo = widgetSizeHelper.getMinSizeFromInfo(info);
-        int minWidth = cellSize(cellSize, minSizeFromInfo.getWidth(), maxAvailHeight);
-        int minHeight = cellSize(cellSize, minSizeFromInfo.getHeight(), maxAvailHeight);
-        AppWidget.Size size = new AppWidget.Size(
+        Size minSize = widgetSizeHelper.getMinSize(info, true);
+        int minWidth = cellSize(cellSize, minSize.getWidth(), maxAvailHeight);
+        int minHeight = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
+        AppWidget.Size widgetSize = new AppWidget.Size(
                 minWidth, minHeight,
                 width, height,
                 maxAvailWidth, maxAvailHeight);
-        widgetSizeHelper.resize(appWidgetId, options, width, height);
-        widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options, size));
+        widgetSizeHelper.resize(appWidgetId, options, width, height, true);
+        widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options, widgetSize));
     }
 
     private void cancelAddNewWidget(int appWidgetId) {
