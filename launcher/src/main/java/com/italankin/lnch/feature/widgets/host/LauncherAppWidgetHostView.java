@@ -37,8 +37,6 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
-        setClipToPadding(false);
-        setClipChildren(false);
     }
 
     @Override
