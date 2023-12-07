@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
+import com.italankin.lnch.R;
 import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.imageloader.resourceloader.*;
 import timber.log.Timber;
@@ -125,9 +126,23 @@ public class ImageLoader {
 
         public void into(@NonNull ImageView target, @NonNull Callback callback) {
             cancel(target);
+            if (!noCache) {
+                Uri cacheKey = (Uri) target.getTag(R.id.image_loader_cache_key);
+                if (cacheKey != null) {
+                    Drawable cached = cache.get(uri);
+                    if (cached != null) {
+                        callbackHandler.post(() -> {
+                            Timber.tag("ImageLoader").d("onImageLoaded: uri=%s cached=%b", uri, true);
+                            target.setImageDrawable(cached);
+                            callback.onSuccess();
+                        });
+                        return;
+                    }
+                }
+            }
             Request request = new Request(
                     uri,
-                    new ImageViewTarget(target),
+                    new ImageViewTarget(target, noCache ? null : uri),
                     errorPlaceholder,
                     callback,
                     noCache);
