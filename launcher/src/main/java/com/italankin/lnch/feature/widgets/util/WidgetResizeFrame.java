@@ -22,6 +22,9 @@ import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.util.ResUtils;
 
+import java.util.Collections;
+import java.util.List;
+
 public class WidgetResizeFrame extends FrameLayout implements GestureDetector.OnGestureListener {
 
     private static final float EXTEND_THRESHOLD = .7f;
@@ -68,6 +71,8 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private boolean resizeModeActive = false;
     private Handle activeDragHandle = null;
     private ValueAnimator switchModeAnimator;
+    private final Rect exclusionRect = new Rect();
+    private final List<Rect> exclusionRects = Collections.singletonList(exclusionRect);
 
     public WidgetResizeFrame(@NonNull Context context) {
         super(context);
@@ -223,6 +228,18 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             return;
         }
         updateFrame();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // if gesture system navigation enabled, we need to
+            // allow dragging right handle from the edge of the screen
+            exclusionRect.set(visualFrame.right - handleTouchRadius, visualFrame.centerY() - handleTouchRadius,
+                    visualFrame.right + handleTouchRadius, visualFrame.centerY() + handleTouchRadius);
+            setSystemGestureExclusionRects(exclusionRects);
+        }
     }
 
     @Override
