@@ -56,24 +56,22 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
                 handleNextMoveAction = true;
             } else if (ev.getAction() == MotionEvent.ACTION_MOVE && handleNextMoveAction) {
                 handleNextMoveAction = false;
-                float rawX = ev.getRawX(), rawY = ev.getRawY();
-                scrollableView.getLocationOnScreen(LOC);
-                if (rawX >= LOC[0] && rawY >= LOC[1] && rawX <= (LOC[0] + scrollableView.getWidth()) && rawY <= (LOC[1] + scrollableView.getHeight())) {
-                    float dx = touchStartX - ev.getX();
-                    float dy = touchStartY - ev.getY();
-                    if (Math.abs(dx) > Math.abs(dy)) {
-                        // horizontal scroll, do not pass to widget
-                        return true;
-                    }
-                    if (scrollableView.canScrollVertically((int) dy)) {
-                        // do not intercept further events, widget can scroll
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                    }
-                    return false;
-                } else {
+                if (!isInBounds(scrollableView, ev.getRawX(), ev.getRawY())) {
                     // gesture is not within scrollable view bounds, intercept events
                     return true;
                 }
+                float dx = touchStartX - ev.getX();
+                float dy = touchStartY - ev.getY();
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // horizontal scroll, do not pass to widget
+                    return true;
+                }
+                int d = (int) ((int) dy == 0 ? Math.signum(dy) : dy);
+                if (scrollableView.canScrollVertically(d)) {
+                    // do not intercept further events, widget can scroll
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
             }
         }
         return false;
@@ -99,6 +97,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             post(this::switchToErrorView);
         }
         scrollableView = checkScrollableRecursively(this);
+    }
+
+    private static boolean isInBounds(View view, float x, float y) {
+        view.getLocationOnScreen(LOC);
+        return x >= LOC[0] && y >= LOC[1] && x <= (LOC[0] + view.getWidth()) && y <= (LOC[1] + view.getHeight());
     }
 
     private View checkScrollableRecursively(ViewGroup viewGroup) {
