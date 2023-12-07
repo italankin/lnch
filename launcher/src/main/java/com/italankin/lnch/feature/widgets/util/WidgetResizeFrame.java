@@ -145,6 +145,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         if (this.forceResize != forceResize) {
             this.forceResize = forceResize;
             updateWidgetFlags();
+            updateMinMaxFrames();
         }
     }
 
@@ -152,8 +153,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         this.appWidget = appWidget;
         this.hostView = hostView;
         addView(hostView, 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
-        frameMin.set(0, 0, appWidget.size.minWidth, appWidget.size.minHeight);
-        frameMax.set(0, 0, appWidget.size.maxWidth, appWidget.size.maxHeight);
+        updateMinMaxFrames();
         updateWidgetFlags();
         setHostViewSize(appWidget.options, appWidget.size.width, appWidget.size.height);
     }
@@ -352,10 +352,21 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         }
     }
 
+    private void updateMinMaxFrames() {
+        if (forceResize) {
+            frameMin.set(0, 0, cellSize, cellSize);
+        } else {
+            frameMin.set(0, 0, appWidget.size.minWidth, appWidget.size.minHeight);
+        }
+        frameMax.set(0, 0, appWidget.size.maxWidth, appWidget.size.maxHeight);
+    }
+
     private void updateWidgetFlags() {
         AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
-        resizeHorizontally = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0;
-        resizeVertically = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0;
+        resizeHorizontally = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0 &&
+                appWidget.size.minWidth != appWidget.size.maxWidth;
+        resizeVertically = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0 &&
+                appWidget.size.minHeight != appWidget.size.maxHeight;
         configureAction.setVisibility(isReconfigurable() ? VISIBLE : INVISIBLE);
     }
 
