@@ -35,8 +35,6 @@ import java.util.List;
 
 public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResults.Callback {
 
-    private static final float TEXT_SIZE_FACTOR = 3.11f;
-
     private final InputMethodManager inputMethodManager;
     private final ImageLoader imageLoader;
 
