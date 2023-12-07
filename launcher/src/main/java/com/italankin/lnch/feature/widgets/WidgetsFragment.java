@@ -393,10 +393,19 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         Size minSize = widgetSizeHelper.getMinSize(info, true);
         int minWidth = cellSize(cellSize, minSize.getWidth(), maxAvailHeight);
         int minHeight = cellSize(cellSize, minSize.getHeight(), maxAvailHeight);
+        int maxWidth = maxAvailWidth, maxHeight = maxAvailHeight;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (info.maxResizeWidth > minWidth) {
+                maxWidth = Math.min(maxAvailWidth, info.maxResizeWidth);
+            }
+            if (info.maxResizeHeight > minHeight) {
+                maxHeight = Math.min(maxAvailHeight, info.maxResizeHeight);
+            }
+        }
         AppWidget.Size widgetSize = new AppWidget.Size(
                 minWidth, minHeight,
                 width, height,
-                maxAvailWidth, maxAvailHeight);
+                maxWidth, maxHeight);
         widgetSizeHelper.resize(appWidgetId, options, width, height, true);
         widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options, widgetSize));
     }
