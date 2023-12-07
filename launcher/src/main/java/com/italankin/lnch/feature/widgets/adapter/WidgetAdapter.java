@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.widgets.adapter;
 
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
@@ -38,15 +37,14 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
     @Override
     public WidgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         AppWidget item = findItemById(viewType);
-        LauncherAppWidgetHostView hostView = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
         WidgetResizeFrame resizeFrame = new WidgetResizeFrame(parent.getContext());
-        resizeFrame.setCellSize(cellSize);
         resizeFrame.setLayoutParams(new RecyclerView.LayoutParams(item.size.width, item.size.height));
-        resizeFrame.addView(hostView, 0, new LayoutParams(item.size.width, item.size.height));
+        LauncherAppWidgetHostView hostView = appWidgetHost.createView(item.appWidgetId, item.providerInfo);
+        resizeFrame.bindAppWidget(item, hostView);
+        resizeFrame.setCellSize(cellSize);
         resizeFrame.setDeleteAction(v -> widgetActionListener.onWidgetDelete(item));
         resizeFrame.setConfigureAction(v -> widgetActionListener.onWidgetConfigure(item));
         resizeFrame.setOnStartDragListener(onStartDragListener);
-        resizeFrame.bindAppWidget(item);
         WidgetViewHolder holder = new WidgetViewHolder(resizeFrame);
         resizeFrame.setCommitAction(() -> notifyDataSetChanged());
         return holder;
@@ -69,8 +67,19 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
     @Override
     public void onBindViewHolder(WidgetAdapter.WidgetViewHolder holder, int position) {
         AppWidget item = items.get(position);
-        holder.resizeFrame.setResizeMode(item.resizeMode);
+        holder.resizeFrame.setResizeMode(item.resizeMode, false);
         holder.resizeFrame.setForceResize(item.forceResize);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull WidgetAdapter.WidgetViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            AppWidget item = items.get(position);
+            holder.resizeFrame.setResizeMode(item.resizeMode, true);
+            holder.resizeFrame.setForceResize(item.forceResize);
+        }
     }
 
     @Override

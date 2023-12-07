@@ -1,5 +1,8 @@
 package com.italankin.lnch.feature.widgets.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.res.Resources;
@@ -18,13 +21,11 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class WidgetResizeFrame extends FrameLayout implements GestureDetector.OnGestureListener {
 
     private static final float EXTEND_THRESHOLD = .80f;
     private static final float SHRINK_THRESHOLD = .5f;
+    private static final int SWITCH_MODE_ANIM_DURATION = 250;
 
     private final WidgetSizeHelper widgetSizeHelper;
 
@@ -53,8 +54,9 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     private final View deleteAction;
     private final View configureAction;
-    private final List<View> actions;
+    private final ViewGroup actionsContainer;
     private LauncherAppWidgetHostView hostView;
+    private final FrameView frameView;
     private AppWidget appWidget;
 
     private boolean triggerCommitAction;
@@ -63,6 +65,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     private boolean resizeModeActive = false;
     private Handle activeDragHandle = null;
+    private ValueAnimator switchModeAnimator;
 
     public WidgetResizeFrame(@NonNull Context context) {
         super(context);
@@ -94,18 +97,24 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
         setClipChildren(false);
         setClipToPadding(false);
+        setChildrenDrawingOrderEnabled(true);
 
         inflate(context, R.layout.widget_edit_actions, this);
         deleteAction = findViewById(R.id.widget_delete);
         configureAction = findViewById(R.id.widget_configure);
-        actions = Arrays.asList(deleteAction, configureAction);
+        actionsContainer = findViewById(R.id.actions_container);
+
+        frameView = new FrameView(context);
+        addView(frameView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        frameView.setVisibility(View.INVISIBLE);
+        frameView.setAlpha(0f);
     }
 
     public void setCellSize(int cellSize) {
         this.cellSize = cellSize;
         float interval = cellSize / 16f;
         gridPaint.setPathEffect(new DashPathEffect(new float[]{interval, interval}, drawFrameInset / 2f));
-        invalidate();
+        frameView.invalidate();
     }
 
     public void setDeleteAction(OnClickListener onClickListener) {
@@ -125,36 +134,82 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     public void setForceResize(boolean forceResize) {
-        this.forceResize = forceResize;
-        updateResizeFlags();
+        if (this.forceResize != forceResize) {
+            this.forceResize = forceResize;
+            updateWidgetFlags();
+        }
     }
 
-    public void bindAppWidget(AppWidget appWidget) {
+    public void bindAppWidget(AppWidget appWidget, LauncherAppWidgetHostView hostView) {
         this.appWidget = appWidget;
+        this.hostView = hostView;
+        addView(hostView, 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
         frameMin.set(0, 0, appWidget.size.minWidth, appWidget.size.minHeight);
         frameMax.set(0, 0, appWidget.size.maxWidth, appWidget.size.maxHeight);
-        updateResizeFlags();
+        updateWidgetFlags();
         setHostViewSize(appWidget.options, appWidget.size.width, appWidget.size.height);
     }
 
-    private void updateResizeFlags() {
-        AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
-        resizeHorizontally = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0;
-        resizeVertically = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0;
-    }
-
-    public void setResizeMode(boolean resizeMode) {
+    public void setResizeMode(boolean resizeMode, boolean animated) {
         if (resizeModeActive != resizeMode) {
             resizeModeActive = resizeMode;
-            deleteAction.setVisibility(resizeMode ? View.VISIBLE : View.INVISIBLE);
-            configureAction.setVisibility(resizeMode && isReconfigurable() ? VISIBLE : GONE);
             activeDragHandle = null;
             if (!resizeMode) {
                 gestureDetector.setIsLongpressEnabled(false);
                 setElevation(0f);
             }
-            setWillNotDraw(!resizeMode);
-            invalidate();
+            if (switchModeAnimator != null && switchModeAnimator.isRunning()) {
+                switchModeAnimator.cancel();
+            }
+            if (!animated) {
+                frameView.setVisibility(resizeMode ? View.VISIBLE : View.INVISIBLE);
+                frameView.setAlpha(resizeMode ? 1 : 0);
+                actionsContainer.setVisibility(resizeMode ? View.VISIBLE : View.INVISIBLE);
+                actionsContainer.setAlpha(resizeMode ? 1 : 0);
+                return;
+            }
+            if (resizeMode) {
+                switchModeAnimator = ValueAnimator.ofFloat(frameView.getAlpha(), 1);
+                switchModeAnimator.setDuration(SWITCH_MODE_ANIM_DURATION);
+                switchModeAnimator.addUpdateListener(animation -> {
+                    float alpha = (float) animation.getAnimatedValue();
+                    frameView.setAlpha(alpha);
+                    actionsContainer.setAlpha(alpha);
+                });
+                switchModeAnimator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        frameView.setVisibility(View.VISIBLE);
+                        actionsContainer.setVisibility(View.VISIBLE);
+                    }
+                });
+                switchModeAnimator.start();
+            } else {
+                switchModeAnimator = ValueAnimator.ofFloat(frameView.getAlpha(), 0);
+                switchModeAnimator.setDuration(SWITCH_MODE_ANIM_DURATION);
+                switchModeAnimator.addUpdateListener(animation -> {
+                    float alpha = (float) animation.getAnimatedValue();
+                    frameView.setAlpha(alpha);
+                    actionsContainer.setAlpha(alpha);
+                });
+                switchModeAnimator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        frameView.setVisibility(View.INVISIBLE);
+                        actionsContainer.setVisibility(View.INVISIBLE);
+                    }
+                });
+                switchModeAnimator.start();
+            }
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (switchModeAnimator != null) {
+            switchModeAnimator.cancel();
+            switchModeAnimator = null;
         }
     }
 
@@ -168,49 +223,13 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
-        super.draw(canvas);
-        if (resizeModeActive && !visualFrame.isEmpty()) {
-            canvas.drawRect(visualFrame, overlayPaint);
-            if (cellSize > 0) {
-                int l = frame.left + cellSize;
-                while (l < frame.right) {
-                    canvas.drawLine(l, visualFrame.top, l, visualFrame.bottom, gridPaint);
-                    l += cellSize;
-                }
-                int t = frame.top + cellSize;
-                while (t < frame.bottom) {
-                    canvas.drawLine(visualFrame.left, t, visualFrame.right, t, gridPaint);
-                    t += cellSize;
-                }
-            }
-            if (activeDragHandle != null) {
-                framePaint.setColor(frameActiveColor);
-                handlePaint.setColor(frameActiveColor);
-            } else {
-                framePaint.setColor(frameColor);
-                handlePaint.setColor(frameColor);
-            }
-            canvas.drawRect(visualFrame, framePaint);
-            if (resizeVertically) {
-                canvas.drawCircle(visualFrame.centerX(), visualFrame.bottom, handleRadius, handlePaint);
-            }
-            if (resizeHorizontally) {
-                canvas.drawCircle(visualFrame.right, visualFrame.centerY(), handleRadius, handlePaint);
-            }
-        }
-    }
-
-    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!resizeModeActive) {
             return false;
         }
-        for (View action : actions) {
-            if (event.getX() >= action.getLeft() && event.getX() <= action.getRight() &&
-                    event.getY() >= action.getTop() && event.getY() <= action.getBottom()) {
-                return false;
-            }
+        if (event.getX() >= actionsContainer.getLeft() && event.getX() <= actionsContainer.getRight() &&
+                event.getY() >= actionsContainer.getTop() && event.getY() <= actionsContainer.getBottom()) {
+            return false;
         }
         resetFrame(event);
         return true;
@@ -237,7 +256,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             }
             if (activeDragHandle != null) {
                 setElevation(1f);
-                invalidate();
+                frameView.invalidate();
                 gestureDetector.setIsLongpressEnabled(false);
                 getParent().requestDisallowInterceptTouchEvent(true);
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -279,7 +298,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         }
         visualFrame.set(frame);
         visualFrame.inset(drawFrameInset, drawFrameInset);
-        invalidate();
+        frameView.invalidate();
 
         int width = frame.width();
         int height = frame.height();
@@ -313,6 +332,13 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         }
     }
 
+    private void updateWidgetFlags() {
+        AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
+        resizeHorizontally = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0;
+        resizeVertically = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0;
+        configureAction.setVisibility(isReconfigurable() ? VISIBLE : INVISIBLE);
+    }
+
     private boolean isReconfigurable() {
         AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
         if (info.configure == null) {
@@ -328,7 +354,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP) {
             activeDragHandle = null;
             updateFrame();
-            invalidate();
+            frameView.invalidate();
             if (triggerCommitAction && commitAction != null) {
                 commitAction.run();
             }
@@ -356,6 +382,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
             requestLayout();
             invalidate();
+            frameView.invalidate();
 
             widgetSizeHelper.resize(hostView.getAppWidgetId(), options, width, height);
             return true;
@@ -364,10 +391,16 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     @Override
-    public void onViewAdded(View child) {
-        if (child instanceof LauncherAppWidgetHostView) {
-            hostView = (LauncherAppWidgetHostView) child;
+    protected int getChildDrawingOrder(int childCount, int drawingPosition) {
+        View child = getChildAt(drawingPosition);
+        if (child == hostView) {
+            return 0;
+        } else if (child == frameView) {
+            return 1;
+        } else if (child == actionsContainer) {
+            return 2;
         }
+        return drawingPosition;
     }
 
     @Override
@@ -395,5 +428,46 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     public interface OnStartDragListener {
         void onStartDrag(WidgetResizeFrame resizeFrame);
+    }
+
+    private class FrameView extends View {
+
+        FrameView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onDraw(@NonNull Canvas canvas) {
+            if (visualFrame.isEmpty()) {
+                return;
+            }
+            canvas.drawRect(visualFrame, overlayPaint);
+            if (cellSize > 0) {
+                int l = frame.left + cellSize;
+                while (l < frame.right) {
+                    canvas.drawLine(l, visualFrame.top, l, visualFrame.bottom, gridPaint);
+                    l += cellSize;
+                }
+                int t = frame.top + cellSize;
+                while (t < frame.bottom) {
+                    canvas.drawLine(visualFrame.left, t, visualFrame.right, t, gridPaint);
+                    t += cellSize;
+                }
+            }
+            if (activeDragHandle != null) {
+                framePaint.setColor(frameActiveColor);
+                handlePaint.setColor(frameActiveColor);
+            } else {
+                framePaint.setColor(frameColor);
+                handlePaint.setColor(frameColor);
+            }
+            canvas.drawRect(visualFrame, framePaint);
+            if (resizeVertically) {
+                canvas.drawCircle(visualFrame.centerX(), visualFrame.bottom, handleRadius, handlePaint);
+            }
+            if (resizeHorizontally) {
+                canvas.drawCircle(visualFrame.right, visualFrame.centerY(), handleRadius, handlePaint);
+            }
+        }
     }
 }

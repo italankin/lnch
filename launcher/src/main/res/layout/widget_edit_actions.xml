@@ -5,10 +5,13 @@
     tools:parentTag="android.widget.FrameLayout">
 
     <LinearLayout
+        android:id="@+id/actions_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/widget_resize_frame_inset"
-        android:clipChildren="false">
+        android:clipChildren="false"
+        android:visibility="invisible"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/widget_delete"
@@ -17,9 +20,7 @@
             android:layout_gravity="start|top"
             android:foreground="?selectableItemBackgroundBorderless"
             android:padding="6dp"
-            android:src="@drawable/ic_widget_delete"
-            android:visibility="invisible"
-            tools:visibility="visible" />
+            android:src="@drawable/ic_widget_delete" />
 
         <ImageView
             android:id="@+id/widget_configure"
