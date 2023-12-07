@@ -8,7 +8,7 @@ lnch is Android launcher, focused on effectiveness.
 * Light and dark themes
 * Shortcuts support
 * Notifications support (badges, popups)
-* Widgets support (limited)
+* Widgets support
 * And many more
 
 ![lnch.jpg](/lnch.jpg)
