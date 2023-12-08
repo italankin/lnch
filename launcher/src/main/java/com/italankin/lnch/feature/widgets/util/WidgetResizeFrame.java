@@ -386,7 +386,6 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             activeDragHandle = null;
             updateFrame();
             frameView.invalidate();
-            setElevation(0f);
             if (triggerCommitAction && commitAction != null) {
                 commitAction.run();
             }
