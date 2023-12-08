@@ -33,7 +33,6 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     private View scrollableView;
     private float touchStartX;
     private float touchStartY;
-    private boolean handleNextMoveAction;
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
@@ -51,9 +50,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
             if (ev.getAction() == MotionEvent.ACTION_DOWN) {
                 touchStartX = ev.getX();
                 touchStartY = ev.getY();
-                handleNextMoveAction = true;
-            } else if (ev.getAction() == MotionEvent.ACTION_MOVE && handleNextMoveAction) {
-                handleNextMoveAction = false;
+            } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
                 if (!isInBounds(scrollableView, ev.getRawX(), ev.getRawY())) {
                     // gesture is not within scrollable view bounds, intercept events
                     return true;
