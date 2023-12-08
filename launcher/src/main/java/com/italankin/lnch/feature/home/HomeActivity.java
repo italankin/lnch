@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -114,6 +115,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         intentQueue.post(intent);
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().popBackStackImmediate()) {

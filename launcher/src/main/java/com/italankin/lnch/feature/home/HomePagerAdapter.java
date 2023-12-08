@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.home;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 
@@ -12,13 +11,11 @@ import java.util.List;
 
 class HomePagerAdapter extends FragmentStateAdapter {
 
-    private final FragmentManager fragmentManager;
     private List<Class<? extends Fragment>> pages = Collections.emptyList();
     private Fragment[] fragments = new Fragment[0];
 
     HomePagerAdapter(FragmentActivity activity) {
         super(activity);
-        this.fragmentManager = activity.getSupportFragmentManager();
     }
 
     void setPages(List<Class<? extends Fragment>> pages) {
