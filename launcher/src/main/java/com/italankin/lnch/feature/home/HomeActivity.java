@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home;
 
 import android.annotation.SuppressLint;
+import android.appwidget.AppWidgetHost;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -36,7 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class HomeActivity extends AppActivity implements HomeView, HomePagerHost {
+public class HomeActivity extends AppActivity implements HomeView, HomePagerHost, WidgetsFragment.Callback {
 
     @InjectPresenter
     HomePresenter presenter;
@@ -133,6 +134,11 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
                 viewPager.setCurrentItem(appsPosition, true);
             }
         }
+    }
+
+    @Override
+    public void startAppWidgetConfigureActivityForResult(AppWidgetHost appWidgetHost, int appWidgetId) {
+        appWidgetHost.startAppWidgetConfigureActivityForResult(this, appWidgetId, 0, 0, null);
     }
 
     @Override

@@ -372,7 +372,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     private boolean isReconfigurable() {
         AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
-        if (info.configure == null || !WidgetHelper.isConfigureActivityExported(getContext(), info)) {
+        if (info.configure == null) {
             return false;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

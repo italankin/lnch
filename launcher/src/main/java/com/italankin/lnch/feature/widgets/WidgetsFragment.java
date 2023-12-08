@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.widgets;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
@@ -70,6 +71,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private int cellSize;
     private int maxHeightCells;
     private HomePagerHost homePagerHost;
+    private Callback callback;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private boolean exitEditModeOnStop = true;
@@ -84,6 +86,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private final ActivityResultLauncher<ConfigureWidgetContract.Input> configureWidgetLauncher = registerForActivityResult(
             new ConfigureWidgetContract(),
             this::onNewWidgetConfigured);
+
+    private final ActivityResultLauncher<ConfigureWidgetContract.Input> reconfigureWidgetLauncher = registerForActivityResult(
+            new ConfigureWidgetContract(),
+            o -> {
+                // empty
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,12 +109,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         if (context instanceof HomePagerHost) {
             homePagerHost = (HomePagerHost) context;
         }
+        if (context instanceof Callback) {
+            callback = (Callback) context;
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         homePagerHost = null;
+        callback = null;
     }
 
     @Override
@@ -272,14 +284,23 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void reconfigureWidget(int appWidgetId, AppWidgetProviderInfo info) {
-        if (info.configure == null || !WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
+        if (info.configure == null) {
             return;
         }
-        try {
-            configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidgetId, info.configure));
-            exitEditModeOnStop = false;
-        } catch (Exception e) {
-            Timber.e(e, "configureWidgetLauncher.launch: %s", e.getMessage());
+        if (WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
+            try {
+                reconfigureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidgetId, info.configure));
+                exitEditModeOnStop = false;
+            } catch (Exception e) {
+                Timber.e(e, "reconfigureWidgetLauncher.launch: %s", e.getMessage());
+            }
+        } else if (callback != null) {
+            try {
+                callback.startAppWidgetConfigureActivityForResult(appWidgetHost, appWidgetId);
+                exitEditModeOnStop = false;
+            } catch (Exception e) {
+                Timber.e(e, "startAppWidgetConfigureActivityForResult: %s", e.getMessage());
+            }
         }
     }
 
@@ -475,6 +496,11 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             return Math.min(size, max);
         }
         return Math.min(size + (cellSize - (size % cellSize)), max);
+    }
+
+    public interface Callback {
+
+        void startAppWidgetConfigureActivityForResult(AppWidgetHost appWidgetHost, int appWidgetId);
     }
 
     private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Boolean> {
