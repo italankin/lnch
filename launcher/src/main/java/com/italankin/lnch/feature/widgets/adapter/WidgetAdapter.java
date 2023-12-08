@@ -43,7 +43,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
         resizeFrame.bindAppWidget(item, hostView);
         resizeFrame.setCellSize(cellSize);
         resizeFrame.setDeleteAction(v -> widgetActionListener.onWidgetDelete(item));
-        resizeFrame.setConfigureAction(v -> widgetActionListener.onWidgetConfigure(item));
+        resizeFrame.setConfigureAction(v -> widgetActionListener.onWidgetReconfigure(item));
         resizeFrame.setOnStartDragListener(onStartDragListener);
         WidgetViewHolder holder = new WidgetViewHolder(resizeFrame);
         resizeFrame.setCommitAction(() -> notifyDataSetChanged());
@@ -109,7 +109,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
 
     public interface WidgetActionListener {
 
-        void onWidgetConfigure(AppWidget appWidget);
+        void onWidgetReconfigure(AppWidget appWidget);
 
         void onWidgetDelete(AppWidget appWidget);
     }

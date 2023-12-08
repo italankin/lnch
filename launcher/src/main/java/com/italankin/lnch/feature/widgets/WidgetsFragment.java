@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.ImageView;
-import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -38,23 +37,20 @@ import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
 
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL;
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE;
+
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, BackButtonHandler,
         WidgetAdapter.WidgetActionListener, MainActionHandler {
 
-    public static final int REQUEST_CODE_CONFIGURE = 133;
-    public static final int REQUEST_CODE_RECONFIGURE = 173;
-
     public static final String ACTION_RELOAD_WIDGETS = "com.italankin.lnch.widgets.RELOAD";
-
-    public static boolean isWidgetRequestCode(int requestCode) {
-        return requestCode == REQUEST_CODE_CONFIGURE || requestCode == REQUEST_CODE_RECONFIGURE;
-    }
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
@@ -210,18 +206,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_CODE_CONFIGURE) {
-            onNewWidgetConfigured(resultCode == Activity.RESULT_OK);
-            return;
-        } else if (requestCode == REQUEST_CODE_RECONFIGURE) {
-            exitEditModeOnStop = true;
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         intentQueue.unregisterOnIntentAction(this);
@@ -271,20 +255,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     @Override
-    public void onWidgetConfigure(AppWidget appWidget) {
-        try {
-            configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidget.appWidgetId, appWidget.providerInfo.configure));
-            exitEditModeOnStop = false;
-            return;
-        } catch (Exception e) {
-            Timber.e(e, "onWidgetConfigure: %s", e.getMessage());
-        }
-        try {
-            appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), appWidget.appWidgetId, 0, REQUEST_CODE_RECONFIGURE, null);
-            exitEditModeOnStop = false;
-        } catch (Exception e) {
-            Timber.e(e, "onWidgetConfigure: %s", e.getMessage());
-        }
+    public void onWidgetReconfigure(AppWidget appWidget) {
+        reconfigureWidget(appWidget.appWidgetId, appWidget.providerInfo);
     }
 
     private void bindWidgets() {
@@ -305,6 +277,18 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         exitEditModeOnStop = true;
     }
 
+    private void reconfigureWidget(int appWidgetId, AppWidgetProviderInfo info) {
+        if (info.configure == null || !WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
+            return;
+        }
+        try {
+            configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(appWidgetId, info.configure));
+            exitEditModeOnStop = false;
+        } catch (Exception e) {
+            Timber.e(e, "configureWidgetLauncher.launch: %s", e.getMessage());
+        }
+    }
+
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
         Timber.d("allocate: %d", newAppWidgetId);
@@ -321,7 +305,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void configureWidget(AppWidgetProviderInfo info) {
-        if (requiresConfiguration(info)) {
+        if (needConfigure(info) && WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
             try {
                 configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
                 exitEditModeOnStop = false;
@@ -329,28 +313,24 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             } catch (Exception e) {
                 Timber.e(e, "ConfigureWidgetContract.launch: %s", e.getMessage());
             }
-            try {
-                appWidgetHost.startAppWidgetConfigureActivityForResult(requireActivity(), newAppWidgetId, 0, REQUEST_CODE_CONFIGURE, null);
-                exitEditModeOnStop = false;
-            } catch (Exception e) {
-                Timber.e(e, "startAppWidgetConfigureActivityForResult: %s", e.getMessage());
-                cancelAddNewWidget(newAppWidgetId);
-                Toast.makeText(requireContext(), R.string.widgets_add_error, Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            addNewWidget(info);
-            widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
+        addNewWidget(info);
     }
 
-    private boolean requiresConfiguration(AppWidgetProviderInfo info) {
+    private static boolean needConfigure(AppWidgetProviderInfo info) {
         if (info.configure == null) {
             return false;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return (info.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                boolean optional = (info.widgetFeatures & WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0 &&
+                        (info.widgetFeatures & WIDGET_FEATURE_RECONFIGURABLE) != 0;
+                return !optional;
+            }
+            // configure reconfigurable widgets later
+            return (info.widgetFeatures & WIDGET_FEATURE_RECONFIGURABLE) == 0;
         }
-        return true;
+        return false;
     }
 
     private void onNewWidgetConfigured(boolean configured) {
@@ -362,7 +342,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 return;
             }
             addNewWidget(info);
-            widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
         } else {
             cancelAddNewWidget(newAppWidgetId);
         }
@@ -372,6 +351,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         addWidgetToScreen(newAppWidgetId, info, true);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         updateWidgets();
+        widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
     }
 
     private void addWidgetToScreen(int appWidgetId, AppWidgetProviderInfo info, boolean isNew) {
@@ -515,7 +495,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
         @Override
         public Boolean parseResult(int resultCode, @Nullable Intent intent) {
-            return resultCode == Activity.RESULT_OK;
+            return resultCode != Activity.RESULT_CANCELED;
         }
 
         static class Input {

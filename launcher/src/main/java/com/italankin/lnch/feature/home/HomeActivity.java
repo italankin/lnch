@@ -115,18 +115,6 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && WidgetsFragment.isWidgetRequestCode(requestCode)) {
-            int index = homePagerAdapter.indexOfFragment(WidgetsFragment.class);
-            if (index >= 0) {
-                ((WidgetsFragment) homePagerAdapter.getFragmentAt(index)).onActivityResult(requestCode, resultCode, data);
-                return;
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return;
