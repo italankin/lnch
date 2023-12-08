@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-
 import androidx.annotation.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WidgetPreviewLoader implements ResourceLoader {
 
@@ -24,6 +26,7 @@ public class WidgetPreviewLoader implements ResourceLoader {
 
     private final Context context;
     private final AppWidgetManager appWidgetManager;
+    private final Map<ComponentName, AppWidgetProviderInfo> providers = new HashMap<>(64);
 
     public WidgetPreviewLoader(Context context) {
         this.context = context;
@@ -38,16 +41,18 @@ public class WidgetPreviewLoader implements ResourceLoader {
     @Nullable
     @Override
     public Drawable load(Uri uri) {
-        String packageName = uri.getAuthority();
-        String className = uri.getLastPathSegment();
-        AppWidgetProviderInfo info = null;
-        for (AppWidgetProviderInfo provider : appWidgetManager.getInstalledProviders()) {
-            if (provider.provider.getPackageName().equals(packageName) &&
-                    provider.provider.getClassName().equals(className)) {
-                info = provider;
-                break;
+        if (providers.isEmpty()) {
+            synchronized (this) {
+                if (providers.isEmpty()) {
+                    for (AppWidgetProviderInfo provider : appWidgetManager.getInstalledProviders()) {
+                        providers.put(provider.provider, provider);
+                    }
+                }
             }
         }
+        String packageName = uri.getAuthority();
+        String className = uri.getLastPathSegment();
+        AppWidgetProviderInfo info = providers.get(new ComponentName(packageName, className));
         if (info == null) {
             return null;
         }
