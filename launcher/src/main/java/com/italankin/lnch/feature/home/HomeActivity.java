@@ -68,7 +68,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         setupWindow();
         setContentView(R.layout.activity_home);
         root = findViewById(R.id.root);
-        viewPager = findViewById(R.id.pager);
+        viewPager = findViewById(R.id.home_pager);
         setupRoot();
         setupPager();
 

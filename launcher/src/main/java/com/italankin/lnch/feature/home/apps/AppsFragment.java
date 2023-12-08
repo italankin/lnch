@@ -52,6 +52,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.HomePagerHost;
+import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
@@ -203,6 +204,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        HomeViewPagerDoNotClipChildren.apply(view);
         lce = view.findViewById(R.id.lce_apps);
         searchOverlay = view.findViewById(R.id.search_bar);
         list = view.findViewById(R.id.list);

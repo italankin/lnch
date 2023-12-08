@@ -32,6 +32,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.util.HomePagerHost;
+import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
@@ -158,6 +159,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        HomeViewPagerDoNotClipChildren.apply(view);
         View actionAddWidget = view.findViewById(R.id.add_widget);
         actionAddWidget.setOnClickListener(v -> startAddNewWidget());
         actionEditMode = view.findViewById(R.id.edit_mode);
