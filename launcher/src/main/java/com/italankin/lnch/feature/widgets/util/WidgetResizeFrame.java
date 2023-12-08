@@ -260,6 +260,9 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         if (!resizeModeActive) {
             return super.onTouchEvent(event);
         }
+        if (event.getAction() == MotionEvent.ACTION_UP && activeDragHandle != null) {
+            setElevation(0f);
+        }
         resetFrame(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             activeDragHandle = null;
