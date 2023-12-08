@@ -92,15 +92,15 @@ public class WidgetSizeHelper {
             }
         }
         Size minSize = getMinSize(info, false);
-        int minWidthDp = options.getInt(OPTION_APPWIDGET_MIN_WIDTH, (int) (minSize.getWidth() / density));
-        int minHeightDp = options.getInt(OPTION_APPWIDGET_MIN_HEIGHT, (int) (minSize.getHeight() / density));
-        int minWidth = (int) (minWidthDp * density);
-        int minHeight = (int) (minHeightDp * density);
+        int widthDp = options.getInt(OPTION_APPWIDGET_MIN_WIDTH, (int) (minSize.getWidth() / density));
+        int heightDp = options.getInt(OPTION_APPWIDGET_MIN_HEIGHT, (int) (minSize.getHeight() / density));
+        int width = (int) (widthDp * density);
+        int height = (int) (heightDp * density);
         if (includePaddings) {
-            minWidth += widgetPaddings;
-            minHeight += widgetPaddings;
+            width += widgetPaddings;
+            height += widgetPaddings;
         }
-        return new Size(minWidth, minHeight);
+        return new Size(width, height);
     }
 
     /**
