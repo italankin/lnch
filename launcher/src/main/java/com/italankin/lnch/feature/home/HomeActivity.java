@@ -50,6 +50,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     private HomePagerAdapter homePagerAdapter;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private boolean onRestartCalled = false;
 
     @ProvidePresenter
     HomePresenter providePresenter() {
@@ -88,6 +89,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
                 appsFragment.setAnimateOnResume(false);
             }
         }
+        onRestartCalled = false;
     }
 
     @Override
@@ -97,6 +99,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         if (appsFragment != null) {
             appsFragment.onRestart();
         }
+        onRestartCalled = true;
     }
 
     @Override
@@ -109,7 +112,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
             }
             int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
             if (viewPager.getCurrentItem() != appsPosition) {
-                viewPager.setCurrentItem(appsPosition, true);
+                viewPager.setCurrentItem(appsPosition, !onRestartCalled);
                 return;
             }
         }
