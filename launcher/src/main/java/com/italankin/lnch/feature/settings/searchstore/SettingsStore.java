@@ -28,16 +28,27 @@ public class SettingsStore {
 
     public List<SettingsEntry> search(String query, int maxResults) {
         populateCache();
+        if (query.length() < 2) {
+            return Collections.emptyList();
+        }
         long start = System.nanoTime();
         List<EntryMatch> matches = new ArrayList<>(10);
         Set<Map.Entry<SettingsEntryImpl, List<SearchToken>>> entries = entriesCache.entrySet();
         for (Map.Entry<SettingsEntryImpl, List<SearchToken>> mapEntry : entries) {
             SettingsEntryImpl entry = mapEntry.getKey();
+            EntryMatch bestMatch = null;
             for (SearchToken searchToken : mapEntry.getValue()) {
                 Searchable.Match match = match(searchToken, query);
-                if (match != null) {
-                    matches.add(new EntryMatch(entry, searchToken.field, EntryMatch.Rank.fromSearchable(match)));
+                if (match == null) {
+                    continue;
                 }
+                EntryMatch entryMatch = new EntryMatch(entry, searchToken.field, EntryMatch.Rank.fromSearchable(match));
+                if (bestMatch == null || bestMatch.compareTo(entryMatch) > 0) {
+                    bestMatch = entryMatch;
+                }
+            }
+            if (bestMatch != null) {
+                matches.add(bestMatch);
             }
         }
         Collections.sort(matches);
