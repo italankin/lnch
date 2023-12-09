@@ -208,6 +208,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     private void setupPager() {
         homePagerAdapter = new HomePagerAdapter(this);
         updateAdapter();
+        viewPager.setOffscreenPageLimit(1);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrollStateChanged(int state) {
