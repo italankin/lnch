@@ -107,7 +107,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         super.onNewIntent(intent);
         if (Intent.ACTION_MAIN.equals(intent.getAction())) {
             Fragment current = homePagerAdapter.getFragmentAt(viewPager.getCurrentItem());
-            if (current instanceof MainActionHandler && ((MainActionHandler) current).handle()) {
+            if (current instanceof MainActionHandler && ((MainActionHandler) current).handleMainAction()) {
                 return;
             }
             int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);

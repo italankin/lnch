@@ -8,5 +8,5 @@ public interface MainActionHandler {
     /**
      * @return {@code true} if action was handled
      */
-    boolean handle();
+    boolean handleMainAction();
 }

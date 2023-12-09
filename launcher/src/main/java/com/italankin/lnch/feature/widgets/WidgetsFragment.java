@@ -250,7 +250,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     @Override
-    public boolean handle() {
+    public boolean handleMainAction() {
         return widgetItemsState.isResizeMode();
     }
 
