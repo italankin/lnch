@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.ImageView;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -30,7 +31,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -49,8 +49,8 @@ import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATI
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE;
 
 @RequiresApi(Build.VERSION_CODES.O)
-public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, BackButtonHandler,
-        WidgetAdapter.WidgetActionListener, MainActionHandler {
+public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, WidgetAdapter.WidgetActionListener,
+        MainActionHandler {
 
     public static final String ACTION_RELOAD_WIDGETS = "com.italankin.lnch.widgets.RELOAD";
 
@@ -94,11 +94,21 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 // empty
             });
 
+    private OnBackPressedCallback onBackPressedCallback;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intentQueue = LauncherApp.daggerService.main().intentQueue();
         preferences = LauncherApp.daggerService.main().preferences();
+
+        onBackPressedCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                exitEditMode();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
     @Override
@@ -238,15 +248,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         } catch (Exception e) {
             Timber.w(e, "onStop:");
         }
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        if (widgetItemsState.isResizeMode()) {
-            exitEditMode();
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -450,11 +451,13 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void updateActionsState() {
-        if (widgetItemsState.isResizeMode()) {
+        boolean resizeMode = widgetItemsState.isResizeMode();
+        if (resizeMode) {
             actionEditMode.setImageResource(R.drawable.ic_customize_save);
         } else {
             actionEditMode.setImageResource(R.drawable.ic_action_rename);
         }
+        onBackPressedCallback.setEnabled(resizeMode);
     }
 
     private void recalculateCellSize() {

@@ -19,6 +19,7 @@ import android.view.*;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,6 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.*;
@@ -80,7 +80,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class AppsFragment extends AppFragment implements AppsView,
-        BackButtonHandler,
         IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -134,10 +133,31 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideSearchRunnable;
+    private OnBackPressedCallback onBackPressedCallback;
 
     @ProvidePresenter
     AppsPresenter providePresenter() {
         return LauncherApp.daggerService.presenters().apps();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        onBackPressedCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                if (editMode) {
+                    presenter.confirmDiscardChanges();
+                    return;
+                }
+                if (searchOverlayBehavior.isShown()) {
+                    searchOverlayBehavior.hide();
+                    return;
+                }
+                scrollToTop();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
     @Override
@@ -174,6 +194,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onResume() {
         super.onResume();
+        onBackPressedCallback.setEnabled(true);
         if (animateOnResume) {
             animateOnResume = false;
             animateListAppearance();
@@ -184,6 +205,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void onPause() {
         super.onPause();
         searchOverlayBehavior.hide();
+        onBackPressedCallback.setEnabled(false);
     }
 
     public void setAnimateOnResume(boolean animateOnResume) {
@@ -374,20 +396,6 @@ public class AppsFragment extends AppFragment implements AppsView,
         } else {
             update.dispatchTo(adapter);
         }
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        if (editMode) {
-            presenter.confirmDiscardChanges();
-            return true;
-        }
-        if (searchOverlayBehavior.isShown()) {
-            searchOverlayBehavior.hide();
-            return true;
-        }
-        scrollToTop();
-        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////

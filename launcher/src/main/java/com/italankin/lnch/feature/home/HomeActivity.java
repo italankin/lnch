@@ -1,6 +1,5 @@
 package com.italankin.lnch.feature.home;
 
-import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHost;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -19,7 +19,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
-import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
@@ -74,6 +73,16 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         setupPager();
 
         intentQueue.post(getIntent());
+
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
+                if (viewPager.getCurrentItem() != appsPosition) {
+                    viewPager.setCurrentItem(appsPosition, true);
+                }
+            }
+        });
     }
 
     @Override
@@ -119,23 +128,12 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         intentQueue.post(intent);
     }
 
-    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return;
         }
-        Fragment fragment = getCurrentPagerFragment();
-        boolean handled = false;
-        if (fragment instanceof BackButtonHandler) {
-            handled = ((BackButtonHandler) fragment).onBackPressed();
-        }
-        if (!handled) {
-            int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
-            if (viewPager.getCurrentItem() != appsPosition) {
-                viewPager.setCurrentItem(appsPosition, true);
-            }
-        }
+        super.onBackPressed();
     }
 
     @Override
