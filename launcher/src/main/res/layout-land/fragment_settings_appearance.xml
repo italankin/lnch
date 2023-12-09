@@ -47,7 +47,7 @@
         android:layout_width="@dimen/default_right_panel_width"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:background="?colorSurfaceContainer"
+        android:background="?colorSurface"
         android:fillViewport="true">
 
         <LinearLayout

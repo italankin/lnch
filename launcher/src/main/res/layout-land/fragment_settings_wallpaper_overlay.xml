@@ -34,7 +34,7 @@
         android:layout_width="@dimen/default_right_panel_width"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:background="?colorPrimary"
+        android:background="?colorSurface"
         app:cp_model="argb"
         app:cp_previewVisible="false" />
 
