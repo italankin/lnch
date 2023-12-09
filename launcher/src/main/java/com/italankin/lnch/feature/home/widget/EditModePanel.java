@@ -19,7 +19,6 @@ public class EditModePanel extends LinearLayout {
     private static final int ANIM_DURATION = 300;
     private static final float ALPHA_DISABLED = 0.25f;
 
-    private final View undo;
     private final View save;
     private final View add;
     private final View hidden;
@@ -38,8 +37,7 @@ public class EditModePanel extends LinearLayout {
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setBackgroundColor(ResUtils.resolveColor(context, R.attr.colorEditPanelBackground));
-        undo = findViewById(R.id.undo);
+        setBackgroundColor(ResUtils.resolveColor(context, com.google.android.material.R.attr.colorSurfaceContainer));
         save = findViewById(R.id.save);
         add = findViewById(R.id.add);
         hidden = findViewById(R.id.hidden);
@@ -59,18 +57,6 @@ public class EditModePanel extends LinearLayout {
     public EditModePanel setOnHiddenItemsClickListener(OnClickListener listener) {
         hidden.setOnClickListener(listener);
         hidden.setVisibility(listener == null ? GONE : VISIBLE);
-        return this;
-    }
-
-    public EditModePanel setOnUndoActionClickListener(OnClickListener listener) {
-        undo.setOnClickListener(listener);
-        undo.setVisibility(listener == null ? GONE : VISIBLE);
-        return this;
-    }
-
-    public EditModePanel setUndoActionEnabled(boolean enabled) {
-        undo.setAlpha(enabled ? 1 : ALPHA_DISABLED);
-        undo.setEnabled(enabled);
         return this;
     }
 

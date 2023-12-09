@@ -6,15 +6,12 @@ import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.UnderlineSpan;
-
+import androidx.annotation.NonNull;
 import com.italankin.lnch.R;
-import com.italankin.lnch.util.ResUtils;
 
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
 
 public class UrlMatch extends PartialMatch {
 
@@ -61,10 +58,5 @@ public class UrlMatch extends PartialMatch {
     @Override
     public int hashCode() {
         return 2;
-    }
-
-    @Override
-    public int getColor(Context context) {
-        return ResUtils.resolveColor(context, R.attr.colorText);
     }
 }

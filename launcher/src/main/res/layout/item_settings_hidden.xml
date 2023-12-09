@@ -28,7 +28,7 @@
         android:fadingEdgeLength="24dp"
         android:requiresFadingEdge="horizontal"
         android:singleLine="true"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         tools:text="@tools:sample/first_names" />
 
@@ -38,13 +38,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/original_label"
         android:layout_marginBottom="8dp"
-        android:layout_toEndOf="@id/icon"
         android:layout_toStartOf="@+id/visibility"
+        android:layout_toEndOf="@id/icon"
         android:ellipsize="none"
         android:fadingEdgeLength="24dp"
         android:requiresFadingEdge="horizontal"
         android:singleLine="true"
-        android:textColor="?colorTextSecondary"
+        android:textColor="?android:textColorSecondary"
         android:textSize="12sp"
         tools:text="@tools:sample/first_names" />
 
@@ -54,9 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_visibility_on"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/cd_application_visibility"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:src="@drawable/ic_visibility_on" />
 
 </RelativeLayout>

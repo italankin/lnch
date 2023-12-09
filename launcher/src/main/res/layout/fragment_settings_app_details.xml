@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ellipsize="end"
-            android:textColor="?colorText"
+            android:textColor="?android:textColorPrimary"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@id/button_info"
             app:layout_constraintHorizontal_bias="0"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ellipsize="end"
-            android:textColor="?colorTextSecondary"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/button_info"
             app:layout_constraintHorizontal_bias="0"
@@ -91,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_app_details_action_rename"
-                android:textColor="?colorText"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="16sp" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textColor="?colorTextSecondary"
+                android:textColor="?android:textColorSecondary"
                 android:textSize="16sp"
                 tools:text="SAMPLE APP" />
 

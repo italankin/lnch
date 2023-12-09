@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="72dp"
         android:singleLine="true"
-        android:textColor="?android:attr/textColorPrimary"
+        android:textColor="?android:textColorPrimary"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
         app:layout_constraintTop_toTopOf="parent"

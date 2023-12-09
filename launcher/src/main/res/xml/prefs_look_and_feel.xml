@@ -105,11 +105,6 @@
             android:key="large_search_bar"
             android:summary="@string/settings_home_laf_search_large_search_bar_summary"
             android:title="@string/settings_home_laf_search_large_search_bar" />
-        <com.italankin.lnch.util.widget.ColorPreference
-            android:key="search_background"
-            android:title="@string/settings_home_laf_search_search_bar_background"
-            app:colorpref_colorModel="argb"
-            app:colorpref_defaultColor="#0000" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other">
         <CheckBoxPreference

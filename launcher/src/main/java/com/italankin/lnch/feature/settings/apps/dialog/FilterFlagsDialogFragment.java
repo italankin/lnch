@@ -2,16 +2,14 @@ package com.italankin.lnch.feature.settings.apps.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 
 import java.util.EnumSet;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDialogFragment.Listener> {
     private static final String ARG_FLAGS = "flags";
@@ -27,7 +25,7 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(requireContext())
+        return new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.settings_apps_list_filter)
                 .setMultiChoiceItems(getFilterTitles(), checkedItems,
                         (dialog, which, isChecked) -> checkedItems[which] = isChecked)

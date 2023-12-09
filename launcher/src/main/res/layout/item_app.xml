@@ -23,6 +23,5 @@
         android:textStyle="bold"
         tools:ignore="Overdraw"
         tools:text="@tools:sample/first_names"
-        tools:textAllCaps="true"
-        tools:textColor="#fff" />
+        tools:textAllCaps="true" />
 </FrameLayout>

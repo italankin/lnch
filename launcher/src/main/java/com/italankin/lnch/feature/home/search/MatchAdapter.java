@@ -69,7 +69,6 @@ class MatchAdapter extends BaseAdapterDelegate<MatchAdapter.ViewHolder, Match> {
     public void onBind(ViewHolder holder, int position, Match item) {
         Context context = holder.itemView.getContext();
         holder.text.setText(item.getLabel(context));
-        holder.text.setTextColor(item.getColor(context));
 
         CharSequence subtext = item.getSubtext(context);
         if (subtext != null && subtext.length() > 0) {

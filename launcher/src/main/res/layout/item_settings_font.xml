@@ -32,7 +32,7 @@
         android:layout_below="@id/name"
         android:fadingEdgeLength="24dp"
         android:requiresFadingEdge="horizontal"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:singleLine="true"
         android:textSize="18sp"
         tools:text="@tools:sample/lorem/random" />

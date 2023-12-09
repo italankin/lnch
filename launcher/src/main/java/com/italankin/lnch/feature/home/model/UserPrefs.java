@@ -22,7 +22,6 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.WALLPAPER_OVERLAY_SHOW);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
-        PREFERENCES.add(Preferences.SEARCH_BACKGROUND);
         PREFERENCES.add(Preferences.SEARCH_SHOW_CUSTOMIZE);
         PREFERENCES.add(Preferences.LARGE_SEARCH_BAR);
         PREFERENCES.add(Preferences.STATUS_BAR_COLOR);
@@ -45,8 +44,6 @@ public final class UserPrefs {
     public final Integer statusBarColor;
     public final ItemPrefs itemPrefs;
     public final boolean globalSearch;
-    @ColorInt
-    public final int searchBackground;
     public final boolean largeSearchBar;
     public final boolean searchBarShowCustomize;
 
@@ -58,7 +55,6 @@ public final class UserPrefs {
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
-        searchBackground = preferences.get(Preferences.SEARCH_BACKGROUND);
         searchBarShowCustomize = preferences.get(Preferences.SEARCH_SHOW_CUSTOMIZE);
         itemPrefs = new UserPrefs.ItemPrefs(preferences, fontManager);
     }
@@ -90,9 +86,6 @@ public final class UserPrefs {
         if (homeAlignment != userPrefs.homeAlignment) {
             return false;
         }
-        if (searchBackground != userPrefs.searchBackground) {
-            return false;
-        }
         if (searchBarShowCustomize != userPrefs.searchBarShowCustomize) {
             return false;
         }
@@ -107,7 +100,6 @@ public final class UserPrefs {
         int result = homeLayout.hashCode();
         result = 31 * result + homeAlignment.hashCode();
         result = 31 * result + overlayColor;
-        result = 31 * result + searchBackground;
         result = 31 * result + (showScrollbar ? 1 : 0);
         result = 31 * result + (searchBarShowCustomize ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
@@ -126,7 +118,6 @@ public final class UserPrefs {
                 "homeLayout=" + homeLayout +
                 ", homeAlignment=" + homeAlignment +
                 ", overlayColor=" + String.format("#%08x", overlayColor) +
-                ", searchBackground=" + String.format("#%08x", searchBackground) +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
                 ", globalSearch=" + searchBarShowCustomize +

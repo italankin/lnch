@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- primary text color -->
-    <attr name="colorText" format="color|reference" />
-
-    <!-- secondary text color, muted -->
-    <attr name="colorTextSecondary" format="color|reference" />
-
     <!-- divider color (e.g. for lists) -->
     <attr name="colorDivider" format="color|reference" />
-
-    <!-- icons tint -->
-    <attr name="colorIconTint" format="color|reference" />
 
     <!-- default group title color -->
     <attr name="colorFolderTitleDefault" format="color|reference" />
@@ -24,22 +15,12 @@
     <!-- background color of folder popup-->
     <attr name="colorFolderBackground" format="color|reference" />
 
-    <!-- background color of folder title popup-->
-    <attr name="colorFolderTitleBackground" format="color|reference" />
-
     <!-- default item shadow -->
     <attr name="colorItemShadowDefault" format="color|reference" />
 
-    <!-- color of the search results overlay -->
-    <attr name="colorSearchResultBackground" format="color|reference" />
+    <!-- background for search matches on home screen -->
+    <attr name="colorSearchMatchBackground" format="color|reference" />
 
-    <!-- background color for edit panel (home customization) -->
-    <attr name="colorEditPanelBackground" format="color|reference" />
-
+    <!-- border for the appearance preview -->
     <attr name="colorPreviewBorder" format="color|reference" />
-
-    <!-- background for widget actions bar -->
-    <attr name="colorWidgetActions" format="color|reference" />
-
-    <attr name="toolbarOverlayTheme" format="reference" />
 </resources>

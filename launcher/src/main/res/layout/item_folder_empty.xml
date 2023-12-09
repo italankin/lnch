@@ -6,5 +6,5 @@
     android:gravity="center"
     android:padding="32dp"
     android:text="@string/folder_empty"
-    android:textColor="?colorText"
+    android:textColor="?android:textColorPrimary"
     android:textSize="18sp" />

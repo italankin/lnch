@@ -36,7 +36,6 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
         this.descriptor = descriptor;
         kind = Kind.APP;
         actions.add(Action.INFO);
-        color = descriptor.getVisibleColor();
         intent = packageManager.getLaunchIntentForPackage(descriptor.packageName);
         if (intent != null && descriptor.componentName != null) {
             intent.setComponent(ComponentName.unflattenFromString(descriptor.componentName));
@@ -49,9 +48,8 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
         super(type);
         this.descriptor = descriptor;
         kind = Kind.OTHER;
-        color = descriptor.getVisibleColor();
         intent = IntentUtils.fromUri(descriptor.intentUri, Intent.URI_INTENT_SCHEME);
-        iconRes = R.drawable.ic_launch_intent;
+        iconRes = R.drawable.ic_open_url;
         actions = Collections.emptySet();
         label = descriptor.getVisibleLabel();
     }
@@ -60,7 +58,6 @@ public class PartialDescriptorMatch extends PartialMatch implements DescriptorMa
         super(type);
         this.descriptor = descriptor;
         kind = Kind.SHORTCUT;
-        color = descriptor.getVisibleColor();
         intent = IntentUtils.fromUri(descriptor.uri);
         iconRes = R.drawable.ic_shortcut;
         label = descriptor.getVisibleLabel();

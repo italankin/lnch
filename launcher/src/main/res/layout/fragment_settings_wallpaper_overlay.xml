@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?colorPrimary"
+        android:background="?colorSurfaceContainer"
         app:cp_model="argb"
         app:cp_previewVisible="false" />
 

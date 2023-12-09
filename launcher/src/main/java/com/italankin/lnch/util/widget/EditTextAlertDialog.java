@@ -2,21 +2,18 @@ package com.italankin.lnch.util.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatEditText;
 
 public final class EditTextAlertDialog {
 
@@ -25,12 +22,12 @@ public final class EditTextAlertDialog {
     }
 
     public static class Builder {
-        private final AlertDialog.Builder builder;
+        private final MaterialAlertDialogBuilder builder;
         private final EditText editText;
         private List<Action<LinearLayout>> customizeRootActions;
 
         private Builder(Context context) {
-            builder = new AlertDialog.Builder(context);
+            builder = new MaterialAlertDialogBuilder(context);
             editText = new AppCompatEditText(context);
         }
 

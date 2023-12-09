@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="?colorPrimary"
     tools:parentTag="android.widget.LinearLayout">
 
     <View
@@ -36,7 +35,7 @@
         android:fontFamily="monospace"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:visibility="gone"
         tools:text="#ffff0000"
         tools:visibility="visible" />

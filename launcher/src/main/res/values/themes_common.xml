@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Theme.Base.AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPopupBackground">?colorSurfaceContainerHigh</item>
+        <item name="colorPopupActionsBackground">?colorSurfaceContainerHighest</item>
+
+        <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        <item name="dialogCornerRadius">28dp</item>
+
+        <item name="android:fontFamily">@font/comfortaa</item>
+        <item name="android:statusBarColor">?colorSurface</item>
+        <item name="android:navigationBarColor">?colorSurface</item>
+
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar.Surface</item>
+        <item name="preferenceCategoryTitleTextColor">?colorPrimary</item>
+    </style>
+
     <style name="AppTheme.Preferences">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:textColorSecondary">?colorTextSecondary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="AppTheme.Preferences.PreferenceSearch">
         <item name="searchViewStyle">@style/PreferenceSearchViewStyle</item>
     </style>
 
-    <style name="AppTheme.Overlay" parent="ThemeOverlay.AppCompat.DayNight">
-        <item name="android:textColorSecondary">?colorText</item>
-    </style>
+    <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3"></style>
 
     <style name="AppTheme.WidgetGallery">
         <item name="android:windowBackground">@drawable/window_background</item>

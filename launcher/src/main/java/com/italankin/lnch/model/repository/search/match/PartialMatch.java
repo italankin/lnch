@@ -7,7 +7,6 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.search.Searchable;
 
@@ -53,7 +52,7 @@ public abstract class PartialMatch implements Match, Comparable<PartialMatch> {
 
     @Override
     public int getColor(Context context) {
-        return color != null ? color : ResUtils.resolveColor(context, R.attr.colorText);
+        return ResUtils.resolveColor(context, com.google.android.material.R.attr.colorOnSurface);
     }
 
     @NonNull

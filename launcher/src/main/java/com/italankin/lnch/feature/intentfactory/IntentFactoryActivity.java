@@ -10,19 +10,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.feature.intentfactory.componenteditor.ActionEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.CategoryEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.ClassEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.DataEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.ExtrasEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.FlagsEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.IntentEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.PackageEditor;
-import com.italankin.lnch.feature.intentfactory.componenteditor.TypeEditor;
+import com.italankin.lnch.feature.intentfactory.componenteditor.*;
 import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -33,13 +30,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class IntentFactoryActivity extends AppCompatActivity implements IntentEditor.Host {
 
@@ -153,7 +143,7 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
             tv.setTextSize(11);
             tv.setTypeface(Typeface.MONOSPACE);
             tv.setText(sw.toString());
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.intent_factory_intent_error_test)
                     .setView(tv)
                     .show();

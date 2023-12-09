@@ -8,7 +8,9 @@ import android.util.Patterns;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
@@ -16,10 +18,6 @@ import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
 
 import java.util.regex.Matcher;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatDialogFragment.Listener> {
     private static final String ARG_CUSTOM_FORMAT = "custom_format";
@@ -65,7 +63,7 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
                 })
                 .customizeRoot(view -> {
                     TextView textView = new TextView(view.getContext());
-                    textView.setTextColor(ResUtils.resolveColor(view.getContext(), R.attr.colorTextSecondary));
+                    textView.setTextColor(ResUtils.resolveColor(view.getContext(), android.R.attr.textColorSecondary));
                     textView.setText(R.string.settings_search_engine_custom_format_hint);
                     view.addView(textView);
                 })

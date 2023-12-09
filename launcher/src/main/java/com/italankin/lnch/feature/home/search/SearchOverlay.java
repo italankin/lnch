@@ -2,8 +2,6 @@ package com.italankin.lnch.feature.home.search;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -13,7 +11,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import androidx.annotation.*;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,7 +43,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     private final ImageView buttonGlobalSearch;
     private final ImageView buttonSettings;
     private final ImageView buttonCustomize;
-    private final View background;
 
     private final RecyclerView searchResultsList;
     private final CompositeAdapter<Match> searchAdapter;
@@ -81,7 +81,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         buttonSettings = findViewById(R.id.search_settings);
         buttonCustomize = findViewById(R.id.search_customize);
         searchResultsList = findViewById(R.id.search_results);
-        background = findViewById(R.id.search_background);
 
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
@@ -125,17 +124,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         searchResults.unsubscribe();
-    }
-
-    public void setSearchBarBackground(@ColorInt int background) {
-        if (background == Color.TRANSPARENT) {
-            this.background.setVisibility(View.GONE);
-        } else {
-            this.background.setVisibility(View.VISIBLE);
-            GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{Color.TRANSPARENT, background});
-            this.background.setBackground(drawable);
-        }
     }
 
     public void setListener(Listener listener) {
@@ -275,8 +263,14 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
             settingsState = state;
             if (settingsState == SettingsState.SETTINGS) {
                 buttonSettings.setImageResource(R.drawable.ic_settings);
+                if (buttonCustomize.getVisibility() != View.GONE) {
+                    buttonCustomize.setVisibility(View.VISIBLE);
+                }
             } else {
-                buttonSettings.setImageResource(R.drawable.ic_search_bar_clear);
+                buttonSettings.setImageResource(R.drawable.ic_close);
+                if (buttonCustomize.getVisibility() != View.GONE) {
+                    buttonCustomize.setVisibility(View.INVISIBLE);
+                }
             }
         }
     }

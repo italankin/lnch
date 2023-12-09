@@ -2,10 +2,9 @@ package com.italankin.lnch.util.dialogfragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragment.Listener> {
 
@@ -13,7 +12,7 @@ public class SimpleDialogFragment extends BaseDialogFragment<SimpleDialogFragmen
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArgs();
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(TitleBuilder.ARG))
                 .setMessage(getString(MessageBuilder.ARG));
         if (arguments.containsKey(PositiveButtonBuilder.ARG)) {

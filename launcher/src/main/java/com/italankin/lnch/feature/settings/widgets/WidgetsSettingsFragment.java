@@ -8,8 +8,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.SeekBarPreference;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
@@ -31,7 +31,7 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
         seekBarPreference.setMin(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.min());
         seekBarPreference.setMax(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.max());
         findPreference(R.string.pref_key_widgets_remove).setOnPreferenceClickListener(preference -> {
-            new AlertDialog.Builder(requireContext())
+            new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.settings_home_widgets_remove_dialog_title)
                     .setMessage(R.string.settings_home_widgets_remove_dialog_message)
                     .setNegativeButton(R.string.cancel, null)

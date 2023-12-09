@@ -81,7 +81,7 @@ class PreferenceMatch implements Match {
 
     @Override
     public int getColor(Context context) {
-        return ResUtils.resolveColor(context, R.attr.colorText);
+        return ResUtils.resolveColor(context, com.google.android.material.R.attr.colorOnSurface);
     }
 
     @Override

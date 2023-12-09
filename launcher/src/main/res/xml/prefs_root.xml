@@ -52,7 +52,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_search">
         <Preference
-            android:icon="@drawable/ic_settings_search"
+            android:icon="@drawable/ic_action_search"
             android:key="@string/pref_key_search_settings"
             android:title="@string/settings_search" />
     </PreferenceCategory>

@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.settings.fonts;
 
 import android.graphics.Typeface;
 import android.net.Uri;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
@@ -10,18 +9,16 @@ import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.fonts.InvalidFontFormat;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.inject.Inject;
-
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @InjectViewState
 public class FontsPresenter extends AppPresenter<FontsView> {
@@ -54,8 +51,9 @@ public class FontsPresenter extends AppPresenter<FontsView> {
         }
 
         Map<String, Typeface> fonts = fontManager.getCustomFonts();
-        List<FontItem> items = new ArrayList<>(FontManager.DEFAULT_FONTS.size() + fonts.size());
-        for (Map.Entry<String, Typeface> entry : FontManager.DEFAULT_FONTS.entrySet()) {
+        Map<String, Typeface> defaultFonts = fontManager.getDefaultFonts();
+        List<FontItem> items = new ArrayList<>(defaultFonts.size() + fonts.size());
+        for (Map.Entry<String, Typeface> entry : defaultFonts.entrySet()) {
             String name = entry.getKey();
             Typeface typeface = entry.getValue();
             items.add(new FontItem(name, previewText, typeface, true));

@@ -1,12 +1,10 @@
 package com.italankin.lnch.feature.intentfactory.componenteditor;
 
 import android.widget.TextView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import static com.italankin.lnch.feature.intentfactory.flags.IntentFlag.getAll;
 
@@ -41,7 +39,7 @@ public class FlagsEditor extends AbstractIntentEditor {
             items[i] = flag.name;
             checked[i] = (flags & flag.value) == flag.value;
         }
-        new AlertDialog.Builder(activity)
+        new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.intent_factory_intent_flags)
                 .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> {
                     checked[which] = isChecked;

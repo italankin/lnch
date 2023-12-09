@@ -258,7 +258,6 @@
     <string name="settings_home_laf_search_bar">Search bar</string>
     <string name="settings_home_laf_search_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_search_large_search_bar_summary">Increase height of the search bar</string>
-    <string name="settings_home_laf_search_search_bar_background">Search bar background</string>
 
     <string name="settings_home_laf_appearance">Appearance</string>
     <string name="settings_home_laf_appearance_summary">Customize text size, font, shadow</string>

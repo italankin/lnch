@@ -23,7 +23,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -33,6 +32,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -633,7 +633,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
     @Override
     public void onConfirmDiscardChanges() {
-        new AlertDialog.Builder(requireContext())
+        new MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.customize_discard_message)
                 .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
                 .setNegativeButton(R.string.cancel, null)
@@ -655,7 +655,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void showDeleteDialog(RemovableDescriptorUi item) {
         String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
         String message = getString(R.string.dialog_delete_message, visibleLabel);
-        new AlertDialog.Builder(requireContext())
+        new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dialog_delete_title)
                 .setMessage(message)
                 .setNegativeButton(R.string.cancel, null)
@@ -950,7 +950,6 @@ public class AppsFragment extends AppFragment implements AppsView,
             searchOverlay.setSearchBarSizeDimen(R.dimen.search_bar_size);
             searchOverlay.setSearchBarTextSizeDimen(R.dimen.search_bar_text_size);
         }
-        searchOverlay.setSearchBarBackground(userPrefs.searchBackground);
         if (userPrefs.searchBarShowCustomize) {
             searchOverlay.setupCustomizeButton(v -> {
                 searchOverlayBehavior.hide(presenter::startCustomize);

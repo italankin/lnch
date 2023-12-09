@@ -4,86 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:background="?colorSurfaceInverse"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <View
-        android:id="@+id/search_background"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="#2000"
-        tools:visibility="visible" />
-
-    <EditText
-        android:id="@+id/search_edit_text"
+    <LinearLayout
+        android:id="@+id/search_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#0000"
-        android:hint="@string/hint_search"
-        android:imeOptions="actionGo|flagNoExtractUi"
-        android:importantForAutofill="no"
-        android:inputType="textAutoComplete"
-        android:minHeight="@dimen/search_bar_size"
-        android:selectAllOnFocus="true"
-        android:textSize="@dimen/search_bar_text_size"
-        app:layout_constraintEnd_toStartOf="@id/actions"
-        app:layout_constraintHeight_min="56dp"
-        app:layout_constraintStart_toEndOf="@id/search_global"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginStart="16dp" />
-
-    <LinearLayout
-        android:id="@+id/actions"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_search_bar"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/search_edit_text">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/search_global"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_search"
+            android:padding="16dp"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_edit_text"
+            tools:src="@drawable/ic_action_search"
+            tools:visibility="visible" />
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#0000"
+            android:hint="@string/hint_search"
+            android:imeOptions="actionGo|flagNoExtractUi"
+            android:importantForAutofill="no"
+            android:includeFontPadding="false"
+            android:inputType="textAutoComplete"
+            android:minHeight="@dimen/search_bar_size"
+            android:selectAllOnFocus="true"
+            android:textSize="@dimen/search_bar_text_size"
+            app:layout_goneMarginStart="16dp" />
 
         <ImageView
             android:id="@+id/search_customize"
-            android:layout_width="@dimen/search_bar_size"
-            android:layout_height="@dimen/search_bar_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_customize"
             android:padding="16dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_action_rename"
             android:visibility="gone"
+            app:tint="?colorOnSurface"
             tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/search_settings"
-            android:layout_width="@dimen/search_bar_size"
-            android:layout_height="@dimen/search_bar_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_settings"
             android:padding="16dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_settings" />
+            android:src="@drawable/ic_settings"
+            app:tint="?colorOnSurface" />
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/search_global"
-        android:layout_width="@dimen/search_bar_size"
-        android:layout_height="@dimen/search_bar_size"
-        android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/cd_search"
-        android:padding="16dp"
-        android:scaleType="centerInside"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/search_edit_text"
-        tools:src="@drawable/ic_action_search"
-        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_results"
@@ -95,7 +88,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/search_bar"
         tools:itemCount="3"
         tools:listitem="@layout/item_search_match"
         tools:visibility="visible" />

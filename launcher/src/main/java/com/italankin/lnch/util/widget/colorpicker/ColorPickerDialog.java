@@ -2,11 +2,10 @@ package com.italankin.lnch.util.widget.colorpicker;
 
 import android.content.Context;
 import android.content.DialogInterface;
-
-import com.italankin.lnch.R;
-
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.italankin.lnch.R;
 
 public final class ColorPickerDialog {
 
@@ -16,12 +15,12 @@ public final class ColorPickerDialog {
 
     public static class Builder {
         final ColorPickerView colorPicker;
-        final AlertDialog.Builder alertDialogBuilder;
+        final MaterialAlertDialogBuilder alertDialogBuilder;
         OnColorPickedListener onColorPickedListener;
 
         private Builder(Context context) {
             colorPicker = new ColorPickerView(context);
-            alertDialogBuilder = new AlertDialog.Builder(context)
+            alertDialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setView(colorPicker)
                     .setNegativeButton(R.string.cancel, null)
                     .setPositiveButton(R.string.ok, (dialog, which) -> {

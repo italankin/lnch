@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/popup_bg"
             android:elevation="@dimen/popup_window_elevation"
-            android:minWidth="192dp"
+            android:minWidth="@dimen/popup_min_width"
             android:orientation="vertical"
             android:outlineProvider="background"
             tools:ignore="UselessParent"

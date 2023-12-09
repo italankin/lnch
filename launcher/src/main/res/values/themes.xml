@@ -1,29 +1,39 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">#f0f0f0</item>
-        <item name="colorPrimaryDark">#a0a0a0</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">?colorPrimaryDark</item>
+    <style name="AppTheme" parent="Theme.Base.AppTheme">
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">?colorPrimaryDark</item>
 
-        <item name="colorText">#222</item>
-        <item name="colorTextSecondary">#888</item>
-        <item name="colorIconTint">#333</item>
         <item name="colorDivider">#17000000</item>
-        <item name="colorFolderTitleDefault">?colorText</item>
-        <item name="colorPopupBackground">?colorPrimary</item>
-        <item name="colorPopupActionsBackground">#a0a0a0</item>
-        <item name="colorFolderBackground">#ddd</item>
-        <item name="colorFolderTitleBackground">#a0a0a0</item>
         <item name="colorItemShadowDefault">#60000000</item>
-        <item name="colorSearchResultBackground">#afff</item>
-        <item name="colorEditPanelBackground">?colorPrimaryDark</item>
         <item name="colorPreviewBorder">#6000</item>
-        <item name="colorWidgetActions">#8fff</item>
+        <item name="colorSearchMatchBackground">#6fff</item>
 
-        <item name="toolbarOverlayTheme">@style/AppTheme.Overlay</item>
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
     <style name="AppTheme.Launcher">

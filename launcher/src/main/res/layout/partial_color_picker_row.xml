@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:textSize="14sp"
         tools:text="R" />
 
@@ -38,7 +38,7 @@
         android:includeFontPadding="false"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:textSize="14sp"
         tools:text="255" />
 

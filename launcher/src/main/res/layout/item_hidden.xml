@@ -30,7 +30,7 @@
         android:fadingEdgeLength="24dp"
         android:requiresFadingEdge="horizontal"
         android:singleLine="true"
-        android:textColor="?colorText"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         tools:text="@tools:sample/first_names" />
 

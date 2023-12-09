@@ -64,7 +64,7 @@ public class SelectFolderFragment extends PopupFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        containerRoot.setArrowColors(ResUtils.resolveColor(requireContext(), R.attr.colorPopupBackground));
+        containerRoot.setArrowColors(ResUtils.resolveColor(requireContext(), com.google.android.material.R.attr.colorSurfaceContainer));
 
         populate();
         showPopup();

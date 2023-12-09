@@ -109,13 +109,6 @@ public interface Preferences {
             true);
 
     /**
-     * Background for the search bar
-     */
-    Pref<Integer> SEARCH_BACKGROUND = Prefs.createInteger(
-            "search_background",
-            Color.TRANSPARENT);
-
-    /**
      * Show 'global search' button in the search bar
      */
     Pref<Boolean> SEARCH_SHOW_GLOBAL_SEARCH = Prefs.createBoolean(
@@ -553,7 +546,6 @@ public interface Preferences {
             SEARCH_SHOW_CUSTOMIZE,
             SEARCH_SHOW_MOST_USED,
             SEARCH_USE_CUSTOM_TABS,
-            SEARCH_BACKGROUND,
             SEARCH_ENGINE,
             CUSTOM_SEARCH_ENGINE_FORMAT,
             EXCLUDED_SEARCH_TARGETS,

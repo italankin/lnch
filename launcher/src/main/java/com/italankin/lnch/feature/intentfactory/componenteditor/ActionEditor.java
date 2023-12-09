@@ -1,12 +1,10 @@
 package com.italankin.lnch.feature.intentfactory.componenteditor;
 
 import android.widget.TextView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.intentfactory.actions.IntentAction;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class ActionEditor extends AbstractIntentEditor {
 
@@ -33,7 +31,7 @@ public class ActionEditor extends AbstractIntentEditor {
     }
 
     private void showActionEdit(TextView textAction) {
-        new AlertDialog.Builder(activity)
+        new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.intent_factory_intent_action)
                 .setItems(createItems(), (dialog, which) -> {
                     IntentAction action = IntentAction.getAll()[which];

@@ -11,7 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
@@ -22,14 +28,6 @@ import com.italankin.lnch.util.widget.LceLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class IntentExtrasActivity extends AppCompatActivity implements IntentExtrasAdapter.Listener {
 
@@ -134,7 +132,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
             spinnerType.setSelection(0);
         }
 
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.intent_factory_extras_dialog_title)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)

@@ -6,18 +6,16 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.CheckBoxPreference;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.NotificationUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.CheckBoxPreference;
 
 public class NotificationsFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -58,7 +56,7 @@ public class NotificationsFragment extends BasePreferenceFragment implements Set
     }
 
     private void showRequestNotificationAccessDialog() {
-        new AlertDialog.Builder(requireContext())
+        new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.settings_home_misc_notifications_permissions_dialog_title)
                 .setMessage(R.string.settings_home_misc_notifications_permission_dialog_message)
                 .setPositiveButton(R.string.settings_home_misc_notifications_permissions_dialog_allow, (dialog, which) -> {

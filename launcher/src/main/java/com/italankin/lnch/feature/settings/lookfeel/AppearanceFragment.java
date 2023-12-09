@@ -265,7 +265,7 @@ public class AppearanceFragment extends AppFragment implements
                 .nameNormalizer()
                 .normalize(getString(R.string.preview));
         preview.setText(previewText);
-        preview.setTextColor(ResUtils.resolveColor(requireContext(), android.R.attr.colorAccent));
+        preview.setTextColor(ResUtils.resolveColor(requireContext(), android.R.attr.colorPrimary));
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setSelectedColor(preview.getCurrentTextColor())
