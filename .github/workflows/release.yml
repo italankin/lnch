@@ -39,12 +39,11 @@ jobs:
       - name: assemble
         run: ./gradlew --no-daemon assembleRelease
 
-      - name: current tag
-        id: current_tag
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: current ref
+        run: echo "CURRENT_REF=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
 
       - name: rename apk
-        run: mv "$OUTPUT_PATH/launcher-release.apk" "$OUTPUT_PATH/lnch-${{ steps.current_tag.outputs.tag }}.apk"
+        run: mv "$OUTPUT_PATH/launcher-release.apk" "$OUTPUT_PATH/lnch-${{ env.CURRENT_REF }}.apk"
 
       - name: release
         uses: ncipollo/release-action@v1.13.0
