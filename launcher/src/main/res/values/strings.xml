@@ -243,6 +243,7 @@
 
     <string name="settings_home_laf_other">Other</string>
     <string name="settings_home_laf_color_theme">Color theme</string>
+    <string name="settings_home_laf_dynamic_colors">Dynamic colors</string>
     <string name="settings_home_laf_alignment">Alignment</string>
     <string name="settings_home_laf_other_home">Home</string>
     <string name="settings_home_laf_other_color_overlay_show">One color for items</string>

@@ -10,6 +10,10 @@
             android:key="color_theme"
             android:summary="%s"
             android:title="@string/settings_home_laf_color_theme" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="dynamic_colors"
+            android:title="@string/settings_home_laf_dynamic_colors" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_other_home">
         <Preference

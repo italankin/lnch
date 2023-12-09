@@ -5,13 +5,18 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.os.Build;
+import android.util.SparseIntArray;
+import com.italankin.lnch.feature.widgets.util.WidgetColorMapping;
 
 public class LauncherAppWidgetHost extends AppWidgetHost {
 
+    private final Context context;
     private final Context fixedContext;
 
     public LauncherAppWidgetHost(Context context, int hostId) {
         super(context, hostId);
+        this.context = context;
         fixedContext = new FixedContextWrapper(context);
     }
 
@@ -21,7 +26,14 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
     }
 
     public final LauncherAppWidgetHostView createView(int appWidgetId, AppWidgetProviderInfo appWidget) {
-        return (LauncherAppWidgetHostView) createView(fixedContext, appWidgetId, appWidget);
+        LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) createView(fixedContext, appWidgetId, appWidget);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            SparseIntArray mapping = WidgetColorMapping.get(context);
+            if (mapping.size() > 0) {
+                hostView.setColorResources(mapping);
+            }
+        }
+        return hostView;
     }
 
     private static class FixedContextWrapper extends ContextWrapper {

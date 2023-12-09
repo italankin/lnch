@@ -1,14 +1,13 @@
-package com.italankin.lnch.util;
+package com.italankin.lnch.util.activitycallbacks;
 
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ThemeUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;

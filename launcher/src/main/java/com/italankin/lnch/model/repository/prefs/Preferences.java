@@ -252,6 +252,13 @@ public interface Preferences {
             ColorTheme::from);
 
     /**
+     * Enable dynamic Material colors
+     */
+    Pref<Boolean> DYNAMIC_COLORS = Prefs.createBoolean(
+            "dynamic_colors",
+            true);
+
+    /**
      * Text size of the home screen items
      */
     RangePref<Float> ITEM_TEXT_SIZE = Prefs.createFloatRange(
@@ -560,6 +567,7 @@ public interface Preferences {
             SCROLL_TO_TOP,
             SMOOTH_SCROLL_TO_TOP,
             COLOR_THEME,
+            DYNAMIC_COLORS,
             ITEM_TEXT_SIZE,
             ITEM_PADDING,
             ITEM_SHADOW_RADIUS,
