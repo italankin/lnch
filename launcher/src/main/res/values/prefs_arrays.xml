@@ -26,7 +26,7 @@
         <item>5</item>
     </string-array>
     <string-array name="pref_desc_app_max_dynamic_shortcuts">
-        <item>default</item>
+        <item>Default</item>
         <item>4</item>
         <item>5</item>
     </string-array>
@@ -36,8 +36,8 @@
         <item>reversed</item>
     </string-array>
     <string-array name="pref_desc_shortcuts_sort_mode">
-        <item>default</item>
-        <item>reversed</item>
+        <item>Default</item>
+        <item>Reversed</item>
     </string-array>
 
     <string-array name="pref_values_excluded_search_targets">
