@@ -48,7 +48,6 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
         setContentView(R.layout.activity_intent_extras);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.intent_factory_extras);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> {
             setResult(RESULT_CANCELED);

@@ -56,7 +56,6 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
         setContentView(R.layout.activity_intent_component_selector);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.intent_component_selector_title);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> {
             setResult(RESULT_CANCELED);

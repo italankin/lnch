@@ -78,7 +78,6 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_widget_gallery);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-//        toolbar.setTitle(R.string.widgets_gallery_title);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> {
             setResult(RESULT_CANCELED);
