@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 
 import java.util.Iterator;
@@ -14,8 +14,8 @@ public class RemoveAction implements DescriptorRepository.Editor.Action {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
-        for (Iterator<Descriptor> i = items.iterator(); i.hasNext(); ) {
+    public void apply(List<MutableDescriptor<?>> items) {
+        for (Iterator<MutableDescriptor<?>> i = items.iterator(); i.hasNext(); ) {
             if (i.next().getId().equals(id)) {
                 i.remove();
                 break;

@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
@@ -21,16 +24,10 @@ import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.icons.CircleDrawable;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.ContextCompat;
 
 import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
 import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
@@ -107,55 +104,55 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
     }
 
     @Override
-    public void onDescriptorLoaded(AppDescriptor descriptor) {
-        String packageName = descriptor.getPackageName();
+    public void onModelLoaded(AppDetailsModel model) {
+        String packageName = model.descriptor.packageName;
         PackageManager packageManager = requireContext().getPackageManager();
         imageIcon.setImageDrawable(PackageUtils.getPackageIcon(packageManager, packageName));
         textName.setText(PackageUtils.getPackageLabel(packageManager, packageName));
         buttonInfo.setOnClickListener(v -> IntentUtils.safeStartAppSettings(requireContext(), packageName, null));
         textPackage.setText(packageName);
-        textVisibleName.setText(descriptor.getVisibleLabel());
+        textVisibleName.setText(model.getVisibleLabel());
 
-        switchHomeVisibility.setChecked(!descriptor.ignored);
+        switchHomeVisibility.setChecked(!model.ignored);
         switchHomeVisibility.jumpDrawablesToCurrentState();
         switchHomeVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setIgnored(descriptor, !isChecked);
+            presenter.setIgnored(model, !isChecked);
         });
 
-        switchSearchVisibility.setChecked((descriptor.searchFlags & FLAG_SEARCH_VISIBLE) == FLAG_SEARCH_VISIBLE);
+        switchSearchVisibility.setChecked((model.searchFlags & FLAG_SEARCH_VISIBLE) == FLAG_SEARCH_VISIBLE);
         switchSearchVisibility.jumpDrawablesToCurrentState();
         switchSearchVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setSearchVisible(descriptor, isChecked);
+            presenter.setSearchVisible(model, isChecked);
         });
 
-        switchShortcutsVisibility.setChecked(descriptor.showShortcuts);
+        switchShortcutsVisibility.setChecked(model.showShortcuts);
         switchShortcutsVisibility.jumpDrawablesToCurrentState();
         switchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setShortcutsVisible(descriptor, isChecked);
+            presenter.setShortcutsVisible(model, isChecked);
         });
 
         switchSearchShortcutsVisibility.setChecked(
-                (descriptor.searchFlags & FLAG_SEARCH_SHORTCUTS_VISIBLE) == FLAG_SEARCH_SHORTCUTS_VISIBLE
+                (model.searchFlags & FLAG_SEARCH_SHORTCUTS_VISIBLE) == FLAG_SEARCH_SHORTCUTS_VISIBLE
         );
         switchSearchShortcutsVisibility.jumpDrawablesToCurrentState();
         switchSearchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setSearchShortcutsVisible(descriptor, isChecked);
+            presenter.setSearchShortcutsVisible(model, isChecked);
         });
 
         buttonRename.setOnClickListener(v -> {
-            new RenameDescriptorDialog(requireContext(), descriptor.getVisibleLabel(),
-                    (newLabel) -> setCustomLabel(descriptor, newLabel))
+            new RenameDescriptorDialog(requireContext(), model.getVisibleLabel(),
+                    (newLabel) -> setCustomLabel(model, newLabel))
                     .show();
         });
 
-        buttonChangeColor.setOnClickListener(v -> setCustomColor(descriptor));
-        updateColorPreview(descriptor);
+        buttonChangeColor.setOnClickListener(v -> setCustomColor(model));
+        updateColorPreview(model);
 
-        buttonChangeBadgeColor.setOnClickListener(v -> setCustomBadgeColor(descriptor));
-        updateBadgeColorPreview(descriptor);
+        buttonChangeBadgeColor.setOnClickListener(v -> setCustomBadgeColor(model));
+        updateBadgeColorPreview(model);
 
         buttonAppAliases.setOnClickListener(v -> {
-            sendResult(new ShowAppAliasesContract().result(descriptor.getId()));
+            sendResult(new ShowAppAliasesContract().result(model.descriptor.getId()));
         });
     }
 
@@ -165,31 +162,31 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         sendResult(new AppDetailsErrorContract().result());
     }
 
-    private void setCustomLabel(AppDescriptor descriptor, String label) {
-        presenter.setCustomLabel(descriptor, label);
-        textVisibleName.setText(descriptor.getVisibleLabel());
+    private void setCustomLabel(AppDetailsModel model, String label) {
+        presenter.setCustomLabel(model, label);
+        textVisibleName.setText(model.getVisibleLabel());
     }
 
-    private void setCustomColor(AppDescriptor descriptor) {
-        new SetColorDescriptorDialog(requireContext(), descriptor.getVisibleColor(),
+    private void setCustomColor(AppDetailsModel model) {
+        new SetColorDescriptorDialog(requireContext(), model.getVisibleColor(),
                 newColor -> {
-                    presenter.setCustomColor(descriptor, newColor);
-                    updateColorPreview(descriptor);
+                    presenter.setCustomColor(model, newColor);
+                    updateColorPreview(model);
                 })
                 .show();
     }
 
-    private void setCustomBadgeColor(AppDescriptor descriptor) {
-        new SetColorDescriptorDialog(requireContext(), getCurrentBadgeColor(descriptor),
+    private void setCustomBadgeColor(AppDetailsModel model) {
+        new SetColorDescriptorDialog(requireContext(), getCurrentBadgeColor(model),
                 newColor -> {
-                    presenter.setCustomBadgeColor(descriptor, newColor);
-                    updateBadgeColorPreview(descriptor);
+                    presenter.setCustomBadgeColor(model, newColor);
+                    updateBadgeColorPreview(model);
                 })
                 .show();
     }
 
-    private void updateColorPreview(AppDescriptor descriptor) {
-        int visibleColor = descriptor.getVisibleColor();
+    private void updateColorPreview(AppDetailsModel model) {
+        int visibleColor = model.getVisibleColor();
         Drawable background = buttonChangeColorPreview.getBackground();
         if (background instanceof CircleDrawable) {
             ((CircleDrawable) background).setColor(visibleColor);
@@ -200,8 +197,8 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         }
     }
 
-    private void updateBadgeColorPreview(AppDescriptor descriptor) {
-        int badgeColor = getCurrentBadgeColor(descriptor);
+    private void updateBadgeColorPreview(AppDetailsModel model) {
+        int badgeColor = getCurrentBadgeColor(model);
         Drawable background = buttonChangeBadgeColorPreview.getBackground();
         if (background instanceof CircleDrawable) {
             ((CircleDrawable) background).setColor(badgeColor);
@@ -212,9 +209,9 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         }
     }
 
-    private int getCurrentBadgeColor(AppDescriptor descriptor) {
-        if (descriptor.customBadgeColor != null) {
-            return descriptor.customBadgeColor;
+    private int getCurrentBadgeColor(AppDetailsModel model) {
+        if (model.customBadgeColor != null) {
+            return model.customBadgeColor;
         }
         Integer dotColor = LauncherApp.daggerService.main()
                 .preferences()

@@ -1,8 +1,11 @@
 package com.italankin.lnch.feature.home.apps.folder.empty;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
-
 import androidx.annotation.Nullable;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Fake descriptor for showing empty folder state
@@ -35,7 +38,12 @@ class EmptyFolderDescriptor implements Descriptor {
     }
 
     @Override
-    public Descriptor copy() {
-        return EmptyFolderDescriptor.INSTANCE;
+    public Set<String> getSearchTokens() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public MutableDescriptor<?> toMutable() {
+        throw new UnsupportedOperationException();
     }
 }

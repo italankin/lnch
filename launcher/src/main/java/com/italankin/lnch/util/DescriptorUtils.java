@@ -44,17 +44,18 @@ public final class DescriptorUtils {
         return info != null ? info.getComponentName() : null;
     }
 
-    public static DeepShortcutDescriptor makeDeepShortcut(Shortcut shortcut, AppDescriptor app,
+    public static DeepShortcutDescriptor.Mutable makeDeepShortcut(Shortcut shortcut, AppDescriptor app,
             NameNormalizer nameNormalizer) {
-        DeepShortcutDescriptor descriptor = new DeepShortcutDescriptor(
+        DeepShortcutDescriptor.Mutable descriptor = new DeepShortcutDescriptor.Mutable(
                 shortcut.getPackageName(), shortcut.getId());
-        descriptor.color = app.color;
+        descriptor.setColor(app.color);
         CharSequence label = shortcut.getShortLabel();
         if (TextUtils.isEmpty(label)) {
-            descriptor.originalLabel = descriptor.label = app.getVisibleLabel();
+            descriptor.setOriginalLabel(app.getVisibleLabel());
+            descriptor.setLabel(app.getVisibleLabel());
         } else {
-            descriptor.originalLabel = label.toString();
-            descriptor.label = nameNormalizer.normalize(label);
+            descriptor.setOriginalLabel(label.toString());
+            descriptor.setLabel(nameNormalizer.normalize(label));
         }
         return descriptor;
     }

@@ -1,14 +1,8 @@
 package com.italankin.lnch.model.ui.impl;
 
 import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
-import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
-import com.italankin.lnch.model.ui.InFolderDescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.*;
 
 import java.util.Objects;
 
@@ -32,7 +26,7 @@ public final class DeepShortcutDescriptorUi implements DescriptorUi,
     public DeepShortcutDescriptorUi(DeepShortcutDescriptor descriptor) {
         this.descriptor = descriptor;
         this.packageName = descriptor.packageName;
-        this.id = descriptor.id;
+        this.id = descriptor.shortcutId;
         this.enabled = descriptor.enabled;
         this.label = descriptor.label;
         this.customLabel = descriptor.customLabel;

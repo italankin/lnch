@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import com.google.android.material.color.MaterialColors;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
@@ -36,10 +35,9 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         String uri = target.toUri(0);
 
         String label = name != null ? name : context.getString(R.string.pinned_shortcut_default_label);
-        int color = MaterialColors.getColor(context, android.R.attr.textColorPrimary, "InstallShortcutReceiver");
-        PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor(uri, label, color);
+        PinnedShortcutDescriptor.Mutable descriptor = new PinnedShortcutDescriptor.Mutable(uri, label);
         NameNormalizer nameNormalizer = LauncherApp.daggerService.main().nameNormalizer();
-        descriptor.originalLabel = descriptor.label = nameNormalizer.normalize(label);
+        descriptor.setLabel(nameNormalizer.normalize(label));
 
         DescriptorRepository apps = LauncherApp.daggerService
                 .main()

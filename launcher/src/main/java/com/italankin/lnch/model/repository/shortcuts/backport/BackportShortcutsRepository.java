@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
-
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -14,17 +13,16 @@ import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import dagger.Lazy;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import dagger.Lazy;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
 
 public class BackportShortcutsRepository implements ShortcutsRepository {
 
@@ -102,15 +100,15 @@ public class BackportShortcutsRepository implements ShortcutsRepository {
                 String packageName = sb.getPackageName();
                 String id = sb.getId();
                 for (DeepShortcutDescriptor deepShortcut : deepShortcuts) {
-                    if (deepShortcut.packageName.equals(packageName) && deepShortcut.id.equals(id)) {
+                    if (deepShortcut.packageName.equals(packageName) && deepShortcut.shortcutId.equals(id)) {
                         return Single.just(false);
                     }
                 }
                 Intent intent = ShortcutBackport.stripPackage(sb.getIntent());
-                IntentDescriptor descriptor = new IntentDescriptor(intent, sb.getShortLabel().toString());
-                descriptor.label = nameNormalizer.normalize(sb.getShortLabel());
+                IntentDescriptor.Mutable mutable = new IntentDescriptor.Mutable(intent, sb.getShortLabel().toString());
+                mutable.setLabel(nameNormalizer.normalize(sb.getShortLabel()));
                 return descriptorRepository.edit()
-                        .enqueue(new AddAction(descriptor))
+                        .enqueue(new AddAction(mutable))
                         .commit()
                         .toSingleDefault(true);
             });

@@ -1,7 +1,8 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class SetIgnoreAction extends BaseAction {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
-        IgnorableDescriptor descriptor = findById(items, id);
+    public void apply(List<MutableDescriptor<?>> items) {
+        IgnorableMutableDescriptor<?> descriptor = findById(items, id);
         if (descriptor != null) {
             descriptor.setIgnored(ignored);
         }

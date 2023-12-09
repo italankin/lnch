@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
-
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
@@ -15,7 +14,7 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     public String type = TYPE;
 
     @SerializedName("id")
-    public String id;
+    public String shortcutId;
 
     @SerializedName("packageName")
     public String packageName;
@@ -46,29 +45,27 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     }
 
     public DeepShortcutDescriptorJson(DeepShortcutDescriptor descriptor) {
-        this.id = descriptor.id;
-        this.packageName = descriptor.packageName;
-        this.originalLabel = descriptor.originalLabel;
-        this.label = descriptor.label;
-        this.color = descriptor.color;
-        this.customLabel = descriptor.customLabel;
-        this.customColor = descriptor.customColor;
-        this.enabled = descriptor.enabled ? null : false;
-        this.ignored = descriptor.ignored ? true : null;
+        shortcutId = descriptor.shortcutId;
+        packageName = descriptor.packageName;
+        originalLabel = descriptor.originalLabel;
+        label = descriptor.label;
+        color = descriptor.color;
+        customLabel = descriptor.customLabel;
+        customColor = descriptor.customColor;
+        enabled = descriptor.enabled ? null : false;
+        ignored = descriptor.ignored ? true : null;
     }
 
     @Override
     public Descriptor toDescriptor() {
-        DeepShortcutDescriptor descriptor = new DeepShortcutDescriptor();
-        descriptor.id = this.id;
-        descriptor.packageName = this.packageName;
-        descriptor.originalLabel = this.originalLabel;
-        descriptor.label = this.label;
-        descriptor.color = this.color;
-        descriptor.customLabel = this.customLabel;
-        descriptor.customColor = this.customColor;
-        descriptor.enabled = this.enabled == null || this.enabled;
-        descriptor.ignored = this.ignored != null && this.ignored;
-        return descriptor;
+        DeepShortcutDescriptor.Mutable mutable = new DeepShortcutDescriptor.Mutable(packageName, shortcutId);
+        mutable.setOriginalLabel(originalLabel);
+        mutable.setLabel(label);
+        mutable.setColor(color);
+        mutable.setCustomLabel(customLabel);
+        mutable.setCustomColor(customColor);
+        mutable.setEnabled(enabled == null || enabled);
+        mutable.setIgnored(ignored != null && ignored);
+        return mutable.toDescriptor();
     }
 }

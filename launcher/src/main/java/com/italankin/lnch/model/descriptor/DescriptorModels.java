@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.descriptor;
 
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.store.json.model.DescriptorJson;
 import com.italankin.lnch.model.ui.DescriptorUi;
 
@@ -12,4 +13,6 @@ public @interface DescriptorModels {
     Class<? extends DescriptorJson> json();
 
     Class<? extends DescriptorUi> ui();
+
+    Class<? extends MutableDescriptor<?>> mutable();
 }

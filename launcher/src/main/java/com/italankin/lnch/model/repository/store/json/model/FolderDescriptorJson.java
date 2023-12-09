@@ -1,12 +1,11 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
+import androidx.annotation.Keep;
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 
 import java.util.List;
-
-import androidx.annotation.Keep;
 
 public final class FolderDescriptorJson implements DescriptorJson {
 
@@ -54,16 +53,14 @@ public final class FolderDescriptorJson implements DescriptorJson {
 
     @Override
     public Descriptor toDescriptor() {
-        FolderDescriptor descriptor = new FolderDescriptor();
-        descriptor.id = this.id;
-        descriptor.originalLabel = this.originalLabel;
-        descriptor.label = this.label;
-        descriptor.customLabel = this.customLabel;
-        descriptor.color = this.color;
-        descriptor.customColor = this.customColor;
+        FolderDescriptor.Mutable mutable = new FolderDescriptor.Mutable(id, originalLabel);
+        mutable.setLabel(label);
+        mutable.setCustomLabel(customLabel);
+        mutable.setColor(color);
+        mutable.setCustomColor(customColor);
         if (items != null) {
-            descriptor.items.addAll(items);
+            mutable.setItems(items);
         }
-        return descriptor;
+        return mutable.toDescriptor();
     }
 }

@@ -1,6 +1,7 @@
 package com.italankin.lnch.model.repository.descriptor;
 
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 
@@ -86,7 +87,7 @@ public interface DescriptorRepository {
         boolean isDisposed();
 
         interface Action {
-            void apply(List<Descriptor> items);
+            void apply(List<MutableDescriptor<?>> items);
         }
     }
 }

@@ -91,7 +91,7 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                     String packageName = shortcut.getPackageName();
                     String id = shortcut.getId();
                     for (DeepShortcutDescriptor deepShortcut : deepShortcuts) {
-                        if (deepShortcut.packageName.equals(packageName) && deepShortcut.id.equals(id)) {
+                        if (deepShortcut.packageName.equals(packageName) && deepShortcut.shortcutId.equals(id)) {
                             return Single.just(false);
                         }
                     }
@@ -100,9 +100,9 @@ public class AppShortcutsRepository implements ShortcutsRepository {
                     if (app == null) {
                         throw new IllegalArgumentException("Cannot find app with packageName=" + packageName);
                     }
-                    DeepShortcutDescriptor descriptor = DescriptorUtils.makeDeepShortcut(shortcut, app, nameNormalizer);
+                    DeepShortcutDescriptor.Mutable mutable = DescriptorUtils.makeDeepShortcut(shortcut, app, nameNormalizer);
                     return descriptorRepository.edit()
-                            .enqueue(new AddAction(descriptor))
+                            .enqueue(new AddAction(mutable))
                             .commit()
                             .toSingleDefault(true);
                 });

@@ -1,42 +1,46 @@
 package com.italankin.lnch.model.descriptor.impl;
 
-import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
-import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.DescriptorModels;
-import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
+import android.graphics.Color;
+import androidx.annotation.NonNull;
+import com.italankin.lnch.model.descriptor.*;
+import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 
 import java.util.UUID;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-
 /**
  * Pinned intent for {@code com.android.launcher.action.INSTALL_SHORTCUT}
  */
-@DescriptorModels(json = PinnedShortcutDescriptorJson.class, ui = PinnedShortcutDescriptorUi.class)
+@DescriptorModels(
+        json = PinnedShortcutDescriptorJson.class,
+        ui = PinnedShortcutDescriptorUi.class,
+        mutable = PinnedShortcutDescriptor.Mutable.class
+)
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
         IgnorableDescriptor {
 
-    public String id;
-    public String uri;
-    public String originalLabel;
-    public String label;
-    public int color;
-    public String customLabel;
-    public Integer customColor;
-    public boolean ignored;
+    public final String id;
+    public final String uri;
+    public final String originalLabel;
+    public final String label;
+    public final int color;
+    public final String customLabel;
+    public final Integer customColor;
+    public final boolean ignored;
 
-    public PinnedShortcutDescriptor() {
-    }
-
-    public PinnedShortcutDescriptor(String uri, String label, @ColorInt int color) {
-        this.id = "shortcut/" + UUID.randomUUID().toString();
-        this.uri = uri;
-        this.originalLabel = this.label = label;
-        this.color = color;
+    public PinnedShortcutDescriptor(Mutable mutable) {
+        id = mutable.id;
+        uri = mutable.uri;
+        originalLabel = mutable.originalLabel;
+        label = mutable.label;
+        color = mutable.color;
+        customLabel = mutable.customLabel;
+        customColor = mutable.customColor;
+        ignored = mutable.ignored;
     }
 
     @Override
@@ -55,11 +59,6 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     }
 
     @Override
-    public void setCustomColor(Integer color) {
-        customColor = color;
-    }
-
-    @Override
     public Integer getCustomColor() {
         return customColor;
     }
@@ -70,20 +69,8 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     }
 
     @Override
-    public void setCustomLabel(String label) {
-        this.label = label;
-        this.originalLabel = label;
-        this.customLabel = label;
-    }
-
-    @Override
     public String getCustomLabel() {
         return customLabel;
-    }
-
-    @Override
-    public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
     }
 
     @Override
@@ -115,16 +102,117 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     }
 
     @Override
-    public PinnedShortcutDescriptor copy() {
-        PinnedShortcutDescriptor copy = new PinnedShortcutDescriptor();
-        copy.id = id;
-        copy.uri = uri;
-        copy.originalLabel = originalLabel;
-        copy.label = label;
-        copy.color = color;
-        copy.ignored = ignored;
-        copy.customLabel = customLabel;
-        copy.customColor = customColor;
-        return copy;
+    public Mutable toMutable() {
+        return new Mutable(this);
+    }
+
+    public static class Mutable implements MutableDescriptor<PinnedShortcutDescriptor>,
+            CustomColorMutableDescriptor<PinnedShortcutDescriptor>,
+            CustomLabelMutableDescriptor<PinnedShortcutDescriptor>,
+            IgnorableMutableDescriptor<PinnedShortcutDescriptor> {
+
+        private final String id;
+        private final String uri;
+        private String originalLabel;
+        private String label;
+        private int color = Color.WHITE;
+        private String customLabel;
+        private Integer customColor;
+        private boolean ignored;
+
+        public Mutable(String uri, String originalLabel) {
+            this("shortcut/" + UUID.randomUUID().toString(), uri, originalLabel);
+        }
+
+        public Mutable(String id, String uri, String originalLabel) {
+            this.id = id;
+            this.uri = uri;
+            this.originalLabel = originalLabel;
+        }
+
+        public Mutable(PinnedShortcutDescriptor descriptor) {
+            id = descriptor.id;
+            uri = descriptor.uri;
+            originalLabel = descriptor.originalLabel;
+            label = descriptor.label;
+            color = descriptor.color;
+            customLabel = descriptor.customLabel;
+            customColor = descriptor.customColor;
+            ignored = descriptor.ignored;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getOriginalLabel() {
+            return originalLabel;
+        }
+
+        @Override
+        public void setOriginalLabel(String originalLabel) {
+            this.originalLabel = originalLabel != null ? originalLabel : "";
+        }
+
+        public String getUri() {
+            return uri;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+
+        @Override
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public int getColor() {
+            return color;
+        }
+
+        @Override
+        public void setColor(int color) {
+            this.color = color;
+        }
+
+        @Override
+        public Integer getCustomColor() {
+            return customColor;
+        }
+
+        @Override
+        public void setCustomColor(Integer customColor) {
+            this.customColor = customColor;
+        }
+
+        @Override
+        public String getCustomLabel() {
+            return customLabel;
+        }
+
+        @Override
+        public void setCustomLabel(String customLabel) {
+            this.customLabel = customLabel;
+        }
+
+        @Override
+        public boolean isIgnored() {
+            return ignored;
+        }
+
+        @Override
+        public void setIgnored(boolean ignored) {
+            this.ignored = ignored;
+        }
+
+        @Override
+        public PinnedShortcutDescriptor toDescriptor() {
+            return new PinnedShortcutDescriptor(this);
+        }
     }
 }

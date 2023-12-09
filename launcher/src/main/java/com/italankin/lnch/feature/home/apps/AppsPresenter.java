@@ -11,11 +11,11 @@ import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
@@ -162,14 +162,16 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void addFolder(String label, @ColorInt int color, List<String> descriptors, boolean move) {
-        FolderDescriptor item = new FolderDescriptor(label, color);
-        item.label = nameNormalizer.normalize(label);
-        editor.enqueue(new AddAction(item));
-        FolderDescriptorUi folderUi = new FolderDescriptorUi(item);
+        FolderDescriptor.Mutable mutable = new FolderDescriptor.Mutable(label);
+        mutable.setLabel(nameNormalizer.normalize(label));
+        mutable.setColor(color);
+        editor.enqueue(new AddAction(mutable));
+        FolderDescriptor descriptor = mutable.toDescriptor();
+        FolderDescriptorUi folderUi = new FolderDescriptorUi(descriptor);
         homeDescriptorsState.insertItem(folderUi);
 
         for (String descriptorId : descriptors) {
-            addToFolder(descriptorId, item.id, move);
+            addToFolder(descriptorId, descriptor.id, move);
         }
     }
 
@@ -207,10 +209,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void addIntent(Intent intent, String label) {
-        IntentDescriptor item = new IntentDescriptor(intent, label);
-        item.label = nameNormalizer.normalize(label);
+        IntentDescriptor.Mutable item = new IntentDescriptor.Mutable(intent, label);
+        item.setLabel(nameNormalizer.normalize(label));
         editor.enqueue(new AddAction(item));
-        homeDescriptorsState.insertItem(new IntentDescriptorUi(item));
+        homeDescriptorsState.insertItem(new IntentDescriptorUi(item.toDescriptor()));
     }
 
     void startEditIntent(String id) {
@@ -326,8 +328,9 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void pinIntent(Intent intent, CharSequence label, @ColorInt int color) {
-        IntentDescriptor descriptor = new IntentDescriptor(intent, label.toString(), color);
-        descriptor.label = nameNormalizer.normalize(label);
+        IntentDescriptor.Mutable descriptor = new IntentDescriptor.Mutable(intent, label.toString());
+        descriptor.setColor(color);
+        descriptor.setLabel(nameNormalizer.normalize(label));
         descriptorRepository.edit()
                 .enqueue(new AddAction(descriptor))
                 .commit()
@@ -557,12 +560,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
 
         @Override
-        public void apply(List<Descriptor> items) {
-            FolderDescriptor descriptor = findById(items, folderId);
+        public void apply(List<MutableDescriptor<?>> items) {
+            FolderDescriptor.Mutable descriptor = findById(items, folderId);
             if (descriptor != null) {
-                descriptor.items.add(descriptorId);
+                descriptor.addItem(descriptorId);
                 if (move) {
-                    IgnorableDescriptor item = findById(items, descriptorId);
+                    IgnorableMutableDescriptor<?> item = findById(items, descriptorId);
                     if (item != null) {
                         item.setIgnored(true);
                     }

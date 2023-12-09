@@ -1,8 +1,8 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 
 import java.util.List;
 
@@ -22,12 +22,12 @@ public class RemoveFromFolderAction extends BaseAction {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
-        FolderDescriptor descriptor = findById(items, folderId);
+    public void apply(List<MutableDescriptor<?>> items) {
+        FolderDescriptor.Mutable descriptor = findById(items, folderId);
         if (descriptor != null) {
-            descriptor.items.remove(itemId);
+            descriptor.removeItem(itemId);
             if (moveToDesktop) {
-                IgnorableDescriptor item = findById(items, itemId);
+                IgnorableMutableDescriptor<?> item = findById(items, itemId);
                 if (item != null) {
                     item.setIgnored(false);
                 }

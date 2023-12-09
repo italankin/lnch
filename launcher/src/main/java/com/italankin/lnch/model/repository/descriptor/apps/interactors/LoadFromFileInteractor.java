@@ -3,13 +3,9 @@ package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
-
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
-import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
-import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
-import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
-import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.*;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
@@ -17,17 +13,11 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
 import com.italankin.lnch.util.IntentUtils;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import io.reactivex.Maybe;
 import timber.log.Timber;
+
+import java.io.InputStream;
+import java.util.*;
 
 import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
 import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
@@ -86,17 +76,17 @@ public class LoadFromFileInteractor {
     private void processSavedItems(ProcessingEnv env, List<Descriptor> savedItems) {
         for (Descriptor item : savedItems) {
             if (item instanceof PinnedShortcutDescriptor) {
-                visitPinnedShortcut(env, (PinnedShortcutDescriptor) item);
+                visitPinnedShortcut(env, ((PinnedShortcutDescriptor) item).toMutable());
             } else if (item instanceof DeepShortcutDescriptor) {
-                visitDeepShortcut(env, (DeepShortcutDescriptor) item);
+                visitDeepShortcut(env, ((DeepShortcutDescriptor) item).toMutable());
             } else if (item instanceof AppDescriptor) {
-                visitApp(env, (AppDescriptor) item);
+                visitApp(env, ((AppDescriptor) item).toMutable());
             } else if (item instanceof IntentDescriptor) {
-                visitIntent(env, (IntentDescriptor) item);
+                visitIntent(env, ((IntentDescriptor) item).toMutable());
             } else if (item instanceof FolderDescriptor) {
-                visitFolder(env, (FolderDescriptor) item);
+                visitFolder(env, ((FolderDescriptor) item).toMutable());
             } else {
-                env.addUnknown(item);
+                env.addUnknown(item.toMutable());
             }
         }
     }
@@ -104,11 +94,11 @@ public class LoadFromFileInteractor {
     private void processNewApps(ProcessingEnv env) {
         for (List<LauncherActivityInfo> infos : env.packages()) {
             if (infos.size() == 1) {
-                AppDescriptor item = appDescriptorInteractor.createItem(infos.get(0));
+                AppDescriptor.Mutable item = appDescriptorInteractor.createItem(infos.get(0));
                 env.addApp(item);
             } else {
                 for (LauncherActivityInfo info : infos) {
-                    AppDescriptor item = appDescriptorInteractor.createItem(info, true);
+                    AppDescriptor.Mutable item = appDescriptorInteractor.createItem(info, true);
                     env.addApp(item);
                 }
             }
@@ -117,13 +107,13 @@ public class LoadFromFileInteractor {
 
     private void cleanupFolders(ProcessingEnv env) {
         Set<String> itemIds = env.itemIds();
-        for (FolderDescriptor folder : env.folders()) {
-            Iterator<String> iterator = folder.items.iterator();
+        for (FolderDescriptor.Mutable folder : env.folders()) {
+            Iterator<String> iterator = folder.getItems().iterator();
             boolean changed = false;
             while (iterator.hasNext()) {
                 String folderItemId = iterator.next();
                 if (!itemIds.contains(folderItemId)) {
-                    Timber.d("remove unavailable '%s' from '%s'", folderItemId, folder.id);
+                    Timber.d("remove unavailable '%s' from '%s'", folderItemId, folder.getId());
                     iterator.remove();
                     changed = true;
                 }
@@ -134,7 +124,7 @@ public class LoadFromFileInteractor {
         }
     }
 
-    private void visitApp(ProcessingEnv env, AppDescriptor app) {
+    private void visitApp(ProcessingEnv env, AppDescriptor.Mutable app) {
         LauncherActivityInfo info = env.pollInfo(app);
         if (info != null) {
             if (appDescriptorInteractor.updateItem(app, info)) {
@@ -146,61 +136,61 @@ public class LoadFromFileInteractor {
         }
     }
 
-    private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor item) {
-        Shortcut shortcut = shortcutsRepository.getShortcut(item.packageName, item.id);
-        item.enabled = shortcut != null;
+    private void visitDeepShortcut(ProcessingEnv env, DeepShortcutDescriptor.Mutable item) {
+        Shortcut shortcut = shortcutsRepository.getShortcut(item.getPackageName(), item.getShortcutId());
+        item.setEnabled(shortcut != null);
         String originalLabel = item.getOriginalLabel();
         if (originalLabel != null) {
-            item.label = nameNormalizer.normalize(originalLabel);
+            item.setLabel(nameNormalizer.normalize(originalLabel));
         } else {
             if (shortcut != null) {
-                item.originalLabel = shortcut.getShortLabel().toString();
-                item.label = nameNormalizer.normalize(item.getOriginalLabel());
+                item.setOriginalLabel(shortcut.getShortLabel().toString());
+                item.setLabel(nameNormalizer.normalize(item.getOriginalLabel()));
             } else {
-                item.originalLabel = item.label;
+                item.setOriginalLabel(item.getLabel());
             }
             env.markUpdated(item);
         }
         env.addDeepShortcut(item);
     }
 
-    private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor item) {
-        String uri = item.uri;
+    private void visitPinnedShortcut(ProcessingEnv env, PinnedShortcutDescriptor.Mutable item) {
+        String uri = item.getUri();
         Intent intent = IntentUtils.fromUri(uri);
         if (IntentUtils.canHandleIntent(packageManager, intent)) {
             String originalLabel = item.getOriginalLabel();
             if (originalLabel == null) {
-                item.originalLabel = item.label;
+                item.setOriginalLabel(item.getLabel());
                 env.markUpdated(item);
             }
-            item.label = nameNormalizer.normalize(item.getOriginalLabel());
+            item.setLabel(nameNormalizer.normalize(item.getOriginalLabel()));
             env.addPinnedShortcut(item);
         } else {
             env.markDeleted(item);
         }
     }
 
-    private void visitIntent(ProcessingEnv env, IntentDescriptor item) {
-        if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.intentUri))) {
+    private void visitIntent(ProcessingEnv env, IntentDescriptor.Mutable item) {
+        if (IntentUtils.canHandleIntent(packageManager, IntentUtils.fromUri(item.getIntentUri()))) {
             String originalLabel = item.getOriginalLabel();
             if (originalLabel == null) {
-                item.originalLabel = item.label;
+                item.setOriginalLabel(item.getLabel());
                 env.markUpdated(item);
             }
-            item.label = nameNormalizer.normalize(item.getOriginalLabel());
+            item.setLabel(nameNormalizer.normalize(item.getOriginalLabel()));
             env.addIntent(item);
         } else {
             env.markDeleted(item);
         }
     }
 
-    private void visitFolder(ProcessingEnv env, FolderDescriptor item) {
+    private void visitFolder(ProcessingEnv env, FolderDescriptor.Mutable item) {
         String originalLabel = item.getOriginalLabel();
         if (originalLabel == null) {
-            item.originalLabel = item.label;
+            item.setOriginalLabel(item.getLabel());
             env.markUpdated(item);
         }
-        item.label = nameNormalizer.normalize(item.getOriginalLabel());
+        item.setLabel(nameNormalizer.normalize(item.getOriginalLabel()));
         env.addFolder(item);
     }
 }
@@ -209,9 +199,9 @@ public class LoadFromFileInteractor {
  * Processing environment object which holds temporary data
  */
 class ProcessingEnv {
-    private final List<Descriptor> items = new ArrayList<>(64);
+    private final List<MutableDescriptor<?>> items = new ArrayList<>(64);
     private final Set<String> itemIds = new HashSet<>(64);
-    private final List<FolderDescriptor> folders = new ArrayList<>(4);
+    private final List<FolderDescriptor.Mutable> folders = new ArrayList<>(4);
     /**
      * Packages data, fetched from {@link android.content.pm.LauncherApps}
      */
@@ -223,43 +213,43 @@ class ProcessingEnv {
         this.packagesMap = packagesMap;
     }
 
-    private void addItem(Descriptor item) {
+    private void addItem(MutableDescriptor<?> item) {
         this.items.add(item);
         this.itemIds.add(item.getId());
     }
 
-    void addApp(AppDescriptor item) {
+    void addApp(AppDescriptor.Mutable item) {
         addItem(item);
     }
 
-    void addIntent(IntentDescriptor item) {
+    void addIntent(IntentDescriptor.Mutable item) {
         addItem(item);
     }
 
-    void addFolder(FolderDescriptor item) {
+    void addFolder(FolderDescriptor.Mutable item) {
         addItem(item);
         folders.add(item);
     }
 
-    void addDeepShortcut(DeepShortcutDescriptor item) {
+    void addDeepShortcut(DeepShortcutDescriptor.Mutable item) {
         addItem(item);
     }
 
-    void addPinnedShortcut(PinnedShortcutDescriptor item) {
+    void addPinnedShortcut(PinnedShortcutDescriptor.Mutable item) {
         addItem(item);
     }
 
-    void addUnknown(Descriptor item) {
+    void addUnknown(MutableDescriptor<?> item) {
         Timber.e("addUnknown: class=%s, item=%s", item.getClass(), item);
         addItem(item);
     }
 
-    void markDeleted(Descriptor descriptor) {
+    void markDeleted(MutableDescriptor<?> descriptor) {
         Timber.d("markDeleted: %s", descriptor);
         deleted++;
     }
 
-    void markUpdated(Descriptor descriptor) {
+    void markUpdated(MutableDescriptor<?> descriptor) {
         Timber.d("markUpdated: %s", descriptor);
         updated++;
     }
@@ -268,7 +258,7 @@ class ProcessingEnv {
      * Remove from a {@code packagesMap} and return matching {@link LauncherActivityInfo}
      * for a given {@link AppDescriptor}
      */
-    LauncherActivityInfo pollInfo(AppDescriptor app) {
+    LauncherActivityInfo pollInfo(AppDescriptor.Mutable app) {
         return packagesMap.poll(app);
     }
 
@@ -283,13 +273,13 @@ class ProcessingEnv {
         return itemIds;
     }
 
-    List<FolderDescriptor> folders() {
+    List<FolderDescriptor.Mutable> folders() {
         return folders;
     }
 
     AppsData getData() {
         boolean changed = deleted > 0 || updated > 0 || !packagesMap.isEmpty();
-        return new AppsData(items, changed);
+        return AppsData.create(items, changed);
     }
 }
 
@@ -315,21 +305,21 @@ class PackagesMap {
      * Get matching {@link LauncherActivityInfo} for a given {@link AppDescriptor}.
      * If {@code null} is returned, the app probably got deleted.
      */
-    LauncherActivityInfo poll(AppDescriptor item) {
-        List<LauncherActivityInfo> infos = packages.get(item.packageName);
+    LauncherActivityInfo poll(AppDescriptor.Mutable item) {
+        List<LauncherActivityInfo> infos = packages.get(item.getPackageName());
         if (infos == null || infos.isEmpty()) {
             return null;
         }
         if (infos.size() == 1) {
             LauncherActivityInfo result = infos.remove(0);
-            packages.remove(item.packageName);
+            packages.remove(item.getPackageName());
             return result;
-        } else if (item.componentName != null) {
+        } else if (item.getComponentName() != null) {
             Iterator<LauncherActivityInfo> iter = infos.iterator();
             while (iter.hasNext()) {
                 LauncherActivityInfo info = iter.next();
                 String componentName = getComponentName(info);
-                if (componentName.equals(item.componentName)) {
+                if (componentName.equals(item.getComponentName())) {
                     iter.remove();
                     return info;
                 }

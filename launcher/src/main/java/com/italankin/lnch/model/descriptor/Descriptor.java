@@ -1,5 +1,6 @@
 package com.italankin.lnch.model.descriptor;
 
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.search.Searchable;
 
@@ -23,10 +24,7 @@ public interface Descriptor extends Searchable {
     @Override
     int hashCode();
 
-    /**
-     * @return a deep copy of this descriptor
-     */
-    Descriptor copy();
+    MutableDescriptor<?> toMutable();
 
     @Override
     default Set<String> getSearchTokens() {
