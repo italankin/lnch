@@ -10,12 +10,12 @@ import android.os.Looper;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
@@ -35,7 +35,6 @@ import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
 public class AppearanceFragment extends AppFragment implements
-        BackButtonHandler,
         ColorPickerDialogFragment.Listener,
         SimpleDialogFragment.Listener,
         SettingsToolbarTitle {
@@ -57,6 +56,8 @@ public class AppearanceFragment extends AppFragment implements
 
     private Preferences preferences;
     private FontManager fontManager;
+
+    private OnBackPressedCallback onBackPressedCallback;
 
     private ImageView wallpaper;
     private TextView preview;
@@ -81,6 +82,19 @@ public class AppearanceFragment extends AppFragment implements
         preferences = LauncherApp.daggerService.main().preferences();
         fontManager = LauncherApp.daggerService.main().typefaceStorage();
         setHasOptionsMenu(true);
+
+        onBackPressedCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                new SimpleDialogFragment.Builder()
+                        .setMessage(R.string.settings_home_laf_appearance_discard_message)
+                        .setPositiveButton(R.string.settings_home_laf_appearance_discard_button)
+                        .setNegativeButton(R.string.cancel)
+                        .build()
+                        .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
     @Override
@@ -90,10 +104,12 @@ public class AppearanceFragment extends AppFragment implements
                 .register(new FontsFragment.OnFontSelected(), result -> {
                     itemFont.setValue(result);
                     updatePreview();
+                    onBackPressedCallback.setEnabled(true);
                 })
                 .register(new FontsFragment.OnFontDeleted(), result -> {
                     itemFont.setValue(preferences.get(Preferences.ITEM_FONT));
                     updatePreview();
+                    onBackPressedCallback.setEnabled(true);
                 })
                 .attach();
     }
@@ -170,20 +186,6 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     @Override
-    public boolean onBackPressed() {
-        if (isChanged()) {
-            new SimpleDialogFragment.Builder()
-                    .setMessage(R.string.settings_home_laf_appearance_discard_message)
-                    .setPositiveButton(R.string.settings_home_laf_appearance_discard_button)
-                    .setNegativeButton(R.string.cancel)
-                    .build()
-                    .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         preview = null;
@@ -211,6 +213,7 @@ public class AppearanceFragment extends AppFragment implements
             case TAG_SHADOW_COLOR: {
                 itemShadowColor.setValue(newColor);
                 updatePreview();
+                onBackPressedCallback.setEnabled(true);
                 break;
             }
         }
@@ -222,6 +225,7 @@ public class AppearanceFragment extends AppFragment implements
             int color = ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault);
             itemShadowColor.setValue(color);
             updatePreview();
+            onBackPressedCallback.setEnabled(true);
         }
     }
 
@@ -298,6 +302,7 @@ public class AppearanceFragment extends AppFragment implements
         setParams(itemTextSize, Preferences.ITEM_TEXT_SIZE);
         itemTextSize.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
+            onBackPressedCallback.setEnabled(true);
         }));
     }
 
@@ -331,6 +336,7 @@ public class AppearanceFragment extends AppFragment implements
         setParams(itemPadding, Preferences.ITEM_PADDING);
         itemPadding.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
+            onBackPressedCallback.setEnabled(true);
         }));
     }
 
@@ -339,6 +345,7 @@ public class AppearanceFragment extends AppFragment implements
         setParams(itemShadowRadius, Preferences.ITEM_SHADOW_RADIUS);
         itemShadowRadius.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
             updatePreview();
+            onBackPressedCallback.setEnabled(true);
         }));
     }
 

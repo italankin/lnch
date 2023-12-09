@@ -12,7 +12,6 @@ import androidx.fragment.app.FragmentManager;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
-import com.italankin.lnch.feature.base.BackButtonHandler;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
@@ -174,15 +173,6 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         updateToolbar();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
-        if (fragment instanceof BackButtonHandler && !((BackButtonHandler) fragment).onBackPressed()) {
-            return;
-        }
-        super.onBackPressed();
     }
 
     private void handleShowPreference(SettingsEntry.Key key) {
