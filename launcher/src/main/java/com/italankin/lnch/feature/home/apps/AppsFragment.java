@@ -741,9 +741,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     ///////////////////////////////////////////////////////////////////////////
 
     public void dismissPopups() {
-        if (!isAdded()) {
-            return;
-        }
         FragmentManager fragmentManager = getParentFragmentManager();
         if (!fragmentManager.isStateSaved()) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);

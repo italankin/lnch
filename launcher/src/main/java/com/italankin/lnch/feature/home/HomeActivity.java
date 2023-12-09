@@ -84,7 +84,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
             if (currentItem == -1 || currentItem == homePagerAdapter.indexOfFragment(AppsFragment.class)) {
                 return;
             }
-            AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
+            AppsFragment appsFragment = getAppsFragment();
             if (appsFragment != null) {
                 appsFragment.setAnimateOnResume(false);
             }
@@ -95,7 +95,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     @Override
     protected void onRestart() {
         super.onRestart();
-        AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
+        AppsFragment appsFragment = getAppsFragment();
         if (appsFragment != null) {
             appsFragment.onRestart();
         }
@@ -106,7 +106,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-            Fragment current = homePagerAdapter.getFragmentAt(viewPager.getCurrentItem());
+            Fragment current = getCurrentPagerFragment();
             if (current instanceof MainActionHandler && ((MainActionHandler) current).handleMainAction()) {
                 return;
             }
@@ -125,15 +125,14 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return;
         }
-        int currentItem = viewPager.getCurrentItem();
-        Fragment fragment = homePagerAdapter.getFragmentAt(currentItem);
+        Fragment fragment = getCurrentPagerFragment();
         boolean handled = false;
         if (fragment instanceof BackButtonHandler) {
             handled = ((BackButtonHandler) fragment).onBackPressed();
         }
         if (!handled) {
             int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
-            if (currentItem != appsPosition) {
+            if (viewPager.getCurrentItem() != appsPosition) {
                 viewPager.setCurrentItem(appsPosition, true);
             }
         }
@@ -213,7 +212,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
             @Override
             public void onPageScrollStateChanged(int state) {
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    AppsFragment appsFragment = homePagerAdapter.getAppsFragment();
+                    AppsFragment appsFragment = getAppsFragment();
                     if (appsFragment != null) {
                         appsFragment.dismissPopups();
                     }
@@ -233,6 +232,25 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     private void setupRoot() {
         root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    }
+
+    private AppsFragment getAppsFragment() {
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof AppsFragment) {
+                return (AppsFragment) fragment;
+            }
+        }
+        return null;
+    }
+
+    private Fragment getCurrentPagerFragment() {
+        Class<? extends Fragment> fragmentClass = homePagerAdapter.getFragmentAt(viewPager.getCurrentItem());
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragmentClass.isAssignableFrom(fragment.getClass())) {
+                return fragment;
+            }
+        }
+        return null;
     }
 
     private List<Class<? extends Fragment>> getPages() {
