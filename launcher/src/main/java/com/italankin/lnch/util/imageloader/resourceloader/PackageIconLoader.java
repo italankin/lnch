@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-
 import androidx.annotation.Nullable;
 
 public class PackageIconLoader implements ResourceLoader {
@@ -30,7 +29,12 @@ public class PackageIconLoader implements ResourceLoader {
     @Override
     public Drawable load(Uri uri) {
         try {
-            return packageManager.getApplicationIcon(uri.getAuthority());
+            Drawable applicationIcon = packageManager.getApplicationIcon(uri.getAuthority());
+            if (applicationIcon.getIntrinsicWidth() <= 0 || applicationIcon.getIntrinsicHeight() <= 0) {
+                // try again?
+                return packageManager.getApplicationIcon(uri.getAuthority());
+            }
+            return applicationIcon;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
