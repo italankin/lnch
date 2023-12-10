@@ -496,16 +496,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         return maxSize / cellHeight;
     }
 
-    private static int minMultipleOfCellSize(int cellSize, int size, int max) {
-        if (size <= cellSize) {
-            return cellSize;
-        }
-        if (size % cellSize == 0) {
-            return Math.min(size, max);
-        }
-        return Math.min(size + (cellSize - (size % cellSize)), max);
-    }
-
     public interface Callback {
 
         void startAppWidgetConfigureActivity(AppWidgetHost appWidgetHost, int appWidgetId);
