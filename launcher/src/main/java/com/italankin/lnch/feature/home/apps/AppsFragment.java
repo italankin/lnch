@@ -938,9 +938,9 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void applyUserPrefs(UserPrefs userPrefs) {
-        if (userPrefs.globalSearch && !searchOverlay.isGlobalSearchVisible()) {
+        if (userPrefs.globalSearch) {
             setupGlobalSearchButton();
-        } else if (!userPrefs.globalSearch && searchOverlay.isGlobalSearchVisible()) {
+        } else {
             searchOverlay.hideGlobalSearch();
         }
         if (userPrefs.largeSearchBar) {

@@ -176,7 +176,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void setupGlobalSearch(Uri icon, OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
-        buttonGlobalSearch.setVisibility(VISIBLE);
+        buttonGlobalSearch.setEnabled(true);
         buttonGlobalSearch.setOnClickListener(onClickListener);
         buttonGlobalSearch.setOnLongClickListener(onLongClickListener);
         imageLoader.load(icon)
@@ -220,9 +220,10 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void hideGlobalSearch() {
-        buttonGlobalSearch.setVisibility(GONE);
+        buttonGlobalSearch.setImageResource(R.drawable.ic_action_search);
         buttonGlobalSearch.setOnClickListener(null);
         buttonGlobalSearch.setOnLongClickListener(null);
+        buttonGlobalSearch.setEnabled(false);
     }
 
     public boolean isGlobalSearchVisible() {
