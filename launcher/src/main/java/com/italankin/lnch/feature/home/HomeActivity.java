@@ -137,7 +137,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     }
 
     @Override
-    public void startAppWidgetConfigureActivityForResult(AppWidgetHost appWidgetHost, int appWidgetId) {
+    public void startAppWidgetConfigureActivity(AppWidgetHost appWidgetHost, int appWidgetId) {
         appWidgetHost.startAppWidgetConfigureActivityForResult(this, appWidgetId, 0, 0, null);
     }
 

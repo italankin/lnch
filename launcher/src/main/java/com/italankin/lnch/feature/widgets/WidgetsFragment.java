@@ -299,7 +299,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
         } else if (callback != null) {
             try {
-                callback.startAppWidgetConfigureActivityForResult(appWidgetHost, appWidgetId);
+                callback.startAppWidgetConfigureActivity(appWidgetHost, appWidgetId);
                 exitEditModeOnStop = false;
             } catch (Exception e) {
                 Timber.e(e, "startAppWidgetConfigureActivityForResult: %s", e.getMessage());
@@ -323,16 +323,22 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void configureWidget(AppWidgetProviderInfo info) {
-        if (needConfigure(info) && WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
-            try {
-                configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
-                exitEditModeOnStop = false;
-                return;
-            } catch (Exception e) {
-                Timber.e(e, "ConfigureWidgetContract.launch: %s", e.getMessage());
+        if (needConfigure(info)) {
+            if (WidgetHelper.isConfigureActivityExported(requireContext(), info)) {
+                try {
+                    configureWidgetLauncher.launch(new ConfigureWidgetContract.Input(newAppWidgetId, info.configure));
+                    exitEditModeOnStop = false;
+                } catch (Exception e) {
+                    Timber.e(e, "ConfigureWidgetContract.launch: %s", e.getMessage());
+                }
+            } else if (callback != null) {
+                int newAppWidgetId = this.newAppWidgetId;
+                addNewWidget(info);
+                callback.startAppWidgetConfigureActivity(appWidgetHost, newAppWidgetId);
             }
+        } else {
+            addNewWidget(info);
         }
-        addNewWidget(info);
     }
 
     private static boolean needConfigure(AppWidgetProviderInfo info) {
@@ -505,7 +511,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     public interface Callback {
 
-        void startAppWidgetConfigureActivityForResult(AppWidgetHost appWidgetHost, int appWidgetId);
+        void startAppWidgetConfigureActivity(AppWidgetHost appWidgetHost, int appWidgetId);
     }
 
     private static class ConfigureWidgetContract extends ActivityResultContract<ConfigureWidgetContract.Input, Boolean> {
