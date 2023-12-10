@@ -34,6 +34,7 @@
         android:dependency="enable_widgets"
         android:key="widgets_height_cell_ratio"
         android:title="@string/settings_home_widgets_height_ratio"
+        tools:ignore="PrefsDetector"
         tools:summary="1.5" />
     <Preference
         android:dependency="enable_widgets"
