@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <MultiSelectListPreference
         android:entries="@array/pref_desc_excluded_search_targets"
         android:entryValues="@array/pref_values_excluded_search_targets"
@@ -13,29 +14,34 @@
         android:key="search_show_soft_keyboard"
         android:summaryOff="@string/settings_search_auto_show_summary_off"
         android:summaryOn="@string/settings_search_auto_show_summary_on"
-        android:title="@string/settings_search_auto_show" />
+        android:title="@string/settings_search_auto_show"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="search_use_custom_tabs"
         android:summary="@string/settings_search_custom_tabs_summary"
-        android:title="@string/settings_search_custom_tabs" />
+        android:title="@string/settings_search_custom_tabs"
+        app:singleLineTitle="false" />
     <PreferenceCategory android:title="@string/settings_search_bar">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="search_show_global_search"
-            android:title="@string/settings_search_global" />
+            android:title="@string/settings_search_global"
+            app:singleLineTitle="false" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="search_show_customize"
             android:summary="@string/settings_search_customize_summary"
-            android:title="@string/settings_search_customize" />
+            android:title="@string/settings_search_customize"
+            app:singleLineTitle="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_search_history">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="search_show_most_used"
             android:summary="@string/settings_search_history_most_used_summary"
-            android:title="@string/settings_search_history_most_used" />
+            android:title="@string/settings_search_history_most_used"
+            app:singleLineTitle="false" />
         <Preference
             android:dependency="search_show_most_used"
             android:key="@string/pref_key_search_most_used_reset"

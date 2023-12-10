@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:defaultValue="sensor"
         android:entries="@array/pref_desc_screen_orientation"
@@ -17,31 +18,37 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="show_scrollbar"
-        android:title="@string/settings_home_misc_scrollbar" />
+        android:title="@string/settings_home_misc_scrollbar"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="scroll_to_top"
         android:summary="@string/settings_home_misc_scroll_top_summary"
-        android:title="@string/settings_home_misc_scroll_top" />
+        android:title="@string/settings_home_misc_scroll_top"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="smooth_scroll_to_top"
-        android:title="@string/settings_home_misc_smooth_scroll_top" />
+        android:title="@string/settings_home_misc_smooth_scroll_top"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="expand_notifications"
         android:summary="@string/settings_home_misc_expand_status_bar_summary"
-        android:title="@string/settings_home_misc_expand_status_bar" />
+        android:title="@string/settings_home_misc_expand_status_bar"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="destructive_non_edit"
         android:summary="@string/settings_home_misc_destructive_non_edit_summary"
-        android:title="@string/settings_home_misc_destructive_non_edit" />
+        android:title="@string/settings_home_misc_destructive_non_edit"
+        app:singleLineTitle="false" />
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="verbose_errors"
         android:summary="@string/settings_home_misc_verbose_errors_summary"
-        android:title="@string/settings_home_misc_verbose_errors" />
+        android:title="@string/settings_home_misc_verbose_errors"
+        app:singleLineTitle="false" />
     <Preference
         android:key="@string/pref_key_misc_experimental"
         android:summary="@string/settings_home_misc_experimental_summary"

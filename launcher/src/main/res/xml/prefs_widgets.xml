@@ -5,7 +5,8 @@
         android:defaultValue="false"
         android:key="enable_widgets"
         android:summary="@string/settings_home_widgets_enable_summary"
-        android:title="@string/settings_home_widgets_enable" />
+        android:title="@string/settings_home_widgets_enable"
+        app:singleLineTitle="false" />
     <ListPreference
         android:defaultValue="left"
         android:dependency="enable_widgets"
@@ -19,7 +20,8 @@
         android:dependency="enable_widgets"
         android:key="widgets_force_resize"
         android:summary="@string/settings_home_widgets_force_resize_summary"
-        android:title="@string/settings_home_widgets_force_resize" />
+        android:title="@string/settings_home_widgets_force_resize"
+        app:singleLineTitle="false" />
     <SeekBarPreference
         android:defaultValue="5"
         android:dependency="enable_widgets"

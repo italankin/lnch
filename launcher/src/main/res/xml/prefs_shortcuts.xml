@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="show_shortcuts"
         android:summaryOff="@string/settings_home_misc_shortcuts_show_summary_off"
         android:summaryOn="@string/settings_home_misc_shortcuts_show_summary_on"
-        android:title="@string/settings_home_misc_shortcuts_show" />
+        android:title="@string/settings_home_misc_shortcuts_show"
+        app:singleLineTitle="false" />
     <ListPreference
         android:defaultValue="default"
         android:dependency="show_shortcuts"

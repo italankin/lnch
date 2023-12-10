@@ -10,6 +10,7 @@
     <PreferenceCategory android:title="@string/settings_home_wallpaper_overlay">
         <CheckBoxPreference
             android:defaultValue="false"
+            app:singleLineTitle="false"
             android:key="wallpaper_overlay_show"
             android:title="@string/settings_home_wallpaper_overlay_show" />
         <com.italankin.lnch.util.widget.ColorPreference

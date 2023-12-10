@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_home_misc_notifications_dot">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="notification_dot"
             android:summary="@string/settings_home_misc_notifications_dot_summary"
-            android:title="@string/settings_home_misc_notifications_dot" />
+            android:title="@string/settings_home_misc_notifications_dot"
+            app:singleLineTitle="false" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="notification_dot"
             android:key="notification_dot_ongoing"
-            android:title="@string/settings_home_misc_notifications_dot_ongoing" />
+            android:title="@string/settings_home_misc_notifications_dot_ongoing"
+            app:singleLineTitle="false" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="notification_dot"
             android:key="notification_dot_folders"
-            android:title="@string/settings_home_misc_notifications_dot_folders" />
+            android:title="@string/settings_home_misc_notifications_dot_folders"
+            app:singleLineTitle="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_misc_notifications_popup">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="notification_popup"
-            android:title="@string/settings_home_misc_notifications_popup_show" />
+            android:title="@string/settings_home_misc_notifications_popup_show"
+            app:singleLineTitle="false" />
     </PreferenceCategory>
 </PreferenceScreen>
