@@ -6,10 +6,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
-
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-
+import com.google.android.material.color.MaterialColors;
 import timber.log.Timber;
 
 public final class ResUtils {
@@ -32,11 +31,7 @@ public final class ResUtils {
 
     @ColorInt
     public static int resolveColor(Context context, @AttrRes int attr) {
-        TypedValue out = resolveAttribute(context, attr);
-        if (out == null) {
-            return Color.BLACK;
-        }
-        return out.data;
+        return MaterialColors.getColor(context, attr, Color.TRANSPARENT);
     }
 
     public static Bitmap bitmapFromDrawable(Drawable icon, int width, int height) {
