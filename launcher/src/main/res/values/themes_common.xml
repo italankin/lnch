@@ -5,9 +5,6 @@
         <item name="colorPopupBackground">?colorSurfaceContainerHigh</item>
         <item name="colorPopupActionsBackground">?colorSurfaceContainerHighest</item>
 
-        <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
-        <item name="dialogCornerRadius">28dp</item>
-
         <item name="android:fontFamily">@font/comfortaa</item>
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:navigationBarColor">?colorSurface</item>
@@ -16,15 +13,19 @@
         <item name="preferenceCategoryTitleTextColor">?colorPrimary</item>
     </style>
 
+    <style name="AppTheme.Preferences.DialogOverlay" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="dialogCornerRadius">28dp</item>
+        <item name="android:windowBackground">@drawable/dialog_bg</item>
+    </style>
+
     <style name="AppTheme.Preferences">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="alertDialogTheme">@style/AppTheme.Preferences.DialogOverlay</item>
     </style>
 
     <style name="AppTheme.Preferences.PreferenceSearch">
         <item name="searchViewStyle">@style/PreferenceSearchViewStyle</item>
     </style>
-
-    <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3"></style>
 
     <style name="AppTheme.WidgetGallery">
         <item name="android:windowBackground">@drawable/window_background</item>
