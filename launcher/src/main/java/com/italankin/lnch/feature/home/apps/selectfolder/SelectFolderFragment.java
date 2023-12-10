@@ -10,11 +10,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
+import com.google.android.material.color.MaterialColors;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.widget.popup.PopupFragment;
 
 import java.io.Serializable;
@@ -64,7 +64,7 @@ public class SelectFolderFragment extends PopupFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        containerRoot.setArrowColors(ResUtils.resolveColor(requireContext(), com.google.android.material.R.attr.colorSurfaceContainer));
+        containerRoot.setArrowColors(MaterialColors.getColor(view, com.google.android.material.R.attr.colorSurfaceContainer));
 
         populate();
         showPopup();

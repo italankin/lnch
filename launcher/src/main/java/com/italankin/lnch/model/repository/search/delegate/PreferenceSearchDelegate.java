@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import com.google.android.material.color.MaterialColors;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
@@ -13,7 +14,6 @@ import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.match.Match;
-import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.icons.BadgedIconDrawable;
 
 import java.util.*;
@@ -81,7 +81,7 @@ class PreferenceMatch implements Match {
 
     @Override
     public int getColor(Context context) {
-        return ResUtils.resolveColor(context, com.google.android.material.R.attr.colorOnSurface);
+        return MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, "PreferenceMatch");
     }
 
     @Override
