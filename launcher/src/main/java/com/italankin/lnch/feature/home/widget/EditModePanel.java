@@ -11,8 +11,8 @@ import android.view.WindowInsets;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.color.MaterialColors;
 import com.italankin.lnch.R;
-import com.italankin.lnch.util.ResUtils;
 
 public class EditModePanel extends LinearLayout {
 
@@ -37,7 +37,7 @@ public class EditModePanel extends LinearLayout {
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setBackgroundColor(ResUtils.resolveColor(context, com.google.android.material.R.attr.colorSurfaceContainer));
+        setBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainer));
         save = findViewById(R.id.save);
         add = findViewById(R.id.add);
         hidden = findViewById(R.id.hidden);
