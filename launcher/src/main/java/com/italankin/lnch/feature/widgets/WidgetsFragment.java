@@ -154,7 +154,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         AppWidgetProviderInfo info = request.getAppWidgetProviderInfo(context);
         if (info != null) {
             newAppWidgetId = appWidgetHost.allocateAppWidgetId();
-            Timber.d("allocate: %d", newAppWidgetId);
             Bundle options = new Bundle();
             options.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, newAppWidgetId);
             if (request.accept(options)) {
@@ -262,10 +261,13 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     @Override
     public void onWidgetDelete(AppWidget appWidget) {
-        widgetItemsState.removeWidgetById(appWidget.appWidgetId);
+        int pos = widgetItemsState.removeWidgetById(appWidget.appWidgetId);
         appWidgetHost.deleteAppWidgetId(appWidget.appWidgetId);
-        Timber.d("deallocate: %d", appWidget.appWidgetId);
-        updateWidgets();
+        if (pos >= 0) {
+            adapter.notifyItemRemoved(pos);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -289,11 +291,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 addWidgetToScreen(appWidgetId, info, widgetsMap.get(appWidgetId));
             } else {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
-                Timber.d("deallocate: %d", appWidgetId);
             }
         }
         widgetItemsState.setWidgetsOrder(widgetsOrder);
-        updateWidgets();
+        updateActionsState();
+        adapter.setItems(widgetItemsState.getItems());
+        adapter.notifyDataSetChanged();
 
         intentQueue.registerOnIntentAction(this);
         exitEditModeOnStop = true;
@@ -322,7 +325,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private void startAddNewWidget() {
         newAppWidgetId = appWidgetHost.allocateAppWidgetId();
-        Timber.d("allocate: %d", newAppWidgetId);
         addWidgetLauncher.launch(newAppWidgetId);
         exitEditModeOnStop = false;
     }
@@ -387,8 +389,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private void addNewWidget(AppWidgetProviderInfo info) {
         addWidgetToScreen(newAppWidgetId, info, null);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-        updateWidgets();
-        widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
+        int position = adapter.getItemCount() - 1;
+        adapter.notifyItemInserted(position);
+        widgetsList.smoothScrollToPosition(position);
     }
 
     private void addWidgetToScreen(int appWidgetId, AppWidgetProviderInfo info, @Nullable Preferences.Widget widgetData) {
@@ -403,7 +406,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             return;
         }
         appWidgetHost.deleteAppWidgetId(newAppWidgetId);
-        Timber.d("deallocate: %d", newAppWidgetId);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     }
 
@@ -441,12 +443,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         if (homePagerHost != null) {
             homePagerHost.setPagerEnabled(true);
         }
-    }
-
-    private void updateWidgets() {
-        updateActionsState();
-        adapter.setItems(widgetItemsState.getItems());
-        adapter.notifyDataSetChanged();
     }
 
     private void updateActionsState() {

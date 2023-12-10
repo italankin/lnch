@@ -28,14 +28,17 @@ class WidgetItemsState {
         resizeMode = false;
     }
 
-    public void removeWidgetById(int appWidgetId) {
+    public int removeWidgetById(int appWidgetId) {
+        int i =0;
         Iterator<AppWidget> iterator = appWidgets.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().appWidgetId == appWidgetId) {
                 iterator.remove();
-                break;
+                return i;
             }
+            i++;
         }
+        return -1;
     }
 
     public void swapWidgets(int from, int to) {

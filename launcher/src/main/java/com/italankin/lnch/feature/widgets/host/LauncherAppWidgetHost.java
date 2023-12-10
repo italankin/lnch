@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import android.os.Build;
 import android.util.SparseIntArray;
 import com.italankin.lnch.feature.widgets.util.WidgetColorMapping;
+import timber.log.Timber;
 
 public class LauncherAppWidgetHost extends AppWidgetHost {
 
@@ -34,6 +35,19 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
             }
         }
         return hostView;
+    }
+
+    @Override
+    public void deleteAppWidgetId(int appWidgetId) {
+        Timber.d("deleteAppWidgetId: %d", appWidgetId);
+        super.deleteAppWidgetId(appWidgetId);
+    }
+
+    @Override
+    public int allocateAppWidgetId() {
+        int appWidgetId = super.allocateAppWidgetId();
+        Timber.d("allocateAppWidgetId: %d", appWidgetId);
+        return appWidgetId;
     }
 
     private static class FixedContextWrapper extends ContextWrapper {
