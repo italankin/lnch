@@ -3,15 +3,13 @@ package com.italankin.lnch.feature.settings.apps.adapter;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
-import me.italankin.adapterdelegates.BaseAdapterDelegate;
-import com.italankin.lnch.util.imageloader.ImageLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.R;
+import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.util.imageloader.ImageLoader;
+import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter.ViewHolder, AppDescriptorUi> {
 
@@ -94,6 +92,7 @@ public class AppsSettingsAdapter extends BaseAdapterDelegate<AppsSettingsAdapter
                     .into(icon);
             float alpha = item.isIgnored() ? ALPHA_ITEM_IGNORED : ALPHA_ITEM_VISIBLE;
             label.setAlpha(alpha);
+            packageName.setAlpha(alpha);
             icon.setAlpha(alpha);
         }
     }
