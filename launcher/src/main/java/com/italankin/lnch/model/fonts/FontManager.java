@@ -19,9 +19,9 @@ import java.util.*;
 
 public class FontManager {
 
-    public static final String DEFAULT_FONT = "default";
+    public static final String DEFAULT_FONT = "default_new";
 
-    private static final String ANDROID_DEFAULT = "android_default";
+    private static final String ANDROID_DEFAULT = "default";
     private static final String SANS_SERIF = "sans_serif";
     private static final String SERIF = "serif";
     private static final String MONOSPACE = "monospace";
