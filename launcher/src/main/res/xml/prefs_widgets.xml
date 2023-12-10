@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="enable_widgets"
@@ -29,6 +30,11 @@
         android:summary="@string/settings_home_widgets_grid_size_summary"
         android:title="@string/settings_home_widgets_grid_size"
         app:showSeekBarValue="true" />
+    <Preference
+        android:dependency="enable_widgets"
+        android:key="widgets_height_cell_ratio"
+        android:title="@string/settings_home_widgets_height_ratio"
+        tools:summary="1.5" />
     <Preference
         android:dependency="enable_widgets"
         android:key="@string/pref_key_widgets_remove"

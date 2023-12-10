@@ -67,12 +67,4 @@ class WidgetItemsState {
         }
         appWidgets.addAll(map.values());
     }
-
-    public List<Integer> getWidgetsOrder() {
-        List<Integer> result = new ArrayList<>(appWidgets.size());
-        for (AppWidget appWidget : appWidgets) {
-            result.add(appWidget.appWidgetId);
-        }
-        return result;
-    }
 }

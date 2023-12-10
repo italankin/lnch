@@ -59,7 +59,8 @@ public class HomePresenter extends AppPresenter<HomeView> {
                 .filter(pref -> {
                     return pref == Preferences.ENABLE_WIDGETS ||
                             pref == Preferences.WIDGETS_POSITION ||
-                            pref == Preferences.WIDGETS_HORIZONTAL_GRID_SIZE;
+                            pref == Preferences.WIDGETS_HORIZONTAL_GRID_SIZE ||
+                            pref == Preferences.WIDGETS_HEIGHT_CELL_RATIO;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Object>() {

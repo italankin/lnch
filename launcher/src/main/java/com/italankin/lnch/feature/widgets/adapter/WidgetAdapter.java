@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.model.CellSize;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 
 import java.util.Collections;
@@ -17,10 +18,10 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
     private final LauncherAppWidgetHost appWidgetHost;
     private final WidgetResizeFrame.OnStartDragListener onStartDragListener;
     private final WidgetActionListener widgetActionListener;
-    private final int cellSize;
+    private final CellSize cellSize;
 
     public WidgetAdapter(LauncherAppWidgetHost appWidgetHost,
-            int cellSize,
+            CellSize cellSize,
             WidgetResizeFrame.OnStartDragListener onStartDragListener,
             WidgetActionListener widgetActionListener) {
         this.appWidgetHost = appWidgetHost;

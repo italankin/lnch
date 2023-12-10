@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.model.CellSize;
 import com.italankin.lnch.util.ResUtils;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final int drawFrameInset;
     private final int handleTouchRadius;
     private final int resizeElevation;
-    private int cellSize;
+    private CellSize cellSize;
 
     private final GestureDetector gestureDetector;
 
@@ -118,9 +119,9 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         frameView.setAlpha(0f);
     }
 
-    public void setCellSize(int cellSize) {
+    public void setCellSize(CellSize cellSize) {
         this.cellSize = cellSize;
-        float interval = cellSize / 16f;
+        float interval = cellSize.width / 16f;
         gridPaint.setPathEffect(new DashPathEffect(new float[]{interval, interval}, drawFrameInset / 2f));
         frameView.invalidate();
     }
@@ -325,18 +326,18 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
         int width = frame.width();
         int height = frame.height();
-        if (cellSize > 0) {
-            if ((width % cellSize) > cellSize * EXTEND_THRESHOLD) {
-                width += (cellSize - (width % cellSize));
-            } else if ((width % cellSize) < cellSize * SHRINK_THRESHOLD) {
-                width -= (width % cellSize);
+        if (!cellSize.isEmpty()) {
+            if ((width % cellSize.width) > cellSize.width * EXTEND_THRESHOLD) {
+                width += (cellSize.width - (width % cellSize.width));
+            } else if ((width % cellSize.width) < cellSize.width * SHRINK_THRESHOLD) {
+                width -= (width % cellSize.width);
             } else {
                 return true;
             }
-            if ((height % cellSize) > cellSize * EXTEND_THRESHOLD) {
-                height += (cellSize - (height % cellSize));
-            } else if ((height % cellSize) < cellSize * SHRINK_THRESHOLD) {
-                height -= (height % cellSize);
+            if ((height % cellSize.height) > cellSize.height * EXTEND_THRESHOLD) {
+                height += (cellSize.height - (height % cellSize.height));
+            } else if ((height % cellSize.height) < cellSize.height * SHRINK_THRESHOLD) {
+                height -= (height % cellSize.height);
             } else {
                 return true;
             }
@@ -357,7 +358,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
     private void updateMinMaxFrames() {
         if (forceResize) {
-            frameMin.set(0, 0, cellSize, cellSize);
+            frameMin.set(0, 0, cellSize.width, cellSize.height);
         } else {
             frameMin.set(0, 0, appWidget.size.minWidth, appWidget.size.minHeight);
         }
@@ -476,16 +477,16 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 return;
             }
             canvas.drawRect(visualFrame, overlayPaint);
-            if (cellSize > 0) {
-                int l = frame.left + cellSize;
+            if (!cellSize.isEmpty()) {
+                int l = frame.left + cellSize.width;
                 while (l < frame.right) {
                     canvas.drawLine(l, visualFrame.top, l, visualFrame.bottom, gridPaint);
-                    l += cellSize;
+                    l += cellSize.width;
                 }
-                int t = frame.top + cellSize;
+                int t = frame.top + cellSize.height;
                 while (t < frame.bottom) {
                     canvas.drawLine(visualFrame.left, t, visualFrame.right, t, gridPaint);
-                    t += cellSize;
+                    t += cellSize.height;
                 }
             }
             if (activeDragHandle != null) {

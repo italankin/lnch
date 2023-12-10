@@ -4,9 +4,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.model.fonts.FontManager;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import java.util.*;
 
@@ -375,23 +375,29 @@ public interface Preferences {
             WidgetsPosition::from);
 
     /**
+     * Height to width ratio for widget cell
+     */
+    RangePref<Float> WIDGETS_HEIGHT_CELL_RATIO = Prefs.createFloatRange(
+            "widgets_height_cell_ratio",
+            1.25f, 1f, 2f);
+
+    /**
      * Current order of the widgets
      */
-    Pref<List<Integer>> WIDGETS_ORDER = Prefs.create(
-            "widgets_order",
+    Pref<List<Widget>> WIDGETS_DATA = Prefs.create(
+            "widgets_data",
             Collections.emptyList(),
             (preferences, key) -> {
                 String value = preferences.getString(key, null);
                 if (value == null || value.isEmpty()) {
                     return null;
                 }
-                String[] split = value.split(",");
-                ArrayList<Integer> result = new ArrayList<>(split.length);
+                String[] split = value.split(";");
+                ArrayList<Widget> result = new ArrayList<>(split.length);
                 for (String s : split) {
-                    try {
-                        result.add(Integer.parseInt(s));
-                    } catch (NumberFormatException e) {
-                        Timber.e(e, "widgets_order:");
+                    Widget widget = Widget.from(s);
+                    if (widget != null) {
+                        result.add(widget);
                     }
                 }
                 return result;
@@ -402,10 +408,10 @@ public interface Preferences {
                     return;
                 }
                 StringBuilder result = new StringBuilder(newValue.size() * 2);
-                result.append(newValue.get(0));
+                newValue.get(0).writeTo(result);
                 for (int i = 1; i < newValue.size(); i++) {
-                    result.append(',');
-                    result.append(newValue.get(i));
+                    result.append(";");
+                    newValue.get(i).writeTo(result);
                 }
                 preferences.edit().putString(key, result.toString()).apply();
             }
@@ -585,7 +591,8 @@ public interface Preferences {
             STATUS_BAR_COLOR,
             ENABLE_WIDGETS,
             WIDGETS_POSITION,
-            WIDGETS_ORDER,
+            WIDGETS_DATA,
+            WIDGETS_HEIGHT_CELL_RATIO,
             WIDGETS_HORIZONTAL_GRID_SIZE,
             WIDGETS_FORCE_RESIZE,
             APPS_LIST_ANIMATE,
@@ -897,6 +904,55 @@ public interface Preferences {
         @Override
         public String toString() {
             return key;
+        }
+    }
+
+    class Widget {
+
+        public static final String SPLIT = ",";
+
+        @Nullable
+        static Widget from(String s) {
+            if (s == null || s.isEmpty()) {
+                return null;
+            }
+            String[] split = s.split(SPLIT);
+            if (split.length != 3) {
+                return null;
+            }
+            try {
+                return new Widget(
+                        Integer.parseInt(split[0]),
+                        Integer.parseInt(split[1]),
+                        Integer.parseInt(split[2])
+                );
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+
+        public final int appWidgetId;
+        public final int widthCells;
+        public final int heightCells;
+
+        public Widget(int appWidgetId, int widthCells, int heightCells) {
+            this.appWidgetId = appWidgetId;
+            this.widthCells = widthCells;
+            this.heightCells = heightCells;
+        }
+
+        void writeTo(StringBuilder sb) {
+            sb.append(appWidgetId);
+            sb.append(SPLIT);
+            sb.append(widthCells);
+            sb.append(SPLIT);
+            sb.append(heightCells);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "Widget{" + appWidgetId + ", " + widthCells + "x" + heightCells + "}";
         }
     }
 

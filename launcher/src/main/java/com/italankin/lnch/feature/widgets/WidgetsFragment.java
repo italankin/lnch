@@ -39,11 +39,17 @@ import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
+import com.italankin.lnch.feature.widgets.model.CellSize;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL;
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE;
@@ -69,8 +75,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private LauncherAppWidgetHost appWidgetHost;
     private AppWidgetManager appWidgetManager;
     private WidgetSizeHelper widgetSizeHelper;
-    private int cellSize;
-    private int maxHeightCells;
+    private CellSize cellSize;
     private HomePagerHost homePagerHost;
     private Callback callback;
 
@@ -210,7 +215,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
         });
         itemTouchHelper.attachToRecyclerView(widgetsList);
-        recalculateCellSize();
+        updateCellSize();
         WidgetResizeFrame.OnStartDragListener widgetLongClickListener = resizeFrame -> {
             RecyclerView.ViewHolder holder = widgetsList.findContainingViewHolder(resizeFrame);
             if (holder != null) {
@@ -269,17 +274,25 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void bindWidgets() {
+        List<Preferences.Widget> widgets = preferences.get(Preferences.WIDGETS_DATA);
+        Map<Integer, Preferences.Widget> widgetsMap = new HashMap<>(widgets.size());
+        List<Integer> widgetsOrder = new ArrayList<>(widgets.size());
+        for (Preferences.Widget widget : widgets) {
+            widgetsMap.put(widget.appWidgetId, widget);
+            widgetsOrder.add(widget.appWidgetId);
+        }
+
         widgetItemsState.clearWidgets();
         for (int appWidgetId : appWidgetHost.getAppWidgetIds()) {
             AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
             if (info != null) {
-                addWidgetToScreen(appWidgetId, info, false);
+                addWidgetToScreen(appWidgetId, info, widgetsMap.get(appWidgetId));
             } else {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
                 Timber.d("deallocate: %d", appWidgetId);
             }
         }
-        widgetItemsState.setWidgetsOrder(preferences.get(Preferences.WIDGETS_ORDER));
+        widgetItemsState.setWidgetsOrder(widgetsOrder);
         updateWidgets();
 
         intentQueue.registerOnIntentAction(this);
@@ -372,45 +385,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     }
 
     private void addNewWidget(AppWidgetProviderInfo info) {
-        addWidgetToScreen(newAppWidgetId, info, true);
+        addWidgetToScreen(newAppWidgetId, info, null);
         newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
         updateWidgets();
         widgetsList.smoothScrollToPosition(adapter.getItemCount() - 1);
     }
 
-    private void addWidgetToScreen(int appWidgetId, AppWidgetProviderInfo info, boolean isNew) {
+    private void addWidgetToScreen(int appWidgetId, AppWidgetProviderInfo info, @Nullable Preferences.Widget widgetData) {
         Bundle options = new Bundle(appWidgetManager.getAppWidgetOptions(appWidgetId));
-        int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
-        int maxAvailWidth = cellSize * gridSize;
-        int maxAvailHeight = cellSize * maxHeightCells;
-        Size size = widgetSizeHelper.getSize(info, options, true);
-        int width = minMultipleOfCellSize(cellSize, size.getWidth(), maxAvailWidth);
-        int height = minMultipleOfCellSize(cellSize, size.getHeight(), maxAvailHeight);
-        Size minSize = widgetSizeHelper.getMinSize(info, true);
-        int minWidth = minMultipleOfCellSize(cellSize, minSize.getWidth(), maxAvailHeight);
-        int minHeight = minMultipleOfCellSize(cellSize, minSize.getHeight(), maxAvailHeight);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isNew) {
-            if (info.targetCellWidth > 0) {
-                width = Math.max(cellSize * Math.min(gridSize, info.targetCellWidth), minWidth);
-            }
-            if (info.targetCellHeight > 0) {
-                height = Math.max(cellSize * Math.min(gridSize, info.targetCellHeight), minHeight);
-            }
-        }
-        int maxWidth = maxAvailWidth, maxHeight = maxAvailHeight;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (info.maxResizeWidth > minWidth) {
-                maxWidth = minMultipleOfCellSize(cellSize, info.maxResizeWidth, maxAvailWidth);
-            }
-            if (info.maxResizeHeight > minHeight) {
-                maxHeight = minMultipleOfCellSize(cellSize, info.maxResizeHeight, maxAvailHeight);
-            }
-        }
-        AppWidget.Size widgetSize = new AppWidget.Size(
-                minWidth, minHeight,
-                width, height,
-                maxWidth, maxHeight);
-        widgetSizeHelper.resize(appWidgetId, options, width, height, true);
+        AppWidget.Size widgetSize = widgetSizeHelper.getAppWidgetSize(cellSize, info, options, widgetData);
+        widgetSizeHelper.resize(appWidgetId, options, widgetSize.width, widgetSize.height, true);
         widgetItemsState.addWidget(new AppWidget(appWidgetId, info, options, widgetSize));
     }
 
@@ -441,7 +425,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         if (!widgetItemsState.isResizeMode()) {
             return;
         }
-        preferences.set(Preferences.WIDGETS_ORDER, widgetItemsState.getWidgetsOrder());
+
+        List<AppWidget> appWidgets = widgetItemsState.getItems();
+        List<Preferences.Widget> widgetsData = new ArrayList<>(appWidgets.size());
+        for (AppWidget appWidget : appWidgets) {
+            int widthCells = Math.max(appWidget.size.width / cellSize.width, 1);
+            int heightCells = Math.max(appWidget.size.height / cellSize.height, 1);
+            widgetsData.add(new Preferences.Widget(appWidget.appWidgetId, widthCells, heightCells));
+        }
+        preferences.set(Preferences.WIDGETS_DATA, widgetsData);
+
         widgetItemsState.setResizeMode(false, false);
         updateActionsState();
         adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
@@ -466,37 +459,41 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         onBackPressedCallback.setEnabled(resizeMode);
     }
 
-    private void recalculateCellSize() {
+    private void updateCellSize() {
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
-        cellSize = calculateCellSize(gridSize);
-        maxHeightCells = calculateMaxHeightCells(cellSize);
+        Size size = calculateSizeForCell(gridSize);
+        int maxHeightCells = calculateMaxHeightCells(size.getHeight());
+        cellSize = new CellSize(size.getWidth(), size.getHeight(), gridSize, maxHeightCells);
+
         ViewGroup.LayoutParams wlp = widgetsList.getLayoutParams();
-        wlp.width = cellSize * gridSize;
+        wlp.width = cellSize.width * gridSize;
         widgetsList.setLayoutParams(wlp);
         GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), gridSize);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 AppWidget item = adapter.getItem(position);
-                return Math.min(item.size.width / cellSize, gridSize);
+                return Math.min(item.size.width / cellSize.width, gridSize);
             }
         });
         widgetsList.setLayoutManager(layoutManager);
     }
 
-    private int calculateCellSize(int gridSize) {
+    private Size calculateSizeForCell(int gridSize) {
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         int margins = res.getDimensionPixelSize(R.dimen.widget_list_margin) * 2;
         int size = Math.min(dm.widthPixels - margins, dm.heightPixels) / gridSize;
         int maxCellSize = res.getDimensionPixelSize(R.dimen.widget_max_cell_size);
-        return Math.min(size, maxCellSize);
+        int cellWidth = Math.min(size, maxCellSize);
+        int cellHeight = (int) (cellWidth * preferences.get(Preferences.WIDGETS_HEIGHT_CELL_RATIO));
+        return new Size(cellWidth, cellHeight);
     }
 
-    private int calculateMaxHeightCells(int cellSize) {
+    private int calculateMaxHeightCells(int cellHeight) {
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int maxSize = (int) (dm.heightPixels * MAX_HEIGHT_FACTOR);
-        return maxSize / cellSize;
+        return maxSize / cellHeight;
     }
 
     private static int minMultipleOfCellSize(int cellSize, int size, int max) {
