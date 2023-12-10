@@ -26,9 +26,4 @@
     <style name="AppTheme.Preferences.PreferenceSearch">
         <item name="searchViewStyle">@style/PreferenceSearchViewStyle</item>
     </style>
-
-    <style name="AppTheme.WidgetGallery">
-        <item name="android:windowBackground">@drawable/window_background</item>
-        <item name="android:windowShowWallpaper">true</item>
-    </style>
 </resources>

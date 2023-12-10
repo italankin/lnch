@@ -65,9 +65,6 @@ public class ImageLoader {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                 resourceLoaders.add(new ShortcutIconLoader(context));
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                resourceLoaders.add(new WidgetPreviewLoader(context));
-            }
         }
 
         public Builder cache(@NonNull Cache cache) {

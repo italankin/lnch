@@ -10,35 +10,49 @@
 
     <ImageView
         android:id="@+id/widget_preview"
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="96dp"
         android:contentDescription="@string/cd_widget_preview"
         android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <ImageView
         android:id="@+id/widget_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:contentDescription="@string/cd_application_icon"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="@id/widget_preview"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/widget_preview"
         tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/widget_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/widget_description"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/widget_preview"
+        app:layout_constraintStart_toEndOf="@id/widget_preview"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="@tools:sample/lorem" />
+
+    <TextView
+        android:id="@+id/widget_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/widget_name"
+        app:layout_constraintTop_toBottomOf="@id/widget_name"
         tools:text="@tools:sample/lorem" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

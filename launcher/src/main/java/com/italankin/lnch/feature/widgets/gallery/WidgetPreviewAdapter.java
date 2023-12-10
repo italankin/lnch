@@ -63,16 +63,24 @@ public class WidgetPreviewAdapter extends BaseAdapterDelegate<WidgetPreviewAdapt
         final ImageView imagePreview;
         final ImageView imageIcon;
         final TextView textName;
+        final TextView textDescription;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imagePreview = itemView.findViewById(R.id.widget_preview);
             imageIcon = itemView.findViewById(R.id.widget_icon);
             textName = itemView.findViewById(R.id.widget_name);
+            textDescription = itemView.findViewById(R.id.widget_description);
         }
 
         void bind(WidgetPreview info) {
             textName.setText(info.label);
+            if (info.description != null) {
+                textDescription.setVisibility(View.VISIBLE);
+                textDescription.setText(info.description);
+            } else {
+                textDescription.setVisibility(View.GONE);
+            }
             imageLoader.load(info.iconUri)
                     .into(imageIcon);
             Drawable placeholder = ContextCompat.getDrawable(

@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -26,6 +25,7 @@ import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.LruCache;
+import com.italankin.lnch.util.imageloader.resourceloader.WidgetPreviewLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 import me.italankin.adapterdelegates.CompositeAdapter;
 
@@ -60,6 +60,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ImageLoader imageLoader = new ImageLoader.Builder(this)
                 .cache(new LruCache(32))
+                .register(new WidgetPreviewLoader(this))
                 .build();
         Preferences preferences = LauncherApp.daggerService.main().preferences();
         SupportsOrientationDelegate.attach(this, preferences);
@@ -86,8 +87,6 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
 
         lce = findViewById(R.id.lce);
         RecyclerView widgetsList = findViewById(R.id.list);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        widgetsList.setLayoutManager(layoutManager);
         adapter = new CompositeAdapter.Builder<WidgetPreview>(this)
                 .add(new WidgetPreviewAdapter(imageLoader, this))
                 .setHasStableIds(true)
@@ -147,7 +146,7 @@ public class WidgetGalleryActivity extends AppCompatActivity implements
         List<AppWidgetProviderInfo> providers = appWidgetManager.getInstalledProviders();
         List<WidgetPreview> items = new ArrayList<>(providers.size());
         for (AppWidgetProviderInfo info : providers) {
-            items.add(new WidgetPreview(packageManager, info));
+            items.add(new WidgetPreview(this, packageManager, info));
         }
 
         filter.setDataset(items);
