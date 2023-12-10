@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -17,6 +16,7 @@ import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.util.widget.LceLayout;
+import com.italankin.lnch.util.widget.SearchViewFixed;
 import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
@@ -80,9 +80,7 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
         inflater.inflate(R.menu.settings_preference_search, menu);
 
         MenuItem actionSearchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = new SearchView(
-                new ContextThemeWrapper(requireContext(), R.style.AppTheme_Preferences_PreferenceSearch));
-        searchView.setQuery(currentQuery, false);
+        SearchView searchView = new SearchViewFixed(requireContext());
         actionSearchItem.setActionView(searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -97,7 +95,6 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
                 return true;
             }
         });
-
         actionSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
@@ -111,6 +108,8 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
                 return true;
             }
         });
+        searchView.setQueryHint(getString(R.string.hint_search_preference));
+        searchView.setQuery(currentQuery, false);
         actionSearchItem.expandActionView();
     }
 

@@ -9,6 +9,7 @@
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:navigationBarColor">?colorSurface</item>
 
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="toolbarStyle">@style/Widget.Material3.Toolbar.Surface</item>
         <item name="preferenceCategoryTitleTextColor">?colorPrimary</item>
     </style>
@@ -21,9 +22,5 @@
     <style name="AppTheme.Preferences">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="alertDialogTheme">@style/AppTheme.Preferences.DialogOverlay</item>
-    </style>
-
-    <style name="AppTheme.Preferences.PreferenceSearch">
-        <item name="searchViewStyle">@style/PreferenceSearchViewStyle</item>
     </style>
 </resources>

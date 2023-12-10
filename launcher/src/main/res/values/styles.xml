@@ -57,8 +57,7 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="PreferenceSearchViewStyle" parent="Widget.Material3.SearchView">
+    <style name="SearchViewStyle" parent="Widget.Material3.SearchView">
         <item name="searchHintIcon">@null</item>
-        <item name="queryHint">@string/hint_search_preference</item>
     </style>
 </resources>
