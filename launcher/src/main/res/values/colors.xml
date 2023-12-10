@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="launcher_background">#212121</color>
-    <color name="accent">#f9a825</color>
     <color name="status_bar">#4000</color>
     <color name="notification_dot">#ff2600</color>
-    <color name="pinned_shortcut_default">#ffffff</color>
     <color name="fullscreen_folder_overlay">#d0000000</color>
     <color name="widget_resize_frame">#fff</color>
     <color name="widget_resize_frame_active">#fff</color>
