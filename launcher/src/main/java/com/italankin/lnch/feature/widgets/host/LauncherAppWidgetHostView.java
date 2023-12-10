@@ -21,6 +21,7 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
 import com.italankin.lnch.R;
@@ -29,6 +30,7 @@ import timber.log.Timber;
 public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     private static final int[] LOC = new int[2];
+    private final int touchSlop;
 
     private View scrollableView;
     private float touchStartX;
@@ -36,6 +38,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     LauncherAppWidgetHostView(Context context) {
         super(context);
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     @Override
@@ -47,26 +50,29 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (scrollableView != null) {
-            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-                touchStartX = ev.getX();
-                touchStartY = ev.getY();
-            } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-                if (!isInBounds(scrollableView, ev.getRawX(), ev.getRawY())) {
-                    // gesture is not within scrollable view bounds, intercept events
-                    return true;
-                }
-                float dx = touchStartX - ev.getX();
-                float dy = touchStartY - ev.getY();
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    // horizontal scroll, do not pass to widget
-                    return true;
-                }
-                int d = (int) ((int) dy == 0 ? Math.signum(dy) : dy);
-                if (scrollableView.canScrollVertically(d)) {
-                    // do not intercept further events, widget can scroll
-                    getParent().requestDisallowInterceptTouchEvent(true);
-                }
-                return false;
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touchStartX = ev.getX();
+                    touchStartY = ev.getY();
+                    if (isInBounds(scrollableView, ev.getRawX(), ev.getRawY())) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (Math.abs(touchStartX - ev.getX()) >= touchSlop) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                        return true;
+                    }
+                    float dy = touchStartY - ev.getY();
+                    if (Math.abs(dy) < touchSlop) {
+                        return false;
+                    }
+                    int d = (int) Math.signum(dy);
+                    if (!scrollableView.canScrollVertically(d)) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                        return true;
+                    }
+                    break;
             }
         }
         return false;
