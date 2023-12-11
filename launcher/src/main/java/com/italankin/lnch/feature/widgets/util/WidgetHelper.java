@@ -8,7 +8,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.di.component.MainComponent;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
 
 public class WidgetHelper {
@@ -20,7 +22,9 @@ public class WidgetHelper {
     public static void resetAllWidgets() {
         if (areWidgetsAvailable()) {
             AppWidgetHost.deleteAllHosts();
-            LauncherApp.daggerService.main().intentQueue().post(new Intent(WidgetsFragment.ACTION_RELOAD_WIDGETS));
+            MainComponent mainComponent = LauncherApp.daggerService.main();
+            mainComponent.preferences().reset(Preferences.WIDGETS_DATA);
+            mainComponent.intentQueue().post(new Intent(WidgetsFragment.ACTION_RELOAD_WIDGETS));
         }
     }
 
