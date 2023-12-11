@@ -138,7 +138,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        preferences.observeValue(Preferences.APPS_SORT_MODE)
+        preferences.observeValue(Preferences.APPS_SORT_MODE, false)
                 .filter(value -> value.get() != Preferences.AppsSortMode.MANUAL)
                 .flatMapCompletable(s -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
@@ -147,7 +147,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 })
                 .subscribe();
 
-        preferences.observeValue(Preferences.NAME_TRANSFORM)
+        preferences.observeValue(Preferences.NAME_TRANSFORM, false)
                 .flatMapCompletable(s -> updater.onErrorComplete())
                 .onErrorComplete(throwable -> {
                     Timber.e(throwable, "subscribeForUpdates (Preferences.NAME_TRANSFORM)");

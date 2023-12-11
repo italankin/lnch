@@ -24,12 +24,12 @@ public class NoOpPreferences implements Preferences {
     }
 
     @Override
-    public <T> Observable<T> observe(Pref<T> pref) {
+    public <T> Observable<T> observe(Pref<T> pref, boolean startWithCurrent) {
         return Observable.empty();
     }
 
     @Override
-    public <T> Observable<Value<T>> observeValue(Pref<T> pref) {
+    public <T> Observable<Value<T>> observeValue(Pref<T> pref, boolean startWithCurrent) {
         return Observable.empty();
     }
 

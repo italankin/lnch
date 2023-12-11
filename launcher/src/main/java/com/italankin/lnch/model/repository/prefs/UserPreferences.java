@@ -85,17 +85,20 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public <T> Observable<T> observe(Pref<T> pref) {
-        return observeValue(pref)
-                .map(Value::get)
-                .startWith(get(pref));
+    public <T> Observable<T> observe(Pref<T> pref, boolean startWithCurrent) {
+        return observeValue(pref, startWithCurrent).map(Value::get);
     }
 
     @Override
-    public <T> Observable<Value<T>> observeValue(Pref<T> pref) {
-        return updates
+    public <T> Observable<Value<T>> observeValue(Pref<T> pref, boolean startWithCurrent) {
+        Observable<Value<T>> observable = updates
                 .filter(pref.key()::equals)
                 .map(key -> new Value<>(get(pref)));
+        if (startWithCurrent) {
+            return observable.startWith(new Value<>(get(pref)));
+        } else {
+            return observable;
+        }
     }
 
     private Pref<?> findByKey(String key) {

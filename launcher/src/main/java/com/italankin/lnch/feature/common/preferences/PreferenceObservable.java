@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.common.preferences;
 
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -19,7 +18,7 @@ abstract class PreferenceObservable<V, L> {
 
     public final Disposable subscribe(L listener) {
         onSubscribe(listener, currentValue);
-        return preferences.observeValue(pref)
+        return preferences.observeValue(pref, false)
                 .filter(value -> {
                     V newValue = value.get();
                     return currentValue == null

@@ -25,8 +25,7 @@ public class DynamicColorsActivityCallback implements Application.ActivityLifecy
                 @Override
                 public void onCreate(@NotNull LifecycleOwner owner) {
                     disposable = LauncherApp.daggerService.main().preferences()
-                            .observe(Preferences.DYNAMIC_COLORS)
-                            .skip(1)
+                            .observe(Preferences.DYNAMIC_COLORS, false)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(aBoolean -> activity.recreate());
                 }

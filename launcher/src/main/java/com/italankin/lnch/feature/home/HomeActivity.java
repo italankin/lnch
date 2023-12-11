@@ -11,18 +11,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.util.Pair;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
@@ -32,18 +31,14 @@ import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class HomeActivity extends AppActivity implements HomeView, HomePagerHost, WidgetsFragment.Callback {
-
-    @InjectPresenter
-    HomePresenter presenter;
+public class HomeActivity extends AppCompatActivity implements HomePagerHost, WidgetsFragment.Callback {
 
     private Preferences preferences;
     private IntentQueue intentQueue;
@@ -54,11 +49,6 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean onRestartCalled = false;
-
-    @ProvidePresenter
-    HomePresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().home();
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
@@ -75,6 +65,7 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         viewPager = findViewById(R.id.home_pager);
         setupRoot();
         setupPager();
+        setupWidgets();
 
         intentQueue.post(getIntent());
 
@@ -154,25 +145,6 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     }
 
     @Override
-    public void onAppsColorOverlayChanged(Integer color) {
-        root.setBackgroundColor(color);
-    }
-
-    @Override
-    public void onStatusBarColorChanged(Integer color) {
-        Drawable foreground = root.getForeground();
-        if (foreground instanceof FakeStatusBarDrawable) {
-            FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
-            drawable.setColor(color);
-        }
-    }
-
-    @Override
-    public void onWidgetPreferencesUpdated() {
-        updateAdapter();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
@@ -201,16 +173,24 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(getWindow(), root);
         insetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        Disposable disposable = preferences.observe(Preferences.HIDE_STATUS_BAR)
+
+        Disposable statusBarDisposable = Observable.combineLatest(
+                        preferences.observeValue(Preferences.STATUS_BAR_COLOR, true),
+                        preferences.observe(Preferences.HIDE_STATUS_BAR, true),
+                        Pair::new
+                )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(hideStatusBar -> {
+                .subscribe(result -> {
+                    boolean hideStatusBar = result.second;
                     if (hideStatusBar) {
                         insetsController.hide(WindowInsetsCompat.Type.statusBars());
+                        setStatusBarColor(Color.TRANSPARENT);
                     } else {
                         insetsController.show(WindowInsetsCompat.Type.statusBars());
+                        setStatusBarColor(result.first.get());
                     }
                 });
-        compositeDisposable.add(disposable);
+        compositeDisposable.add(statusBarDisposable);
     }
 
     private void setupPager() {
@@ -230,6 +210,22 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
         });
     }
 
+    private void setupWidgets() {
+        Set<String> widgetPrefKeys = new HashSet<>(Arrays.asList(
+                Preferences.ENABLE_WIDGETS.key(),
+                Preferences.WIDGETS_POSITION.key(),
+                Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.key(),
+                Preferences.WIDGETS_HEIGHT_CELL_RATIO.key()
+        ));
+        Disposable disposable = preferences.observe()
+                .filter(pref -> widgetPrefKeys.contains(pref.key()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pref -> {
+                    updateAdapter();
+                });
+        compositeDisposable.add(disposable);
+    }
+
     private void updateAdapter() {
         List<Class<? extends Fragment>> pages = getPages();
         homePagerAdapter.setPages(pages);
@@ -239,8 +235,23 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     }
 
     private void setupRoot() {
-//        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-//                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        Disposable disposable = Observable.combineLatest(
+                        preferences.observe(Preferences.WALLPAPER_OVERLAY_COLOR, true),
+                        preferences.observe(Preferences.WALLPAPER_OVERLAY_SHOW, true),
+                        (overlayColor, showOverlay) -> {
+                            return showOverlay ? overlayColor : Color.TRANSPARENT;
+                        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(overlayColor -> root.setBackgroundColor(overlayColor));
+        compositeDisposable.add(disposable);
+    }
+
+    private void setStatusBarColor(Integer color) {
+        Drawable foreground = root.getForeground();
+        if (foreground instanceof FakeStatusBarDrawable) {
+            FakeStatusBarDrawable drawable = (FakeStatusBarDrawable) foreground;
+            drawable.setColor(color);
+        }
     }
 
     private AppsFragment getAppsFragment() {

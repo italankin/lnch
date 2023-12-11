@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
@@ -13,10 +15,6 @@ import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.PackageUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -99,7 +97,7 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
     }
 
     private void subscribeForUpdates() {
-        Disposable disposable = preferences.observeValue(Preferences.SEARCH_ENGINE)
+        Disposable disposable = preferences.observeValue(Preferences.SEARCH_ENGINE, false)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
                     Preferences.SearchEngine engine = value.get();
