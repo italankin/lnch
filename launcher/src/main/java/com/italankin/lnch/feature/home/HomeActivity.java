@@ -122,7 +122,10 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
             int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
             if (viewPager.getCurrentItem() != appsPosition) {
                 viewPager.setCurrentItem(appsPosition, !onRestartCalled);
+                onRestartCalled = false;
                 return;
+            } else {
+                onRestartCalled = false;
             }
         }
         intentQueue.post(intent);
