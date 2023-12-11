@@ -196,6 +196,7 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
     private void setupPager() {
         homePagerAdapter = new HomePagerAdapter(this);
         updateAdapter();
+        viewPager.setSaveEnabled(false);
         viewPager.setOffscreenPageLimit(1);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -220,9 +221,7 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
         Disposable disposable = preferences.observe()
                 .filter(pref -> widgetPrefKeys.contains(pref.key()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pref -> {
-                    updateAdapter();
-                });
+                .subscribe(pref -> recreate());
         compositeDisposable.add(disposable);
     }
 
