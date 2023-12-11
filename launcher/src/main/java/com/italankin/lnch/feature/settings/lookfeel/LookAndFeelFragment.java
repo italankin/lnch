@@ -84,8 +84,9 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
             folderShowOverlay.setEnabled(!isEnabled);
             return true;
         });
-        findPreference(Preferences.NOTIFICATION_DOT_COLOR)
-                .setEnabled(preferences.get(Preferences.NOTIFICATION_DOT));
+        boolean notificationDotEnabled = preferences.get(Preferences.NOTIFICATION_DOT);
+        findPreference(Preferences.NOTIFICATION_DOT_COLOR).setEnabled(notificationDotEnabled);
+        findPreference(Preferences.NOTIFICATION_DOT_SIZE).setEnabled(notificationDotEnabled);
         findPreference(Preferences.APPS_LIST_ANIMATE)
                 .setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
         findPreference(Preferences.HIDE_STATUS_BAR).setOnPreferenceChangeListener((preference, newValue) -> {
