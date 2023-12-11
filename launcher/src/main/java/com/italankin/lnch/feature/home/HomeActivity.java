@@ -11,6 +11,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -180,27 +184,31 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
 
     private void setupWindow() {
         Window window = getWindow();
-        window.getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
+        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
+        window.getDecorView().setOnApplyWindowInsetsListener((v, systemInsets) -> {
             boolean hideStatusBar = preferences.get(Preferences.HIDE_STATUS_BAR);
-            int stableInsetTop = hideStatusBar ? 0 : insets.getStableInsetTop();
-            root.setPadding(insets.getStableInsetLeft(), stableInsetTop, insets.getStableInsetRight(), 0);
-            FakeStatusBarDrawable foreground = new FakeStatusBarDrawable(getColor(R.color.status_bar), stableInsetTop);
+            Insets insets = WindowInsetsCompat.toWindowInsetsCompat(systemInsets)
+                    .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars());
+            int topInsets = insets.top;
+            root.setPadding(insets.left, topInsets, insets.right, 0);
+            FakeStatusBarDrawable foreground = new FakeStatusBarDrawable(getColor(R.color.status_bar), topInsets);
             Integer statusBarColor = hideStatusBar ? Color.TRANSPARENT : preferences.get(Preferences.STATUS_BAR_COLOR);
             foreground.setColor(statusBarColor);
             root.setForeground(foreground);
-
-            return insets;
+            return systemInsets;
         });
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(getWindow(), root);
+        insetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         Disposable disposable = preferences.observe(Preferences.HIDE_STATUS_BAR)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(hideStatusBar -> {
-                    int mask = WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER |
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN;
-                    int flags = WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
                     if (hideStatusBar) {
-                        flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                        insetsController.hide(WindowInsetsCompat.Type.statusBars());
+                    } else {
+                        insetsController.show(WindowInsetsCompat.Type.statusBars());
                     }
-                    getWindow().setFlags(flags, mask);
                 });
         compositeDisposable.add(disposable);
     }
@@ -231,8 +239,8 @@ public class HomeActivity extends AppActivity implements HomeView, HomePagerHost
     }
 
     private void setupRoot() {
-        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+//        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+//                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
 
     private AppsFragment getAppsFragment() {
