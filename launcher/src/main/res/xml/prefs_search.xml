@@ -29,7 +29,7 @@
             android:title="@string/settings_search_global"
             app:singleLineTitle="false" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="search_show_customize"
             android:summary="@string/settings_search_customize_summary"
             android:title="@string/settings_search_customize"

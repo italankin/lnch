@@ -120,7 +120,7 @@ public interface Preferences {
      */
     Pref<Boolean> SEARCH_SHOW_CUSTOMIZE = Prefs.createBoolean(
             "search_show_customize",
-            false);
+            true);
 
     /**
      * Show most used items in search
