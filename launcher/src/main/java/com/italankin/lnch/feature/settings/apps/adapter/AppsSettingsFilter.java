@@ -1,11 +1,11 @@
 package com.italankin.lnch.feature.settings.apps.adapter;
 
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import com.italankin.lnch.feature.settings.apps.model.FilterFlag;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.search.Searchable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -55,7 +55,7 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
         return of(result);
     }
 
-    @NotNull
+    @NonNull
     private List<AppDescriptorUi> filterByFlags(List<AppDescriptorUi> unfiltered) {
         boolean includeVisible = flags.contains(FilterFlag.VISIBLE);
         boolean includeIgnored = flags.contains(FilterFlag.IGNORED);

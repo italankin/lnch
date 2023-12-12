@@ -29,7 +29,6 @@ import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.popup.PopupFragment;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +75,7 @@ public class HiddenItemsPopupFragment extends PopupFragment {
     }
 
     @Override
-    public void onAttach(@NonNull @NotNull Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         imageLoader = new ImageLoader.Builder(context)
                 .cache(imageLoaderCache)
@@ -188,7 +187,7 @@ public class HiddenItemsPopupFragment extends PopupFragment {
                 }
             };
 
-            ViewHolder(@NonNull @NotNull View itemView) {
+            ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 icon = itemView.findViewById(R.id.icon);
                 label = itemView.findViewById(R.id.label);

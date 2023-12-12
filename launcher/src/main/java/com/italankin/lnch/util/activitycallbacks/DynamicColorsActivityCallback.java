@@ -12,7 +12,6 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import org.jetbrains.annotations.NotNull;
 
 public class DynamicColorsActivityCallback implements Application.ActivityLifecycleCallbacks {
 
@@ -23,7 +22,7 @@ public class DynamicColorsActivityCallback implements Application.ActivityLifecy
                 private Disposable disposable;
 
                 @Override
-                public void onCreate(@NotNull LifecycleOwner owner) {
+                public void onCreate(@NonNull LifecycleOwner owner) {
                     disposable = LauncherApp.daggerService.main().preferences()
                             .observe(Preferences.DYNAMIC_COLORS, false)
                             .observeOn(AndroidSchedulers.mainThread())
@@ -31,7 +30,7 @@ public class DynamicColorsActivityCallback implements Application.ActivityLifecy
                 }
 
                 @Override
-                public void onDestroy(@NotNull LifecycleOwner owner) {
+                public void onDestroy(@NonNull LifecycleOwner owner) {
                     if (disposable != null) {
                         disposable.dispose();
                         disposable = null;
