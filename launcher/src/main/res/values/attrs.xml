@@ -3,9 +3,6 @@
     <!-- divider color (e.g. for lists) -->
     <attr name="colorDivider" format="color|reference" />
 
-    <!-- default group title color -->
-    <attr name="colorFolderTitleDefault" format="color|reference" />
-
     <!-- background color of the popup -->
     <attr name="colorPopupBackground" format="color|reference" />
 

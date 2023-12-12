@@ -32,6 +32,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -1025,7 +1026,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 })
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String folderName = editText.getText().toString().trim();
-                    int color = ResUtils.resolveColor(requireContext(), R.attr.colorFolderTitleDefault);
+                    int color = MaterialColors.getColor(requireContext(), android.R.attr.textColorPrimary, "showCreateFolderDialog");
                     presenter.addFolder(folderName, color, descriptors, move);
                 })
                 .setNegativeButton(R.string.cancel, null)
