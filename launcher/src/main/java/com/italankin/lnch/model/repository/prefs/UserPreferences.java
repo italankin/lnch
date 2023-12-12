@@ -7,10 +7,7 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class UserPreferences implements Preferences {
@@ -26,7 +23,7 @@ public class UserPreferences implements Preferences {
 
     private final SharedPreferences prefs;
     private final PublishSubject<String> removedKeys = PublishSubject.create();
-    private final Observable<String> updates;
+    private final Observable<List<String>> updates;
 
     @Inject
     public UserPreferences(SharedPreferences sharedPreferences) {
@@ -43,7 +40,7 @@ public class UserPreferences implements Preferences {
                     emitter.setCancellable(() -> prefs.unregisterOnSharedPreferenceChangeListener(listener));
                 })
                 .mergeWith(removedKeys)
-                .debounce(100, TimeUnit.MILLISECONDS)
+                .buffer(100,TimeUnit.MILLISECONDS)
                 .share();
     }
 
@@ -80,8 +77,14 @@ public class UserPreferences implements Preferences {
     }
 
     @Override
-    public Observable<Pref<?>> observe() {
-        return updates.map(this::findByKey);
+    public Observable<Set<Pref<?>>> observe() {
+        return updates.map(keys -> {
+            Set<Pref<?>> prefs = new HashSet<>(keys.size());
+            for (String key : keys) {
+                prefs.add(findByKey(key));
+            }
+            return prefs;
+        });
     }
 
     @Override
@@ -92,7 +95,7 @@ public class UserPreferences implements Preferences {
     @Override
     public <T> Observable<Value<T>> observeValue(Pref<T> pref, boolean startWithCurrent) {
         Observable<Value<T>> observable = updates
-                .filter(pref.key()::equals)
+                .filter(keys -> keys.contains(pref.key()))
                 .map(key -> new Value<>(get(pref)));
         if (startWithCurrent) {
             return observable.startWith(new Value<>(get(pref)));

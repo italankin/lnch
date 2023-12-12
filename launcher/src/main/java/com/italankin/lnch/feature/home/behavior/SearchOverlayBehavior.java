@@ -103,7 +103,7 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             return false;
         }
         if (topViewScrollState == ScrollState.BOTTOM && velocityY > 0 && (shown || dragInProgress)) {
-            hide();
+            hideInternal(null);
             return true;
         }
         if (topViewScrollState == ScrollState.TOP && shown && velocityY < 0) {
@@ -122,28 +122,10 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void show(@Nullable Runnable runnable) {
-        dragInProgress = false;
-        shown = true;
-        topView.animate()
-                .translationY(0)
-                .setDuration(ANIM_DURATION)
-                .alpha(1)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        topView.animate().setListener(null);
-                        listener.onShow();
-                        if (runnable != null) {
-                            runnable.run();
-                        }
-                    }
-                })
-                .start();
-        bottomView.animate()
-                .translationY(maxOffset)
-                .setDuration(ANIM_DURATION)
-                .alpha(0)
-                .start();
+        if (shown) {
+            return;
+        }
+        showInternal(runnable);
     }
 
     public void hide() {
@@ -151,28 +133,10 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     public void hide(@Nullable Runnable runnable) {
-        dragInProgress = false;
-        shown = false;
-        topView.animate()
-                .translationY(-maxOffset)
-                .setDuration(ANIM_DURATION)
-                .alpha(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        topView.animate().setListener(null);
-                        listener.onHide();
-                        if (runnable != null) {
-                            runnable.run();
-                        }
-                    }
-                })
-                .start();
-        bottomView.animate()
-                .translationY(0)
-                .setDuration(ANIM_DURATION)
-                .alpha(1)
-                .start();
+        if (!shown) {
+            return;
+        }
+        hideInternal(runnable);
     }
 
     public void showNow() {
@@ -230,6 +194,56 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         }
     }
 
+    private void showInternal(@Nullable Runnable runnable) {
+        dragInProgress = false;
+        shown = true;
+        topView.animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION)
+                .alpha(1)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        topView.animate().setListener(null);
+                        listener.onShow();
+                        if (runnable != null) {
+                            runnable.run();
+                        }
+                    }
+                })
+                .start();
+        bottomView.animate()
+                .translationY(maxOffset)
+                .setDuration(ANIM_DURATION)
+                .alpha(0)
+                .start();
+    }
+
+    private void hideInternal(@Nullable Runnable runnable) {
+        dragInProgress = false;
+        shown = false;
+        topView.animate()
+                .translationY(-maxOffset)
+                .setDuration(ANIM_DURATION)
+                .alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        topView.animate().setListener(null);
+                        listener.onHide();
+                        if (runnable != null) {
+                            runnable.run();
+                        }
+                    }
+                })
+                .start();
+        bottomView.animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION)
+                .alpha(1)
+                .start();
+    }
+
     private void onDrag(int dy) {
         if (dy == 0) {
             return;
@@ -256,15 +270,15 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
                 return;
             }
             if (abs < maxOffset * SHOWN_SHOW_THRESHOLD) {
-                show();
+                showInternal(null);
             } else {
-                hide();
+                hideInternal(null);
             }
         } else {
             if (abs < maxOffset * HIDDEN_SHOW_THRESHOLD) {
-                show();
+                showInternal(null);
             } else {
-                hide();
+                hideInternal(null);
             }
         }
     }

@@ -21,7 +21,7 @@ public interface Preferences {
 
     <T> void set(Pref<T> pref, T newValue);
 
-    Observable<Pref<?>> observe();
+    Observable<Set<Pref<?>>> observe();
 
     <T> Observable<T> observe(Pref<T> pref, boolean startWithCurrent);
 

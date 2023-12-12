@@ -41,6 +41,7 @@ import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.*;
 import com.italankin.lnch.feature.home.apps.delegate.*;
+import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.*;
@@ -49,9 +50,10 @@ import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.EditModeChangeEvent;
+import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
-import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
@@ -98,7 +100,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     private Preferences preferences;
     private HomeDescriptorsState homeDescriptorsState;
     private IntentQueue intentQueue;
-    private HomePagerHost homePagerHost;
+    private HomeBus homeBus;
 
     private LceLayout lce;
     private HomeRecyclerView list;
@@ -166,18 +168,9 @@ public class AppsFragment extends AppFragment implements AppsView,
         preferences = LauncherApp.daggerService.main().preferences();
         intentQueue = LauncherApp.daggerService.main().intentQueue();
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
+        homeBus = LauncherApp.daggerService.main().homeBus();
 
         registerFragmentResultListeners();
-
-        if (context instanceof HomePagerHost) {
-            homePagerHost = (HomePagerHost) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        homePagerHost = null;
     }
 
     @Override
@@ -588,9 +581,6 @@ public class AppsFragment extends AppFragment implements AppsView,
             editModePanel.dismiss();
             editModePanel = null;
         }
-        if (homePagerHost != null) {
-            homePagerHost.setPagerEnabled(!value);
-        }
     }
 
     private void showCustomizePopup(int position, DescriptorUi item) {
@@ -629,6 +619,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onStartCustomize() {
         setEditMode(true);
+        homeBus.post(EditModeChangeEvent.ENTER);
     }
 
     @Override
@@ -643,11 +634,13 @@ public class AppsFragment extends AppFragment implements AppsView,
     @Override
     public void onStopCustomize() {
         setEditMode(false);
+        homeBus.post(EditModeChangeEvent.DISCARD);
     }
 
     @Override
     public void onChangesSaveStarted() {
         setEditMode(false);
+        homeBus.post(EditModeChangeEvent.COMMIT);
         Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
@@ -772,17 +765,13 @@ public class AppsFragment extends AppFragment implements AppsView,
                 if (preferences.get(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)) {
                     searchOverlay.focusEditText();
                 }
-                if (homePagerHost != null) {
-                    homePagerHost.setPagerEnabled(false);
-                }
+                homeBus.post(SearchStateEvent.SHOWN);
             }
 
             @Override
             public void onHide() {
                 searchOverlay.onSearchHidden();
-                if (homePagerHost != null) {
-                    homePagerHost.setPagerEnabled(!editMode);
-                }
+                homeBus.post(SearchStateEvent.HIDDEN);
             }
 
             @Override

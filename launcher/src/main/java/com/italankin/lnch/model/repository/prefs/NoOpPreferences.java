@@ -2,6 +2,8 @@ package com.italankin.lnch.model.repository.prefs;
 
 import io.reactivex.Observable;
 
+import java.util.Set;
+
 public class NoOpPreferences implements Preferences {
 
     @Override
@@ -19,7 +21,7 @@ public class NoOpPreferences implements Preferences {
     }
 
     @Override
-    public Observable<Pref<?>> observe() {
+    public Observable<Set<Pref<?>>> observe() {
         return Observable.empty();
     }
 

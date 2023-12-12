@@ -7,6 +7,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
+import com.italankin.lnch.feature.home.repository.HomeBus;
+import com.italankin.lnch.feature.home.repository.HomeBusImpl;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -154,6 +156,12 @@ public class MainModule {
     @Singleton
     HomeDescriptorsState provideHomeDescriptorsState() {
         return new HomeDescriptorsStateImpl();
+    }
+
+    @Provides
+    @Singleton
+    HomeBus provideHomeBus() {
+        return new HomeBusImpl();
     }
 
     @Provides

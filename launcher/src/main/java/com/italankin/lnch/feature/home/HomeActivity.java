@@ -24,11 +24,14 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
+import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
+import com.italankin.lnch.feature.home.repository.EditModeChangeEvent;
+import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
-import com.italankin.lnch.feature.home.util.HomePagerHost;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.WidgetsFragment;
+import com.italankin.lnch.feature.widgets.events.WidgetEditModeChangeEvent;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
 import io.reactivex.Observable;
@@ -38,7 +41,7 @@ import io.reactivex.disposables.Disposable;
 
 import java.util.*;
 
-public class HomeActivity extends AppCompatActivity implements HomePagerHost, WidgetsFragment.Callback {
+public class HomeActivity extends AppCompatActivity implements WidgetsFragment.Callback, HomeBus.EventListener {
 
     private Preferences preferences;
     private IntentQueue intentQueue;
@@ -48,6 +51,7 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
     private HomePagerAdapter homePagerAdapter;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final HomeScreenState homeScreenState = new HomeScreenState();
     private boolean onRestartCalled = false;
 
     @Override
@@ -78,6 +82,9 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
                 }
             }
         });
+
+        HomeBus homeBus = LauncherApp.daggerService.main().homeBus();
+        homeBus.subscribe(this, this);
     }
 
     @Override
@@ -140,8 +147,26 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
     }
 
     @Override
-    public void setPagerEnabled(boolean enabled) {
-        viewPager.setUserInputEnabled(enabled);
+    public void onHomeEvent(HomeBus bus, HomeBus.Event event) {
+        if (event instanceof EditModeChangeEvent) {
+            switch (((EditModeChangeEvent) event)) {
+                case ENTER:
+                    homeScreenState.editMode = true;
+                    break;
+                case COMMIT:
+                    homeScreenState.editMode = false;
+                    break;
+                case DISCARD:
+                    homeScreenState.editMode = false;
+                    resetFromUserPreferences();
+                    break;
+            }
+        } else if (event instanceof WidgetEditModeChangeEvent) {
+            homeScreenState.widgetsEditMode = event == WidgetEditModeChangeEvent.ENTER;
+        } else if (event instanceof SearchStateEvent) {
+            homeScreenState.searchVisible = event == SearchStateEvent.SHOWN;
+        }
+        viewPager.setUserInputEnabled(homeScreenState.pagerUserInoutEnabled());
     }
 
     @Override
@@ -212,14 +237,19 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
     }
 
     private void setupWidgets() {
-        Set<String> widgetPrefKeys = new HashSet<>(Arrays.asList(
-                Preferences.ENABLE_WIDGETS.key(),
-                Preferences.WIDGETS_POSITION.key(),
-                Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.key(),
-                Preferences.WIDGETS_HEIGHT_CELL_RATIO.key()
+        Set<Preferences.Pref<?>> widgetPrefs = new HashSet<>(Arrays.asList(
+                Preferences.ENABLE_WIDGETS,
+                Preferences.WIDGETS_POSITION,
+                Preferences.WIDGETS_HORIZONTAL_GRID_SIZE,
+                Preferences.WIDGETS_HEIGHT_CELL_RATIO
         ));
         Disposable disposable = preferences.observe()
-                .filter(pref -> widgetPrefKeys.contains(pref.key()))
+                .filter(prefs -> {
+                    for (Preferences.Pref<?> pref : prefs) {
+                        if (widgetPrefs.contains(pref)) return true;
+                    }
+                    return false;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pref -> recreate());
         compositeDisposable.add(disposable);
@@ -289,5 +319,23 @@ public class HomeActivity extends AppCompatActivity implements HomePagerHost, Wi
 
     private boolean isWidgetsEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS);
+    }
+
+    private void resetFromUserPreferences() {
+        if (preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)) {
+            root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
+        } else {
+            root.setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
+
+    private static class HomeScreenState {
+        boolean searchVisible;
+        boolean editMode;
+        boolean widgetsEditMode;
+
+        boolean pagerUserInoutEnabled() {
+            return !(editMode || widgetsEditMode || searchVisible);
+        }
     }
 }

@@ -524,7 +524,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private Observable<UserPrefs> observeUserPrefs() {
         return fontManager.loadUserFonts()
                 .andThen(preferences.observe()
-                        .filter(UserPrefs.PREFERENCES::contains)
+                        .filter(prefs -> {
+                            for (Preferences.Pref<?> pref : prefs) {
+                                if (UserPrefs.PREFERENCES.contains(pref)) return true;
+                            }
+                            return false;
+                        })
                         .map(s -> new UserPrefs(preferences, fontManager))
                         .startWith(Observable.fromCallable(() -> {
                             // make sure we load fonts first

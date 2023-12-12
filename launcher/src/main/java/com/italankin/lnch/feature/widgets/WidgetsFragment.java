@@ -31,11 +31,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.util.HomePagerHost;
+import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
+import com.italankin.lnch.feature.widgets.events.WidgetEditModeChangeEvent;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
@@ -66,6 +67,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private IntentQueue intentQueue;
     private Preferences preferences;
+    private HomeBus homeBus;
 
     private RecyclerView widgetsList;
     private ItemTouchHelper itemTouchHelper;
@@ -76,7 +78,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     private AppWidgetManager appWidgetManager;
     private WidgetSizeHelper widgetSizeHelper;
     private CellSize cellSize;
-    private HomePagerHost homePagerHost;
     private Callback callback;
 
     private int newAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
@@ -106,6 +107,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         super.onCreate(savedInstanceState);
         intentQueue = LauncherApp.daggerService.main().intentQueue();
         preferences = LauncherApp.daggerService.main().preferences();
+        homeBus = LauncherApp.daggerService.main().homeBus();
 
         onBackPressedCallback = new OnBackPressedCallback(false) {
             @Override
@@ -122,9 +124,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         appWidgetHost = new LauncherAppWidgetHost(context, APP_WIDGET_HOST_ID);
         appWidgetManager = (AppWidgetManager) context.getSystemService(Context.APPWIDGET_SERVICE);
         widgetSizeHelper = new WidgetSizeHelper(context);
-        if (context instanceof HomePagerHost) {
-            homePagerHost = (HomePagerHost) context;
-        }
         if (context instanceof Callback) {
             callback = (Callback) context;
         }
@@ -133,7 +132,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
     @Override
     public void onDetach() {
         super.onDetach();
-        homePagerHost = null;
         callback = null;
     }
 
@@ -181,12 +179,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             if (widgetItemsState.isResizeMode()) {
                 exitEditMode();
             } else {
-                widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
-                updateActionsState();
-                adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
-                if (homePagerHost != null) {
-                    homePagerHost.setPagerEnabled(false);
-                }
+                enterEditMode();
             }
         });
 
@@ -423,6 +416,13 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         }
     }
 
+    private void enterEditMode() {
+        widgetItemsState.setResizeMode(true, preferences.get(Preferences.WIDGETS_FORCE_RESIZE));
+        updateActionsState();
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
+        homeBus.post(WidgetEditModeChangeEvent.ENTER);
+    }
+
     private void exitEditMode() {
         if (!widgetItemsState.isResizeMode()) {
             return;
@@ -440,9 +440,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         widgetItemsState.setResizeMode(false, false);
         updateActionsState();
         adapter.notifyItemRangeChanged(0, adapter.getItemCount(), new Object());
-        if (homePagerHost != null) {
-            homePagerHost.setPagerEnabled(true);
-        }
+        homeBus.post(WidgetEditModeChangeEvent.EXIT);
     }
 
     private void updateActionsState() {

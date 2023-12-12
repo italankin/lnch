@@ -3,6 +3,7 @@ package com.italankin.lnch.di.component;
 import android.content.Context;
 import com.italankin.lnch.di.module.BackupModule;
 import com.italankin.lnch.di.module.MainModule;
+import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
@@ -40,6 +41,8 @@ public interface MainComponent extends PresenterComponent.Dependencies {
     NotificationsRepository notificationsRepository();
 
     HomeDescriptorsState homeDescriptorState();
+
+    HomeBus homeBus();
 
     FontManager typefaceStorage();
 
