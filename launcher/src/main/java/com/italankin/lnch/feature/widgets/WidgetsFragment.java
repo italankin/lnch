@@ -245,6 +245,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         } catch (Exception e) {
             Timber.w(e, "onStop:");
         }
+        widgetsList.scrollToPosition(0);
     }
 
     @Override
