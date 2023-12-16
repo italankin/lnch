@@ -223,5 +223,11 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         public IntentDescriptor toDescriptor() {
             return new IntentDescriptor(this);
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "IntentDescriptor.Mutable{" + getId() + "}";
+        }
     }
 }

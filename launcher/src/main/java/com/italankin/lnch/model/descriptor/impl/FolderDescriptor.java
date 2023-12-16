@@ -213,5 +213,11 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
         public FolderDescriptor toDescriptor() {
             return new FolderDescriptor(this);
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "FolderDescriptor.Mutable{" + getId() + "}";
+        }
     }
 }

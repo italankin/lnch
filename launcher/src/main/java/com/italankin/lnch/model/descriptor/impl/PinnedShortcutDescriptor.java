@@ -214,5 +214,11 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         public PinnedShortcutDescriptor toDescriptor() {
             return new PinnedShortcutDescriptor(this);
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "PinnedShortcutDescriptor.Mutable{" + getId() + "}";
+        }
     }
 }

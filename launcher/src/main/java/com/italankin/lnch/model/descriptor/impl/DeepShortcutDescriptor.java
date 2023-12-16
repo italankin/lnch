@@ -229,5 +229,11 @@ public final class DeepShortcutDescriptor implements Descriptor, PackageDescript
         public DeepShortcutDescriptor toDescriptor() {
             return new DeepShortcutDescriptor(this);
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "DeepShortcutDescriptor.Mutable{" + getId() + "}";
+        }
     }
 }

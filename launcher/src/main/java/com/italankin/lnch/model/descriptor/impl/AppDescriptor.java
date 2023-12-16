@@ -306,5 +306,11 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         public AppDescriptor toDescriptor() {
             return new AppDescriptor(this);
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "AppDescriptor.Mutable{" + getId() + "}";
+        }
     }
 }
