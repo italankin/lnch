@@ -12,7 +12,7 @@
     <string name="notification_service_name">Notification dots</string>
 
     <string name="widgets_gallery_title">Widget Gallery</string>
-    <string name="widgets_gallery_hint_search">Filter by app or widget name</string>
+    <string name="widgets_gallery_hint_search">App or widget name</string>
     <string name="widgets_gallery_search_empty">Nothing found</string>
 
     <string name="hint_search">Search</string>
