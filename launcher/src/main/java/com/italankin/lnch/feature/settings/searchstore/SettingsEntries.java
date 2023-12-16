@@ -217,7 +217,7 @@ final class SettingsEntries {
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_TEXT_SIZE)
-                        .title(R.string.settings_home_laf_appearance__text_size)
+                        .title(R.string.settings_home_laf_appearance_text_size)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
                             return Arrays.asList(

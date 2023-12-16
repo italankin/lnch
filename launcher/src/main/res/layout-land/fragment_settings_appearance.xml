@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:spv_icon="@drawable/ic_settings_size"
-                app:spv_title="@string/settings_home_laf_appearance__text_size" />
+                app:spv_title="@string/settings_home_laf_appearance_text_size" />
 
             <com.italankin.lnch.util.widget.pref.ValuePrefView
                 android:id="@+id/item_font"

@@ -260,7 +260,7 @@
     <string name="settings_home_laf_appearance">Appearance</string>
     <string name="settings_home_laf_appearance_summary">Customize text size, font, shadow</string>
     <string name="settings_home_laf_appearance_reset">Reset</string>
-    <string name="settings_home_laf_appearance__text_size">Text size</string>
+    <string name="settings_home_laf_appearance_text_size">Text size</string>
     <string name="settings_home_laf_appearance_text_font">Font</string>
     <string name="settings_home_laf_appearance_shadow_radius">Shadow radius</string>
     <string name="settings_home_laf_appearance_shadow_color">Shadow color</string>
