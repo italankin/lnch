@@ -10,7 +10,7 @@ public interface PreferencesBackup {
     Map<String, Object> read();
 
     /**
-     * Override preference' values with a values from the {@code map}
+     * Override preferences' values with a values from the {@code map}
      *
      * @param map a map of preference keys and their values
      */

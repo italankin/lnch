@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.base;
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
 import com.italankin.lnch.util.rxjava.WeakDisposableList;
-
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;

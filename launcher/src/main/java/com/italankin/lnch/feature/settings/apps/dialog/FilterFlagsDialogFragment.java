@@ -58,7 +58,7 @@ public class FilterFlagsDialogFragment extends BaseDialogFragment<FilterFlagsDia
     private boolean[] getCheckedItems() {
         FilterFlag[] values = FilterFlag.values();
         EnumSet<FilterFlag> flags = getFilterFlags();
-        boolean itemsState[] = new boolean[values.length];
+        boolean[] itemsState = new boolean[values.length];
         for (int i = 0; i < values.length; i++) {
             FilterFlag value = values[i];
             itemsState[i] = flags.contains(value);

@@ -11,9 +11,6 @@
 
     <string name="notification_service_name">Notification dots</string>
 
-    <string name="widgets_empty">No widgets added</string>
-    <string name="widgets_remove">Remove widget</string>
-    <string name="widgets_app_info">App info</string>
     <string name="widgets_gallery_title">Widget Gallery</string>
     <string name="widgets_gallery_hint_search">Filter by app or widget name</string>
     <string name="widgets_gallery_search_empty">Nothing found</string>
@@ -205,7 +202,6 @@
     <string name="settings_home_widgets_remove_dialog_removed">All widgets removed</string>
 
     <string name="settings_home_hidden_items">Hidden items</string>
-    <string name="settings_home_hidden_items_empty">No hidden items</string>
     <string name="settings_home_hidden_items_filter_empty">No items found</string>
 
     <string name="settings_category_search">Search</string>
@@ -303,7 +299,6 @@
     <string name="settings_other_bar_reset_dialog_lnch_message">Do you want to reset all lnch settings (home settings, fonts, etc.) to their defaults?\n\n<font color="red">THIS ACTION CANNOT BE UNDONE!</font></string>
     <string name="settings_other_bar_reset_dialog_action">Reset</string>
 
-    <string name="error_no_wallpaper_permission">Permission is required to display wallpaper</string>
     <string name="error_manual_sorting_required">Reordering is only available for manual sorting</string>
     <string name="error_shortcut_not_found">Not found</string>
     <string name="error_shortcut_disabled">Shortcut is disabled</string>

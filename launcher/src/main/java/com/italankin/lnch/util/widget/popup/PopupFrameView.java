@@ -162,11 +162,11 @@ public class PopupFrameView extends ViewGroup {
                 tmp[1] = 0;
                 placeInside(out, container, tmp);
                 if (tmp[0] != 0) {
-                    // shifted along x axis
+                    // shifted along x-axis
                     childAnchorX = anchorX - out.left;
                 }
                 if (tmp[1] != 0) {
-                    // shifted along y axis
+                    // shifted along y-axis
                     childAnchorY = anchorY - out.top;
                 }
             }

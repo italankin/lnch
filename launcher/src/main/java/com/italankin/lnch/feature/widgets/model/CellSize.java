@@ -25,7 +25,7 @@ public class CellSize {
         return width * widthCells;
     }
 
-    public boolean isEmpty() {
-        return width == 0 || height == 0;
+    public boolean isNotEmpty() {
+        return width > 0 && height > 0;
     }
 }

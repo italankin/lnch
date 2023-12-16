@@ -1,11 +1,10 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.content.Context;
-
+import androidx.annotation.NonNull;
+import androidx.collection.SparseArrayCompat;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.ui.DescriptorUi;
-
-import androidx.collection.SparseArrayCompat;
 import me.italankin.adapterdelegates.AdapterDelegate;
 import me.italankin.adapterdelegates.CompositeAdapter;
 
@@ -39,11 +38,7 @@ public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
             super(context);
         }
 
-        @Override
-        public HomeAdapter create() {
-            return (HomeAdapter) super.create();
-        }
-
+        @NonNull
         @Override
         protected HomeAdapter createAdapter() {
             return new HomeAdapter(context, delegates, hasStableIds);

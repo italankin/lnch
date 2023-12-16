@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.feature.home.repository.HomeBus;
@@ -62,7 +61,7 @@ public class MainModule {
     @Provides
     @Singleton
     SharedPreferences provideSharedPreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
+        return context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
     }
 
     @Provides

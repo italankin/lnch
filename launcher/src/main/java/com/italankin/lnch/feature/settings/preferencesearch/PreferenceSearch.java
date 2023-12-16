@@ -1,9 +1,7 @@
 package com.italankin.lnch.feature.settings.preferencesearch;
 
-import com.italankin.lnch.feature.settings.searchstore.SettingStackBuilder;
-import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
-
 import androidx.annotation.StringRes;
+import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 
 class PreferenceSearch implements PreferenceSearchItem {
 
@@ -13,13 +11,10 @@ class PreferenceSearch implements PreferenceSearchItem {
     @StringRes
     final int summary;
 
-    final SettingStackBuilder stackBuilder;
-
     PreferenceSearch(SettingsEntry entry) {
         key = entry.key();
         title = entry.title();
         summary = entry.summary();
-        stackBuilder = entry.stackBuilder();
     }
 
     @Override

@@ -326,7 +326,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
 
         int width = frame.width();
         int height = frame.height();
-        if (!cellSize.isEmpty()) {
+        if (cellSize.isNotEmpty()) {
             if ((width % cellSize.width) > cellSize.width * EXTEND_THRESHOLD) {
                 width += (cellSize.width - (width % cellSize.width));
             } else if ((width % cellSize.width) < cellSize.width * SHRINK_THRESHOLD) {
@@ -477,7 +477,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 return;
             }
             canvas.drawRect(visualFrame, overlayPaint);
-            if (!cellSize.isEmpty()) {
+            if (cellSize.isNotEmpty()) {
                 int l = frame.left + cellSize.width;
                 while (l < frame.right) {
                     canvas.drawLine(l, visualFrame.top, l, visualFrame.bottom, gridPaint);

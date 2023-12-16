@@ -8,16 +8,13 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.util.ShortcutUtils;
 import com.italankin.lnch.util.icons.BadgedIconDrawable;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
 public class ShortcutIconLoader implements ResourceLoader {

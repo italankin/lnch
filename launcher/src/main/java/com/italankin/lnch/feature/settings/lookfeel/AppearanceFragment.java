@@ -391,35 +391,6 @@ public class AppearanceFragment extends AppFragment implements
         preferences.set(Preferences.ITEM_FONT, font);
     }
 
-    private boolean isChanged() {
-        float textSize = itemTextSize.getProgress() + Preferences.ITEM_TEXT_SIZE.min();
-        if (Float.compare(textSize, preferences.get(Preferences.ITEM_TEXT_SIZE)) != 0) {
-            return true;
-        }
-
-        int padding = itemPadding.getProgress() + Preferences.ITEM_PADDING.min();
-        if (padding != preferences.get(Preferences.ITEM_PADDING)) {
-            return true;
-        }
-
-        float shadowRadius = itemShadowRadius.getProgress();
-        if (Float.compare(shadowRadius, preferences.get(Preferences.ITEM_SHADOW_RADIUS)) != 0) {
-            return true;
-        }
-
-        int shadowColor = itemShadowColor.getValue();
-        Integer currentShadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
-        if (currentShadowColor == null) {
-            if (shadowColor != ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault)) {
-                return true;
-            }
-        } else if (currentShadowColor != shadowColor) {
-            return true;
-        }
-
-        return itemFont.getValue() != preferences.get(Preferences.ITEM_FONT);
-    }
-
     private void setParams(SliderPrefView prefView, Preferences.RangePref<? extends Number> pref) {
         int min = pref.min().intValue();
         prefView.setProgress(preferences.get(pref).intValue() - min);

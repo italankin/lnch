@@ -11,18 +11,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import androidx.annotation.*;
+import androidx.appcompat.content.res.AppCompatResources;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.util.HashMap;
-
-import androidx.annotation.CheckResult;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 public class LceLayout extends FrameLayout {
 
@@ -299,7 +293,7 @@ public class LceLayout extends FrameLayout {
         return new LceLayoutParams(p);
     }
 
-    public class LceLayoutParams extends FrameLayout.LayoutParams {
+    public static class LceLayoutParams extends FrameLayout.LayoutParams {
         public final Layer layer;
 
         public LceLayoutParams() {

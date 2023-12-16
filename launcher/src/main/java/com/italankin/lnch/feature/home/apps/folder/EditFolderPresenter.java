@@ -73,8 +73,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
     void editIntent(String descriptorId, Intent intent) {
         descriptorRepository.edit()
                 .enqueue(new EditIntentAction(descriptorId, intent));
-        for (int i = 0; i < items.size(); i++) {
-            DescriptorUi item = items.get(i);
+        for (DescriptorUi item : items) {
             if (item.getDescriptor().getId().equals(descriptorId)) {
                 IntentDescriptorUi intentItem = (IntentDescriptorUi) item;
                 intentItem.intent = intent;

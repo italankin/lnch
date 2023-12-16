@@ -160,7 +160,6 @@ public class ColorPickerView extends LinearLayout {
         super.onRestoreInstanceState(myState.getParcelable(STATE_BASE_STATE));
         boolean previewVisible = myState.getBoolean(STATE_PREVIEW_VISIBLE, true);
         setPreviewVisible(previewVisible);
-        //noinspection unchecked
         ColorModel model = (ColorModel) myState.getSerializable(STATE_MODEL);
         if (model != null) {
             setColorModel(model);

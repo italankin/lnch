@@ -56,7 +56,6 @@ public class AppDescriptorInteractor {
         String newLabel = info.getLabel().toString();
         if (!newLabel.equals(app.getOriginalLabel())) {
             app.setOriginalLabel(newLabel);
-            ;
             updated = true;
         }
         app.setLabel(nameNormalizer.normalize(info.getLabel()));

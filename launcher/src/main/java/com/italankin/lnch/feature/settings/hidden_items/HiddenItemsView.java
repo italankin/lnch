@@ -3,7 +3,6 @@ package com.italankin.lnch.feature.settings.hidden_items;
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 
 import java.util.List;
 

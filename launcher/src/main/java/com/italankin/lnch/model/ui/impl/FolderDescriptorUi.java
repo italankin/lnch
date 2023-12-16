@@ -1,13 +1,8 @@
 package com.italankin.lnch.model.ui.impl;
 
 import androidx.annotation.NonNull;
-
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
-import com.italankin.lnch.model.ui.BadgeDescriptorUi;
-import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
-import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
-import com.italankin.lnch.model.ui.DescriptorUi;
-import com.italankin.lnch.model.ui.RemovableDescriptorUi;
+import com.italankin.lnch.model.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +22,7 @@ public final class FolderDescriptorUi implements DescriptorUi,
     private String customLabel;
     private Integer customColor;
     public Integer customBadgeColor;
-    public List<String> items;
+    public final List<String> items;
     private boolean badgeVisible;
 
     public FolderDescriptorUi(FolderDescriptor descriptor) {
