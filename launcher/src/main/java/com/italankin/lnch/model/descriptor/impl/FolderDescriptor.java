@@ -1,39 +1,48 @@
 package com.italankin.lnch.model.descriptor.impl;
 
+import android.graphics.Color;
+import androidx.annotation.NonNull;
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.DescriptorModels;
+import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
+import com.italankin.lnch.util.ListUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-
 /**
  * A home screen folder
  */
-@DescriptorModels(json = FolderDescriptorJson.class, ui = FolderDescriptorUi.class)
+@DescriptorModels(
+        json = FolderDescriptorJson.class,
+        ui = FolderDescriptorUi.class,
+        mutable = FolderDescriptor.Mutable.class
+)
 public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
 
-    public String id;
-    public String originalLabel;
-    public String label;
-    public String customLabel;
-    public int color;
-    public Integer customColor;
-    public final List<String> items = new ArrayList<>(4);
+    public final String id;
+    public final String originalLabel;
+    public final String label;
+    public final String customLabel;
+    public final int color;
+    public final Integer customColor;
+    public final List<String> items;
 
-    public FolderDescriptor() {
-    }
-
-    public FolderDescriptor(String label, int color) {
-        this.id = "folder/" + UUID.randomUUID().toString();
-        this.originalLabel = this.label = label;
-        this.color = color;
+    public FolderDescriptor(Mutable mutable) {
+        id = mutable.id;
+        originalLabel = mutable.originalLabel;
+        label = mutable.label;
+        customLabel = mutable.customLabel;
+        color = mutable.color;
+        customColor = mutable.customColor;
+        items = mutable.items;
     }
 
     @Override
@@ -52,11 +61,6 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
     }
 
     @Override
-    public void setCustomColor(Integer color) {
-        this.customColor = color;
-    }
-
-    @Override
     public Integer getCustomColor() {
         return customColor;
     }
@@ -64,13 +68,6 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
     @Override
     public String getLabel() {
         return label != null ? label : originalLabel;
-    }
-
-    @Override
-    public void setCustomLabel(String label) {
-        this.label = label;
-        this.originalLabel = label;
-        this.customLabel = label;
     }
 
     @Override
@@ -102,14 +99,119 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
     }
 
     @Override
-    public FolderDescriptor copy() {
-        FolderDescriptor copy = new FolderDescriptor();
-        copy.id = id;
-        copy.originalLabel = copy.label = label;
-        copy.customLabel = customLabel;
-        copy.color = color;
-        copy.customColor = customColor;
-        copy.items.addAll(items);
-        return copy;
+    public Mutable toMutable() {
+        return new FolderDescriptor.Mutable(this);
+    }
+
+    public static class Mutable implements MutableDescriptor<FolderDescriptor>,
+            CustomColorMutableDescriptor<FolderDescriptor>,
+            CustomLabelMutableDescriptor<FolderDescriptor> {
+
+        private final String id;
+        private String originalLabel;
+        private String label;
+        private String customLabel;
+        private int color = Color.WHITE;
+        private Integer customColor;
+        private List<String> items = new ArrayList<>(1);
+
+        public Mutable(String originalLabel) {
+            this("folder/" + UUID.randomUUID().toString(), originalLabel);
+        }
+
+        public Mutable(String id, String originalLabel) {
+            this.id = id;
+            this.originalLabel = originalLabel;
+        }
+
+        public Mutable(FolderDescriptor descriptor) {
+            id = descriptor.id;
+            originalLabel = descriptor.originalLabel;
+            label = descriptor.label;
+            customLabel = descriptor.customLabel;
+            color = descriptor.color;
+            customColor = descriptor.customColor;
+            items.addAll(descriptor.items);
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+
+        @Override
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String getOriginalLabel() {
+            return originalLabel;
+        }
+
+        @Override
+        public void setOriginalLabel(String originalLabel) {
+            this.originalLabel = originalLabel != null ? originalLabel : "";
+        }
+
+        @Override
+        public int getColor() {
+            return color;
+        }
+
+        @Override
+        public void setColor(int color) {
+            this.color = color;
+        }
+
+        @Override
+        public Integer getCustomColor() {
+            return customColor;
+        }
+
+        @Override
+        public void setCustomColor(Integer customColor) {
+            this.customColor = customColor;
+        }
+
+        @Override
+        public String getCustomLabel() {
+            return customLabel;
+        }
+
+        @Override
+        public void setCustomLabel(String customLabel) {
+            this.customLabel = customLabel;
+        }
+
+        public void addItem(String descriptorId) {
+            items.add(descriptorId);
+        }
+
+        public void removeItem(String descriptorId) {
+            items.remove(descriptorId);
+        }
+
+        public void move(int from, int to) {
+            ListUtils.move(items, from, to);
+        }
+
+        public List<String> getItems() {
+            return items;
+        }
+
+        public void setItems(List<String> items) {
+            this.items = new ArrayList<>(items);
+        }
+
+        @Override
+        public FolderDescriptor toDescriptor() {
+            return new FolderDescriptor(this);
+        }
     }
 }

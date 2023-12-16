@@ -1,6 +1,6 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.util.ListUtils;
 
@@ -16,7 +16,7 @@ public class MoveAction implements DescriptorRepository.Editor.Action {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
+    public void apply(List<MutableDescriptor<?>> items) {
         ListUtils.move(items, from, to);
     }
 }

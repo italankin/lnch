@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
-
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
@@ -55,15 +54,12 @@ public final class IntentDescriptorJson implements DescriptorJson {
 
     @Override
     public Descriptor toDescriptor() {
-        IntentDescriptor descriptor = new IntentDescriptor();
-        descriptor.id = this.id;
-        descriptor.intentUri = this.intentUri;
-        descriptor.originalLabel = this.originalLabel;
-        descriptor.label = this.label;
-        descriptor.customLabel = this.customLabel;
-        descriptor.color = this.color;
-        descriptor.customColor = this.customColor;
-        descriptor.ignored = this.ignored != null && this.ignored;
-        return descriptor;
+        IntentDescriptor.Mutable mutable = new IntentDescriptor.Mutable(id, intentUri, originalLabel);
+        mutable.setLabel(label);
+        mutable.setCustomLabel(customLabel);
+        mutable.setColor(color);
+        mutable.setCustomColor(customColor);
+        mutable.setIgnored(ignored != null && ignored);
+        return mutable.toDescriptor();
     }
 }

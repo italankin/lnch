@@ -1,7 +1,7 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 
 import java.util.List;
 
@@ -15,10 +15,10 @@ public class ShortcutsVisibilityAction extends BaseAction {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
-        AppDescriptor descriptor = findById(items, id);
+    public void apply(List<MutableDescriptor<?>> items) {
+        AppDescriptor.Mutable descriptor = findById(items, id);
         if (descriptor != null) {
-            descriptor.showShortcuts = showShortcuts;
+            descriptor.setShowShortcuts(showShortcuts);
         }
     }
 }

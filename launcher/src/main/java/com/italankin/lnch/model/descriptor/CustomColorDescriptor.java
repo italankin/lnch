@@ -7,8 +7,6 @@ import androidx.annotation.ColorInt;
  */
 public interface CustomColorDescriptor extends ColorDescriptor {
 
-    void setCustomColor(@ColorInt Integer color);
-
     @ColorInt
     Integer getCustomColor();
 

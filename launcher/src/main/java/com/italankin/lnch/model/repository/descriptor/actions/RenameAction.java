@@ -1,7 +1,8 @@
 package com.italankin.lnch.model.repository.descriptor.actions;
 
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 
 import java.util.List;
 
@@ -15,8 +16,8 @@ public class RenameAction extends BaseAction {
     }
 
     @Override
-    public void apply(List<Descriptor> items) {
-        CustomLabelDescriptor descriptor = findById(items, id);
+    public void apply(List<MutableDescriptor<?>> items) {
+        CustomLabelMutableDescriptor<?> descriptor = findById(items, id);
         if (descriptor != null) {
             descriptor.setCustomLabel(newLabel);
         }

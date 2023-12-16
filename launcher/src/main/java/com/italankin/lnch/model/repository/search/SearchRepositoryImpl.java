@@ -110,7 +110,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 match = new PartialDescriptorMatch((IntentDescriptor) descriptor, PartialMatch.Type.EXACT);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && descriptor instanceof DeepShortcutDescriptor) {
                 DeepShortcutDescriptor d = (DeepShortcutDescriptor) descriptor;
-                Shortcut shortcut = shortcutsRepository.getShortcut(d.packageName, d.id);
+                Shortcut shortcut = shortcutsRepository.getShortcut(d.packageName, d.shortcutId);
                 match = new PartialDescriptorMatch(d, shortcut, PartialMatch.Type.EXACT);
             } else if (descriptor instanceof PinnedShortcutDescriptor) {
                 match = new PartialDescriptorMatch((PinnedShortcutDescriptor) descriptor, PartialMatch.Type.EXACT);

@@ -1,12 +1,11 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
+import androidx.annotation.Keep;
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 
 import java.util.List;
-
-import androidx.annotation.Keep;
 
 public final class AppDescriptorJson implements DescriptorJson {
 
@@ -77,20 +76,16 @@ public final class AppDescriptorJson implements DescriptorJson {
 
     @Override
     public Descriptor toDescriptor() {
-        AppDescriptor descriptor = new AppDescriptor();
-        descriptor.packageName = this.packageName;
-        descriptor.versionCode = this.versionCode;
-        descriptor.componentName = this.componentName;
-        descriptor.label = this.label;
-        descriptor.originalLabel = this.originalLabel;
-        descriptor.customLabel = this.customLabel;
-        descriptor.color = this.color;
-        descriptor.customColor = this.customColor;
-        descriptor.customBadgeColor = this.customBadgeColor;
-        descriptor.ignored = this.ignored != null && this.ignored;
-        descriptor.searchFlags = this.searchFlags != null ? this.searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS;
-        descriptor.showShortcuts = this.showShortcuts == null || this.showShortcuts;
-        descriptor.setAliases(aliases);
-        return descriptor;
+        AppDescriptor.Mutable mutable = new AppDescriptor.Mutable(packageName, componentName, versionCode, originalLabel);
+        mutable.setColor(color);
+        mutable.setCustomColor(customColor);
+        mutable.setLabel(label);
+        mutable.setCustomLabel(customLabel);
+        mutable.setCustomBadgeColor(customBadgeColor);
+        mutable.setIgnored(ignored != null && ignored);
+        mutable.setSearchFlags(searchFlags != null ? searchFlags : AppDescriptor.SEARCH_DEFAULT_FLAGS);
+        mutable.setShowShortcuts(showShortcuts == null || showShortcuts);
+        mutable.setAliases(aliases);
+        return mutable.toDescriptor();
     }
 }

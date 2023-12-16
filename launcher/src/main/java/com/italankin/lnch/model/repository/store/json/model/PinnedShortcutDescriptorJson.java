@@ -1,7 +1,6 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
-
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
@@ -55,15 +54,13 @@ public final class PinnedShortcutDescriptorJson implements DescriptorJson {
 
     @Override
     public Descriptor toDescriptor() {
-        PinnedShortcutDescriptor descriptor = new PinnedShortcutDescriptor();
-        descriptor.id = this.id;
-        descriptor.uri = this.uri;
-        descriptor.originalLabel = this.originalLabel;
-        descriptor.label = this.label;
-        descriptor.color = this.color;
-        descriptor.customLabel = this.customLabel;
-        descriptor.customColor = this.customColor;
-        descriptor.ignored = this.ignored != null && this.ignored;
-        return descriptor;
+        PinnedShortcutDescriptor.Mutable mutable = new PinnedShortcutDescriptor.Mutable(id, uri, originalLabel);
+        mutable.setOriginalLabel(originalLabel);
+        mutable.setLabel(label);
+        mutable.setColor(color);
+        mutable.setCustomLabel(customLabel);
+        mutable.setCustomColor(customColor);
+        mutable.setIgnored(ignored != null && ignored);
+        return mutable.toDescriptor();
     }
 }

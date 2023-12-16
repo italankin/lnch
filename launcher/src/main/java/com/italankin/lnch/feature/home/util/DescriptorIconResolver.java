@@ -32,7 +32,7 @@ public class DescriptorIconResolver {
         } else if (descriptor instanceof DeepShortcutDescriptor) {
             DeepShortcutDescriptor d = (DeepShortcutDescriptor) descriptor;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                resolveResult.uriIcon(ShortcutIconLoader.uriFrom(d.packageName, d.id, true));
+                resolveResult.uriIcon(ShortcutIconLoader.uriFrom(d.packageName, d.shortcutId, true));
             } else {
                 resolveResult.resourceIcon(0);
             }

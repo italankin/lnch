@@ -2,19 +2,17 @@ package com.italankin.lnch.feature.settings.lookfeel;
 
 import com.arellomobile.mvp.MvpView;
 import com.italankin.lnch.feature.base.AppPresenter;
-import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
-import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import javax.inject.Inject;
+import java.util.List;
 
 public class LookAndFeelPresenter extends AppPresenter<MvpView> {
 
@@ -60,13 +58,13 @@ public class LookAndFeelPresenter extends AppPresenter<MvpView> {
         }
 
         @Override
-        public void apply(List<Descriptor> items) {
-            for (Descriptor item : items) {
-                if (item instanceof FolderDescriptor) {
+        public void apply(List<MutableDescriptor<?>> items) {
+            for (MutableDescriptor<?> item : items) {
+                if (item instanceof FolderDescriptor.Mutable) {
                     continue;
                 }
-                if (item instanceof CustomColorDescriptor) {
-                    ((CustomColorDescriptor) item).setCustomColor(newColor);
+                if (item instanceof CustomColorMutableDescriptor) {
+                    ((CustomColorMutableDescriptor<?>) item).setCustomColor(newColor);
                 }
             }
         }

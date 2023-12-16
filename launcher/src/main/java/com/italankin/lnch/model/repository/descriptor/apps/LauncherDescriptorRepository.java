@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.os.Process;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.AppDescriptorInteractor;
@@ -186,11 +187,11 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
         return Single
                 .fromCallable(() -> {
-                    List<Descriptor> items = new ArrayList<>(64);
+                    List<MutableDescriptor<?>> items = new ArrayList<>(64);
                     for (LauncherActivityInfo info : infoList) {
                         items.add(appDescriptorInteractor.createItem(info));
                     }
-                    return new AppsData(items, true);
+                    return AppsData.create(items, true);
                 });
     }
 
@@ -256,19 +257,23 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
             return Single
                     .fromCallable(() -> {
                         long start = System.nanoTime();
-                        List<Descriptor> result = new ArrayList<>(items.size());
+                        List<MutableDescriptor<?>> mutable = new ArrayList<>(items.size());
                         for (Descriptor item : items) {
-                            result.add(item.copy());
+                            mutable.add(item.toMutable());
                         }
                         int actionsSize = actions.size();
                         Iterator<Action> iter = actions.iterator();
                         while (iter.hasNext()) {
-                            iter.next().apply(result);
+                            iter.next().apply(mutable);
                             iter.remove();
+                        }
+                        List<Descriptor> newItems = new ArrayList<>(mutable.size());
+                        for (MutableDescriptor<?> descriptor : mutable) {
+                            newItems.add(descriptor.toDescriptor());
                         }
                         Timber.d("commit: applied %d actions in %.3fms",
                                 actionsSize, (System.nanoTime() - start) / 1_000_000f);
-                        return result;
+                        return newItems;
                     })
                     .doFinally(this::dispose)
                     .doOnSuccess(LauncherDescriptorRepository.this::writeToDisk)

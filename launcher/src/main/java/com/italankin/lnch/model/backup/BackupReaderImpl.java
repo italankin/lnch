@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.util.IOUtils;
@@ -45,18 +46,18 @@ public class BackupReaderImpl implements BackupReader {
     @Override
     public Completable read(Uri uri) {
         return Single.using(
-                () -> contentResolver.openInputStream(uri),
-                inputStream -> Single.fromCallable(() -> {
-                    try (InputStreamReader reader = getReader(inputStream)) {
-                        return gson.fromJson(reader, Backup.class);
-                    } catch (JsonSyntaxException e) {
-                        Timber.e(e, "read:");
-                        throw e;
-                    } catch (Exception e) {
-                        throw new RuntimeException("Restore failed: " + e.getMessage(), e);
-                    }
-                }),
-                IOUtils::closeQuietly)
+                        () -> contentResolver.openInputStream(uri),
+                        inputStream -> Single.fromCallable(() -> {
+                            try (InputStreamReader reader = getReader(inputStream)) {
+                                return gson.fromJson(reader, Backup.class);
+                            } catch (JsonSyntaxException e) {
+                                Timber.e(e, "read:");
+                                throw e;
+                            } catch (Exception e) {
+                                throw new RuntimeException("Restore failed: " + e.getMessage(), e);
+                            }
+                        }),
+                        IOUtils::closeQuietly)
                 .flatMapCompletable(this::applyBackup)
                 .onErrorResumeNext(throwable -> {
                     if (!(throwable instanceof JsonSyntaxException)) {
@@ -69,13 +70,13 @@ public class BackupReaderImpl implements BackupReader {
     @Override
     public Completable read(InputStreamFactory factory) {
         return Single.using(
-                factory::get,
-                inputStream -> Single.fromCallable(() -> {
-                    try (InputStreamReader reader = getReader(inputStream)) {
-                        return gson.fromJson(reader, Backup.class);
-                    }
-                }),
-                IOUtils::closeQuietly)
+                        factory::get,
+                        inputStream -> Single.fromCallable(() -> {
+                            try (InputStreamReader reader = getReader(inputStream)) {
+                                return gson.fromJson(reader, Backup.class);
+                            }
+                        }),
+                        IOUtils::closeQuietly)
                 .flatMapCompletable(this::applyBackup);
     }
 
@@ -126,9 +127,11 @@ public class BackupReaderImpl implements BackupReader {
         }
 
         @Override
-        public void apply(List<Descriptor> items) {
+        public void apply(List<MutableDescriptor<?>> items) {
             items.clear();
-            items.addAll(newItems);
+            for (Descriptor item : newItems) {
+                items.add(item.toMutable());
+            }
         }
     }
 }
