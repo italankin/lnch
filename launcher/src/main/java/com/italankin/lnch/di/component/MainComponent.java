@@ -44,7 +44,7 @@ public interface MainComponent extends PresenterComponent.Dependencies {
 
     HomeBus homeBus();
 
-    FontManager typefaceStorage();
+    FontManager fontManager();
 
     SettingsStore settingsStore();
 

@@ -46,7 +46,7 @@ public class WallpaperOverlayFragment extends AppFragment implements SettingsToo
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         preferences = LauncherApp.daggerService.main().preferences();
-        fontManager = LauncherApp.daggerService.main().typefaceStorage();
+        fontManager = LauncherApp.daggerService.main().fontManager();
     }
 
     @Nullable

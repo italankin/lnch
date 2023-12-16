@@ -80,7 +80,7 @@ public class AppearanceFragment extends AppFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
-        fontManager = LauncherApp.daggerService.main().typefaceStorage();
+        fontManager = LauncherApp.daggerService.main().fontManager();
         setHasOptionsMenu(true);
 
         onBackPressedCallback = new OnBackPressedCallback(false) {
