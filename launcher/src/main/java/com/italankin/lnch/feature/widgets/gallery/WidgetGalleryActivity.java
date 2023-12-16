@@ -25,7 +25,6 @@ import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.LruCache;
-import com.italankin.lnch.util.imageloader.resourceloader.WidgetPreviewLoader;
 import com.italankin.lnch.util.widget.LceLayout;
 import me.italankin.adapterdelegates.CompositeAdapter;
 

@@ -1,4 +1,4 @@
-package com.italankin.lnch.util.imageloader.resourceloader;
+package com.italankin.lnch.feature.widgets.gallery;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+import com.italankin.lnch.util.imageloader.resourceloader.ResourceLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +17,14 @@ import java.util.Map;
 public class WidgetPreviewLoader implements ResourceLoader {
 
     private static final String SCHEME = "widget.preview";
+    private static final String PARAM_ICON = "icon";
 
-    public static Uri uriFrom(ComponentName provider) {
+    public static Uri uriFrom(ComponentName provider, boolean icon) {
         return new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(provider.getPackageName())
                 .appendEncodedPath(provider.getClassName())
+                .appendQueryParameter(PARAM_ICON, String.valueOf(icon))
                 .build();
     }
 
@@ -57,7 +60,13 @@ public class WidgetPreviewLoader implements ResourceLoader {
         String className = uri.getLastPathSegment();
         AppWidgetProviderInfo info = providers.get(new ComponentName(packageName, className));
         if (info != null) {
-            Drawable drawable = info.loadPreviewImage(context, Resources.getSystem().getDisplayMetrics().densityDpi);
+            int densityDpi = Resources.getSystem().getDisplayMetrics().densityDpi;
+            Drawable drawable;
+            if ("true".equals(uri.getQueryParameter(PARAM_ICON))) {
+                drawable = info.loadIcon(context, densityDpi);
+            } else {
+                drawable = info.loadPreviewImage(context, densityDpi);
+            }
             if (drawable != null) {
                 return drawable;
             }

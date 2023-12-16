@@ -4,10 +4,9 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 import com.italankin.lnch.util.PackageUtils;
-import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
-import com.italankin.lnch.util.imageloader.resourceloader.WidgetPreviewLoader;
 import com.italankin.lnch.util.search.Searchable;
 
 import java.util.Set;
@@ -24,13 +23,12 @@ class WidgetPreview implements Searchable {
 
     WidgetPreview(Context context, PackageManager packageManager, AppWidgetProviderInfo info) {
         this.info = info;
-        this.previewUri = WidgetPreviewLoader.uriFrom(info.provider);
-        String packageName = info.provider.getPackageName();
-        this.iconUri = PackageIconLoader.uriFrom(packageName);
+        this.previewUri = WidgetPreviewLoader.uriFrom(info.provider, false);
+        this.iconUri = WidgetPreviewLoader.uriFrom(info.provider, true);
         this.label = info.loadLabel(packageManager);
-        CharSequence packageLabel = PackageUtils.getPackageLabel(packageManager, packageName);
+        CharSequence packageLabel = PackageUtils.getPackageLabel(packageManager, info.provider.getPackageName());
         this.appName = packageLabel != null ? packageLabel.toString() : null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             CharSequence desc = info.loadDescription(context);
             if (!TextUtils.isEmpty(desc)) {
                 description = desc.toString();
