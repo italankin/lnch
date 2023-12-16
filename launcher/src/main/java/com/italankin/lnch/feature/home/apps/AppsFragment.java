@@ -51,7 +51,6 @@ import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
-import com.italankin.lnch.feature.home.repository.EditModeChangeEvent;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
@@ -618,13 +617,12 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onStartCustomize() {
+    public void onStartEditMode() {
         setEditMode(true);
-        homeBus.post(EditModeChangeEvent.ENTER);
     }
 
     @Override
-    public void onConfirmDiscardChanges() {
+    public void onEditModeConfirmDiscardChanges() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.customize_discard_message)
                 .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
@@ -633,15 +631,13 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     @Override
-    public void onStopCustomize() {
+    public void onEditModeChangesDiscarded() {
         setEditMode(false);
-        homeBus.post(EditModeChangeEvent.DISCARD);
     }
 
     @Override
-    public void onChangesSaveStarted() {
+    public void onEditModeChangesSaved() {
         setEditMode(false);
-        homeBus.post(EditModeChangeEvent.COMMIT);
         Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 

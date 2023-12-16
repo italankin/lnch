@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import com.arellomobile.mvp.InjectViewState;
+import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
@@ -31,7 +33,6 @@ import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -45,29 +46,32 @@ import java.util.concurrent.TimeUnit;
 import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
+@AppScope
 public class AppsPresenter extends AppPresenter<AppsView> {
 
     private final HomeDescriptorsState homeDescriptorsState;
     private final DescriptorRepository descriptorRepository;
     private final ShortcutsRepository shortcutsRepository;
     private final NotificationsRepository notificationsRepository;
+    private final EditModeState editModeState;
     private final Preferences preferences;
     private final NameNormalizer nameNormalizer;
     private final FontManager fontManager;
-
-    private DescriptorRepository.Editor editor = EmptyEditor.INSTANCE;
 
     @Inject
     AppsPresenter(HomeDescriptorsState homeDescriptorsState,
             DescriptorRepository descriptorRepository,
             ShortcutsRepository shortcutsRepository,
             NotificationsRepository notificationsRepository,
-            Preferences preferences, NameNormalizer nameNormalizer,
+            EditModeState editModeState,
+            Preferences preferences,
+            NameNormalizer nameNormalizer,
             FontManager fontManager) {
         this.homeDescriptorsState = homeDescriptorsState;
         this.descriptorRepository = descriptorRepository;
         this.shortcutsRepository = shortcutsRepository;
         this.notificationsRepository = notificationsRepository;
+        this.editModeState = editModeState;
         this.preferences = preferences;
         this.nameNormalizer = nameNormalizer;
         this.fontManager = fontManager;
@@ -98,14 +102,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                     });
             return;
         }
-        if (editor == EmptyEditor.INSTANCE || editor.isDisposed()) {
-            editor = descriptorRepository.edit();
-        }
-        getViewState().onStartCustomize();
+        editModeState.activate();
+        getViewState().onStartEditMode();
     }
 
     void moveItem(int from, int to) {
-        editor.enqueue(new MoveAction(from, to));
+        editModeState.addAction(new MoveAction(from, to));
         homeDescriptorsState.moveItem(from, to);
     }
 
@@ -119,7 +121,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     void renameItem(CustomLabelDescriptorUi item, String customLabel) {
         String newLabel = customLabel == null || customLabel.isEmpty() ? null : customLabel;
-        editor.enqueue(new RenameAction(item.getDescriptor(), newLabel));
+        editModeState.addAction(new RenameAction(item.getDescriptor(), newLabel));
         item.setCustomLabel(newLabel);
         homeDescriptorsState.updateItem(item);
     }
@@ -133,7 +135,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void changeItemCustomColor(CustomColorDescriptorUi item, Integer color) {
-        editor.enqueue(new SetColorAction(item.getDescriptor(), color));
+        editModeState.addAction(new SetColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         homeDescriptorsState.updateItem(item);
     }
@@ -143,7 +145,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         if (entry == null) {
             return;
         }
-        editor.enqueue(new SetIgnoreAction(id, true));
+        editModeState.addAction(new SetIgnoreAction(id, true));
         IgnorableDescriptorUi item = entry.item;
         item.setIgnored(true);
         homeDescriptorsState.updateItem(item);
@@ -154,7 +156,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         if (entry == null) {
             return;
         }
-        editor.enqueue(new SetIgnoreAction(id, false));
+        editModeState.addAction(new SetIgnoreAction(id, false));
         IgnorableDescriptorUi item = entry.item;
         item.setIgnored(false);
         homeDescriptorsState.updateItem(item);
@@ -165,7 +167,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         FolderDescriptor.Mutable mutable = new FolderDescriptor.Mutable(label);
         mutable.setLabel(nameNormalizer.normalize(label));
         mutable.setColor(color);
-        editor.enqueue(new AddAction(mutable));
+        editModeState.addAction(new AddAction(mutable));
         FolderDescriptor descriptor = mutable.toDescriptor();
         FolderDescriptorUi folderUi = new FolderDescriptorUi(descriptor);
         homeDescriptorsState.insertItem(folderUi);
@@ -186,7 +188,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             return;
         }
         if (move) {
-            editor.enqueue(new AddToFolderAction(folderId, descriptorId, true));
+            editModeState.addAction(new AddToFolderAction(folderId, descriptorId, true));
             HomeEntry<IgnorableDescriptorUi> ignorableEntry = homeDescriptorsState.find(
                     IgnorableDescriptorUi.class, descriptorId);
             if (ignorableEntry != null) {
@@ -194,7 +196,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 homeDescriptorsState.updateItem(ignorableEntry.item);
             }
         } else {
-            editor.enqueue(new AddToFolderAction(folderId, descriptorId, false));
+            editModeState.addAction(new AddToFolderAction(folderId, descriptorId, false));
         }
         folder.items.add(descriptorId);
         getViewState().onFolderUpdated(folder, true, move);
@@ -211,7 +213,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     void addIntent(Intent intent, String label) {
         IntentDescriptor.Mutable item = new IntentDescriptor.Mutable(intent, label);
         item.setLabel(nameNormalizer.normalize(label));
-        editor.enqueue(new AddAction(item));
+        editModeState.addAction(new AddAction(item));
         homeDescriptorsState.insertItem(new IntentDescriptorUi(item.toDescriptor()));
     }
 
@@ -228,27 +230,26 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         if (entry == null) {
             return;
         }
-        editor.enqueue(new EditIntentAction(id, intent));
+        editModeState.addAction(new EditIntentAction(id, intent));
         entry.item.intent = intent;
     }
 
     void removeItem(String id) {
-        editor.enqueue(new RemoveAction(id));
+        editModeState.addAction(new RemoveAction(id));
         homeDescriptorsState.removeById(id);
     }
 
     void confirmDiscardChanges() {
-        if (editor.isEmpty()) {
-            discardChanges();
+        if (editModeState.hasSomethingToCommit()) {
+            getViewState().onEditModeConfirmDiscardChanges();
         } else {
-            getViewState().onConfirmDiscardChanges();
+            discardChanges();
         }
     }
 
     void discardChanges() {
-        editor.dispose();
-        editor = EmptyEditor.INSTANCE;
-        getViewState().onStopCustomize();
+        editModeState.discard();
+        getViewState().onEditModeChangesDiscarded();
         update();
     }
 
@@ -262,21 +263,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     }
 
     void stopCustomize() {
-        if (editor.isEmpty()) {
+        if (editModeState.hasSomethingToCommit()) {
+            editModeState.commit();
+            getViewState().onEditModeChangesSaved();
+        } else {
             discardChanges();
-            return;
         }
-        editor.commit()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableState() {
-                    @Override
-                    protected void onError(AppsView viewState, Throwable e) {
-                        viewState.showError(e);
-                    }
-                });
-        editor = EmptyEditor.INSTANCE;
-        getViewState().onChangesSaveStarted();
     }
 
     void pinShortcut(String packageName, String shortcutId) {
@@ -355,7 +347,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     void removeItemImmediate(RemovableDescriptorUi item) {
         DescriptorRepository.Editor editor = descriptorRepository.edit();
         String descriptorId = item.getDescriptor().getId();
-        editor.enqueue(new RemoveAction(descriptorId));
+        editModeState.addAction(new RemoveAction(descriptorId));
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
@@ -400,7 +392,7 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private void observe() {
         Observable.combineLatest(observeApps(), observeUserPrefs(), Update::with)
-                .filter(appItems -> editor == EmptyEditor.INSTANCE)
+                .filter(appItems -> !editModeState.isActive())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new State<Update>() {
                     @Override
@@ -610,39 +602,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 }
             }
             return byDescriptorId;
-        }
-    }
-
-    private static class EmptyEditor implements DescriptorRepository.Editor {
-        private static final DescriptorRepository.Editor INSTANCE = new EmptyEditor();
-
-        @Override
-        public DescriptorRepository.Editor enqueue(Action action) {
-            return this;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public DescriptorRepository.Editor clear() {
-            return this;
-        }
-
-        @Override
-        public Completable commit() {
-            return Completable.complete();
-        }
-
-        @Override
-        public void dispose() {
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return true;
         }
     }
 }

@@ -25,7 +25,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.home.apps.AppsFragment;
 import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
-import com.italankin.lnch.feature.home.repository.EditModeChangeEvent;
+import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -41,7 +41,8 @@ import io.reactivex.disposables.Disposable;
 
 import java.util.*;
 
-public class HomeActivity extends AppCompatActivity implements WidgetsFragment.Callback, HomeBus.EventListener {
+public class HomeActivity extends AppCompatActivity implements WidgetsFragment.Callback, HomeBus.EventListener,
+        EditModeState.Callback {
 
     private Preferences preferences;
     private IntentQueue intentQueue;
@@ -85,6 +86,11 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
 
         HomeBus homeBus = LauncherApp.daggerService.main().homeBus();
         homeBus.subscribe(this, this);
+        EditModeState editModeState = LauncherApp.daggerService.main().editModeState();
+        editModeState.addCallback(this, this);
+
+        homeScreenState.editMode = editModeState.isActive();
+        syncHomeState();
     }
 
     @Override
@@ -148,25 +154,31 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
 
     @Override
     public void onHomeEvent(HomeBus bus, HomeBus.Event event) {
-        if (event instanceof EditModeChangeEvent) {
-            switch (((EditModeChangeEvent) event)) {
-                case ENTER:
-                    homeScreenState.editMode = true;
-                    break;
-                case COMMIT:
-                    homeScreenState.editMode = false;
-                    break;
-                case DISCARD:
-                    homeScreenState.editMode = false;
-                    resetFromUserPreferences();
-                    break;
-            }
-        } else if (event instanceof WidgetEditModeChangeEvent) {
+        if (event instanceof WidgetEditModeChangeEvent) {
             homeScreenState.widgetsEditMode = event == WidgetEditModeChangeEvent.ENTER;
         } else if (event instanceof SearchStateEvent) {
             homeScreenState.searchVisible = event == SearchStateEvent.SHOWN;
         }
-        viewPager.setUserInputEnabled(homeScreenState.pagerUserInoutEnabled());
+        syncHomeState();
+    }
+
+    @Override
+    public void onEditModeActivate() {
+        homeScreenState.editMode = true;
+        syncHomeState();
+    }
+
+    @Override
+    public void onEditModeDiscard() {
+        homeScreenState.editMode = false;
+        resetFromUserPreferences();
+        syncHomeState();
+    }
+
+    @Override
+    public void onEditModeCommit() {
+        homeScreenState.editMode = false;
+        syncHomeState();
     }
 
     @Override
@@ -319,6 +331,10 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
 
     private boolean isWidgetsEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && preferences.get(Preferences.ENABLE_WIDGETS);
+    }
+
+    private void syncHomeState() {
+        viewPager.setUserInputEnabled(homeScreenState.pagerUserInoutEnabled());
     }
 
     private void resetFromUserPreferences() {

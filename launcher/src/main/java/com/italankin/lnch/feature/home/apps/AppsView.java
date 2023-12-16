@@ -2,7 +2,6 @@ package com.italankin.lnch.feature.home.apps;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
-import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.italankin.lnch.feature.base.state.OneExecutionTagStrategy;
 import com.italankin.lnch.feature.base.state.TagStrategy;
@@ -23,13 +22,13 @@ interface AppsView extends MvpView {
     String CONTENT = "content";
     String CUSTOMIZE = "customize";
 
-    @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
+    @StateStrategyType(value = TagStrategy.class, tag = CONTENT)
     void showProgress();
 
-    @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
+    @StateStrategyType(value = TagStrategy.class, tag = CONTENT)
     void onReceiveUpdate(Update update);
 
-    @StateStrategyType(value = SingleStateStrategy.class, tag = CONTENT)
+    @StateStrategyType(value = TagStrategy.class, tag = CONTENT)
     void onReceiveUpdateError(Throwable e);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -54,16 +53,16 @@ interface AppsView extends MvpView {
     void onFolderUpdated(FolderDescriptorUi item, boolean added, boolean moved);
 
     @StateStrategyType(value = TagStrategy.class, tag = CUSTOMIZE)
-    void onStartCustomize();
-
-    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
-    void onStopCustomize();
+    void onStartEditMode();
 
     @StateStrategyType(value = OneExecutionStateStrategy.class)
-    void onConfirmDiscardChanges();
+    void onEditModeConfirmDiscardChanges();
 
     @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
-    void onChangesSaveStarted();
+    void onEditModeChangesDiscarded();
+
+    @StateStrategyType(value = OneExecutionTagStrategy.class, tag = CUSTOMIZE)
+    void onEditModeChangesSaved();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showDeleteDialog(RemovableDescriptorUi item);

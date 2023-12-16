@@ -3,6 +3,7 @@ package com.italankin.lnch.feature.home.apps.folder;
 import android.content.Intent;
 import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
+import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.fonts.FontManager;
@@ -22,10 +23,13 @@ import java.util.Iterator;
 @InjectViewState
 public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
 
+    private final EditModeState editModeState;
+
     @Inject
     EditFolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
-            Preferences preferences, FontManager fontManager) {
+            Preferences preferences, FontManager fontManager, EditModeState editModeState) {
         super(homeDescriptorsState, descriptorRepository, preferences, fontManager);
+        this.editModeState = editModeState;
     }
 
     void startEditIntent(String descriptorId) {
@@ -46,8 +50,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
     }
 
     void renameItem(int position, CustomLabelDescriptorUi item, String newLabel) {
-        descriptorRepository.edit()
-                .enqueue(new RenameAction(item.getDescriptor(), newLabel));
+        editModeState.addAction(new RenameAction(item.getDescriptor(), newLabel));
         item.setCustomLabel(newLabel);
         homeDescriptorsState.updateItem(item);
         getViewState().onItemChanged(position);
@@ -63,16 +66,14 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
     }
 
     void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
-        descriptorRepository.edit()
-                .enqueue(new SetColorAction(item.getDescriptor(), color));
+        editModeState.addAction(new SetColorAction(item.getDescriptor(), color));
         item.setCustomColor(color);
         homeDescriptorsState.updateItem(item);
         getViewState().onItemChanged(position);
     }
 
     void editIntent(String descriptorId, Intent intent) {
-        descriptorRepository.edit()
-                .enqueue(new EditIntentAction(descriptorId, intent));
+        editModeState.addAction(new EditIntentAction(descriptorId, intent));
         for (DescriptorUi item : items) {
             if (item.getDescriptor().getId().equals(descriptorId)) {
                 IntentDescriptorUi intentItem = (IntentDescriptorUi) item;
@@ -83,8 +84,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
     }
 
     void moveItem(int from, int to) {
-        descriptorRepository.edit()
-                .enqueue(new FolderMoveAction(folder.getDescriptor(), from, to));
+        editModeState.addAction(new FolderMoveAction(folder.getDescriptor(), from, to));
         ListUtils.move(folder.items, from, to);
         ListUtils.move(items, from, to);
         getViewState().onFolderItemMove(from, to);
@@ -94,8 +94,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         if (!folder.getDescriptor().getId().equals(folderId)) {
             return;
         }
-        DescriptorRepository.Editor editor = descriptorRepository.edit();
-        editor.enqueue(new RemoveFromFolderAction(folderId, descriptorId, moveToDesktop));
+        editModeState.addAction(new RemoveFromFolderAction(folderId, descriptorId, moveToDesktop));
         removeFromFolder(descriptorId);
         if (moveToDesktop) {
             HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, descriptorId);
@@ -104,7 +103,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
                 homeDescriptorsState.updateItem(entry.item);
 
                 int last = homeDescriptorsState.items().size() - 1;
-                editor.enqueue(new MoveAction(entry.position, last));
+                editModeState.addAction(new MoveAction(entry.position, last));
                 homeDescriptorsState.moveItem(entry.position, last);
             }
         }
@@ -119,8 +118,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         if (position == -1) {
             return;
         }
-        descriptorRepository.edit()
-                .enqueue(new RemoveAction(descriptorId));
+        editModeState.addAction(new RemoveAction(descriptorId));
         homeDescriptorsState.removeById(descriptorId);
         removeFromFolder(descriptorId);
         getViewState().onFolderUpdated(items);

@@ -136,7 +136,9 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
             container.setMinimumHeight((int) (dm.heightPixels * MIN_FULLSCREEN_HEIGHT_FACTOR));
         } else {
             Point anchor = requireArguments().getParcelable(ARG_ANCHOR);
-            alignFrameView.setAnchorPoint(anchor.x, anchor.y);
+            if (anchor != null) {
+                alignFrameView.setAnchorPoint(anchor.x, anchor.y);
+            }
         }
 
         alignFrameView.post(() -> {
