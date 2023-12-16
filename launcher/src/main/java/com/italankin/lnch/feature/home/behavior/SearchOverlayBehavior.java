@@ -78,7 +78,7 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
                 ? ScrollState.UNKNOWN
                 : (dyUnconsumed > 0 ? ScrollState.BOTTOM : ScrollState.TOP);
         if (dragInProgress) {
-            onDrag(dyUnconsumed);
+            consumed[1] = onDrag(dyUnconsumed);
         }
     }
 
@@ -244,9 +244,13 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
                 .start();
     }
 
-    private void onDrag(int dy) {
+    /**
+     * @param dy amount of scrolled pixels
+     * @return consumed amount of scroll
+     */
+    private int onDrag(int dy) {
         if (dy == 0) {
-            return;
+            return 0;
         }
         float currentTopViewTy = topView.getTranslationY();
         float progress = Math.abs(currentTopViewTy) / maxOffset;
@@ -254,6 +258,14 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         float actualDy = dy * resistanceFactor;
 
         float topViewTy = box(currentTopViewTy - actualDy, -maxOffset, 0);
+        if (topViewTy == topView.getTranslationY()) {
+            if (topViewTy != -maxOffset) {
+                // if already at max offset (search bar is shown), consume event to allow showExpand trigger
+                return dy;
+            }
+            // allow overscroll effect when search bar is hidden
+            return 0;
+        }
         topView.setTranslationY(topViewTy);
         float v = Math.abs(topViewTy) / maxOffset;
         topView.setAlpha(1 - v);
@@ -261,6 +273,8 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
 
         float bottomViewTy = box(bottomView.getTranslationY() - actualDy, 0, maxOffset);
         bottomView.setTranslationY(bottomViewTy);
+
+        return dy;
     }
 
     private void jumpToActualState() {
