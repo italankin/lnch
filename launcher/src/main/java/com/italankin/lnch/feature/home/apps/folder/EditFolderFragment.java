@@ -7,12 +7,12 @@ import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
@@ -68,13 +68,7 @@ public class EditFolderFragment extends BaseFolderFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) LauncherApp.daggerService.presenters().editFolder();
-            }
-        }).get(EditFolderViewModel.class);
+        viewModel = AppViewModelProvider.get(this, EditFolderViewModel.class, PresenterComponent::editFolder);
         preferences = LauncherApp.daggerService.main().preferences();
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 

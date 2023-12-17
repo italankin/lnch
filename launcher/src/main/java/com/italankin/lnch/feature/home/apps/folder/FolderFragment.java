@@ -5,12 +5,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
@@ -51,13 +50,7 @@ public class FolderFragment extends BaseFolderFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) LauncherApp.daggerService.presenters().folder();
-            }
-        }).get(FolderViewModel.class);
+        viewModel = AppViewModelProvider.get(this, FolderViewModel.class, PresenterComponent::folder);
         fragmentResultManager
                 .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     viewModel.removeFromFolderImmediate(result.descriptorId);
