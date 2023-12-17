@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
-import com.arellomobile.mvp.MvpView;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
@@ -14,14 +13,14 @@ import timber.log.Timber;
 import javax.inject.Inject;
 import java.util.List;
 
-public class LookAndFeelPresenter extends AppPresenter<MvpView> {
+public class LookAndFeelViewModel extends AppViewModel {
 
     private final DescriptorRepository descriptorRepository;
     private final Preferences preferences;
     private final boolean showOverlay;
 
     @Inject
-    LookAndFeelPresenter(DescriptorRepository descriptorRepository, Preferences preferences) {
+    LookAndFeelViewModel(DescriptorRepository descriptorRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
         this.preferences = preferences;
         this.showOverlay = preferences.get(Preferences.APPS_COLOR_OVERLAY_SHOW);

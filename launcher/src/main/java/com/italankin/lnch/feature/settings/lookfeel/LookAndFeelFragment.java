@@ -7,18 +7,17 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import com.arellomobile.mvp.MvpView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.material.color.DynamicColors;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class LookAndFeelFragment extends AppPreferenceFragment implements MvpView, SettingsToolbarTitle {
+public class LookAndFeelFragment extends AppPreferenceFragment implements SettingsToolbarTitle {
 
     public static LookAndFeelFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -28,15 +27,8 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
         return fragment;
     }
 
-    @InjectPresenter
-    LookAndFeelPresenter presenter;
-
+    private LookAndFeelViewModel viewModel;
     private Preferences preferences;
-
-    @ProvidePresenter
-    LookAndFeelPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().lookAndFeel();
-    }
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -46,13 +38,14 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements MvpVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, LookAndFeelViewModel.class, PresenterComponent::lookAndFeel);
         preferences = LauncherApp.daggerService.main().preferences();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter.saveData();
+        viewModel.saveData();
     }
 
     @Override
