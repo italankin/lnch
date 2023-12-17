@@ -7,15 +7,17 @@ import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
@@ -30,7 +32,7 @@ import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
 
-public class EditFolderFragment extends BaseFolderFragment implements EditFolderView, MoveItemHelper.Callback {
+public class EditFolderFragment extends BaseFolderFragment {
 
     public static EditFolderFragment newInstance(
             FolderDescriptor descriptor,
@@ -41,46 +43,65 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         return fragment;
     }
 
-    @InjectPresenter
-    EditFolderPresenter presenter;
+    private EditFolderViewModel viewModel;
 
     private Preferences preferences;
+    private HomeDescriptorsState homeDescriptorsState;
 
     private final ActivityResultLauncher<IntentDescriptorUi> editIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.EditContract(),
             this::onIntentEdited);
 
-    private final ItemTouchHelper touchHelper = new ItemTouchHelper(new MoveItemHelper(this));
-
-    @ProvidePresenter
-    EditFolderPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().editFolder();
-    }
+    private final ItemTouchHelper touchHelper = new ItemTouchHelper(new MoveItemHelper(new MoveItemHelper.Callback() {
+        @Override
+        public void onItemMove(int from, int to) {
+            viewModel.moveItem(from, to);
+            adapter.notifyItemMoved(from, to);
+        }
+    }));
 
     @Override
-    protected BaseFolderPresenter<? extends BaseFolderView> getPresenter() {
-        return presenter;
+    protected BaseFolderViewModel getViewModel() {
+        return viewModel;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) LauncherApp.daggerService.presenters().editFolder();
+            }
+        }).get(EditFolderViewModel.class);
         preferences = LauncherApp.daggerService.main().preferences();
+        homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
+
         fragmentResultManager
                 .register(new CustomizeDescriptorPopupFragment.RenameContract(), descriptorId -> {
-                    presenter.showRenameDialog(descriptorId);
+                    HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, descriptorId);
+                    if (entry != null) {
+                        onShowRenameDialog(entry.item);
+                    }
                 })
                 .register(new CustomizeDescriptorPopupFragment.SetColorContract(), descriptorId -> {
-                    presenter.showSetColorDialog(descriptorId);
+                    HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, descriptorId);
+                    if (entry != null) {
+                        onShowSetColorDialog(entry.item);
+                    }
                 })
                 .register(new CustomizeDescriptorPopupFragment.RemoveContract(), descriptorId -> {
-                    presenter.removeItem(descriptorId);
+                    viewModel.removeItem(descriptorId);
                 })
                 .register(new CustomizeDescriptorPopupFragment.EditIntentContract(), descriptorId -> {
-                    presenter.startEditIntent(descriptorId);
+                    HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+                    if (entry != null) {
+                        editIntentLauncher.launch(entry.item);
+                    }
                 })
                 .register(new CustomizeDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
-                    presenter.removeFromFolder(result.descriptorId, result.folderId, result.moveToDesktop);
+                    viewModel.removeFromFolder(result.descriptorId, result.folderId, result.moveToDesktop);
                 });
         drawOverlay = true;
     }
@@ -91,47 +112,16 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         touchHelper.attachToRecyclerView(list);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // View state
-    ///////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onShowRenameDialog(int position, CustomLabelDescriptorUi item) {
+    private void onShowRenameDialog(CustomLabelDescriptorUi item) {
         new RenameDescriptorDialog(requireContext(), item.getVisibleLabel(),
-                newLabel -> presenter.renameItem(position, item, newLabel))
+                newLabel -> viewModel.renameItem(item, newLabel))
                 .show();
     }
 
-    @Override
-    public void onShowSetColorDialog(int position, CustomColorDescriptorUi item) {
+    private void onShowSetColorDialog(CustomColorDescriptorUi item) {
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
-                newColor -> presenter.changeItemCustomColor(position, item, newColor))
+                newColor -> viewModel.setCustomColor(item, newColor))
                 .show();
-    }
-
-    @Override
-    public void onEditIntent(IntentDescriptorUi item) {
-        editIntentLauncher.launch(item);
-    }
-
-    @Override
-    public void onItemChanged(int position) {
-        adapter.notifyItemChanged(position);
-    }
-
-    @Override
-    public void onItemRemoved(int position) {
-        adapter.notifyItemRemoved(position);
-    }
-
-    @Override
-    public void onFolderItemMove(int from, int to) {
-        adapter.notifyItemMoved(from, to);
-    }
-
-    @Override
-    public void onItemMove(int from, int to) {
-        presenter.moveItem(from, to);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -211,6 +201,6 @@ public class EditFolderFragment extends BaseFolderFragment implements EditFolder
         if (result == null || result.descriptorId == null) {
             return;
         }
-        presenter.editIntent(result.descriptorId, result.intent);
+        viewModel.editIntent(result.descriptorId, result.intent);
     }
 }

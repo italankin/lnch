@@ -40,8 +40,7 @@ import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
 
-abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
-        AppDescriptorUiAdapter.Listener,
+abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
         DeepShortcutDescriptorUiAdapter.Listener {
@@ -87,7 +86,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
     private boolean isFullscreen;
     private int backstackId = -1;
 
-    protected abstract BaseFolderPresenter<? extends BaseFolderView> getPresenter();
+    protected abstract BaseFolderViewModel getViewModel();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,15 +168,44 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
 
         initDelegates(requireContext());
 
-        getPresenter().loadFolder(folderId);
+        getViewModel()
+                .showFolderEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(FolderState state) {
+                        onShowFolder(state.folder.getVisibleLabel(), state.items, state.userPrefs, state.animated);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorDelegate.showError(e.getMessage());
+                    }
+                });
+
+        getViewModel()
+                .folderUpdateEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<DescriptorUi> items) {
+                        onFolderUpdated(items);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorDelegate.showError(e.getMessage());
+                    }
+                });
+
+        if (savedInstanceState == null) {
+            getViewModel().loadFolder(folderId, true);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // View state
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs, boolean animated) {
+    protected void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs, boolean animated) {
         title.setText(folderTitle);
         title.setTypeface(userPrefs.itemPrefs.typeface);
         adapter.updateUserPrefs(userPrefs);
@@ -189,8 +217,7 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
         }
     }
 
-    @Override
-    public void onFolderUpdated(List<DescriptorUi> items) {
+    protected void onFolderUpdated(List<DescriptorUi> items) {
         adapter.setDataset(items);
         adapter.notifyDataSetChanged();
     }
@@ -203,11 +230,6 @@ abstract class BaseFolderFragment extends AppFragment implements BaseFolderView,
                 dismiss();
             }
         };
-    }
-
-    @Override
-    public void onError(Throwable error) {
-        errorDelegate.showError(error.getMessage());
     }
 
     ///////////////////////////////////////////////////////////////////////////

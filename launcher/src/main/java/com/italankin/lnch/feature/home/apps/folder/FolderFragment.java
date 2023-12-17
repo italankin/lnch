@@ -5,32 +5,18 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
-
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
@@ -39,10 +25,7 @@ import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.ViewUtils;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
-public class FolderFragment extends BaseFolderFragment implements FolderView {
+public class FolderFragment extends BaseFolderFragment {
 
     public static FolderFragment newInstance(
             FolderDescriptor descriptor,
@@ -53,30 +36,31 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         return fragment;
     }
 
-    @InjectPresenter
-    FolderPresenter presenter;
+    private FolderViewModel viewModel;
 
     protected AppClickDelegate appClickDelegate;
     protected PinnedShortcutClickDelegate pinnedShortcutClickDelegate;
     protected DeepShortcutClickDelegate deepShortcutClickDelegate;
     protected IntentClickDelegate intentClickDelegate;
 
-    @ProvidePresenter
-    FolderPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().folder();
-    }
-
     @Override
-    protected BaseFolderPresenter<? extends BaseFolderView> getPresenter() {
-        return presenter;
+    protected BaseFolderViewModel getViewModel() {
+        return viewModel;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) LauncherApp.daggerService.presenters().folder();
+            }
+        }).get(FolderViewModel.class);
         fragmentResultManager
                 .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
-                    presenter.removeFromFolderImmediate(result.descriptorId);
+                    viewModel.removeFromFolderImmediate(result.descriptorId);
                 });
     }
 
@@ -120,18 +104,6 @@ public class FolderFragment extends BaseFolderFragment implements FolderView {
         intentClickDelegate = new IntentClickDelegateImpl(searchIntentStarterDelegate, itemPopupDelegate);
         appClickDelegate = new AppClickDelegateImpl(context, preferences, errorDelegate, itemPopupDelegate,
                 usageTracker);
-    }
-
-    @Override
-    public void onShortcutPinned(Shortcut shortcut) {
-        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onShortcutAlreadyPinnedError(Shortcut shortcut) {
-        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
-                Toast.LENGTH_SHORT).show();
     }
 
     ///////////////////////////////////////////////////////////////////////////

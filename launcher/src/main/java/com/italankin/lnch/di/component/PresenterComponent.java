@@ -3,8 +3,8 @@ package com.italankin.lnch.di.component;
 import android.content.Context;
 import com.italankin.lnch.di.scope.AppScope;
 import com.italankin.lnch.feature.home.apps.AppsPresenter;
-import com.italankin.lnch.feature.home.apps.folder.EditFolderPresenter;
-import com.italankin.lnch.feature.home.apps.folder.FolderPresenter;
+import com.italankin.lnch.feature.home.apps.folder.EditFolderViewModel;
+import com.italankin.lnch.feature.home.apps.folder.FolderViewModel;
 import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorPresenter;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsPresenter;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsPresenter;
@@ -24,9 +24,9 @@ public interface PresenterComponent {
 
     AppsPresenter apps();
 
-    FolderPresenter folder();
+    FolderViewModel folder();
 
-    EditFolderPresenter editFolder();
+    EditFolderViewModel editFolder();
 
     AppsSettingsPresenter appsSettings();
 

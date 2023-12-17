@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.home.apps.folder;
 
 import android.content.Intent;
-import com.arellomobile.mvp.InjectViewState;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUi;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
@@ -20,56 +19,15 @@ import com.italankin.lnch.util.ListUtils;
 import javax.inject.Inject;
 import java.util.Iterator;
 
-@InjectViewState
-public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
+public class EditFolderViewModel extends BaseFolderViewModel {
 
     private final EditModeState editModeState;
 
     @Inject
-    EditFolderPresenter(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
+    EditFolderViewModel(HomeDescriptorsState homeDescriptorsState, DescriptorRepository descriptorRepository,
             Preferences preferences, FontManager fontManager, EditModeState editModeState) {
         super(homeDescriptorsState, descriptorRepository, preferences, fontManager);
         this.editModeState = editModeState;
-    }
-
-    void startEditIntent(String descriptorId) {
-        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        getViewState().onEditIntent(entry.item);
-    }
-
-    void showRenameDialog(String descriptorId) {
-        int position = findDescriptorIndex(descriptorId);
-        if (position == -1) {
-            return;
-        }
-        CustomLabelDescriptorUi item = (CustomLabelDescriptorUi) items.get(position);
-        getViewState().onShowRenameDialog(position, item);
-    }
-
-    void renameItem(int position, CustomLabelDescriptorUi item, String newLabel) {
-        editModeState.addAction(new RenameAction(item.getDescriptor(), newLabel));
-        item.setCustomLabel(newLabel);
-        homeDescriptorsState.updateItem(item);
-        getViewState().onItemChanged(position);
-    }
-
-    void showSetColorDialog(String descriptorId) {
-        int position = findDescriptorIndex(descriptorId);
-        if (position == -1) {
-            return;
-        }
-        CustomColorDescriptorUi item = (CustomColorDescriptorUi) items.get(position);
-        getViewState().onShowSetColorDialog(position, item);
-    }
-
-    void changeItemCustomColor(int position, CustomColorDescriptorUi item, Integer color) {
-        editModeState.addAction(new SetColorAction(item.getDescriptor(), color));
-        item.setCustomColor(color);
-        homeDescriptorsState.updateItem(item);
-        getViewState().onItemChanged(position);
     }
 
     void editIntent(String descriptorId, Intent intent) {
@@ -87,7 +45,6 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         editModeState.addAction(new FolderMoveAction(folder.getDescriptor(), from, to));
         ListUtils.move(folder.items, from, to);
         ListUtils.move(items, from, to);
-        getViewState().onFolderItemMove(from, to);
     }
 
     void removeFromFolder(String descriptorId, String folderId, boolean moveToDesktop) {
@@ -110,7 +67,21 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         if (items.isEmpty()) {
             items.add(new EmptyFolderDescriptorUi());
         }
-        getViewState().onFolderUpdated(items);
+        folderUpdateEvents.onNext(items);
+    }
+
+    void renameItem(CustomLabelDescriptorUi item, String newLabel) {
+        editModeState.addAction(new RenameAction(item.getDescriptor(), newLabel));
+        item.setCustomLabel(newLabel);
+        homeDescriptorsState.updateItem(item);
+        folderUpdateEvents.onNext(items);
+    }
+
+    void setCustomColor(CustomColorDescriptorUi item, Integer newColor) {
+        editModeState.addAction(new SetColorAction(item.getDescriptor(), newColor));
+        item.setCustomColor(newColor);
+        homeDescriptorsState.updateItem(item);
+        folderUpdateEvents.onNext(items);
     }
 
     void removeItem(String descriptorId) {
@@ -121,7 +92,7 @@ public class EditFolderPresenter extends BaseFolderPresenter<EditFolderView> {
         editModeState.addAction(new RemoveAction(descriptorId));
         homeDescriptorsState.removeById(descriptorId);
         removeFromFolder(descriptorId);
-        getViewState().onFolderUpdated(items);
+        folderUpdateEvents.onNext(items);
     }
 
     private void removeFromFolder(String descriptorId) {
