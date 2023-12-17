@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppActivity;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.feature.intentfactory.componentselector.adapter.ComponentNameAdapter;
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
@@ -29,18 +29,10 @@ import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-public class ComponentSelectorActivity extends AppActivity implements ComponentSelectorView,
-        ComponentNameAdapter.Listener, ListFilter.OnFilterResult<ComponentNameUi> {
+public class ComponentSelectorActivity extends AppActivity implements ComponentNameAdapter.Listener,
+        ListFilter.OnFilterResult<ComponentNameUi> {
 
     private static final String EXTRA_RESULT = "result";
-
-    @InjectPresenter
-    ComponentSelectorPresenter presenter;
-
-    @ProvidePresenter
-    ComponentSelectorPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().componentSelector();
-    }
 
     private LceLayout lce;
     private ComponentNameAdapter adapter;
@@ -73,6 +65,16 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
         list.setAdapter(adapter);
 
         lce.showLoading();
+
+        ComponentSelectorViewModel viewModel = AppViewModelProvider.get(this, ComponentSelectorViewModel.class,
+                ViewModelComponent::componentSelector);
+        viewModel.componentsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<ComponentNameUi> componentNames) {
+                        filter.setDataset(componentNames);
+                    }
+                });
     }
 
     @Override
@@ -114,11 +116,6 @@ public class ComponentSelectorActivity extends AppActivity implements ComponentS
                     .message(R.string.intent_component_selector_empty)
                     .show();
         }
-    }
-
-    @Override
-    public void onComponentsLoaded(List<ComponentNameUi> componentNames) {
-        filter.setDataset(componentNames);
     }
 
     public static class Contract extends ActivityResultContract<Void, ComponentName> {

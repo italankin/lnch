@@ -6,33 +6,36 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.feature.intentfactory.componentselector.model.ComponentNameUi;
 import com.italankin.lnch.util.imageloader.resourceloader.ActivityIconLoader;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 
-@InjectViewState
-public class ComponentSelectorPresenter extends AppPresenter<ComponentSelectorView> {
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ComponentSelectorViewModel extends AppViewModel {
 
     private final PackageManager packageManager;
+    private final BehaviorSubject<List<ComponentNameUi>> componentsSubject = BehaviorSubject.create();
 
     @Inject
-    ComponentSelectorPresenter(Context context) {
+    ComponentSelectorViewModel(Context context) {
         this.packageManager = context.getPackageManager();
+
+        loadComponents();
     }
 
-    @Override
-    protected void onFirstViewAttach() {
+    Observable<List<ComponentNameUi>> componentsEvents() {
+        return componentsSubject.observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void loadComponents() {
         Single
                 .fromCallable(() -> {
                     List<PackageInfo> packages = packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES);
@@ -58,12 +61,11 @@ public class ComponentSelectorPresenter extends AppPresenter<ComponentSelectorVi
                     }
                     return activities;
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<List<ComponentNameUi>>() {
+                .subscribeOn(Schedulers.computation())
+                .subscribe(new SingleState<>() {
                     @Override
-                    protected void onSuccess(ComponentSelectorView viewState, List<ComponentNameUi> result) {
-                        viewState.onComponentsLoaded(result);
+                    public void onSuccess(List<ComponentNameUi> result) {
+                        componentsSubject.onNext(result);
                     }
                 });
     }
