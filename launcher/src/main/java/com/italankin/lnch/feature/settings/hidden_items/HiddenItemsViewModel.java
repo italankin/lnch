@@ -1,13 +1,14 @@
 package com.italankin.lnch.feature.settings.hidden_items;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import javax.inject.Inject;
@@ -15,35 +16,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@InjectViewState
-public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
+public class HiddenItemsViewModel extends AppViewModel {
 
     private final DescriptorRepository descriptorRepository;
+    private final BehaviorSubject<List<HiddenItem>> hiddenItemsSubject = BehaviorSubject.create();
 
     @Inject
-    public HiddenItemsPresenter(DescriptorRepository descriptorRepository) {
+    public HiddenItemsViewModel(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
-    }
 
-    @Override
-    protected void onFirstViewAttach() {
         observeApps();
     }
 
-    void showItem(IgnorableDescriptor descriptor) {
-        descriptorRepository.edit()
-                .enqueue(new SetIgnoreAction(descriptor, false))
-                .commit()
-                .subscribe(new CompletableState() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("Changes saved");
-                    }
-                });
+    Observable<List<HiddenItem>> hiddenItemsEvents() {
+        return hiddenItemsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
     void observeApps() {
-        getViewState().showLoading();
         descriptorRepository.observe(true)
                 .map(descriptors -> {
                     ArrayList<HiddenItem> list = new ArrayList<>();
@@ -60,17 +49,28 @@ public class HiddenItemsPresenter extends AppPresenter<HiddenItemsView> {
                     });
                     return list;
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.computation())
                 .subscribe(new State<List<HiddenItem>>() {
                     @Override
-                    protected void onNext(HiddenItemsView viewState, List<HiddenItem> items) {
-                        viewState.onItemsUpdated(items);
+                    public void onNext(List<HiddenItem> items) {
+                        hiddenItemsSubject.onNext(items);
                     }
 
                     @Override
-                    protected void onError(HiddenItemsView viewState, Throwable e) {
-                        viewState.showError(e);
+                    public void onError(Throwable e) {
+                        hiddenItemsSubject.onError(e);
+                    }
+                });
+    }
+
+    void showItem(IgnorableDescriptor descriptor) {
+        descriptorRepository.edit()
+                .enqueue(new SetIgnoreAction(descriptor, false))
+                .commit()
+                .subscribe(new CompletableState() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("Changes saved");
                     }
                 });
     }

@@ -10,11 +10,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
@@ -26,22 +25,16 @@ import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
 
-public class HiddenItemsFragment extends AppFragment implements HiddenItemsView, SettingsToolbarTitle,
+public class HiddenItemsFragment extends AppFragment implements SettingsToolbarTitle,
         ListFilter.OnFilterResult<HiddenItem> {
 
-    @InjectPresenter
-    HiddenItemsPresenter presenter;
+    private HiddenItemsViewModel viewModel;
 
     private LceLayout lce;
     private CompositeAdapter<HiddenItem> adapter;
 
     private final SimpleListFilter<HiddenItem> filter = SimpleListFilter.createSearchable(this);
     private final Cache imageLoaderCache = new LruCache(48);
-
-    @ProvidePresenter
-    HiddenItemsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().hiddenItems();
-    }
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -51,6 +44,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, HiddenItemsViewModel.class, ViewModelComponent::hiddenItems);
         setHasOptionsMenu(true);
     }
 
@@ -71,7 +65,7 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
                 .cache(imageLoaderCache)
                 .build();
         adapter = new CompositeAdapter.Builder<HiddenItem>(context)
-                .add(new HiddenItemAdapter(imageLoader, item -> presenter.showItem(item.descriptor)))
+                .add(new HiddenItemAdapter(imageLoader, item -> viewModel.showItem(item.descriptor)))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
@@ -80,6 +74,22 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
         DividerItemDecoration decoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);
+
+        lce.showLoading();
+        viewModel.hiddenItemsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<HiddenItem> hiddenItems) {
+                        filter.setDataset(hiddenItems);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        lce.error()
+                                .message(e.getMessage())
+                                .show();
+                    }
+                });
     }
 
     @Override
@@ -100,24 +110,6 @@ public class HiddenItemsFragment extends AppFragment implements HiddenItemsView,
                 return false;
             }
         });
-    }
-
-    @Override
-    public void showLoading() {
-        lce.showLoading();
-    }
-
-    @Override
-    public void onItemsUpdated(List<HiddenItem> items) {
-        filter.setDataset(items);
-    }
-
-    @Override
-    public void showError(Throwable e) {
-        lce.error()
-                .button(v -> presenter.observeApps())
-                .message(e.getMessage())
-                .show();
     }
 
     @Override
