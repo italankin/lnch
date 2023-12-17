@@ -10,30 +10,9 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
-
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-import me.italankin.adapterdelegates.CompositeAdapter;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
-import com.italankin.lnch.util.widget.LceLayout;
-
-import java.util.List;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -41,8 +20,24 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+import com.italankin.lnch.LauncherApp;
+import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.ViewModelComponent;
+import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
+import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.feature.settings.fonts.events.AddFontEvent;
+import com.italankin.lnch.feature.settings.fonts.events.DeleteFontEvent;
+import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
+import com.italankin.lnch.util.widget.LceLayout;
+import me.italankin.adapterdelegates.CompositeAdapter;
 
-public class FontsFragment extends AppFragment implements FontsView, FontItemAdapter.Listener, SettingsToolbarTitle {
+import java.util.List;
+
+public class FontsFragment extends AppFragment implements FontItemAdapter.Listener, SettingsToolbarTitle {
 
     public static FontsFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -54,9 +49,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
 
     private static final String MIME_TYPE = "*/*";
 
-    @InjectPresenter
-    FontsPresenter presenter;
-
+    private FontsViewModel viewModel;
     private Preferences preferences;
 
     private LceLayout lce;
@@ -64,11 +57,6 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
 
     private final ActivityResultLauncher<Void> openFileLauncher = registerForActivityResult(
             new OpenFileContract(), this::showAddDialog);
-
-    @ProvidePresenter
-    FontsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().fonts();
-    }
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -78,6 +66,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, FontsViewModel.class, ViewModelComponent::fonts);
         preferences = LauncherApp.daggerService.main().preferences();
         setHasOptionsMenu(true);
     }
@@ -105,6 +94,38 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         DividerItemDecoration decoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);
+
+        viewModel.fontItemsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<FontItem> fontItems) {
+                        onItemsUpdated(fontItems);
+                    }
+                });
+        viewModel.addFontEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(AddFontEvent event) {
+                        if (event instanceof AddFontEvent.FontExistsError) {
+                            onAddFontExistsError(((AddFontEvent.FontExistsError) event).fontName);
+                        } else if (event instanceof AddFontEvent.FontEmptyNameError) {
+                            onAddFontEmptyNameError();
+                        } else if (event instanceof AddFontEvent.FontAdded) {
+                            onFontAdded();
+                        } else if (event instanceof AddFontEvent.InvalidFormatError) {
+                            showErrorInvalidFormat();
+                        } else if (event instanceof AddFontEvent.FontAddError) {
+                            showError(((AddFontEvent.FontAddError) event).error);
+                        }
+                    }
+                });
+        viewModel.deleteFontEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(DeleteFontEvent event) {
+                        onFontDeleted(event.reset);
+                    }
+                });
     }
 
     @Override
@@ -121,8 +142,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onItemsUpdated(List<FontItem> items) {
+    private void onItemsUpdated(List<FontItem> items) {
         adapter.setDataset(items);
         adapter.notifyDataSetChanged();
         if (items.isEmpty()) {
@@ -134,8 +154,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         }
     }
 
-    @Override
-    public void showError(Throwable e) {
+    private void showError(Throwable e) {
         if (preferences.get(Preferences.VERBOSE_ERRORS)) {
             Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         } else {
@@ -143,19 +162,16 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
         }
     }
 
-    @Override
-    public void onFontDeleted(boolean reset) {
+    private void onFontDeleted(boolean reset) {
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_deleted, Toast.LENGTH_SHORT).show();
         sendResult(new OnFontDeleted().result());
     }
 
-    @Override
-    public void onFontAdded() {
+    private void onFontAdded() {
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_added, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void showErrorInvalidFormat() {
+    private void showErrorInvalidFormat() {
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_invalid_format, Toast.LENGTH_LONG).show();
     }
 
@@ -166,17 +182,15 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
 
     @Override
     public void onFontDelete(int position, FontItem item) {
-        presenter.deleteFont(item);
+        viewModel.deleteFont(item);
     }
 
-    @Override
-    public void onAddFontExistsError(String name) {
+    private void onAddFontExistsError(String name) {
         String message = getString(R.string.settings_home_laf_appearance_fonts_error_exists, name);
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void onAddFontEmptyNameError() {
+    private void onAddFontEmptyNameError() {
         Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_LONG).show();
     }
 
@@ -198,7 +212,7 @@ public class FontsFragment extends AppFragment implements FontsView, FontItemAda
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.settings_home_laf_appearance_fonts_add, (dialog, editText) -> {
-                    presenter.addFont(editText.getText().toString(), result);
+                    viewModel.addFont(editText.getText().toString(), result);
                 })
                 .show();
     }

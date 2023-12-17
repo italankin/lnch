@@ -10,7 +10,7 @@ import com.italankin.lnch.feature.settings.apps.AppsSettingsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesViewModel;
 import com.italankin.lnch.feature.settings.backup.BackupViewModel;
-import com.italankin.lnch.feature.settings.fonts.FontsPresenter;
+import com.italankin.lnch.feature.settings.fonts.FontsViewModel;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsViewModel;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelViewModel;
 import com.italankin.lnch.feature.settings.preferencesearch.PreferenceSearchViewModel;
@@ -32,7 +32,7 @@ public interface ViewModelComponent {
 
     HiddenItemsViewModel hiddenItems();
 
-    FontsPresenter fonts();
+    FontsViewModel fonts();
 
     AppDetailsViewModel appDetails();
 
