@@ -14,10 +14,10 @@ import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-public class LookAndFeelFragment extends AppPreferenceFragment implements SettingsToolbarTitle {
+public class LookAndFeelFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
     public static LookAndFeelFragment newInstance(String requestKey) {
         Bundle args = new Bundle();

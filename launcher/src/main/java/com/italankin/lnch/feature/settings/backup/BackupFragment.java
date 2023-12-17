@@ -12,17 +12,20 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.ViewModelComponent;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.feature.settings.backup.events.BackupEvent;
+import com.italankin.lnch.feature.settings.backup.events.ResetEvent;
+import com.italankin.lnch.feature.settings.backup.events.RestoreEvent;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
-public class BackupFragment extends AppPreferenceFragment implements BackupView, SimpleDialogFragment.Listener,
+public class BackupFragment extends AppPreferenceFragment implements SimpleDialogFragment.Listener,
         SettingsToolbarTitle {
 
     private static final String MIME_TYPE_ANY = "*/*";
@@ -30,33 +33,27 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
     private static final String TAG_RESET_DIALOG_APPS = "reset_dialog_apps";
     private static final String TAG_RESET_DIALOG_LNCH = "reset_dialog_lnch";
 
-    @InjectPresenter
-    BackupPresenter presenter;
-
+    private BackupViewModel viewModel;
     private Preferences preferences;
 
     private final ActivityResultLauncher<Void> restoreLauncher = registerForActivityResult(
             new OpenDocumentContract(), result -> {
                 if (result != null) {
-                    presenter.onRestoreSettings(result);
+                    viewModel.onRestoreSettings(result);
                 }
             });
 
     private final ActivityResultLauncher<Void> backupLauncher = registerForActivityResult(
             new CreateDocumentContract(), result -> {
                 if (result != null) {
-                    presenter.onBackupSettings(result);
+                    viewModel.onBackupSettings(result);
                 }
             });
-
-    @ProvidePresenter
-    BackupPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().backup();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, BackupViewModel.class, ViewModelComponent::backup);
         preferences = LauncherApp.daggerService.main().preferences();
     }
 
@@ -90,44 +87,58 @@ public class BackupFragment extends AppPreferenceFragment implements BackupView,
             return true;
         });
         scrollToTarget();
-    }
 
-    @Override
-    public void onRestoreSuccess() {
-        Toast.makeText(requireContext(), R.string.settings_other_bar_restore_success, Toast.LENGTH_LONG).show();
-    }
+        viewModel.backupEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(BackupEvent backupEvent) {
+                        switch (backupEvent) {
+                            case SUCCESS:
+                                Toast.makeText(requireContext(), R.string.settings_other_bar_backup_success, Toast.LENGTH_LONG).show();
+                                break;
+                            case ERROR:
+                                showError(getString(R.string.error));
+                                break;
+                        }
+                    }
+                });
+        viewModel.resetEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(ResetEvent resetEvent) {
+                        switch (resetEvent) {
+                            case SUCCESS:
+                                Toast.makeText(requireContext(), R.string.settings_other_bar_reset_success, Toast.LENGTH_LONG).show();
+                                break;
+                            case ERROR:
+                                showError(getString(R.string.error));
+                                break;
+                        }
+                    }
+                });
 
-    @Override
-    public void onRestoreError(Throwable error) {
-        showError(error);
-    }
-
-    @Override
-    public void onBackupSuccess() {
-        Toast.makeText(requireContext(), R.string.settings_other_bar_backup_success, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBackupError(Throwable error) {
-        showError(error);
-    }
-
-    @Override
-    public void onResetSuccess() {
-        Toast.makeText(requireContext(), R.string.settings_other_bar_reset_success, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onResetError(Throwable error) {
-        showError(error);
+        viewModel.restoreEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(RestoreEvent restoreEvent) {
+                        switch (restoreEvent) {
+                            case SUCCESS:
+                                Toast.makeText(requireContext(), R.string.settings_other_bar_restore_success, Toast.LENGTH_LONG).show();
+                                break;
+                            case ERROR:
+                                showError(getString(R.string.error));
+                                break;
+                        }
+                    }
+                });
     }
 
     @Override
     public void onPositiveButtonClick(@Nullable String tag) {
         if (TAG_RESET_DIALOG_APPS.equals(tag)) {
-            presenter.resetAppsSettings();
+            viewModel.resetAppsSettings();
         } else if (TAG_RESET_DIALOG_LNCH.equals(tag)) {
-            presenter.resetLnchSettings();
+            viewModel.resetLnchSettings();
             WidgetHelper.resetAllWidgets();
         }
     }

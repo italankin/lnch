@@ -1,102 +1,35 @@
 package com.italankin.lnch.feature.settings.base;
 
-import android.os.Bundle;
-
-import com.arellomobile.mvp.MvpDelegate;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.CallSuper;
+import com.italankin.lnch.util.rxjava.WeakDisposableList;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 public abstract class AppPreferenceFragment extends BasePreferenceFragment {
 
-    private boolean mIsStateSaved;
-    private MvpDelegate<? extends AppPreferenceFragment> mMvpDelegate;
+    private final WeakDisposableList eventsSubs = new WeakDisposableList();
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getMvpDelegate().onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        mIsStateSaved = false;
-
-        getMvpDelegate().onAttach();
-    }
-
-    public void onResume() {
-        super.onResume();
-
-        mIsStateSaved = false;
-
-        getMvpDelegate().onAttach();
-    }
-
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        mIsStateSaved = true;
-
-        getMvpDelegate().onSaveInstanceState(outState);
-        getMvpDelegate().onDetach();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        getMvpDelegate().onDetach();
-    }
-
+    @CallSuper
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        getMvpDelegate().onDetach();
-        getMvpDelegate().onDestroyView();
+        eventsSubs.clear();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        //We leave the screen and respectively all fragments will be destroyed
-        if (requireActivity().isFinishing()) {
-            getMvpDelegate().onDestroy();
-            return;
+    protected abstract class EventObserver<T> implements Observer<T> {
+        @Override
+        public void onSubscribe(Disposable d) {
+            eventsSubs.add(d);
         }
 
-        // When we rotate device isRemoving() return true for fragment placed in backstack
-        // http://stackoverflow.com/questions/34649126/fragment-back-stack-and-isremoving
-        if (mIsStateSaved) {
-            mIsStateSaved = false;
-            return;
+        @Override
+        public void onError(Throwable e) {
+            Timber.e(e, "onError:");
         }
 
-        // See https://github.com/Arello-Mobile/Moxy/issues/24
-        boolean anyParentIsRemoving = false;
-        Fragment parent = getParentFragment();
-        while (!anyParentIsRemoving && parent != null) {
-            anyParentIsRemoving = parent.isRemoving();
-            parent = parent.getParentFragment();
+        @Override
+        public void onComplete() {
         }
-
-        if (isRemoving() || anyParentIsRemoving) {
-            getMvpDelegate().onDestroy();
-        }
-    }
-
-    /**
-     * @return The {@link MvpDelegate} being used by this Fragment.
-     */
-    public MvpDelegate getMvpDelegate() {
-        if (mMvpDelegate == null) {
-            mMvpDelegate = new MvpDelegate<>(this);
-        }
-
-        return mMvpDelegate;
     }
 }

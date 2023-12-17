@@ -9,7 +9,7 @@ import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelec
 import com.italankin.lnch.feature.settings.apps.AppsSettingsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesViewModel;
-import com.italankin.lnch.feature.settings.backup.BackupPresenter;
+import com.italankin.lnch.feature.settings.backup.BackupViewModel;
 import com.italankin.lnch.feature.settings.fonts.FontsPresenter;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsViewModel;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelViewModel;
@@ -40,7 +40,7 @@ public interface ViewModelComponent {
 
     LookAndFeelViewModel lookAndFeel();
 
-    BackupPresenter backup();
+    BackupViewModel backup();
 
     PreferenceSearchViewModel preferenceSearch();
 
