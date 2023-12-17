@@ -4,30 +4,22 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
+import android.view.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.model.descriptor.AliasDescriptor;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
-public class AppAliasesFragment extends AppFragment implements AppAliasesView, SettingsToolbarTitle {
+public class AppAliasesFragment extends AppFragment implements SettingsToolbarTitle {
 
     public static AppAliasesFragment newInstance(String descriptorId) {
         Bundle args = new Bundle();
@@ -40,20 +32,15 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView, S
     private static final int MAX_ALIAS_LENGTH = 255;
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
 
-    @InjectPresenter
-    AppAliasesPresenter presenter;
+    private AppAliasesViewModel viewModel;
 
     private LceLayout lce;
     private RecyclerView list;
 
     private AppAliasesAdapter adapter;
 
+    private boolean canAddMore;
     private MenuItem itemAdd;
-
-    @ProvidePresenter
-    AppAliasesPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().appAliases();
-    }
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -63,6 +50,7 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView, S
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, AppAliasesViewModel.class, PresenterComponent::appAliases);
         setHasOptionsMenu(true);
     }
 
@@ -77,13 +65,29 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView, S
         lce = view.findViewById(R.id.lce);
         list = view.findViewById(R.id.list);
 
-        presenter.loadAliases(requireArguments().getString(ARG_DESCRIPTOR_ID));
+        viewModel.aliasesEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<String> aliases) {
+                        onAliasesChanged(aliases);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        lce.error().message(e.getMessage()).show();
+                    }
+                });
+
+        if (savedInstanceState == null) {
+            viewModel.loadAliases(requireArguments().getString(ARG_DESCRIPTOR_ID));
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.settings_app_aliases, menu);
         itemAdd = menu.findItem(R.id.action_add);
+        updateItemAddState(canAddMore);
     }
 
     @Override
@@ -101,49 +105,24 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView, S
                     })
                     .setPositiveButton(R.string.settings_app_aliases_add, (dialog, editText) -> {
                         String alias = editText.getText().toString();
-                        presenter.addAlias(alias);
+                        viewModel.addAlias(alias);
                     })
                     .setNegativeButton(R.string.cancel, null)
-                    .show();
+                    .show(this);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
-    public void onAliasesChanged(List<String> aliases, boolean canAddMore) {
+    private void onAliasesChanged(List<String> aliases) {
         if (adapter == null) {
-            adapter = new AppAliasesAdapter(presenter::deleteAlias);
+            adapter = new AppAliasesAdapter(viewModel::deleteAlias);
             list.setAdapter(adapter);
         }
         adapter.setDataset(aliases);
-        updateItemAddState(canAddMore);
+        updateItemAddState(aliases.size() < AliasDescriptor.MAX_ALIASES);
         updateLceState(aliases.size());
-    }
-
-    @Override
-    public void notifyAliasRemoved(int size, boolean canAddMore) {
-        adapter.notifyDataSetChanged();
-        updateItemAddState(canAddMore);
-        updateLceState(size);
-    }
-
-    @Override
-    public void notifyAliasAdded(int size, boolean canAddMore) {
-        adapter.notifyDataSetChanged();
-        updateItemAddState(canAddMore);
-        updateLceState(size);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        lce.error().message(e.getMessage()).show();
-    }
-
-    @Override
-    public void onInvalidAlias() {
-        Toast.makeText(requireContext(), R.string.settings_app_aliases_invalid, Toast.LENGTH_SHORT).show();
     }
 
     private void updateLceState(int size) {
@@ -155,7 +134,10 @@ public class AppAliasesFragment extends AppFragment implements AppAliasesView, S
     }
 
     private void updateItemAddState(boolean canAddMore) {
-        itemAdd.setEnabled(canAddMore);
-        itemAdd.getIcon().setAlpha(canAddMore ? 255 : 32);
+        this.canAddMore = canAddMore;
+        if (itemAdd != null) {
+            itemAdd.setEnabled(canAddMore);
+            itemAdd.getIcon().setAlpha(canAddMore ? 255 : 32);
+        }
     }
 }

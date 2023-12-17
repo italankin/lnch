@@ -6,12 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.util.ViewUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,6 +112,23 @@ public final class EditTextAlertDialog {
             } finally {
                 dialog.show();
             }
+        }
+
+        public AlertDialog show(LifecycleOwner lifecycleOwner) {
+            AlertDialog alertDialog = show();
+            WeakReference<AlertDialog> ref = new WeakReference<>(alertDialog);
+            lifecycleOwner.getLifecycle().addObserver(new DefaultLifecycleObserver() {
+                @Override
+                public void onDestroy(@NonNull LifecycleOwner owner) {
+                    owner.getLifecycle().removeObserver(this);
+                    AlertDialog dialog = ref.get();
+                    if (dialog != null) {
+                        dialog.dismiss();
+                        ref.clear();
+                    }
+                }
+            });
+            return alertDialog;
         }
     }
 

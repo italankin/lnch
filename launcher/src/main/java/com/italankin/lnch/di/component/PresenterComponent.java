@@ -8,7 +8,7 @@ import com.italankin.lnch.feature.home.apps.folder.FolderViewModel;
 import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorPresenter;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsViewModel;
-import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesPresenter;
+import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesViewModel;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
 import com.italankin.lnch.feature.settings.fonts.FontsPresenter;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsPresenter;
@@ -36,7 +36,7 @@ public interface PresenterComponent {
 
     AppDetailsViewModel appDetails();
 
-    AppAliasesPresenter appAliases();
+    AppAliasesViewModel appAliases();
 
     LookAndFeelPresenter lookAndFeel();
 
