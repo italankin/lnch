@@ -1,42 +1,47 @@
 package com.italankin.lnch.feature.settings.apps.details;
 
 import androidx.annotation.Nullable;
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.*;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import javax.inject.Inject;
 
-@InjectViewState
-public class AppDetailsPresenter extends AppPresenter<AppDetailsView> {
+public class AppDetailsViewModel extends AppViewModel {
 
     private final DescriptorRepository descriptorRepository;
+    private final BehaviorSubject<AppDetailsModel> appDetailsModelSubject = BehaviorSubject.create();
 
     @Inject
-    AppDetailsPresenter(DescriptorRepository descriptorRepository) {
+    AppDetailsViewModel(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
+    }
+
+    Observable<AppDetailsModel> appDetailsEvents() {
+        return appDetailsModelSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
     void loadDescriptor(String descriptorId) {
         Single.fromCallable(() -> {
                     return new AppDetailsModel(descriptorRepository.findById(AppDescriptor.class, descriptorId));
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<AppDetailsModel>() {
+                .subscribeOn(Schedulers.computation())
+                .subscribe(new SingleState<>() {
                     @Override
-                    protected void onSuccess(AppDetailsView viewState, AppDetailsModel model) {
-                        viewState.onModelLoaded(model);
+                    public void onSuccess(AppDetailsModel model) {
+                        appDetailsModelSubject.onNext(model);
                     }
 
                     @Override
-                    protected void onError(AppDetailsView viewState, Throwable e) {
-                        viewState.onError(e);
+                    public void onError(Throwable e) {
+                        appDetailsModelSubject.onError(e);
                     }
                 });
     }

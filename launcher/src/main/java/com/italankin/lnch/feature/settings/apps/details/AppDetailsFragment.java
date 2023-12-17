@@ -14,11 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
@@ -32,7 +32,7 @@ import com.italankin.lnch.util.icons.CircleDrawable;
 import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_SHORTCUTS_VISIBLE;
 import static com.italankin.lnch.model.descriptor.impl.AppDescriptor.FLAG_SEARCH_VISIBLE;
 
-public class AppDetailsFragment extends AppFragment implements AppDetailsView, SettingsToolbarTitle {
+public class AppDetailsFragment extends AppFragment implements SettingsToolbarTitle {
 
     public static AppDetailsFragment newInstance(String requestKey, String descriptorId) {
         Bundle args = new Bundle();
@@ -45,8 +45,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
 
     private static final String ARG_DESCRIPTOR_ID = "descriptor_id";
 
-    @InjectPresenter
-    AppDetailsPresenter presenter;
+    private AppDetailsViewModel viewModel;
 
     private TextView textName;
     private ImageView imageIcon;
@@ -70,9 +69,10 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         return context.getString(R.string.settings_app_details);
     }
 
-    @ProvidePresenter
-    AppDetailsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().appDetails();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, AppDetailsViewModel.class, PresenterComponent::appDetails);
     }
 
     @Nullable
@@ -99,12 +99,27 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         buttonChangeBadgeColorPreview = view.findViewById(R.id.action_badge_color_preview);
         textVisibleName = view.findViewById(R.id.visible_name);
 
-        String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
-        presenter.loadDescriptor(descriptorId);
+        viewModel.appDetailsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(AppDetailsModel appDetailsModel) {
+                        onModelLoaded(appDetailsModel);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        sendResult(new AppDetailsErrorContract().result());
+                    }
+                });
+
+        if (savedInstanceState == null) {
+            String descriptorId = requireArguments().getString(ARG_DESCRIPTOR_ID);
+            viewModel.loadDescriptor(descriptorId);
+        }
     }
 
-    @Override
-    public void onModelLoaded(AppDetailsModel model) {
+    private void onModelLoaded(AppDetailsModel model) {
         String packageName = model.descriptor.packageName;
         PackageManager packageManager = requireContext().getPackageManager();
         imageIcon.setImageDrawable(PackageUtils.getPackageIcon(packageManager, packageName));
@@ -116,19 +131,19 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         switchHomeVisibility.setChecked(!model.ignored);
         switchHomeVisibility.jumpDrawablesToCurrentState();
         switchHomeVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setIgnored(model, !isChecked);
+            viewModel.setIgnored(model, !isChecked);
         });
 
         switchSearchVisibility.setChecked((model.searchFlags & FLAG_SEARCH_VISIBLE) == FLAG_SEARCH_VISIBLE);
         switchSearchVisibility.jumpDrawablesToCurrentState();
         switchSearchVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setSearchVisible(model, isChecked);
+            viewModel.setSearchVisible(model, isChecked);
         });
 
         switchShortcutsVisibility.setChecked(model.showShortcuts);
         switchShortcutsVisibility.jumpDrawablesToCurrentState();
         switchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setShortcutsVisible(model, isChecked);
+            viewModel.setShortcutsVisible(model, isChecked);
         });
 
         switchSearchShortcutsVisibility.setChecked(
@@ -136,7 +151,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         );
         switchSearchShortcutsVisibility.jumpDrawablesToCurrentState();
         switchSearchShortcutsVisibility.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            presenter.setSearchShortcutsVisible(model, isChecked);
+            viewModel.setSearchShortcutsVisible(model, isChecked);
         });
 
         buttonRename.setOnClickListener(v -> {
@@ -156,21 +171,15 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
         });
     }
 
-    @Override
-    public void onError(Throwable e) {
-        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        sendResult(new AppDetailsErrorContract().result());
-    }
-
     private void setCustomLabel(AppDetailsModel model, String label) {
-        presenter.setCustomLabel(model, label);
+        viewModel.setCustomLabel(model, label);
         textVisibleName.setText(model.getVisibleLabel());
     }
 
     private void setCustomColor(AppDetailsModel model) {
         new SetColorDescriptorDialog(requireContext(), model.getVisibleColor(),
                 newColor -> {
-                    presenter.setCustomColor(model, newColor);
+                    viewModel.setCustomColor(model, newColor);
                     updateColorPreview(model);
                 })
                 .show();
@@ -179,7 +188,7 @@ public class AppDetailsFragment extends AppFragment implements AppDetailsView, S
     private void setCustomBadgeColor(AppDetailsModel model) {
         new SetColorDescriptorDialog(requireContext(), getCurrentBadgeColor(model),
                 newColor -> {
-                    presenter.setCustomBadgeColor(model, newColor);
+                    viewModel.setCustomBadgeColor(model, newColor);
                     updateBadgeColorPreview(model);
                 })
                 .show();
