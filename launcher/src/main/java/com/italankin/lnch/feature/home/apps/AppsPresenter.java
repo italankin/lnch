@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.di.scope.AppScope;
+import com.italankin.lnch.di.scope.ViewModelScope;
 import com.italankin.lnch.feature.base.AppPresenter;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 @InjectViewState
-@AppScope
+@ViewModelScope
 public class AppsPresenter extends AppPresenter<AppsView> {
 
     private final HomeDescriptorsState homeDescriptorsState;

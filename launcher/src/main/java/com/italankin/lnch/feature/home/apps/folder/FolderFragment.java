@@ -8,7 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
@@ -50,7 +50,7 @@ public class FolderFragment extends BaseFolderFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, FolderViewModel.class, PresenterComponent::folder);
+        viewModel = AppViewModelProvider.get(this, FolderViewModel.class, ViewModelComponent::folder);
         fragmentResultManager
                 .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
                     viewModel.removeFromFolderImmediate(result.descriptorId);

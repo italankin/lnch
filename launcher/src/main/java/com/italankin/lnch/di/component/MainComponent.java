@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {MainModule.class, BackupModule.class})
-public interface MainComponent extends PresenterComponent.Dependencies {
+public interface MainComponent extends ViewModelComponent.Dependencies {
 
     Preferences preferences();
 

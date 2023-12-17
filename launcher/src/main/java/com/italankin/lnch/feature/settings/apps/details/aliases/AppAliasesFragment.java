@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
@@ -50,7 +50,7 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, AppAliasesViewModel.class, PresenterComponent::appAliases);
+        viewModel = AppViewModelProvider.get(this, AppAliasesViewModel.class, ViewModelComponent::appAliases);
         setHasOptionsMenu(true);
     }
 

@@ -1,27 +1,26 @@
 package com.italankin.lnch.di.service;
 
 import android.content.Context;
-
 import com.italankin.lnch.di.component.DaggerMainComponent;
-import com.italankin.lnch.di.component.DaggerPresenterComponent;
+import com.italankin.lnch.di.component.DaggerViewModelComponent;
 import com.italankin.lnch.di.component.MainComponent;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 
 public class DaggerService {
-    private final PresenterComponent presenters;
+    private final ViewModelComponent viewModels;
     private final MainComponent main;
 
     public DaggerService(Context context) {
         main = DaggerMainComponent.builder()
                 .context(context)
                 .build();
-        presenters = DaggerPresenterComponent.builder()
+        viewModels = DaggerViewModelComponent.builder()
                 .mainComponent(main)
                 .build();
     }
 
-    public PresenterComponent presenters() {
-        return presenters;
+    public ViewModelComponent presenters() {
+        return viewModels;
     }
 
     public MainComponent main() {

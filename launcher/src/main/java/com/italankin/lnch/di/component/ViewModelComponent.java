@@ -1,7 +1,7 @@
 package com.italankin.lnch.di.component;
 
 import android.content.Context;
-import com.italankin.lnch.di.scope.AppScope;
+import com.italankin.lnch.di.scope.ViewModelScope;
 import com.italankin.lnch.feature.home.apps.AppsPresenter;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderViewModel;
 import com.italankin.lnch.feature.home.apps.folder.FolderViewModel;
@@ -18,9 +18,9 @@ import com.italankin.lnch.model.backup.BackupReader;
 import com.italankin.lnch.model.backup.BackupWriter;
 import dagger.Component;
 
-@AppScope
+@ViewModelScope
 @Component(dependencies = MainComponent.class)
-public interface PresenterComponent {
+public interface ViewModelComponent {
 
     AppsPresenter apps();
 

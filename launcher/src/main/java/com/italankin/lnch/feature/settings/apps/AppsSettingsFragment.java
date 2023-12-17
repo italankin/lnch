@@ -12,7 +12,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
@@ -67,7 +67,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, AppsSettingsViewModel.class, PresenterComponent::appsSettings);
+        viewModel = AppViewModelProvider.get(this, AppsSettingsViewModel.class, ViewModelComponent::appsSettings);
         setHasOptionsMenu(true);
     }
 

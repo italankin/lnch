@@ -10,7 +10,7 @@ import androidx.preference.Preference;
 import com.google.android.material.color.DynamicColors;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
@@ -38,7 +38,7 @@ public class LookAndFeelFragment extends AppPreferenceFragment implements Settin
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, LookAndFeelViewModel.class, PresenterComponent::lookAndFeel);
+        viewModel = AppViewModelProvider.get(this, LookAndFeelViewModel.class, ViewModelComponent::lookAndFeel);
         preferences = LauncherApp.daggerService.main().preferences();
     }
 

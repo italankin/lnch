@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import com.italankin.lnch.LauncherApp;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 
 public final class AppViewModelProvider {
 
@@ -21,7 +21,7 @@ public final class AppViewModelProvider {
     }
 
     public interface Factory<T> {
-        T get(PresenterComponent component);
+        T get(ViewModelComponent component);
     }
 
     private AppViewModelProvider() {

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
@@ -38,7 +38,7 @@ public class PreferenceSearchFragment extends AppFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, PreferenceSearchViewModel.class, PresenterComponent::preferenceSearch);
+        viewModel = AppViewModelProvider.get(this, PreferenceSearchViewModel.class, ViewModelComponent::preferenceSearch);
         setHasOptionsMenu(true);
     }
 

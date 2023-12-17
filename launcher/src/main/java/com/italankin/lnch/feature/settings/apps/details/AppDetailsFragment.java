@@ -16,7 +16,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.di.component.PresenterComponent;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
@@ -72,7 +72,7 @@ public class AppDetailsFragment extends AppFragment implements SettingsToolbarTi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = AppViewModelProvider.get(this, AppDetailsViewModel.class, PresenterComponent::appDetails);
+        viewModel = AppViewModelProvider.get(this, AppDetailsViewModel.class, ViewModelComponent::appDetails);
     }
 
     @Nullable
