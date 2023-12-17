@@ -1,51 +1,47 @@
 package com.italankin.lnch.feature.settings.preferencesearch;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
-@InjectViewState
-public class PreferenceSearchPresenter extends AppPresenter<PreferenceSearchView> {
+import javax.inject.Inject;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+public class PreferenceSearchViewModel extends AppViewModel {
 
     private final SettingsStore settingsStore;
 
     private final PublishSubject<String> queries = PublishSubject.create();
+    private final BehaviorSubject<List<PreferenceSearchItem>> searchResultsSubject = BehaviorSubject.create();
 
     @Inject
-    public PreferenceSearchPresenter(SettingsStore settingsStore) {
+    public PreferenceSearchViewModel(SettingsStore settingsStore) {
         this.settingsStore = settingsStore;
-    }
 
-    @Override
-    protected void onFirstViewAttach() {
         queries
                 .observeOn(Schedulers.computation())
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .map(query -> query.trim().toLowerCase(Locale.getDefault()))
+                .filter(query -> !query.isBlank())
                 .distinctUntilChanged()
                 .switchMapSingle(this::searchPreferences)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<List<PreferenceSearchItem>>() {
+                .subscribe(new State<>() {
                     @Override
-                    protected void onNext(PreferenceSearchView viewState, List<PreferenceSearchItem> results) {
-                        viewState.onSearchResults(results);
+                    public void onNext(List<PreferenceSearchItem> results) {
+                        searchResultsSubject.onNext(results);
                     }
                 });
+    }
+
+    Observable<List<PreferenceSearchItem>> searchResultsEvents() {
+        return searchResultsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
     void search(String query) {

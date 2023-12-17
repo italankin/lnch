@@ -7,11 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
@@ -21,7 +20,7 @@ import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
 
-public class PreferenceSearchFragment extends AppFragment implements PreferenceSearchView {
+public class PreferenceSearchFragment extends AppFragment {
 
     public static PreferenceSearchFragment newInstance(String requestKey) {
         Bundle args = new Bundle();
@@ -31,26 +30,16 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
         return fragment;
     }
 
-    private static final String STATE_QUERY = "query";
-
-    @InjectPresenter
-    PreferenceSearchPresenter presenter;
+    private PreferenceSearchViewModel viewModel;
 
     private LceLayout lce;
     private CompositeAdapter<PreferenceSearchItem> adapter;
 
-    private String currentQuery;
-
-    @ProvidePresenter
-    PreferenceSearchPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().preferenceSearch();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, PreferenceSearchViewModel.class, PresenterComponent::preferenceSearch);
         setHasOptionsMenu(true);
-        currentQuery = savedInstanceState != null ? savedInstanceState.getString(STATE_QUERY) : null;
     }
 
     @Override
@@ -73,6 +62,14 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
+
+        viewModel.searchResultsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<PreferenceSearchItem> results) {
+                        onSearchResults(results);
+                    }
+                });
     }
 
     @Override
@@ -85,13 +82,13 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                presenter.search(currentQuery = query);
+                viewModel.search(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                presenter.search(currentQuery = newText);
+                viewModel.search(newText);
                 return true;
             }
         });
@@ -109,18 +106,10 @@ public class PreferenceSearchFragment extends AppFragment implements PreferenceS
             }
         });
         searchView.setQueryHint(getString(R.string.hint_search_preference));
-        searchView.setQuery(currentQuery, false);
         actionSearchItem.expandActionView();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(currentQuery, STATE_QUERY);
-    }
-
-    @Override
-    public void onSearchResults(List<PreferenceSearchItem> items) {
+    private void onSearchResults(List<PreferenceSearchItem> items) {
         adapter.setDataset(items);
         adapter.notifyDataSetChanged();
         lce.showContent();
