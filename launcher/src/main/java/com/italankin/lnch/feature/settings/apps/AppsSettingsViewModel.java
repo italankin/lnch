@@ -1,14 +1,15 @@
 package com.italankin.lnch.feature.settings.apps;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import javax.inject.Inject;
@@ -16,19 +17,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@InjectViewState
-public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
+public class AppsSettingsViewModel extends AppViewModel {
 
     private final DescriptorRepository descriptorRepository;
+    private final BehaviorSubject<List<AppDescriptorUi>> appsSubject = BehaviorSubject.create();
 
     @Inject
-    AppsSettingsPresenter(DescriptorRepository descriptorRepository) {
+    AppsSettingsViewModel(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
+
+        observeApps();
     }
 
-    @Override
-    protected void onFirstViewAttach() {
-        observeApps();
+    Observable<List<AppDescriptorUi>> appsEvents() {
+        return appsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
     void toggleAppVisibility(AppDescriptorUi item) {
@@ -43,8 +45,7 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
                 });
     }
 
-    void observeApps() {
-        getViewState().showLoading();
+    private void observeApps() {
         descriptorRepository.observe(true)
                 .map(descriptors -> {
                     ArrayList<AppDescriptorUi> list = new ArrayList<>();
@@ -58,17 +59,16 @@ public class AppsSettingsPresenter extends AppPresenter<AppsSettingsView> {
                     });
                     return list;
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.computation())
                 .subscribe(new State<List<AppDescriptorUi>>() {
                     @Override
-                    protected void onNext(AppsSettingsView viewState, List<AppDescriptorUi> apps) {
-                        viewState.onAppsUpdated(apps);
+                    public void onNext(List<AppDescriptorUi> apps) {
+                        appsSubject.onNext(apps);
                     }
 
                     @Override
-                    protected void onError(AppsSettingsView viewState, Throwable e) {
-                        viewState.showError(e);
+                    public void onError(Throwable e) {
+                        appsSubject.onError(e);
                     }
                 });
     }

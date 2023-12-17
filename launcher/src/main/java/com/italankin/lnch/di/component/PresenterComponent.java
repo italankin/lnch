@@ -6,7 +6,7 @@ import com.italankin.lnch.feature.home.apps.AppsPresenter;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderViewModel;
 import com.italankin.lnch.feature.home.apps.folder.FolderViewModel;
 import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorPresenter;
-import com.italankin.lnch.feature.settings.apps.AppsSettingsPresenter;
+import com.italankin.lnch.feature.settings.apps.AppsSettingsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsViewModel;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesPresenter;
 import com.italankin.lnch.feature.settings.backup.BackupPresenter;
@@ -28,7 +28,7 @@ public interface PresenterComponent {
 
     EditFolderViewModel editFolder();
 
-    AppsSettingsPresenter appsSettings();
+    AppsSettingsViewModel appsSettings();
 
     HiddenItemsPresenter hiddenItems();
 

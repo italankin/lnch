@@ -11,11 +11,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.di.component.PresenterComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.apps.adapter.AppsSettingsAdapter;
@@ -29,12 +28,12 @@ import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.LceLayout;
 import me.italankin.adapterdelegates.CompositeAdapter;
+import timber.log.Timber;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class AppsSettingsFragment extends AppFragment implements AppsSettingsView,
-        AppsSettingsAdapter.Listener,
+public class AppsSettingsFragment extends AppFragment implements AppsSettingsAdapter.Listener,
         FilterFlagsDialogFragment.Listener,
         ListFilter.OnFilterResult<AppDescriptorUi>,
         SettingsToolbarTitle {
@@ -51,8 +50,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private static final String TAG_FILTER_FLAGS = "filter";
 
-    @InjectPresenter
-    AppsSettingsPresenter presenter;
+    private AppsSettingsViewModel viewModel;
 
     private LceLayout lce;
     private RecyclerView list;
@@ -60,11 +58,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
     private final Cache imageLoaderCache = new LruCache(48);
-
-    @ProvidePresenter
-    AppsSettingsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().appsSettings();
-    }
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -74,6 +67,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, AppsSettingsViewModel.class, PresenterComponent::appsSettings);
         setHasOptionsMenu(true);
     }
 
@@ -91,12 +85,28 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
         initAdapter();
         addListDivider();
         if (savedInstanceState != null) {
-            EnumSet<FilterFlag> flags = (EnumSet<FilterFlag>)
-                    savedInstanceState.getSerializable(DATA_FILTER_FLAGS);
+            EnumSet<FilterFlag> flags = (EnumSet<FilterFlag>) savedInstanceState.getSerializable(DATA_FILTER_FLAGS);
             if (flags != null) {
-                filter.setFlags(flags);
+                filter.setFlags(flags, false);
             }
         }
+
+        lce.showLoading();
+        viewModel.appsEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(List<AppDescriptorUi> apps) {
+                        filter.setDataset(apps);
+                        lce.showContent();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        lce.error()
+                                .message(e.getMessage())
+                                .show();
+                    }
+                });
     }
 
     @Override
@@ -143,27 +153,8 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
     }
 
     @Override
-    public void showLoading() {
-        lce.showLoading();
-    }
-
-    @Override
-    public void onAppsUpdated(List<AppDescriptorUi> apps) {
-        filter.setDataset(apps);
-        lce.showContent();
-    }
-
-    @Override
-    public void showError(Throwable e) {
-        lce.error()
-                .button(v -> presenter.observeApps())
-                .message(e.getMessage())
-                .show();
-    }
-
-    @Override
     public void onVisibilityClick(int position, AppDescriptorUi item) {
-        presenter.toggleAppVisibility(item);
+        viewModel.toggleAppVisibility(item);
     }
 
     @Override
@@ -173,6 +164,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public void onFilterResult(String query, List<AppDescriptorUi> items) {
+        Timber.d("onFilterResult: %d", items.size());
         if (adapter == null) {
             return;
         }
@@ -192,7 +184,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsVie
 
     @Override
     public void onFlagsSet(EnumSet<FilterFlag> newFlags) {
-        filter.setFlags(newFlags);
+        filter.setFlags(newFlags, true);
     }
 
     @Override

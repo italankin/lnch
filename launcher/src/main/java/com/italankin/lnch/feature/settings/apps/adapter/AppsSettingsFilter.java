@@ -21,16 +21,18 @@ public class AppsSettingsFilter extends ListFilter<AppDescriptorUi> {
         super(onFilterResult);
     }
 
-    public void setFlags(Set<FilterFlag> newFlags) {
+    public void setFlags(Set<FilterFlag> newFlags, boolean fireFilter) {
         if (!flags.equals(newFlags)) {
             flags.clear();
             flags.addAll(newFlags);
-            fireFilter();
+            if (fireFilter) {
+                fireFilter();
+            }
         }
     }
 
     public void resetFlags() {
-        setFlags(DEFAULT_FLAGS);
+        setFlags(DEFAULT_FLAGS, true);
     }
 
     public EnumSet<FilterFlag> getFlags() {
