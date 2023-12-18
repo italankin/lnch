@@ -370,7 +370,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .register(new SelectFolderFragment.AddToFolderContract(), result -> {
                     viewModel.addToFolder(result.folderId, Collections.singletonList(result.descriptorId), result.move);
                 })
-                .register(new EditModePopupFragment.AddFolderContract(), result -> showCreateFolderDialog())
+                .register(new EditModePopupFragment.AddFolderContract(), result -> {
+                    showCreateFolderDialog(Collections.emptyList(), false);
+                })
                 .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
                     createIntentLauncher.launch(null);
                 })
@@ -417,16 +419,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         } else {
             update.dispatchTo(adapter);
         }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Start
-    ///////////////////////////////////////////////////////////////////////////
-
-    private void startAppActivity(ComponentName componentName, View view) {
-        Rect bounds = ViewUtils.getViewBounds(view);
-        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
-        IntentUtils.safeStartMainActivity(requireContext(), componentName, bounds, opts);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -587,36 +579,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
-    private void setEditMode(boolean value) {
-        if (editMode == value) {
-            return;
-        }
-        editMode = value;
-        searchOverlayBehavior.hide();
-        searchOverlayBehavior.setEnabled(!value);
-        if (value) {
-            dismissPopups();
-            searchOverlay.hideSoftKeyboard();
-            EditModePanel panel = new EditModePanel(requireContext())
-                    .setOnAddActionClickListener(this::showEditModeAddPopup)
-                    .setOnSaveActionClickListener(v -> {
-                        if (editModePanel != null && editModePanel.isShown()) {
-                            viewModel.stopCustomize();
-                        }
-                    })
-                    .setOnHiddenItemsClickListener(v -> {
-                        Rect bounds = ViewUtils.getViewBoundsInsetPadding(v);
-                        HiddenItemsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
-                                .show(getParentFragmentManager());
-                    })
-                    .setHiddenItemsActionEnabled(hasHiddenItems());
-            editModePanel = panel.show(coordinator);
-        } else if (editModePanel != null) {
-            editModePanel.dismiss();
-            editModePanel = null;
-        }
-    }
-
     private void showCustomizePopup(int position, DescriptorUi item) {
         View view = list.findViewForAdapterPosition(position);
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
@@ -643,22 +605,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             return;
         }
         viewModel.editIntent(result.descriptorId, result.intent);
-    }
-
-    @Override
-    public void onEditModeActivate() {
-        setEditMode(true);
-    }
-
-    @Override
-    public void onEditModeDiscard() {
-        setEditMode(false);
-    }
-
-    @Override
-    public void onEditModeCommit() {
-        setEditMode(false);
-        Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
     private void onEditModeConfirmDiscardChanges() {
@@ -765,6 +711,56 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             errorDelegate.showError(e.getMessage());
         } else {
             errorDelegate.showError(getString(R.string.error));
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Edit mode
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onEditModeActivate() {
+        setEditMode(true);
+    }
+
+    @Override
+    public void onEditModeDiscard() {
+        setEditMode(false);
+    }
+
+    @Override
+    public void onEditModeCommit() {
+        setEditMode(false);
+        Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setEditMode(boolean value) {
+        if (editMode == value) {
+            return;
+        }
+        editMode = value;
+        searchOverlayBehavior.hide();
+        searchOverlayBehavior.setEnabled(!value);
+        if (value) {
+            dismissPopups();
+            searchOverlay.hideSoftKeyboard();
+            EditModePanel panel = new EditModePanel(requireContext())
+                    .setOnAddActionClickListener(this::showEditModeAddPopup)
+                    .setOnSaveActionClickListener(v -> {
+                        if (editModePanel != null && editModePanel.isShown()) {
+                            viewModel.stopCustomize();
+                        }
+                    })
+                    .setOnHiddenItemsClickListener(v -> {
+                        Rect bounds = ViewUtils.getViewBoundsInsetPadding(v);
+                        HiddenItemsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
+                                .show(getParentFragmentManager());
+                    })
+                    .setHiddenItemsActionEnabled(hasHiddenItems());
+            editModePanel = panel.show(coordinator);
+        } else if (editModePanel != null) {
+            editModePanel.dismiss();
+            editModePanel = null;
         }
     }
 
@@ -895,9 +891,23 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
+    private void hideSearchOverlayWithDelay() {
+        hideSearchRunnable = () -> {
+            hideSearchRunnable = null;
+            searchOverlayBehavior.hide();
+        };
+        handler.postDelayed(hideSearchRunnable, 1000);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Other
     ///////////////////////////////////////////////////////////////////////////
+
+    private void startAppActivity(ComponentName componentName, View view) {
+        Rect bounds = ViewUtils.getViewBounds(view);
+        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
+        IntentUtils.safeStartMainActivity(requireContext(), componentName, bounds, opts);
+    }
 
     private void startDrag(int position) {
         if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {
@@ -913,14 +923,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             return;
         }
         touchHelper.startDrag(list.getChildViewHolder(view));
-    }
-
-    private void hideSearchOverlayWithDelay() {
-        hideSearchRunnable = () -> {
-            hideSearchRunnable = null;
-            searchOverlayBehavior.hide();
-        };
-        handler.postDelayed(hideSearchRunnable, 1000);
     }
 
     private void animateListAppearance() {
@@ -1039,10 +1041,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         if (insets != null) {
             list.setBottomInset(insets.getStableInsetBottom());
         }
-    }
-
-    private void showCreateFolderDialog() {
-        showCreateFolderDialog(Collections.emptyList(), false);
     }
 
     private void showCreateFolderDialog(List<String> descriptors, boolean move) {
