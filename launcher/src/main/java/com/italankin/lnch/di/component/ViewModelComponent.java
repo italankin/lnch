@@ -2,7 +2,7 @@ package com.italankin.lnch.di.component;
 
 import android.content.Context;
 import com.italankin.lnch.di.scope.ViewModelScope;
-import com.italankin.lnch.feature.home.apps.AppsPresenter;
+import com.italankin.lnch.feature.home.apps.AppsViewModel;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderViewModel;
 import com.italankin.lnch.feature.home.apps.folder.FolderViewModel;
 import com.italankin.lnch.feature.intentfactory.componentselector.ComponentSelectorViewModel;
@@ -22,7 +22,7 @@ import dagger.Component;
 @Component(dependencies = MainComponent.class)
 public interface ViewModelComponent {
 
-    AppsPresenter apps();
+    AppsViewModel apps();
 
     FolderViewModel folder();
 

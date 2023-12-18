@@ -232,8 +232,8 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
 
     private void setupPager() {
         homePagerAdapter = new HomePagerAdapter(this);
-        updateAdapter();
-        viewPager.setSaveEnabled(false);
+        homePagerAdapter.setPages(getPages());
+        viewPager.setAdapter(homePagerAdapter);
         viewPager.setOffscreenPageLimit(1);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -246,6 +246,8 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
                 }
             }
         });
+        int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
+        viewPager.setCurrentItem(appsPosition, false);
     }
 
     private void setupWidgets() {
@@ -265,14 +267,6 @@ public class HomeActivity extends AppCompatActivity implements WidgetsFragment.C
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pref -> recreate());
         compositeDisposable.add(disposable);
-    }
-
-    private void updateAdapter() {
-        List<Class<? extends Fragment>> pages = getPages();
-        homePagerAdapter.setPages(pages);
-        viewPager.setAdapter(homePagerAdapter);
-        int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
-        viewPager.setCurrentItem(appsPosition, false);
     }
 
     private void setupRoot() {

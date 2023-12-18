@@ -1,10 +1,12 @@
 package com.italankin.lnch.feature.intentfactory.componenteditor;
 
 import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.intentfactory.category.IntentCategory;
+import com.italankin.lnch.util.DialogUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +56,7 @@ public class CategoryEditor extends AbstractIntentEditor {
             items[i] = category.name;
             checked[i] = resultCategories != null && resultCategories.contains(category.value);
         }
-        new MaterialAlertDialogBuilder(activity)
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.intent_factory_intent_category)
                 .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> {
                     checked[which] = isChecked;
@@ -81,5 +83,6 @@ public class CategoryEditor extends AbstractIntentEditor {
                     update();
                 })
                 .show();
+        DialogUtils.dismissOnDestroy(activity, alertDialog);
     }
 }

@@ -21,6 +21,21 @@ class HomePagerAdapter extends FragmentStateAdapter {
         notifyDataSetChanged();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return pages.get(position).hashCode();
+    }
+
+    @Override
+    public boolean containsItem(long itemId) {
+        for (Class<? extends Fragment> page : pages) {
+            if (page.hashCode() == itemId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @NonNull
     @Override
     public Fragment createFragment(int position) {

@@ -1,11 +1,10 @@
 package com.italankin.lnch.feature.common.dialog;
 
 import android.content.Context;
-
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
-
-import androidx.annotation.Nullable;
 
 public class SetColorDescriptorDialog {
 
@@ -19,7 +18,7 @@ public class SetColorDescriptorDialog {
         this.onSetColor = onSetColor;
     }
 
-    public void show() {
+    public void show(LifecycleOwner lifecycleOwner) {
         ColorPickerDialog.builder(context)
                 .setHexVisible(false)
                 .setSelectedColor(visibleColor)
@@ -32,7 +31,7 @@ public class SetColorDescriptorDialog {
                     onSetColor.onSetColor(null);
                 })
                 .setCancellable(false)
-                .show();
+                .show(lifecycleOwner);
     }
 
     public interface OnSetColor {

@@ -157,7 +157,7 @@ public class AppDetailsFragment extends AppFragment implements SettingsToolbarTi
         buttonRename.setOnClickListener(v -> {
             new RenameDescriptorDialog(requireContext(), model.getVisibleLabel(),
                     (newLabel) -> setCustomLabel(model, newLabel))
-                    .show();
+                    .show(this);
         });
 
         buttonChangeColor.setOnClickListener(v -> setCustomColor(model));
@@ -182,7 +182,7 @@ public class AppDetailsFragment extends AppFragment implements SettingsToolbarTi
                     viewModel.setCustomColor(model, newColor);
                     updateColorPreview(model);
                 })
-                .show();
+                .show(this);
     }
 
     private void setCustomBadgeColor(AppDetailsModel model) {
@@ -191,7 +191,7 @@ public class AppDetailsFragment extends AppFragment implements SettingsToolbarTi
                     viewModel.setCustomBadgeColor(model, newColor);
                     updateBadgeColorPreview(model);
                 })
-                .show();
+                .show(this);
     }
 
     private void updateColorPreview(AppDetailsModel model) {

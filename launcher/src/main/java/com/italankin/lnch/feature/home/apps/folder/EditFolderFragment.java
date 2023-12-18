@@ -109,13 +109,13 @@ public class EditFolderFragment extends BaseFolderFragment {
     private void onShowRenameDialog(CustomLabelDescriptorUi item) {
         new RenameDescriptorDialog(requireContext(), item.getVisibleLabel(),
                 newLabel -> viewModel.renameItem(item, newLabel))
-                .show();
+                .show(this);
     }
 
     private void onShowSetColorDialog(CustomColorDescriptorUi item) {
         new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
                 newColor -> viewModel.setCustomColor(item, newColor))
-                .show();
+                .show(this);
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -24,6 +25,7 @@ import com.italankin.lnch.feature.intentfactory.flags.IntentFlag;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
+import com.italankin.lnch.util.DialogUtils;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.io.PrintWriter;
@@ -143,10 +145,11 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
             tv.setTextSize(11);
             tv.setTypeface(Typeface.MONOSPACE);
             tv.setText(sw.toString());
-            new MaterialAlertDialogBuilder(this)
+            AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.intent_factory_intent_error_test)
                     .setView(tv)
                     .show();
+            DialogUtils.dismissOnDestroy(this, alertDialog);
         }
     }
 

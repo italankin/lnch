@@ -2,14 +2,14 @@ package com.italankin.lnch.feature.base;
 
 import android.os.Bundle;
 import androidx.annotation.CallSuper;
-import com.arellomobile.mvp.MvpAppCompatFragment;
+import androidx.fragment.app.Fragment;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultSender;
 import com.italankin.lnch.util.rxjava.WeakDisposableList;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
-public abstract class AppFragment extends MvpAppCompatFragment implements FragmentResultSender {
+public abstract class AppFragment extends Fragment implements FragmentResultSender {
 
     private final WeakDisposableList eventsSubs = new WeakDisposableList();
 

@@ -1,7 +1,7 @@
 package com.italankin.lnch.feature.home.repository;
 
 import androidx.annotation.Nullable;
-
+import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 
@@ -71,6 +71,8 @@ public interface HomeDescriptorsState {
     void moveItem(int fromPosition, int toPosition);
 
     void addCallback(Callback callback);
+
+    void addCallback(LifecycleOwner lifecycleOwner, Callback callback);
 
     void removeCallback(Callback callback);
 

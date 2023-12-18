@@ -3,11 +3,10 @@ package com.italankin.lnch.feature.common.dialog;
 import android.content.Context;
 import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
-
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
-
-import androidx.annotation.Nullable;
 
 public class RenameDescriptorDialog {
 
@@ -21,7 +20,7 @@ public class RenameDescriptorDialog {
         this.onRename = onRename;
     }
 
-    public void show() {
+    public void show(LifecycleOwner lifecycleOwner) {
         EditTextAlertDialog.builder(context)
                 .setTitle(visibleLabel)
                 .customizeEditText(editText -> {
@@ -44,7 +43,7 @@ public class RenameDescriptorDialog {
                     onRename.onRename(null);
                 })
                 .setCancellable(false)
-                .show();
+                .show(lifecycleOwner);
     }
 
     public interface OnRename {

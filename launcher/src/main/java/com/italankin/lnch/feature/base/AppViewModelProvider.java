@@ -9,12 +9,12 @@ import com.italankin.lnch.di.component.ViewModelComponent;
 
 public final class AppViewModelProvider {
 
+    @SuppressWarnings("unchecked")
     public static <VM extends ViewModel> VM get(ViewModelStoreOwner owner, Class<? extends VM> modelClass, Factory<VM> factory) {
         return new ViewModelProvider(owner, new ViewModelProvider.Factory() {
             @NonNull
             @Override
             public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                //noinspection unchecked
                 return (T) factory.get(LauncherApp.daggerService.presenters());
             }
         }).get(modelClass);

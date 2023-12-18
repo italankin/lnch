@@ -1,9 +1,7 @@
 package com.italankin.lnch.feature.home.repository;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
+import com.italankin.lnch.util.LifecycleUtils;
 import timber.log.Timber;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -27,17 +25,9 @@ public class HomeBusImpl implements HomeBus {
 
     @Override
     public void subscribe(LifecycleOwner lifecycleOwner, EventListener listener) {
-        Lifecycle lifecycle = lifecycleOwner.getLifecycle();
-        if (lifecycle.getCurrentState() == Lifecycle.State.DESTROYED) {
-            return;
-        }
         subscribe(listener);
-        lifecycle.addObserver(new DefaultLifecycleObserver() {
-            @Override
-            public void onDestroy(@NonNull LifecycleOwner owner) {
-                owner.getLifecycle().removeObserver(this);
-                unsubscribe(listener);
-            }
+        LifecycleUtils.doOnDestroyOnce(lifecycleOwner, () -> {
+            unsubscribe(listener);
         });
     }
 

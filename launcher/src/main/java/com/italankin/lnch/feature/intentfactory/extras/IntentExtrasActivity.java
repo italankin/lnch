@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +24,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.DialogUtils;
 import com.italankin.lnch.util.widget.LceLayout;
 
 import java.util.ArrayList;
@@ -131,7 +133,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
             spinnerType.setSelection(0);
         }
 
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.intent_factory_extras_dialog_title)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
@@ -159,6 +161,7 @@ public class IntentExtrasActivity extends AppCompatActivity implements IntentExt
                     }
                 })
                 .show();
+        DialogUtils.dismissOnDestroy(this, alertDialog);
     }
 
     private void finishWithResult() {

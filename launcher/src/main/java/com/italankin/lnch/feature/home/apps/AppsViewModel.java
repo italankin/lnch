@@ -5,9 +5,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
-import com.arellomobile.mvp.InjectViewState;
-import com.italankin.lnch.di.scope.ViewModelScope;
-import com.italankin.lnch.feature.base.AppPresenter;
+import com.italankin.lnch.feature.base.AppViewModel;
+import com.italankin.lnch.feature.home.apps.events.ShortcutPinEvent;
+import com.italankin.lnch.feature.home.apps.events.UpdateEvent;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.EditModeState;
@@ -37,6 +37,8 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import javax.inject.Inject;
@@ -45,9 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
-@InjectViewState
-@ViewModelScope
-public class AppsPresenter extends AppPresenter<AppsView> {
+public class AppsViewModel extends AppViewModel {
 
     private final HomeDescriptorsState homeDescriptorsState;
     private final DescriptorRepository descriptorRepository;
@@ -58,8 +58,12 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private final NameNormalizer nameNormalizer;
     private final FontManager fontManager;
 
+    private final BehaviorSubject<UpdateEvent> updatesSubject = BehaviorSubject.create();
+    private final PublishSubject<Throwable> errorsSubject = PublishSubject.create();
+    private final PublishSubject<ShortcutPinEvent> shortcutPinSubject = PublishSubject.create();
+
     @Inject
-    AppsPresenter(HomeDescriptorsState homeDescriptorsState,
+    AppsViewModel(HomeDescriptorsState homeDescriptorsState,
             DescriptorRepository descriptorRepository,
             ShortcutsRepository shortcutsRepository,
             NotificationsRepository notificationsRepository,
@@ -75,16 +79,24 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         this.preferences = preferences;
         this.nameNormalizer = nameNormalizer;
         this.fontManager = fontManager;
+
+        reloadApps();
     }
 
-    @Override
-    protected void onFirstViewAttach() {
-        reloadApps();
+    Observable<UpdateEvent> updateEvents() {
+        return updatesSubject.observeOn(AndroidSchedulers.mainThread());
+    }
+
+    Observable<Throwable> errorEvents() {
+        return errorsSubject.observeOn(AndroidSchedulers.mainThread());
+    }
+
+    Observable<ShortcutPinEvent> shortcutPinEvents() {
+        return shortcutPinSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
     void reloadApps() {
         observe();
-        getViewState().showProgress();
         update();
     }
 
@@ -103,7 +115,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
             return;
         }
         editModeState.activate();
-        getViewState().onStartEditMode();
     }
 
     void moveItem(int from, int to) {
@@ -111,27 +122,11 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.moveItem(from, to);
     }
 
-    void renameItem(String id) {
-        HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, id);
-        if (entry == null) {
-            return;
-        }
-        getViewState().showItemRenameDialog(entry.position, entry.item);
-    }
-
     void renameItem(CustomLabelDescriptorUi item, String customLabel) {
         String newLabel = customLabel == null || customLabel.isEmpty() ? null : customLabel;
         editModeState.addAction(new RenameAction(item.getDescriptor(), newLabel));
         item.setCustomLabel(newLabel);
         homeDescriptorsState.updateItem(item);
-    }
-
-    void showSetItemColorDialog(String id) {
-        HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, id);
-        if (entry == null) {
-            return;
-        }
-        getViewState().showSetItemColorDialog(entry.position, entry.item);
     }
 
     void changeItemCustomColor(CustomColorDescriptorUi item, Integer color) {
@@ -163,51 +158,22 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         moveItem(entry.position, homeDescriptorsState.items().size() - 1);
     }
 
-    void addFolder(String label, @ColorInt int color, List<String> descriptors, boolean move) {
+    void addFolder(String label, @ColorInt int color, List<String> descriptorIds, boolean move) {
         FolderDescriptor.Mutable mutable = new FolderDescriptor.Mutable(label);
         mutable.setLabel(nameNormalizer.normalize(label));
         mutable.setColor(color);
         editModeState.addAction(new AddAction(mutable));
-        FolderDescriptor descriptor = mutable.toDescriptor();
-        FolderDescriptorUi folderUi = new FolderDescriptorUi(descriptor);
+        FolderDescriptor folder = mutable.toDescriptor();
+        FolderDescriptorUi folderUi = new FolderDescriptorUi(folder);
         homeDescriptorsState.insertItem(folderUi);
-
-        for (String descriptorId : descriptors) {
-            addToFolder(descriptorId, descriptor.id, move);
-        }
+        addToFolder(folderUi, descriptorIds, move);
     }
 
-    void addToFolder(String descriptorId, String folderId, boolean move) {
+    void addToFolder(String folderId, List<String> descriptorIds, boolean move) {
         HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
-        if (entry == null) {
-            return;
+        if (entry != null) {
+            addToFolder(entry.item, descriptorIds, move);
         }
-        FolderDescriptorUi folder = entry.item;
-        if (folder.items.contains(descriptorId)) {
-            getViewState().onFolderUpdated(folder, false, false);
-            return;
-        }
-        if (move) {
-            editModeState.addAction(new AddToFolderAction(folderId, descriptorId, true));
-            HomeEntry<IgnorableDescriptorUi> ignorableEntry = homeDescriptorsState.find(
-                    IgnorableDescriptorUi.class, descriptorId);
-            if (ignorableEntry != null) {
-                ignorableEntry.item.setIgnored(true);
-                homeDescriptorsState.updateItem(ignorableEntry.item);
-            }
-        } else {
-            editModeState.addAction(new AddToFolderAction(folderId, descriptorId, false));
-        }
-        folder.items.add(descriptorId);
-        getViewState().onFolderUpdated(folder, true, move);
-    }
-
-    void showFolder(String folderId) {
-        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
-        if (entry == null) {
-            return;
-        }
-        getViewState().showFolder(entry.position, entry.item.getDescriptor());
     }
 
     void addIntent(Intent intent, String label) {
@@ -215,14 +181,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         item.setLabel(nameNormalizer.normalize(label));
         editModeState.addAction(new AddAction(item));
         homeDescriptorsState.insertItem(new IntentDescriptorUi(item.toDescriptor()));
-    }
-
-    void startEditIntent(String id) {
-        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, id);
-        if (entry == null) {
-            return;
-        }
-        getViewState().showIntentEditor(entry.item);
     }
 
     void editIntent(String id, Intent intent) {
@@ -239,33 +197,14 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         homeDescriptorsState.removeById(id);
     }
 
-    void confirmDiscardChanges() {
-        if (editModeState.hasSomethingToCommit()) {
-            getViewState().onEditModeConfirmDiscardChanges();
-        } else {
-            discardChanges();
-        }
-    }
-
     void discardChanges() {
         editModeState.discard();
-        getViewState().onEditModeChangesDiscarded();
         update();
-    }
-
-    void selectFolder(String descriptorId, boolean move) {
-        HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
-        getViewState().showSelectFolderDialog(entry.position, entry.item, folders, move);
     }
 
     void stopCustomize() {
         if (editModeState.hasSomethingToCommit()) {
             editModeState.commit();
-            getViewState().onEditModeChangesSaved();
         } else {
             discardChanges();
         }
@@ -276,27 +215,6 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         if (shortcut != null) {
             pinShortcut(shortcut);
         }
-    }
-
-    void pinShortcut(Shortcut shortcut) {
-        shortcutsRepository.pinShortcut(shortcut)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleState<Boolean>() {
-                    @Override
-                    protected void onSuccess(AppsView viewState, Boolean pinned) {
-                        if (pinned) {
-                            viewState.onShortcutPinned(shortcut);
-                        } else {
-                            viewState.onShortcutAlreadyPinnedError(shortcut);
-                        }
-                    }
-
-                    @Override
-                    protected void onError(AppsView viewState, Throwable e) {
-                        viewState.showError(e);
-                    }
-                });
     }
 
     void removeFromFolder(String descriptorId, String folderId) {
@@ -330,18 +248,10 @@ public class AppsPresenter extends AppPresenter<AppsView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableState() {
                     @Override
-                    protected void onError(AppsView viewState, Throwable e) {
-                        viewState.showError(e);
+                    public void onError(Throwable e) {
+                        errorsSubject.onNext(e);
                     }
                 });
-    }
-
-    void requestRemoveItem(String descriptorId) {
-        HomeEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        getViewState().showDeleteDialog(entry.item);
     }
 
     void removeItemImmediate(RemovableDescriptorUi item) {
@@ -392,22 +302,25 @@ public class AppsPresenter extends AppPresenter<AppsView> {
 
     private void observe() {
         Observable.combineLatest(observeApps(), observeUserPrefs(), Update::with)
-                .filter(appItems -> !editModeState.isActive())
+                .filter(appItems -> {
+                    return !editModeState.isActive() || !updatesSubject.hasValue();
+                })
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new State<Update>() {
+                .subscribe(new State<>() {
                     @Override
-                    protected void onNext(AppsView viewState, Update update) {
+                    public void onNext(Update update) {
                         Timber.d("Update: %s", update);
                         homeDescriptorsState.setItems(update.items);
-                        viewState.onReceiveUpdate(update);
+                        updatesSubject.onNext(new UpdateEvent.Success(update));
                     }
 
                     @Override
-                    protected void onError(AppsView viewState, Throwable e) {
+                    public void onError(Throwable e) {
                         if (homeDescriptorsState.isInitialState()) {
-                            viewState.onReceiveUpdateError(e);
+                            updatesSubject.onNext(new UpdateEvent.Error(e));
                         } else {
-                            viewState.showError(e);
+                            errorsSubject.onNext(e);
                         }
                     }
                 });
@@ -508,6 +421,42 @@ public class AppsPresenter extends AppPresenter<AppsView> {
         }
     }
 
+    private void addToFolder(FolderDescriptorUi folder, List<String> descriptorIds, boolean move) {
+        editModeState.addAction(new AddToFolderAction(folder.getDescriptor().getId(), descriptorIds, move));
+        if (move) {
+            for (String descriptorId : descriptorIds) {
+                // ignore all descriptors, even if they already in folder
+                HomeEntry<IgnorableDescriptorUi> entry = homeDescriptorsState.find(IgnorableDescriptorUi.class, descriptorId);
+                if (entry != null) {
+                    entry.item.setIgnored(true);
+                    homeDescriptorsState.updateItem(entry.item);
+                }
+            }
+        }
+        for (String descriptorId : descriptorIds) {
+            if (!folder.items.contains(descriptorId)) {
+                folder.items.addAll(descriptorIds);
+            }
+        }
+    }
+
+    private void pinShortcut(Shortcut shortcut) {
+        shortcutsRepository.pinShortcut(shortcut)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleState<>() {
+                    @Override
+                    public void onSuccess(Boolean pinned) {
+                        shortcutPinSubject.onNext(new ShortcutPinEvent(shortcut, pinned));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorsSubject.onNext(e);
+                    }
+                });
+    }
+
     private boolean isBadgeVisible(@Nullable NotificationBag bag, boolean showOngoing) {
         if (bag != null) {
             // bag will never be empty here
@@ -542,20 +491,25 @@ public class AppsPresenter extends AppPresenter<AppsView> {
     private static class AddToFolderAction extends BaseAction {
 
         private final String folderId;
-        private final String descriptorId;
+        private final List<String> descriptorIds;
         private final boolean move;
 
-        private AddToFolderAction(String folderId, String descriptorId, boolean move) {
+        private AddToFolderAction(String folderId, List<String> descriptorIds, boolean move) {
             this.folderId = folderId;
-            this.descriptorId = descriptorId;
+            this.descriptorIds = descriptorIds;
             this.move = move;
         }
 
         @Override
         public void apply(List<MutableDescriptor<?>> items) {
             FolderDescriptor.Mutable descriptor = findById(items, folderId);
-            if (descriptor != null) {
-                descriptor.addItem(descriptorId);
+            if (descriptor == null) {
+                return;
+            }
+            for (String descriptorId : descriptorIds) {
+                if (!descriptor.getItems().contains(descriptorId)) {
+                    descriptor.addItem(descriptorId);
+                }
                 if (move) {
                     IgnorableMutableDescriptor<?> item = findById(items, descriptorId);
                     if (item != null) {

@@ -1,17 +1,14 @@
 package com.italankin.lnch.feature.home.repository;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
+import com.italankin.lnch.util.LifecycleUtils;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import androidx.annotation.Nullable;
 
 public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
 
@@ -32,8 +29,7 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
             throw new NullPointerException("items cannot be null");
         }
         this.items = items;
-        for (int i = callbacks.size() - 1; i >= 0; i--) {
-            Callback callback = callbacks.get(i);
+        for (Callback callback : callbacks) {
             callback.onNewItems(items);
         }
     }
@@ -61,8 +57,7 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(id)) {
                 items.remove(i);
-                for (int j = callbacks.size() - 1; j >= 0; j--) {
-                    Callback callback = callbacks.get(j);
+                for (Callback callback : callbacks) {
                     callback.onItemRemoved(i, item);
                 }
                 break;
@@ -116,16 +111,14 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     public void insertItem(DescriptorUi item) {
         int position = items.size();
         items.add(item);
-        for (int i = callbacks.size() - 1; i >= 0; i--) {
-            Callback callback = callbacks.get(i);
+        for (Callback callback : callbacks) {
             callback.onItemInserted(position, item);
         }
     }
 
     @Override
     public void updateItem(DescriptorUi item) {
-        for (int i = callbacks.size() - 1; i >= 0; i--) {
-            Callback callback = callbacks.get(i);
+        for (Callback callback : callbacks) {
             callback.onItemChanged(items.indexOf(item), item);
         }
     }
@@ -133,8 +126,7 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     @Override
     public void moveItem(int fromPosition, int toPosition) {
         ListUtils.move(items, fromPosition, toPosition);
-        for (int i = callbacks.size() - 1; i >= 0; i--) {
-            Callback callback = callbacks.get(i);
+        for (Callback callback : callbacks) {
             callback.onItemMoved(fromPosition, toPosition);
         }
     }
@@ -142,6 +134,14 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     @Override
     public void addCallback(Callback callback) {
         callbacks.add(callback);
+    }
+
+    @Override
+    public void addCallback(LifecycleOwner lifecycleOwner, Callback callback) {
+        addCallback(callback);
+        LifecycleUtils.doOnDestroyOnce(lifecycleOwner, () -> {
+            removeCallback(callback);
+        });
     }
 
     @Override

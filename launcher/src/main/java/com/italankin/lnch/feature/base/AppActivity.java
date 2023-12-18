@@ -1,12 +1,12 @@
 package com.italankin.lnch.feature.base;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import com.italankin.lnch.util.rxjava.WeakDisposableList;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
-public abstract class AppActivity extends MvpAppCompatActivity {
+public abstract class AppActivity extends AppCompatActivity {
 
     private final WeakDisposableList eventsSubs = new WeakDisposableList();
 

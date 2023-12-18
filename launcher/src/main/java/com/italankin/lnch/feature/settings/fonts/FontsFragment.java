@@ -214,7 +214,7 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
                 .setPositiveButton(R.string.settings_home_laf_appearance_fonts_add, (dialog, editText) -> {
                     viewModel.addFont(editText.getText().toString(), result);
                 })
-                .show();
+                .show(this);
     }
 
     @Nullable

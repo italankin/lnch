@@ -23,12 +23,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -37,12 +36,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
+import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.*;
 import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
+import com.italankin.lnch.feature.home.apps.events.ShortcutPinEvent;
+import com.italankin.lnch.feature.home.apps.events.UpdateEvent;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.*;
@@ -51,8 +54,10 @@ import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -77,28 +82,29 @@ import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
+import timber.log.Timber;
 
 import java.util.Collections;
 import java.util.List;
 
-public class AppsFragment extends AppFragment implements AppsView,
-        IntentQueue.OnIntentAction,
+public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
         AppDescriptorUiAdapter.Listener,
         FolderDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener,
-        HomeDescriptorsState.Callback {
+        HomeDescriptorsState.Callback,
+        EditModeState.Callback {
 
     private static final int ANIM_LIST_APPEARANCE_DURATION = 400;
 
     private static final String REQUEST_KEY_APPS = "apps";
 
-    @InjectPresenter
-    AppsPresenter presenter;
+    private AppsViewModel viewModel;
 
     private Preferences preferences;
     private HomeDescriptorsState homeDescriptorsState;
+    private EditModeState editModeState;
     private IntentQueue intentQueue;
     private HomeBus homeBus;
 
@@ -137,19 +143,20 @@ public class AppsFragment extends AppFragment implements AppsView,
     private Runnable hideSearchRunnable;
     private OnBackPressedCallback onBackPressedCallback;
 
-    @ProvidePresenter
-    AppsPresenter providePresenter() {
-        return LauncherApp.daggerService.presenters().apps();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = AppViewModelProvider.get(this, AppsViewModel.class, ViewModelComponent::apps);
+        editModeState = LauncherApp.daggerService.main().editModeState();
         onBackPressedCallback = new OnBackPressedCallback(false) {
             @Override
             public void handleOnBackPressed() {
                 if (editMode) {
-                    presenter.confirmDiscardChanges();
+                    if (editModeState.hasSomethingToCommit()) {
+                        onEditModeConfirmDiscardChanges();
+                    } else {
+                        viewModel.discardChanges();
+                    }
                     return;
                 }
                 if (searchOverlayBehavior.isShown()) {
@@ -227,7 +234,7 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         setupSearchOverlay();
 
-        touchHelper = new ItemTouchHelper(new MoveItemHelper(presenter::moveItem));
+        touchHelper = new ItemTouchHelper(new MoveItemHelper(viewModel::moveItem));
         touchHelper.attachToRecyclerView(list);
         list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
             @Override
@@ -243,7 +250,40 @@ public class AppsFragment extends AppFragment implements AppsView,
 
         intentQueue.registerOnIntentAction(this);
 
-        homeDescriptorsState.addCallback(this);
+        homeDescriptorsState.addCallback(this, this);
+        editModeState.addCallback(this, this);
+
+        setEditMode(editModeState.isActive());
+
+        viewModel.updateEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(UpdateEvent event) {
+                        if (event instanceof UpdateEvent.Success) {
+                            onReceiveUpdate(((UpdateEvent.Success) event).update);
+                        } else if (event instanceof UpdateEvent.Error) {
+                            onReceiveUpdateError(((UpdateEvent.Error) event).error);
+                        }
+                    }
+                });
+        viewModel.errorEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(Throwable throwable) {
+                        showError(throwable);
+                    }
+                });
+        viewModel.shortcutPinEvents()
+                .subscribe(new EventObserver<>() {
+                    @Override
+                    public void onNext(ShortcutPinEvent event) {
+                        if (event.pinned) {
+                            onShortcutPinned(event.shortcut);
+                        } else {
+                            onShortcutAlreadyPinnedError(event.shortcut);
+                        }
+                    }
+                });
     }
 
     private void initDelegates(Context context) {
@@ -261,7 +301,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                         .show(getParentFragmentManager());
             }
         };
-        CustomizeDelegate customizeDelegate = presenter::startCustomize;
+        CustomizeDelegate customizeDelegate = viewModel::startCustomize;
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
                 customizeDelegate, usageTracker);
         pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate,
@@ -279,7 +319,6 @@ public class AppsFragment extends AppFragment implements AppsView,
     public void onDestroyView() {
         super.onDestroyView();
         intentQueue.unregisterOnIntentAction(this);
-        homeDescriptorsState.removeCallback(this);
     }
 
     @Override
@@ -302,7 +341,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 dismissPopups();
                 if (!editMode) {
                     animateOnResume = false;
-                    presenter.startCustomize();
+                    viewModel.startCustomize();
                 }
                 return true;
             }
@@ -313,53 +352,43 @@ public class AppsFragment extends AppFragment implements AppsView,
     private void registerFragmentResultListeners() {
         new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_APPS)
                 .register(new FolderFragment.CustomizeContract(), ignored -> {
-                    presenter.startCustomize();
+                    viewModel.startCustomize();
                 })
                 .register(new AppDescriptorPopupFragment.CustomizeContract(), ignored -> {
-                    presenter.startCustomize();
+                    viewModel.startCustomize();
                 })
                 .register(new AppDescriptorPopupFragment.PinShortcutContract(), result -> {
-                    presenter.pinShortcut(result.packageName, result.shortcutId);
+                    viewModel.pinShortcut(result.packageName, result.shortcutId);
                 })
                 .register(new AppDescriptorPopupFragment.RemoveFromFolderContract(), result -> {
-                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                    viewModel.removeFromFolder(result.descriptorId, result.folderId);
                 })
-                .register(new DescriptorPopupFragment.RequestRemovalContract(), descriptorId -> {
-                    presenter.requestRemoveItem(descriptorId);
-                })
+                .register(new DescriptorPopupFragment.RequestRemovalContract(), this::showDeleteDialog)
                 .register(new DescriptorPopupFragment.RemoveFromFolderContract(), result -> {
-                    presenter.removeFromFolder(result.descriptorId, result.folderId);
+                    viewModel.removeFromFolder(result.descriptorId, result.folderId);
                 })
                 .register(new SelectFolderFragment.AddToFolderContract(), result -> {
-                    presenter.addToFolder(result.descriptorId, result.folderId, result.move);
+                    viewModel.addToFolder(result.folderId, Collections.singletonList(result.descriptorId), result.move);
                 })
                 .register(new EditModePopupFragment.AddFolderContract(), result -> showCreateFolderDialog())
                 .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
                     createIntentLauncher.launch(null);
                 })
                 .register(new CustomizeDescriptorPopupFragment.ShowSelectFolderContract(), result -> {
-                    presenter.selectFolder(result.descriptorId, result.move);
+                    showSelectFolderDialog(result.descriptorId, result.move);
                 })
                 .register(new CustomizeDescriptorPopupFragment.IgnoreContract(), descriptorId -> {
-                    presenter.ignoreItem(descriptorId);
+                    viewModel.ignoreItem(descriptorId);
                 })
-                .register(new CustomizeDescriptorPopupFragment.RenameContract(), descriptorId -> {
-                    presenter.renameItem(descriptorId);
-                })
-                .register(new CustomizeDescriptorPopupFragment.SetColorContract(), descriptorId -> {
-                    presenter.showSetItemColorDialog(descriptorId);
-                })
+                .register(new CustomizeDescriptorPopupFragment.RenameContract(), this::showItemRenameDialog)
+                .register(new CustomizeDescriptorPopupFragment.SetColorContract(), this::showSetItemColorDialog)
                 .register(new CustomizeDescriptorPopupFragment.RemoveContract(), descriptorId -> {
-                    presenter.removeItem(descriptorId);
+                    viewModel.removeItem(descriptorId);
                 })
-                .register(new CustomizeDescriptorPopupFragment.EditIntentContract(), descriptorId -> {
-                    presenter.startEditIntent(descriptorId);
-                })
-                .register(new CustomizeDescriptorPopupFragment.EditFolderContract(), folderId -> {
-                    presenter.showFolder(folderId);
-                })
+                .register(new CustomizeDescriptorPopupFragment.EditIntentContract(), this::showIntentEditor)
+                .register(new CustomizeDescriptorPopupFragment.EditFolderContract(), this::showFolder)
                 .register(new HiddenItemsPopupFragment.ShowContract(), descriptorId -> {
-                    presenter.showItem(descriptorId);
+                    viewModel.showItem(descriptorId);
                 })
                 .register(new ActionPopupFragment.ActionDoneContract(), ignored -> {
                     // empty
@@ -367,8 +396,7 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .attach();
     }
 
-    @Override
-    public void onReceiveUpdate(Update update) {
+    private void onReceiveUpdate(Update update) {
         setItems(update);
         if (update.items.isEmpty()) {
             lce.empty()
@@ -534,8 +562,14 @@ public class AppsFragment extends AppFragment implements AppsView,
     // Other
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public void showFolder(int position, FolderDescriptor descriptor) {
+    private void showFolder(String folderId) {
+        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
+        if (entry != null) {
+            showFolder(entry.position, entry.item.getDescriptor());
+        }
+    }
+
+    private void showFolder(int position, FolderDescriptor descriptor) {
         Point point = null;
         View view = list.findViewForAdapterPosition(position);
         if (view != null) {
@@ -566,8 +600,8 @@ public class AppsFragment extends AppFragment implements AppsView,
             EditModePanel panel = new EditModePanel(requireContext())
                     .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
-                        if (this.editModePanel != null && this.editModePanel.isShown()) {
-                            presenter.stopCustomize();
+                        if (editModePanel != null && editModePanel.isShown()) {
+                            viewModel.stopCustomize();
                         }
                     })
                     .setOnHiddenItemsClickListener(v -> {
@@ -601,132 +635,132 @@ public class AppsFragment extends AppFragment implements AppsView,
             return;
         }
         String label = getString(R.string.intent_factory_default_title);
-        presenter.addIntent(result.intent, label);
+        viewModel.addIntent(result.intent, label);
     }
 
     private void onIntentEdited(@Nullable IntentFactoryResult result) {
         if (result == null || result.descriptorId == null) {
             return;
         }
-        presenter.editIntent(result.descriptorId, result.intent);
+        viewModel.editIntent(result.descriptorId, result.intent);
     }
 
     @Override
-    public void showProgress() {
-        lce.showLoading();
-    }
-
-    @Override
-    public void onStartEditMode() {
+    public void onEditModeActivate() {
         setEditMode(true);
     }
 
     @Override
-    public void onEditModeConfirmDiscardChanges() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.customize_discard_message)
-                .setPositiveButton(R.string.customize_discard, (dialog, which) -> presenter.discardChanges())
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    @Override
-    public void onEditModeChangesDiscarded() {
+    public void onEditModeDiscard() {
         setEditMode(false);
     }
 
     @Override
-    public void onEditModeChangesSaved() {
+    public void onEditModeCommit() {
         setEditMode(false);
         Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void showDeleteDialog(RemovableDescriptorUi item) {
-        String visibleLabel = ((CustomLabelDescriptorUi) item).getVisibleLabel();
+    private void onEditModeConfirmDiscardChanges() {
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.customize_discard_message)
+                .setPositiveButton(R.string.customize_discard, (dialog, which) -> viewModel.discardChanges())
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+        DialogUtils.dismissOnDestroy(this, alertDialog);
+    }
+
+    private void showDeleteDialog(String descriptorId) {
+        HomeEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        String visibleLabel;
+        if (entry.item instanceof CustomLabelDescriptorUi) {
+            visibleLabel = ((CustomLabelDescriptorUi) entry.item).getVisibleLabel();
+        } else if (entry.item instanceof LabelDescriptorUi) {
+            visibleLabel = ((LabelDescriptorUi) entry.item).getLabel();
+        } else {
+            visibleLabel = entry.item.getDescriptor().getOriginalLabel();
+        }
         String message = getString(R.string.dialog_delete_message, visibleLabel);
-        new MaterialAlertDialogBuilder(requireContext())
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dialog_delete_title)
                 .setMessage(message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.dialog_delete_action, (dialog, which) -> {
-                    presenter.removeItemImmediate(item);
+                    viewModel.removeItemImmediate(entry.item);
                 })
                 .show();
+        DialogUtils.dismissOnDestroy(this, alertDialog);
     }
 
-    @Override
-    public void onShortcutPinned(Shortcut shortcut) {
+    private void onShortcutPinned(Shortcut shortcut) {
         Toast.makeText(requireContext(), getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
                 Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onShortcutAlreadyPinnedError(Shortcut shortcut) {
+    private void onShortcutAlreadyPinnedError(Shortcut shortcut) {
         Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
                 Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onReceiveUpdateError(Throwable e) {
+    private void onReceiveUpdateError(Throwable e) {
         lce.error()
-                .button(v -> presenter.reloadApps())
+                .button(v -> viewModel.reloadApps())
                 .message(e.getMessage())
                 .show();
     }
 
-    @Override
-    public void showSelectFolderDialog(int position, InFolderDescriptorUi item, List<FolderDescriptorUi> folders, boolean move) {
-        if (folders.isEmpty()) {
-            showCreateFolderDialog(Collections.singletonList(item.getDescriptor().getId()), move);
+    private void showSelectFolderDialog(String descriptorId, boolean move) {
+        HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class,
+                descriptorId);
+        if (entry == null) {
             return;
         }
-        View view = list.findViewForAdapterPosition(position);
+        List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
+        if (folders.isEmpty()) {
+            showCreateFolderDialog(Collections.singletonList(entry.item.getDescriptor().getId()), move);
+            return;
+        }
+        View view = list.findViewForAdapterPosition(entry.position);
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
-        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, item, folders, move, bounds)
+        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, entry.item, folders, move, bounds)
                 .show(getParentFragmentManager());
     }
 
-    @Override
-    public void onFolderUpdated(FolderDescriptorUi item, boolean added, boolean moved) {
-        String text;
-        if (added) {
-            if (moved) {
-                text = getString(R.string.folder_select_item_moved, item.getVisibleLabel());
-            } else {
-                text = getString(R.string.folder_select_item_added, item.getVisibleLabel());
-            }
-        } else {
-            text = getString(R.string.folder_select_already_in_folder, item.getVisibleLabel());
+    private void showItemRenameDialog(String descriptorId) {
+        HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
         }
-        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
+        new RenameDescriptorDialog(requireContext(), entry.item.getVisibleLabel(),
+                (newLabel) -> viewModel.renameItem(entry.item, newLabel))
+                .show(this);
     }
 
-    @Override
-    public void showItemRenameDialog(int position, CustomLabelDescriptorUi item) {
-        new RenameDescriptorDialog(requireContext(), item.getVisibleLabel(),
-                (newLabel) -> presenter.renameItem(item, newLabel))
-                .show();
+    private void showSetItemColorDialog(String descriptorId) {
+        HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        new SetColorDescriptorDialog(requireContext(), entry.item.getVisibleColor(),
+                newColor -> viewModel.changeItemCustomColor(entry.item, newColor))
+                .show(this);
     }
 
-    @Override
-    public void showSetItemColorDialog(int position, CustomColorDescriptorUi item) {
-        new SetColorDescriptorDialog(requireContext(), item.getVisibleColor(),
-                newColor -> presenter.changeItemCustomColor(item, newColor))
-                .show();
-    }
-
-    @Override
-    public void showIntentEditor(IntentDescriptorUi item) {
-        editIntentLauncher.launch(item);
+    private void showIntentEditor(String descriptorId) {
+        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+        if (entry != null) {
+            editIntentLauncher.launch(entry.item);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Errors
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public void showError(Throwable e) {
+    private void showError(Throwable e) {
         if (preferences.get(Preferences.VERBOSE_ERRORS)) {
             errorDelegate.showError(e.getMessage());
         } else {
@@ -813,7 +847,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             public void onSearchItemPinClick(Match match) {
                 searchOverlayBehavior.hide();
                 Context context = requireContext();
-                presenter.pinIntent(match.getIntent(context), match.getLabel(context), match.getColor(context));
+                viewModel.pinIntent(match.getIntent(context), match.getLabel(context), match.getColor(context));
             }
 
             @Override
@@ -833,7 +867,7 @@ public class AppsFragment extends AppFragment implements AppsView,
             hideSearchOverlayWithDelay();
             startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
         }, v -> {
-            searchOverlayBehavior.hide(presenter::startCustomize);
+            searchOverlayBehavior.hide(viewModel::startCustomize);
             return true;
         });
 
@@ -938,7 +972,7 @@ public class AppsFragment extends AppFragment implements AppsView,
         }
         if (userPrefs.searchBarShowCustomize) {
             searchOverlay.setupCustomizeButton(v -> {
-                searchOverlayBehavior.hide(presenter::startCustomize);
+                searchOverlayBehavior.hide(viewModel::startCustomize);
             });
         } else {
             searchOverlay.setupCustomizeButton(null);
@@ -948,6 +982,7 @@ public class AppsFragment extends AppFragment implements AppsView,
     }
 
     private void setItems(Update update) {
+        Timber.d("setItems: this=%s, adapter=%s", this, adapter);
         if (adapter == null) {
             adapter = new HomeAdapter.Builder(getContext())
                     .add(new AppDescriptorUiAdapter(this))
@@ -1023,10 +1058,10 @@ public class AppsFragment extends AppFragment implements AppsView,
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String folderName = editText.getText().toString().trim();
                     int color = MaterialColors.getColor(requireContext(), android.R.attr.textColorPrimary, "showCreateFolderDialog");
-                    presenter.addFolder(folderName, color, descriptors, move);
+                    viewModel.addFolder(folderName, color, descriptors, move);
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .show();
+                .show(this);
     }
 
     private boolean hasHiddenItems() {

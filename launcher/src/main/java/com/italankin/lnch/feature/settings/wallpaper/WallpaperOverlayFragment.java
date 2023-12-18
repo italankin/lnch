@@ -106,7 +106,7 @@ public class WallpaperOverlayFragment extends AppFragment implements SettingsToo
             ColorPickerDialog.builder(requireContext())
                     .setSelectedColor(itemPreview.getCurrentTextColor())
                     .setOnColorPickedListener(itemPreview::setTextColor)
-                    .show();
+                    .show(this);
         });
 
         Context context = requireContext();

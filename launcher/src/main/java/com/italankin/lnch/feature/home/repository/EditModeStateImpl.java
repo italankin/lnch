@@ -1,11 +1,9 @@
 package com.italankin.lnch.feature.home.repository;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.util.LifecycleUtils;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
@@ -32,7 +30,9 @@ public class EditModeStateImpl implements EditModeState {
 
     @Override
     public void activate() {
-        requireNotActive();
+        if (isActive()) {
+            return;
+        }
         editor = descriptorRepository.edit();
         for (Callback callback : callbacks) {
             callback.onEditModeActivate();
@@ -94,17 +94,9 @@ public class EditModeStateImpl implements EditModeState {
 
     @Override
     public void addCallback(LifecycleOwner lifecycleOwner, Callback callback) {
-        Lifecycle lifecycle = lifecycleOwner.getLifecycle();
-        if (lifecycle.getCurrentState() == Lifecycle.State.DESTROYED) {
-            return;
-        }
         addCallback(callback);
-        lifecycle.addObserver(new DefaultLifecycleObserver() {
-            @Override
-            public void onDestroy(@NonNull LifecycleOwner owner) {
-                owner.getLifecycle().removeObserver(this);
-                removeCallback(callback);
-            }
+        LifecycleUtils.doOnDestroyOnce(lifecycleOwner, () -> {
+            removeCallback(callback);
         });
     }
 
@@ -116,12 +108,6 @@ public class EditModeStateImpl implements EditModeState {
     private void requireActive() {
         if (!isActive()) {
             throw new IllegalStateException("edit mode is not active");
-        }
-    }
-
-    private void requireNotActive() {
-        if (isActive()) {
-            throw new IllegalStateException("edit mode is active");
         }
     }
 

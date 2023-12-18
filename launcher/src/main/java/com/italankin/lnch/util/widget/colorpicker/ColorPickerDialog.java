@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.LifecycleOwner;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.R;
+import com.italankin.lnch.util.DialogUtils;
 
 public final class ColorPickerDialog {
 
@@ -72,6 +74,13 @@ public final class ColorPickerDialog {
         public AlertDialog show() {
             AlertDialog dialog = build();
             dialog.show();
+            return dialog;
+        }
+
+        public AlertDialog show(LifecycleOwner lifecycleOwner) {
+            AlertDialog dialog = build();
+            dialog.show();
+            DialogUtils.dismissOnDestroy(lifecycleOwner, dialog);
             return dialog;
         }
     }

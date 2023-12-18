@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.SeekBarPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -18,6 +19,7 @@ import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
         horizontalGridSizePref.setMin(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.min());
         horizontalGridSizePref.setMax(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE.max());
         findPreference(R.string.pref_key_widgets_remove).setOnPreferenceClickListener(preference -> {
-            new MaterialAlertDialogBuilder(requireContext())
+            AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.settings_home_widgets_remove_dialog_title)
                     .setMessage(R.string.settings_home_widgets_remove_dialog_message)
                     .setNegativeButton(R.string.cancel, null)
@@ -51,6 +53,7 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
                                 .show();
                     })
                     .show();
+            DialogUtils.dismissOnDestroy(this, alertDialog);
             return true;
         });
 
@@ -79,7 +82,7 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
                 i++;
             }
             HeightCellRatioItem[] items = values.toArray(new HeightCellRatioItem[0]);
-            new MaterialAlertDialogBuilder(requireContext())
+            AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(preference.getTitle())
                     .setSingleChoiceItems(items, currentValueIndex, (dialog, which) -> {
                         float newValue = items[which].value;
@@ -89,6 +92,7 @@ public class WidgetsSettingsFragment extends BasePreferenceFragment implements S
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
+            DialogUtils.dismissOnDestroy(this, alertDialog);
             return false;
         });
         heightCellRatioPref.setSummary(HeightCellRatioItem.stringValue(preferences.get(Preferences.WIDGETS_HEIGHT_CELL_RATIO)));
