@@ -22,6 +22,7 @@ public class EditModePanel extends LinearLayout {
     private final View save;
     private final View add;
     private final View hidden;
+    private final View additional;
 
     private CoordinatorLayout parent;
     private boolean dismissed = false;
@@ -41,6 +42,7 @@ public class EditModePanel extends LinearLayout {
         save = findViewById(R.id.save);
         add = findViewById(R.id.add);
         hidden = findViewById(R.id.hidden);
+        additional = findViewById(R.id.additional);
     }
 
     public EditModePanel setOnAddActionClickListener(OnClickListener listener) {
@@ -57,6 +59,12 @@ public class EditModePanel extends LinearLayout {
     public EditModePanel setOnHiddenItemsClickListener(OnClickListener listener) {
         hidden.setOnClickListener(listener);
         hidden.setVisibility(listener == null ? GONE : VISIBLE);
+        return this;
+    }
+
+    public EditModePanel setOnAdditionalSettingsClickListener(OnClickListener listener) {
+        additional.setOnClickListener(listener);
+        additional.setVisibility(listener == null ? GONE : VISIBLE);
         return this;
     }
 

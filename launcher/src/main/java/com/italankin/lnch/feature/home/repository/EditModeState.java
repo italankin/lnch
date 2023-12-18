@@ -1,8 +1,8 @@
 package com.italankin.lnch.feature.home.repository;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 
 public interface EditModeState {
 
@@ -19,6 +19,8 @@ public interface EditModeState {
     void addAction(DescriptorRepository.Editor.Action action);
 
     <T> T getProperty(Property<T> property);
+
+    boolean isPropertySet(Property<?> property);
 
     <T> void setProperty(Property<T> property, T newValue);
 
@@ -43,24 +45,11 @@ public interface EditModeState {
         }
     }
 
-    class Property<T> {
-        final String key;
+    interface Property<T> {
+    }
 
-        public Property(String key) {
-            this.key = key;
-        }
+    interface PreferenceProperty<T> extends Property<T> {
 
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (obj instanceof Property) {
-                return key.equals(((Property<?>) obj).key);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return key.hashCode();
-        }
+        void write(Preferences preferences, T newValue);
     }
 }

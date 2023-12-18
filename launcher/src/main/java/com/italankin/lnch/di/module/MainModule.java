@@ -156,8 +156,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    EditModeState provideEditModeState(DescriptorRepository descriptorRepository) {
-        return new EditModeStateImpl(descriptorRepository);
+    EditModeState provideEditModeState(DescriptorRepository descriptorRepository, Preferences preferences) {
+        return new EditModeStateImpl(descriptorRepository, preferences);
     }
 
     @Provides

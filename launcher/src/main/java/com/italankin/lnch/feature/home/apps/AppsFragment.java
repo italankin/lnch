@@ -617,6 +617,11 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                         HiddenItemsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
                                 .show(getParentFragmentManager());
                     })
+                    .setOnAdditionalSettingsClickListener(v -> {
+                        Rect bounds = ViewUtils.getViewBoundsInsetPadding(v);
+                        AdditionalSettingsPopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
+                                .show(getParentFragmentManager());
+                    })
                     .setHiddenItemsActionEnabled(hasHiddenItems());
             editModePanel = panel.show(coordinator);
         } else if (editModePanel != null) {

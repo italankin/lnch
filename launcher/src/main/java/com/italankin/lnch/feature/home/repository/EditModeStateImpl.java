@@ -2,7 +2,9 @@ package com.italankin.lnch.feature.home.repository;
 
 import android.annotation.SuppressLint;
 import androidx.lifecycle.LifecycleOwner;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.LifecycleUtils;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -18,12 +20,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class EditModeStateImpl implements EditModeState {
 
     private final DescriptorRepository descriptorRepository;
+    private final Preferences preferences;
+
     private final List<Callback> callbacks = new CopyOnWriteArrayList<>();
+
     private DescriptorRepository.Editor editor = EmptyEditor.INSTANCE;
     private final Map<Property<?>, Object> properties = new HashMap<>(4);
 
-    public EditModeStateImpl(DescriptorRepository descriptorRepository) {
+    public EditModeStateImpl(DescriptorRepository descriptorRepository, Preferences preferences) {
         this.descriptorRepository = descriptorRepository;
+        this.preferences = preferences;
     }
 
     @Override
@@ -55,9 +61,16 @@ public class EditModeStateImpl implements EditModeState {
     }
 
     @SuppressLint("CheckResult")
+    @SuppressWarnings("unchecked")
     @Override
     public void commit() {
         requireActive();
+        for (Map.Entry<Property<?>, Object> entry : properties.entrySet()) {
+            Property<?> property = entry.getKey();
+            if (property instanceof PreferenceProperty) {
+                editor.enqueue(new PreferenceWriteAction<>(preferences, (PreferenceProperty<Object>) property, entry.getValue()));
+            }
+        }
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableObserver() {
@@ -84,7 +97,15 @@ public class EditModeStateImpl implements EditModeState {
 
     @Override
     public boolean hasSomethingToCommit() {
-        return !editor.isEmpty();
+        if (!editor.isEmpty()) {
+            return true;
+        }
+        for (Property<?> property : properties.keySet()) {
+            if (property instanceof PreferenceProperty) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -101,9 +122,16 @@ public class EditModeStateImpl implements EditModeState {
     }
 
     @Override
+    public boolean isPropertySet(Property<?> property) {
+        requireActive();
+        return properties.containsKey(property);
+    }
+
+    @Override
     public <T> void setProperty(Property<T> property, T newValue) {
         requireActive();
         properties.put(property, newValue);
+        Timber.d("setProperty: %s=%s", property, newValue);
         for (Callback callback : callbacks) {
             callback.onEditModePropertyChange(property, newValue);
         }
@@ -163,6 +191,23 @@ public class EditModeStateImpl implements EditModeState {
         @Override
         public boolean isDisposed() {
             return true;
+        }
+    }
+
+    private static class PreferenceWriteAction<T> implements DescriptorRepository.Editor.Action {
+        private final Preferences preferences;
+        private final PreferenceProperty<T> property;
+        private final T newValue;
+
+        private PreferenceWriteAction(Preferences preferences, PreferenceProperty<T> property, T newValue) {
+            this.preferences = preferences;
+            this.property = property;
+            this.newValue = newValue;
+        }
+
+        @Override
+        public void apply(List<MutableDescriptor<?>> items) {
+            property.write(preferences, newValue);
         }
     }
 }
