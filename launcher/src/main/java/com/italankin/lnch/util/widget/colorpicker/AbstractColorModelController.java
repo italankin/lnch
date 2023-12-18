@@ -6,17 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.util.NumberUtils;
-import com.italankin.lnch.util.adapter.SeekBarChangeListener;
-import com.italankin.lnch.util.widget.EditTextAlertDialog;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import com.google.android.material.slider.Slider;
+import com.italankin.lnch.R;
+import com.italankin.lnch.util.NumberUtils;
+import com.italankin.lnch.util.widget.EditTextAlertDialog;
 
 abstract class AbstractColorModelController implements ColorModelController {
     @Nullable
@@ -41,8 +38,8 @@ abstract class AbstractColorModelController implements ColorModelController {
             labelView.setTextColor(textColor);
         }
         labelView.setText(label);
-        SeekBar seekBarView = rowView.findViewById(R.id.seekbar);
-        seekBarView.setMax(max);
+        Slider slider = rowView.findViewById(R.id.slider);
+        slider.setValueTo(max);
         TextView valueView = rowView.findViewById(R.id.value);
         valueView.setOnClickListener(v -> {
             EditTextAlertDialog.builder(root.getContext())
@@ -51,7 +48,7 @@ abstract class AbstractColorModelController implements ColorModelController {
                         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                         editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
-                        String text = String.valueOf(seekBarView.getProgress());
+                        String text = String.valueOf((int) slider.getValue());
                         editText.setText(text);
                         editText.setSelection(text.length());
                         editText.setHint(editText.getContext()
@@ -61,43 +58,43 @@ abstract class AbstractColorModelController implements ColorModelController {
                         String s = editText.getText().toString().trim();
                         Integer value = NumberUtils.parseInt(s);
                         if (value != null) {
-                            seekBarView.setProgress(Math.min(max, Math.max(0, value)));
+                            slider.setValue(Math.min(max, Math.max(0, value)));
                         }
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
         });
         root.addView(rowView);
-        Row row = new Row(rowView, labelView, seekBarView, valueView);
-        seekBarView.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+        Row row = new Row(rowView, labelView, slider, valueView);
+        slider.addOnChangeListener((aSlider, value, fromUser) -> {
             row.update();
             if (listener != null) {
                 listener.onColorChanged(getColor());
             }
-        }));
+        });
         return row;
     }
 
     public static class Row {
         public final View root;
         public final TextView label;
-        public final SeekBar seekbar;
+        public final Slider slider;
         public final TextView value;
 
-        public Row(View root, TextView label, SeekBar seekbar, TextView value) {
+        public Row(View root, TextView label, Slider slider, TextView value) {
             this.root = root;
             this.label = label;
-            this.seekbar = seekbar;
+            this.slider = slider;
             this.value = value;
         }
 
         public void setValue(int newValue) {
-            seekbar.setProgress(newValue);
+            slider.setValue(newValue);
             update();
         }
 
         public int getValue() {
-            return seekbar.getProgress();
+            return (int) slider.getValue();
         }
 
         public void update() {

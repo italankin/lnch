@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="4dp">
 
     <TextView
         android:id="@+id/label"
@@ -17,16 +19,16 @@
         android:textSize="14sp"
         tools:text="R" />
 
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/seekbar"
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="9"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
         android:saveEnabled="false"
-        tools:max="255"
-        tools:progress="85" />
+        android:valueFrom="0"
+        android:valueTo="255"
+        app:labelBehavior="gone"
+        tools:value="95" />
 
     <TextView
         android:id="@+id/value"

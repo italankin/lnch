@@ -3,6 +3,10 @@
     <color name="status_bar">#4000</color>
     <color name="notification_dot">#ff2600</color>
     <color name="fullscreen_folder_overlay">#d0000000</color>
+    <color name="color_picker_text_red">#C62828</color>
+    <color name="color_picker_text_green">#2E7D32</color>
+    <color name="color_picker_text_blue">#1565C0</color>
+
     <color name="widget_resize_frame">#fff</color>
     <color name="widget_resize_frame_active">#fff</color>
     <color name="widget_resize_frame_grid">#afff</color>
