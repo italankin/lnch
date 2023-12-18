@@ -15,9 +15,14 @@ import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
+import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
+import com.italankin.lnch.feature.home.model.ItemPrefsWrapper;
+import com.italankin.lnch.feature.home.model.UserPrefs;
+import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
+import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
@@ -46,6 +51,7 @@ public class EditFolderFragment extends BaseFolderFragment {
     private EditFolderViewModel viewModel;
 
     private Preferences preferences;
+    private EditModeState editModeState;
     private HomeDescriptorsState homeDescriptorsState;
 
     private final ActivityResultLauncher<IntentDescriptorUi> editIntentLauncher = registerForActivityResult(
@@ -70,6 +76,7 @@ public class EditFolderFragment extends BaseFolderFragment {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, EditFolderViewModel.class, ViewModelComponent::editFolder);
         preferences = LauncherApp.daggerService.main().preferences();
+        editModeState = LauncherApp.daggerService.main().editModeState();
         homeDescriptorsState = LauncherApp.daggerService.main().homeDescriptorState();
 
         fragmentResultManager
@@ -104,6 +111,24 @@ public class EditFolderFragment extends BaseFolderFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         touchHelper.attachToRecyclerView(list);
+        adapter.setUserPrefsOverrides(new HomeAdapter.ItemPrefsOverrides() {
+            @Override
+            public UserPrefs.ItemPrefs getItemPrefsOverrides(UserPrefs.ItemPrefs itemPrefs) {
+                return new ItemPrefsWrapper(itemPrefs) {
+                    @Override
+                    public float itemTextSize() {
+                        Float itemTextSize = editModeState.getProperty(EditModeProperties.ITEM_TEXT_SIZE);
+                        return itemTextSize != null ? itemTextSize : super.itemTextSize();
+                    }
+
+                    @Override
+                    public int itemPadding() {
+                        Integer itemPadding = editModeState.getProperty(EditModeProperties.ITEM_PADDING);
+                        return itemPadding != null ? itemPadding : super.itemPadding();
+                    }
+                };
+            }
+        });
     }
 
     private void onShowRenameDialog(CustomLabelDescriptorUi item) {

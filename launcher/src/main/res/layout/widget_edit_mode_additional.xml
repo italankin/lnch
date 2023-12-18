@@ -11,22 +11,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingVertical="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/customize_wallpaper_dim"
+            android:textColor="?android:textColorPrimary"
+            app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_checkbox"
+            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_checkbox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/wallpaper_dim_checkbox" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/wallpaper_dim_checkbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/customize_wallpaper_dim"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/wallpaper_dim_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:padding="4dp"
+            android:padding="12dp"
             android:src="@drawable/ic_action_color"
             app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_slider"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,12 +47,81 @@
             android:id="@+id/wallpaper_dim_slider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
             android:valueFrom="0"
             android:valueTo="1"
+            app:labelBehavior="gone"
             app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_checkbox" />
 
+        <TextView
+            android:id="@+id/text_size_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:text="@string/customize_text_size"
+            android:textColor="?android:textColorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_slider" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/text_size_slider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:stepSize="1"
+            app:labelBehavior="gone"
+            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_size_title"
+            app:tickVisible="false" />
+
+        <ImageView
+            android:id="@+id/text_size_reset"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:src="@drawable/ic_settings_backup_restore"
+            app:layout_constraintBottom_toBottomOf="@id/text_size_slider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_size_slider" />
+
+        <TextView
+            android:id="@+id/text_padding_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:text="@string/customize_text_padding"
+            android:textColor="?android:textColorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_size_slider" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/text_padding_slider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:stepSize="1"
+            app:labelBehavior="gone"
+            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_padding_title"
+            app:tickVisible="false" />
+
+        <ImageView
+            android:id="@+id/text_padding_reset"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:src="@drawable/ic_settings_backup_restore"
+            app:layout_constraintBottom_toBottomOf="@id/text_padding_slider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_padding_slider" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>

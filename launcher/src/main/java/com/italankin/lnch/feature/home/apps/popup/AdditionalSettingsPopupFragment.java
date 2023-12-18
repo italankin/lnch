@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.Debouncer;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
 import com.italankin.lnch.util.widget.popup.PopupFragment;
@@ -69,6 +69,8 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupWallpaperDim(view);
+        setupTextSize(view);
+        setupItemPadding(view);
 
         showPopup();
     }
@@ -87,10 +89,9 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         Slider dimSlider = view.findViewById(R.id.wallpaper_dim_slider);
         dimSlider.setEnabled(wallpaperDimColor != null);
         dimSlider.setValue(wallpaperDimAmount(wallpaperDimColor));
-        dimSlider.setLabelBehavior(LabelFormatter.LABEL_GONE);
-        dimSlider.addOnChangeListener((slider, value, fromUser) -> {
+        dimSlider.addOnChangeListener(new DebounceChangeListener(value -> {
             editModeState.setProperty(EditModeProperties.WALLPAPER_DIM, wallpaperDimColor(value, baseColor));
-        });
+        }));
 
         View colorSelector = view.findViewById(R.id.wallpaper_dim_color);
         colorSelector.setEnabled(wallpaperDimColor != null);
@@ -107,6 +108,7 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         });
 
         CheckBox dimCheckBox = view.findViewById(R.id.wallpaper_dim_checkbox);
+        dimCheckBox.setChecked(wallpaperDimColor != null);
         dimCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             dimSlider.setEnabled(isChecked);
             colorSelector.setEnabled(isChecked);
@@ -117,7 +119,40 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
                 editModeState.setProperty(EditModeProperties.WALLPAPER_DIM, null);
             }
         });
-        dimCheckBox.setChecked(wallpaperDimColor != null);
+    }
+
+    private void setupTextSize(View view) {
+        Slider slider = view.findViewById(R.id.text_size_slider);
+        slider.setValueFrom(Preferences.ITEM_TEXT_SIZE.min());
+        slider.setValueTo(Preferences.ITEM_TEXT_SIZE.max());
+        // convert to int in case of non-zero decimal part
+        slider.setValue(getCurrentValue(EditModeProperties.ITEM_TEXT_SIZE, Preferences.ITEM_TEXT_SIZE).intValue());
+        slider.addOnChangeListener(new DebounceChangeListener(value -> {
+            editModeState.setProperty(EditModeProperties.ITEM_TEXT_SIZE, value);
+        }));
+        View reset = view.findViewById(R.id.text_size_reset);
+        reset.setOnClickListener(v -> {
+            slider.setValue(Preferences.ITEM_TEXT_SIZE.defaultValue());
+        });
+    }
+
+    private void setupItemPadding(View view) {
+        Slider slider = view.findViewById(R.id.text_padding_slider);
+        slider.setValueFrom(Preferences.ITEM_PADDING.min());
+        slider.setValueTo(Preferences.ITEM_PADDING.max());
+        slider.setValue(getCurrentValue(EditModeProperties.ITEM_PADDING, Preferences.ITEM_PADDING));
+        slider.addOnChangeListener(new DebounceChangeListener(value -> {
+            editModeState.setProperty(EditModeProperties.ITEM_PADDING, (int) value);
+        }));
+        View reset = view.findViewById(R.id.text_padding_reset);
+        reset.setOnClickListener(v -> {
+            slider.setValue(Preferences.ITEM_PADDING.defaultValue());
+        });
+    }
+
+    private <T> T getCurrentValue(EditModeState.Property<T> prop, Preferences.Pref<T> pref) {
+        T value = editModeState.getProperty(prop);
+        return value != null ? value : preferences.get(pref);
     }
 
     private static int wallpaperDimColor(float dimAmount, int baseColor) {
@@ -129,5 +164,32 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
             return 0f;
         }
         return (color >>> 24 & 0xff) / 255f;
+    }
+
+    private static class DebounceChangeListener implements Slider.OnChangeListener, Runnable {
+        private final OnValueChange listener;
+        private final Debouncer debouncer;
+
+        private float value;
+
+        private DebounceChangeListener(OnValueChange listener) {
+            this.listener = listener;
+            this.debouncer = new Debouncer(250);
+        }
+
+        @Override
+        public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+            this.value = value;
+            debouncer.send(this);
+        }
+
+        @Override
+        public void run() {
+            listener.onValueChange(value);
+        }
+
+        interface OnValueChange {
+            void onValueChange(float value);
+        }
     }
 }

@@ -38,6 +38,7 @@ final class Prefs {
     ) {
         return new BasePref<T>(
                 prefKey,
+                defaultValue,
                 (preferences, key) -> {
                     T value = fetcher.fetch(preferences, key);
                     return value != null ? value : defaultValue;
@@ -49,6 +50,7 @@ final class Prefs {
     static <T> Preferences.Pref<T> create(String prefKey, T defaultValue, ValueConverter<T> valueConverter) {
         return new BasePref<T>(
                 prefKey,
+                defaultValue,
                 (preferences, key) -> {
                     String value = preferences.getString(key, null);
                     return valueConverter.convert(value, defaultValue);
@@ -67,15 +69,17 @@ final class Prefs {
 
     private static class BasePref<T> implements Preferences.Pref<T> {
         private final String key;
+        private final T defaultValue;
         private final Fetcher<T> fetcher;
         private final Updater<T> updater;
 
         BasePref(String key, T defaultValue, Updater<T> updater) {
-            this(key, new ObjectFetcher<>(key, defaultValue), updater);
+            this(key, defaultValue, new ObjectFetcher<>(key, defaultValue), updater);
         }
 
-        BasePref(String key, Fetcher<T> fetcher, Updater<T> updater) {
+        BasePref(String key, T defaultValue, Fetcher<T> fetcher, Updater<T> updater) {
             this.key = key;
+            this.defaultValue = defaultValue;
             this.fetcher = fetcher;
             this.updater = updater;
         }
@@ -83,6 +87,11 @@ final class Prefs {
         @Override
         public String key() {
             return key;
+        }
+
+        @Override
+        public T defaultValue() {
+            return defaultValue;
         }
 
         @Override

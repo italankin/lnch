@@ -61,6 +61,8 @@ public interface Preferences {
 
         Updater<T> updater();
 
+        T defaultValue();
+
         /**
          * Handler for preference reads
          *

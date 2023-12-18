@@ -41,6 +41,9 @@ public interface EditModeState {
         default void onEditModeCommit() {
         }
 
+        default void onEditModeChangesCommitted() {
+        }
+
         default <T> void onEditModePropertyChange(Property<T> property, T newValue) {
         }
     }

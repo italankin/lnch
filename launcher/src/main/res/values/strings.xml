@@ -58,6 +58,8 @@
     <string name="customize_item_new_folder">New folder</string>
     <string name="customize_action_reset">Reset</string>
     <string name="customize_wallpaper_dim">Dim wallpaper</string>
+    <string name="customize_text_size">Text size</string>
+    <string name="customize_text_padding">Padding</string>
 
     <string name="folder_empty">Folder is empty</string>
     <string name="folder_new_title">Folder name</string>

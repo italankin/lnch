@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 
 class SimpleProperty<T> implements EditModeState.Property<T> {
-    final String key;
+    private final String key;
 
     SimpleProperty(String key) {
         this.key = key;

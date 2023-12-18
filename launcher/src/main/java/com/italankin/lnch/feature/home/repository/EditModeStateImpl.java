@@ -8,6 +8,7 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.LifecycleUtils;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -73,6 +74,7 @@ public class EditModeStateImpl implements EditModeState {
         }
         editor.commit()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -81,6 +83,9 @@ public class EditModeStateImpl implements EditModeState {
                     @Override
                     public void onComplete() {
                         Timber.d("changes saved");
+                        for (Callback callback : callbacks) {
+                            callback.onEditModeChangesCommitted();
+                        }
                     }
 
                     @Override
