@@ -55,6 +55,7 @@
     <string name="customize_item_remove_from_folder">Remove from folder</string>
     <string name="customize_item_move_to_desktop">Move to desktop</string>
     <string name="customize_item_edit_folder">Edit folder</string>
+    <string name="customize_item_new_folder">New folder</string>
     <string name="customize_action_reset">Reset</string>
 
     <string name="folder_empty">Folder is empty</string>

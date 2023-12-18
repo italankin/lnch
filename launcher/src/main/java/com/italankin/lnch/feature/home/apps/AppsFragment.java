@@ -368,7 +368,11 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                     viewModel.removeFromFolder(result.descriptorId, result.folderId);
                 })
                 .register(new SelectFolderFragment.AddToFolderContract(), result -> {
-                    viewModel.addToFolder(result.folderId, Collections.singletonList(result.descriptorId), result.move);
+                    if (result.folderId != null) {
+                        viewModel.addToFolder(result.folderId, Collections.singletonList(result.descriptorId), result.move);
+                    } else {
+                        showCreateFolderDialog(Collections.singletonList(result.descriptorId), result.move);
+                    }
                 })
                 .register(new EditModePopupFragment.AddFolderContract(), result -> {
                     showCreateFolderDialog(Collections.emptyList(), false);
@@ -665,10 +669,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             return;
         }
         List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
-        if (folders.isEmpty()) {
-            showCreateFolderDialog(Collections.singletonList(entry.item.getDescriptor().getId()), move);
-            return;
-        }
         View view = list.findViewForAdapterPosition(entry.position);
         Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
         SelectFolderFragment.newInstance(REQUEST_KEY_APPS, entry.item, folders, move, bounds)

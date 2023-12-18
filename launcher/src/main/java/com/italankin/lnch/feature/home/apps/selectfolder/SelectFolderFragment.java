@@ -73,14 +73,28 @@ public class SelectFolderFragment extends PopupFragment {
     @SuppressWarnings("unchecked")
     private void populate() {
         Bundle args = requireArguments();
+        String descriptorId = args.getString(ARG_DESCRIPTOR_ID);
+        boolean move = args.getBoolean(ARG_MOVE);
         ArrayList<Folder> folders = (ArrayList<Folder>) args.getSerializable(ARG_FOLDERS);
+
         LayoutInflater inflater = getLayoutInflater();
+
+        TextView addFolderView = (TextView) inflater.inflate(R.layout.item_folder_select, itemsContainer, false);
+        addFolderView.setText(R.string.customize_item_new_folder);
+        addFolderView.setOnClickListener(v -> {
+            dismiss();
+            Bundle result = AddToFolderContract.result(descriptorId, null, move);
+            sendResult(result);
+        });
+        addFolderView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_action_add_new_folder, 0, 0, 0);
+        itemsContainer.addView(addFolderView);
+
         for (Folder folder : folders) {
             TextView folderView = (TextView) inflater.inflate(R.layout.item_folder_select, itemsContainer, false);
             folderView.setText(folder.label);
             folderView.setOnClickListener(v -> {
                 dismiss();
-                Bundle result = AddToFolderContract.result(args.getString(ARG_DESCRIPTOR_ID), folder.id, args.getBoolean(ARG_MOVE));
+                Bundle result = AddToFolderContract.result(descriptorId, folder.id, move);
                 sendResult(result);
             });
             TextViewCompat.setCompoundDrawableTintList(folderView, ColorStateList.valueOf(folder.color));
@@ -128,10 +142,11 @@ public class SelectFolderFragment extends PopupFragment {
 
         public static class Result {
             public final String descriptorId;
+            @Nullable
             public final String folderId;
             public final boolean move;
 
-            public Result(String descriptorId, String folderId, boolean move) {
+            public Result(String descriptorId, @Nullable String folderId, boolean move) {
                 this.descriptorId = descriptorId;
                 this.folderId = folderId;
                 this.move = move;
