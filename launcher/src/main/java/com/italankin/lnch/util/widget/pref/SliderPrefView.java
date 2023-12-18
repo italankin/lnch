@@ -8,13 +8,11 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
+import com.google.android.material.slider.Slider;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ViewUtils;
 
@@ -25,7 +23,7 @@ public class SliderPrefView extends RelativeLayout {
 
     private final ImageView icon;
     private final TextView title;
-    private final SeekBar seekbar;
+    private final Slider slider;
 
     public SliderPrefView(Context context) {
         this(context, null);
@@ -40,7 +38,7 @@ public class SliderPrefView extends RelativeLayout {
 
         icon = findViewById(R.id.icon);
         title = findViewById(R.id.title);
-        seekbar = findViewById(R.id.seekbar);
+        slider = findViewById(R.id.slider);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SliderPrefView);
         CharSequence text = a.getText(R.styleable.SliderPrefView_spv_title);
@@ -59,19 +57,19 @@ public class SliderPrefView extends RelativeLayout {
     }
 
     public void setMax(int max) {
-        seekbar.setMax(max);
+        slider.setValueTo(max);
     }
 
     public void setProgress(int progress) {
-        seekbar.setProgress(progress);
+        slider.setValue(progress);
     }
 
     public int getProgress() {
-        return seekbar.getProgress();
+        return (int) slider.getValue();
     }
 
-    public void setOnSeekBarChangeListener(SeekBar.OnSeekBarChangeListener listener) {
-        seekbar.setOnSeekBarChangeListener(listener);
+    public void addOnChangeListener(Slider.OnChangeListener listener) {
+        slider.addOnChangeListener(listener);
     }
 
     @Nullable
@@ -79,7 +77,7 @@ public class SliderPrefView extends RelativeLayout {
     protected Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
         bundle.putParcelable(STATE_SUPER, super.onSaveInstanceState());
-        bundle.putInt(STATE_VALUE, seekbar.getProgress());
+        bundle.putInt(STATE_VALUE, (int) slider.getValue());
         return bundle;
     }
 

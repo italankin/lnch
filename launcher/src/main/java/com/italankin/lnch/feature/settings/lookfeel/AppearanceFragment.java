@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.google.android.material.slider.Slider;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -26,7 +27,6 @@ import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
-import com.italankin.lnch.util.adapter.SeekBarChangeListener;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.BackdropDrawable;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
@@ -298,10 +298,11 @@ public class AppearanceFragment extends AppFragment implements
     private void initTextSize(View view) {
         itemTextSize = view.findViewById(R.id.item_text_size);
         setParams(itemTextSize, Preferences.ITEM_TEXT_SIZE);
-        itemTextSize.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+        Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
             onBackPressedCallback.setEnabled(true);
-        }));
+        };
+        itemTextSize.addOnChangeListener(listener);
     }
 
     private void initFont(View view) {
@@ -332,19 +333,21 @@ public class AppearanceFragment extends AppFragment implements
     private void initPadding(View view) {
         itemPadding = view.findViewById(R.id.item_padding);
         setParams(itemPadding, Preferences.ITEM_PADDING);
-        itemPadding.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+        Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
             onBackPressedCallback.setEnabled(true);
-        }));
+        };
+        itemPadding.addOnChangeListener(listener);
     }
 
     private void initShadowRadius(View view) {
         itemShadowRadius = view.findViewById(R.id.item_shadow_radius);
         setParams(itemShadowRadius, Preferences.ITEM_SHADOW_RADIUS);
-        itemShadowRadius.setOnSeekBarChangeListener(new SeekBarChangeListener((progress, fromUser) -> {
+        Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
             onBackPressedCallback.setEnabled(true);
-        }));
+        };
+        itemShadowRadius.addOnChangeListener(listener);
     }
 
     private void initShadowColor(View view) {

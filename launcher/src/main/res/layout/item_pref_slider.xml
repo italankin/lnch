@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:padding="16dp"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp"
     tools:parentTag="android.widget.RelativeLayout">
 
     <ImageView
@@ -24,15 +27,14 @@
         android:textSize="12sp"
         tools:text="Title" />
 
-    <SeekBar
-        android:id="@+id/seekbar"
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="12dp"
         android:layout_toEndOf="@id/icon"
         android:saveEnabled="false"
-        tools:max="42"
-        tools:progress="25" />
+        app:labelBehavior="gone" />
 
 </merge>
