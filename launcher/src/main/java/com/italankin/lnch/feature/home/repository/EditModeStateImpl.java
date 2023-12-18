@@ -10,7 +10,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EditModeStateImpl implements EditModeState {
@@ -18,6 +20,7 @@ public class EditModeStateImpl implements EditModeState {
     private final DescriptorRepository descriptorRepository;
     private final List<Callback> callbacks = new CopyOnWriteArrayList<>();
     private DescriptorRepository.Editor editor = EmptyEditor.INSTANCE;
+    private final Map<Property<?>, Object> properties = new HashMap<>(4);
 
     public EditModeStateImpl(DescriptorRepository descriptorRepository) {
         this.descriptorRepository = descriptorRepository;
@@ -34,6 +37,7 @@ public class EditModeStateImpl implements EditModeState {
             return;
         }
         editor = descriptorRepository.edit();
+        properties.clear();
         for (Callback callback : callbacks) {
             callback.onEditModeActivate();
         }
@@ -43,6 +47,7 @@ public class EditModeStateImpl implements EditModeState {
     public void discard() {
         requireActive();
         editor.dispose();
+        properties.clear();
         editor = EmptyEditor.INSTANCE;
         for (Callback callback : callbacks) {
             callback.onEditModeDiscard();
@@ -71,6 +76,7 @@ public class EditModeStateImpl implements EditModeState {
                     }
                 });
         editor = EmptyEditor.INSTANCE;
+        properties.clear();
         for (Callback callback : callbacks) {
             callback.onEditModeCommit();
         }
@@ -85,6 +91,22 @@ public class EditModeStateImpl implements EditModeState {
     public void addAction(DescriptorRepository.Editor.Action action) {
         requireActive();
         editor.enqueue(action);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getProperty(Property<T> property) {
+        requireActive();
+        return (T) properties.get(property);
+    }
+
+    @Override
+    public <T> void setProperty(Property<T> property, T newValue) {
+        requireActive();
+        properties.put(property, newValue);
+        for (Callback callback : callbacks) {
+            callback.onEditModePropertyChange(property, newValue);
+        }
     }
 
     @Override
