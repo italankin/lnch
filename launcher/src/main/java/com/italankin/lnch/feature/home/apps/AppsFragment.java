@@ -402,32 +402,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .attach();
     }
 
-    private void onReceiveUpdate(Update update) {
-        setItems(update);
-        if (update.items.isEmpty()) {
-            lce.empty()
-                    .message(R.string.apps_list_empty)
-                    .button(R.string.open_settings, v -> {
-                        startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
-                    })
-                    .show();
-        } else {
-            lce.showContent();
-        }
-
-        applyUserPrefs(update.userPrefs);
-
-        boolean needsFullUpdate = adapter.updateUserPrefs(update.userPrefs);
-        if (needsFullUpdate) {
-            adapter.notifyDataSetChanged();
-        } else {
-            update.dispatchTo(adapter);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Adapter callbacks
-    ///////////////////////////////////////////////////////////////////////////
+    //region Adapter callbacks
 
     @Override
     public void onAppClick(int position, AppDescriptorUi item) {
@@ -526,9 +501,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // State callbacks
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
+
+    //region HomeDescriptorsState
 
     @Override
     public void onItemChanged(int position, DescriptorUi item) {
@@ -554,105 +529,31 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         adapter.notifyItemMoved(fromPosition, toPosition);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Other
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
 
-    private void showFolder(String folderId) {
-        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
-        if (entry != null) {
-            showFolder(entry.position, entry.item.getDescriptor());
-        }
-    }
+    //region Update
 
-    private void showFolder(int position, FolderDescriptor descriptor) {
-        Point point = null;
-        View view = list.findViewForAdapterPosition(position);
-        if (view != null) {
-            int[] loc = new int[2];
-            view.getLocationInWindow(loc);
-            point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
-        }
-
-        if (editMode) {
-            EditFolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
-                    .show(getParentFragmentManager(), android.R.id.content);
+    private void onReceiveUpdate(Update update) {
+        setItems(update);
+        if (update.items.isEmpty()) {
+            lce.empty()
+                    .message(R.string.apps_list_empty)
+                    .button(R.string.open_settings, v -> {
+                        startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
+                    })
+                    .show();
         } else {
-            FolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
-                    .show(getParentFragmentManager(), android.R.id.content);
+            lce.showContent();
         }
-    }
 
-    private void showCustomizePopup(int position, DescriptorUi item) {
-        View view = list.findViewForAdapterPosition(position);
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
-        CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
-                .show(getParentFragmentManager());
-    }
+        applyUserPrefs(update.userPrefs);
 
-    private void showEditModeAddPopup(View anchor) {
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
-        EditModePopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
-                .show(getParentFragmentManager());
-    }
-
-    private void onNewIntentCreated(@Nullable IntentFactoryResult result) {
-        if (result == null) {
-            return;
-        }
-        String label = getString(R.string.intent_factory_default_title);
-        viewModel.addIntent(result.intent, label);
-    }
-
-    private void onIntentEdited(@Nullable IntentFactoryResult result) {
-        if (result == null || result.descriptorId == null) {
-            return;
-        }
-        viewModel.editIntent(result.descriptorId, result.intent);
-    }
-
-    private void onEditModeConfirmDiscardChanges() {
-        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.customize_discard_message)
-                .setPositiveButton(R.string.customize_discard, (dialog, which) -> viewModel.discardChanges())
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-        DialogUtils.dismissOnDestroy(this, alertDialog);
-    }
-
-    private void showDeleteDialog(String descriptorId) {
-        HomeEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        String visibleLabel;
-        if (entry.item instanceof CustomLabelDescriptorUi) {
-            visibleLabel = ((CustomLabelDescriptorUi) entry.item).getVisibleLabel();
-        } else if (entry.item instanceof LabelDescriptorUi) {
-            visibleLabel = ((LabelDescriptorUi) entry.item).getLabel();
+        boolean needsFullUpdate = adapter.updateUserPrefs(update.userPrefs);
+        if (needsFullUpdate) {
+            adapter.notifyDataSetChanged();
         } else {
-            visibleLabel = entry.item.getDescriptor().getOriginalLabel();
+            update.dispatchTo(adapter);
         }
-        String message = getString(R.string.dialog_delete_message, visibleLabel);
-        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.dialog_delete_title)
-                .setMessage(message)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.dialog_delete_action, (dialog, which) -> {
-                    viewModel.removeItemImmediate(entry.item);
-                })
-                .show();
-        DialogUtils.dismissOnDestroy(this, alertDialog);
-    }
-
-    private void onShortcutPinned(Shortcut shortcut) {
-        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
-                Toast.LENGTH_SHORT).show();
-    }
-
-    private void onShortcutAlreadyPinnedError(Shortcut shortcut) {
-        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
-                Toast.LENGTH_SHORT).show();
     }
 
     private void onReceiveUpdateError(Throwable e) {
@@ -662,49 +563,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .show();
     }
 
-    private void showSelectFolderDialog(String descriptorId, boolean move) {
-        HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class,
-                descriptorId);
-        if (entry == null) {
-            return;
-        }
-        List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
-        View view = list.findViewForAdapterPosition(entry.position);
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
-        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, entry.item, folders, move, bounds)
-                .show(getParentFragmentManager());
-    }
+    //endregion
 
-    private void showItemRenameDialog(String descriptorId) {
-        HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        new RenameDescriptorDialog(requireContext(), entry.item.getVisibleLabel(),
-                (newLabel) -> viewModel.renameItem(entry.item, newLabel))
-                .show(this);
-    }
-
-    private void showSetItemColorDialog(String descriptorId) {
-        HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, descriptorId);
-        if (entry == null) {
-            return;
-        }
-        new SetColorDescriptorDialog(requireContext(), entry.item.getVisibleColor(),
-                newColor -> viewModel.changeItemCustomColor(entry.item, newColor))
-                .show(this);
-    }
-
-    private void showIntentEditor(String descriptorId) {
-        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
-        if (entry != null) {
-            editIntentLauncher.launch(entry.item);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Errors
-    ///////////////////////////////////////////////////////////////////////////
+    //region Errors
 
     private void showError(Throwable e) {
         if (preferences.get(Preferences.VERBOSE_ERRORS)) {
@@ -714,9 +575,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Edit mode
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
+
+    //region Edit mode
 
     @Override
     public void onEditModeActivate() {
@@ -764,9 +625,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Popup
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
+
+    //region Popup
 
     public void dismissPopups() {
         FragmentManager fragmentManager = getParentFragmentManager();
@@ -775,9 +636,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // SearchBar
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
+
+    //region Search bar
 
     private void setupSearchOverlay() {
         searchOverlayBehavior = new SearchOverlayBehavior(searchOverlay, list, new SearchOverlayBehavior.Listener() {
@@ -899,9 +760,144 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         handler.postDelayed(hideSearchRunnable, 1000);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Other
-    ///////////////////////////////////////////////////////////////////////////
+    //endregion
+
+    private void showFolder(String folderId) {
+        HomeEntry<FolderDescriptorUi> entry = homeDescriptorsState.find(FolderDescriptorUi.class, folderId);
+        if (entry != null) {
+            showFolder(entry.position, entry.item.getDescriptor());
+        }
+    }
+
+    private void showFolder(int position, FolderDescriptor descriptor) {
+        Point point = null;
+        View view = list.findViewForAdapterPosition(position);
+        if (view != null) {
+            int[] loc = new int[2];
+            view.getLocationInWindow(loc);
+            point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
+        }
+
+        if (editMode) {
+            EditFolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
+                    .show(getParentFragmentManager(), android.R.id.content);
+        } else {
+            FolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
+                    .show(getParentFragmentManager(), android.R.id.content);
+        }
+    }
+
+    private void showCustomizePopup(int position, DescriptorUi item) {
+        View view = list.findViewForAdapterPosition(position);
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
+                .show(getParentFragmentManager());
+    }
+
+    private void showEditModeAddPopup(View anchor) {
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
+        EditModePopupFragment.newInstance(REQUEST_KEY_APPS, bounds)
+                .show(getParentFragmentManager());
+    }
+
+    private void onNewIntentCreated(@Nullable IntentFactoryResult result) {
+        if (result == null) {
+            return;
+        }
+        String label = getString(R.string.intent_factory_default_title);
+        viewModel.addIntent(result.intent, label);
+    }
+
+    private void onIntentEdited(@Nullable IntentFactoryResult result) {
+        if (result == null || result.descriptorId == null) {
+            return;
+        }
+        viewModel.editIntent(result.descriptorId, result.intent);
+    }
+
+    private void onEditModeConfirmDiscardChanges() {
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.customize_discard_message)
+                .setPositiveButton(R.string.customize_discard, (dialog, which) -> viewModel.discardChanges())
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+        DialogUtils.dismissOnDestroy(this, alertDialog);
+    }
+
+    private void showDeleteDialog(String descriptorId) {
+        HomeEntry<RemovableDescriptorUi> entry = homeDescriptorsState.find(RemovableDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        String visibleLabel;
+        if (entry.item instanceof CustomLabelDescriptorUi) {
+            visibleLabel = ((CustomLabelDescriptorUi) entry.item).getVisibleLabel();
+        } else if (entry.item instanceof LabelDescriptorUi) {
+            visibleLabel = ((LabelDescriptorUi) entry.item).getLabel();
+        } else {
+            visibleLabel = entry.item.getDescriptor().getOriginalLabel();
+        }
+        String message = getString(R.string.dialog_delete_message, visibleLabel);
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.dialog_delete_action, (dialog, which) -> {
+                    viewModel.removeItemImmediate(entry.item);
+                })
+                .show();
+        DialogUtils.dismissOnDestroy(this, alertDialog);
+    }
+
+    private void onShortcutPinned(Shortcut shortcut) {
+        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void onShortcutAlreadyPinnedError(Shortcut shortcut) {
+        Toast.makeText(requireContext(), getString(R.string.deep_shortcut_already_pinned, shortcut.getShortLabel()),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void showSelectFolderDialog(String descriptorId, boolean move) {
+        HomeEntry<InFolderDescriptorUi> entry = homeDescriptorsState.find(InFolderDescriptorUi.class,
+                descriptorId);
+        if (entry == null) {
+            return;
+        }
+        List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
+        View view = list.findViewForAdapterPosition(entry.position);
+        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        SelectFolderFragment.newInstance(REQUEST_KEY_APPS, entry.item, folders, move, bounds)
+                .show(getParentFragmentManager());
+    }
+
+    private void showItemRenameDialog(String descriptorId) {
+        HomeEntry<CustomLabelDescriptorUi> entry = homeDescriptorsState.find(CustomLabelDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        new RenameDescriptorDialog(requireContext(), entry.item.getVisibleLabel(),
+                (newLabel) -> viewModel.renameItem(entry.item, newLabel))
+                .show(this);
+    }
+
+    private void showSetItemColorDialog(String descriptorId) {
+        HomeEntry<CustomColorDescriptorUi> entry = homeDescriptorsState.find(CustomColorDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        new SetColorDescriptorDialog(requireContext(), entry.item.getVisibleColor(),
+                newColor -> viewModel.changeItemCustomColor(entry.item, newColor))
+                .show(this);
+    }
+
+    private void showIntentEditor(String descriptorId) {
+        HomeEntry<IntentDescriptorUi> entry = homeDescriptorsState.find(IntentDescriptorUi.class, descriptorId);
+        if (entry != null) {
+            editIntentLauncher.launch(entry.item);
+        }
+    }
 
     private void startAppActivity(ComponentName componentName, View view) {
         Rect bounds = ViewUtils.getViewBounds(view);
