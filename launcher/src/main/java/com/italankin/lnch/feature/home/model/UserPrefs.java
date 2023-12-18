@@ -51,7 +51,7 @@ public final class UserPrefs {
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
         statusBarColor = preferences.get(Preferences.STATUS_BAR_COLOR);
         searchBarShowCustomize = preferences.get(Preferences.SEARCH_SHOW_CUSTOMIZE);
-        itemPrefs = new UserPrefs.ItemPrefs(preferences, fontManager);
+        itemPrefs = new UserPrefs.PreferencesItemPrefs(preferences, fontManager);
     }
 
     @Override
@@ -117,21 +117,47 @@ public final class UserPrefs {
                 '}';
     }
 
-    public static final class ItemPrefs {
+    public interface ItemPrefs {
+
+        float itemTextSize();
+
+        int itemPadding();
+
+        float itemShadowRadius();
+
+        @ColorInt
+        @Nullable
+        Integer itemShadowColor();
+
+        @NonNull
+        Typeface typeface();
+
+        @ColorInt
+        @Nullable
+        Integer notificationDotColor();
+
+        Preferences.NotificationDotSize notificationDotSize();
+
+        Preferences.ItemWidth itemWidth();
+
+        Preferences.HomeAlignment homeAlignment();
+    }
+
+    public static final class PreferencesItemPrefs implements ItemPrefs {
         public final float itemTextSize;
         public final int itemPadding;
         public final float itemShadowRadius;
         @ColorInt
         @Nullable
         public final Integer itemShadowColor;
-        public final String itemFont;
+        private final String itemFont;
         public final Typeface typeface;
         public final Integer notificationDotColor;
         public final Preferences.NotificationDotSize notificationDotSize;
         public final Preferences.ItemWidth itemWidth;
         public final Preferences.HomeAlignment alignment;
 
-        private ItemPrefs(Preferences preferences, FontManager fontManager) {
+        private PreferencesItemPrefs(Preferences preferences, FontManager fontManager) {
             itemTextSize = preferences.get(Preferences.ITEM_TEXT_SIZE);
             itemPadding = preferences.get(Preferences.ITEM_PADDING);
             itemShadowRadius = preferences.get(Preferences.ITEM_SHADOW_RADIUS);
@@ -145,14 +171,62 @@ public final class UserPrefs {
         }
 
         @Override
+        public float itemTextSize() {
+            return itemTextSize;
+        }
+
+        @Override
+        public int itemPadding() {
+            return itemPadding;
+        }
+
+        @Override
+        public float itemShadowRadius() {
+            return itemShadowRadius;
+        }
+
+        @Nullable
+        @Override
+        public Integer itemShadowColor() {
+            return itemShadowColor;
+        }
+
+        @NonNull
+        @Override
+        public Typeface typeface() {
+            return typeface;
+        }
+
+        @Nullable
+        @Override
+        public Integer notificationDotColor() {
+            return notificationDotColor;
+        }
+
+        @Override
+        public Preferences.NotificationDotSize notificationDotSize() {
+            return notificationDotSize;
+        }
+
+        @Override
+        public Preferences.ItemWidth itemWidth() {
+            return itemWidth;
+        }
+
+        @Override
+        public Preferences.HomeAlignment homeAlignment() {
+            return alignment;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof ItemPrefs)) {
+            if (!(o instanceof PreferencesItemPrefs)) {
                 return false;
             }
-            ItemPrefs itemPrefs = (ItemPrefs) o;
+            PreferencesItemPrefs itemPrefs = (PreferencesItemPrefs) o;
             if (Float.compare(itemPrefs.itemTextSize, itemTextSize) != 0) {
                 return false;
             }
@@ -174,7 +248,7 @@ public final class UserPrefs {
             if (Float.compare(itemPrefs.itemShadowRadius, itemShadowRadius) != 0) {
                 return false;
             }
-            if (!Objects.equals(itemShadowColor, itemPrefs.itemShadowColor)) {
+            if (!Objects.equals(itemShadowColor, itemPrefs.itemShadowColor())) {
                 return false;
             }
             return itemFont.equals(itemPrefs.itemFont);

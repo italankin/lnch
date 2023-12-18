@@ -3,11 +3,9 @@ package com.italankin.lnch.feature.home.adapter;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
@@ -121,8 +119,8 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
             Integer badgeColor = item.getCustomBadgeColor();
-            notificationDot.setColor(badgeColor != null ? badgeColor : itemPrefs.notificationDotColor);
-            notificationDot.setMargin(itemPrefs.itemPadding * 2);
+            notificationDot.setColor(badgeColor != null ? badgeColor : itemPrefs.notificationDotColor());
+            notificationDot.setMargin(itemPrefs.itemPadding() * 2);
         }
     }
 }

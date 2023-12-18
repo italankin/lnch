@@ -82,19 +82,20 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
     }
 
     protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
-        ViewUtils.setPaddingDp(label, itemPrefs.itemPadding);
-        label.setTextSize(itemPrefs.itemTextSize);
-        int shadowColor = itemPrefs.itemShadowColor != null
-                ? itemPrefs.itemShadowColor
+        ViewUtils.setPaddingDp(label, itemPrefs.itemPadding());
+        label.setTextSize(itemPrefs.itemTextSize());
+        Integer itemShadowColor = itemPrefs.itemShadowColor();
+        int shadowColor = itemShadowColor != null
+                ? itemShadowColor
                 : ResUtils.resolveColor(label.getContext(), R.attr.colorItemShadowDefault);
-        label.setShadowLayer(itemPrefs.itemShadowRadius, label.getShadowDx(),
+        label.setShadowLayer(itemPrefs.itemShadowRadius(), label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
-        label.setTypeface(itemPrefs.typeface);
+        label.setTypeface(itemPrefs.typeface());
         NotificationDotDrawable notificationDot = holder.getNotificationDot();
         if (notificationDot != null) {
             notificationDot.setGravity(Gravity.TOP | Gravity.END);
-            notificationDot.setColor(itemPrefs.notificationDotColor);
-            switch (itemPrefs.notificationDotSize) {
+            notificationDot.setColor(itemPrefs.notificationDotColor());
+            switch (itemPrefs.notificationDotSize()) {
                 case SMALL:
                     notificationDot.setSize(NotificationDotDrawable.Size.SMALL);
                     break;
@@ -176,10 +177,10 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
     public static class Params {
 
         public static final Params DEFAULT = new Params(false,
-                itemPrefs -> itemPrefs.itemWidth,
-                itemPrefs -> itemPrefs.alignment);
+                itemPrefs -> itemPrefs.itemWidth(),
+                itemPrefs -> itemPrefs.homeAlignment());
         public static final Provider<Preferences.ItemWidth> ITEM_WIDTH_WRAP = itemPrefs -> Preferences.ItemWidth.WRAP;
-        public static final Provider<Preferences.HomeAlignment> ALIGNMENT_FROM_PREFS = itemPrefs -> itemPrefs.alignment;
+        public static final Provider<Preferences.HomeAlignment> ALIGNMENT_FROM_PREFS = itemPrefs -> itemPrefs.homeAlignment();
 
         final boolean ignoreVisibility;
         final Provider<Preferences.ItemWidth> itemWidthProvider;

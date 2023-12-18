@@ -207,7 +207,7 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
     protected void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs, boolean animated) {
         title.setText(folderTitle);
-        title.setTypeface(userPrefs.itemPrefs.typeface);
+        title.setTypeface(userPrefs.itemPrefs.typeface());
         adapter.updateUserPrefs(userPrefs);
         onFolderUpdated(items);
         if (animated) {
