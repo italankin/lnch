@@ -47,7 +47,7 @@ public class AppearanceFragment extends AppFragment implements
         return fragment;
     }
 
-    private static final String TAG_OVERLAY_COLOR = "overlay_color";
+    private static final String TAG_WALLPAPER_DIM_COLOR = "wallpaper_dim_color";
     private static final String TAG_SHADOW_COLOR = "shadow_color";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final String TAG_DISCARD_CHANGES = "discard_changes";
@@ -61,7 +61,7 @@ public class AppearanceFragment extends AppFragment implements
 
     private ImageView wallpaper;
     private TextView preview;
-    private View overlay;
+    private View wallpaperDim;
 
     private SliderPrefView itemTextSize;
     private ValuePrefView itemFont;
@@ -202,8 +202,8 @@ public class AppearanceFragment extends AppFragment implements
             return;
         }
         switch (tag) {
-            case TAG_OVERLAY_COLOR: {
-                overlay.setBackgroundColor(newColor);
+            case TAG_WALLPAPER_DIM_COLOR: {
+                wallpaperDim.setBackgroundColor(newColor);
                 break;
             }
             case TAG_PREVIEW_OVERLAY: {
@@ -237,24 +237,22 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void initOverlay(View view) {
-        int overlayColor = preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)
-                ? preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR)
-                : Color.TRANSPARENT;
-        overlay = view.findViewById(R.id.overlay);
-        overlay.setBackgroundColor(overlayColor);
-        overlay.setOnClickListener(v -> {
+        int dimColor = preferences.get(Preferences.WALLPAPER_DIM_COLOR);
+        wallpaperDim = view.findViewById(R.id.wallpaper_dim);
+        wallpaperDim.setBackgroundColor(dimColor);
+        wallpaperDim.setOnClickListener(v -> {
             Drawable background = v.getBackground();
             int selectedColor;
             if (background instanceof ColorDrawable) {
                 selectedColor = ((ColorDrawable) background).getColor();
             } else {
-                selectedColor = overlayColor;
+                selectedColor = dimColor;
             }
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
                     .build()
-                    .show(getChildFragmentManager(), TAG_OVERLAY_COLOR);
+                    .show(getChildFragmentManager(), TAG_WALLPAPER_DIM_COLOR);
         });
     }
 
@@ -284,15 +282,15 @@ public class AppearanceFragment extends AppFragment implements
         switch (previewBackground) {
             case WALLPAPER:
                 wallpaper.setImageDrawable(new BackdropDrawable(requireContext()));
-                overlay.setVisibility(View.VISIBLE);
+                wallpaperDim.setVisibility(View.VISIBLE);
                 break;
             case WHITE:
                 wallpaper.setImageDrawable(new ColorDrawable(Color.WHITE));
-                overlay.setVisibility(View.INVISIBLE);
+                wallpaperDim.setVisibility(View.INVISIBLE);
                 break;
             case BLACK:
                 wallpaper.setImageDrawable(new ColorDrawable(Color.BLACK));
-                overlay.setVisibility(View.INVISIBLE);
+                wallpaperDim.setVisibility(View.INVISIBLE);
                 break;
         }
     }

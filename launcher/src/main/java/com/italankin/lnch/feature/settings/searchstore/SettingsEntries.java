@@ -12,7 +12,6 @@ import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
 import com.italankin.lnch.feature.settings.search.SearchFragment;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
-import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -50,21 +49,11 @@ final class SettingsEntries {
                             return Collections.singletonList(WallpaperFragment.newInstance(requestKey));
                         })
                         .build(),
-                new SettingsEntryImpl.Builder(Preferences.WALLPAPER_OVERLAY_SHOW)
-                        .title(R.string.settings_home_wallpaper_overlay_show)
+                new SettingsEntryImpl.Builder(Preferences.WALLPAPER_DIM_COLOR)
+                        .title(R.string.settings_home_wallpaper_dim_color)
                         .category(R.string.settings_home_wallpaper)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(WallpaperFragment.newInstance(requestKey));
-                        })
-                        .build(),
-                new SettingsEntryImpl.Builder(Preferences.WALLPAPER_OVERLAY_COLOR)
-                        .title(R.string.settings_home_wallpaper_overlay_color)
-                        .category(R.string.settings_home_wallpaper)
-                        .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    WallpaperFragment.newInstance(requestKey),
-                                    WallpaperOverlayFragment.newInstance(requestKey)
-                            );
                         })
                         .build(),
 

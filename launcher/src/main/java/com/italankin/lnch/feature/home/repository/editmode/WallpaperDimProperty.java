@@ -12,11 +12,9 @@ class WallpaperDimProperty extends SimpleProperty<Integer> implements EditModeSt
     @Override
     public void write(Preferences preferences, Integer newValue) {
         if (newValue != null) {
-            preferences.set(Preferences.WALLPAPER_OVERLAY_SHOW, true);
-            preferences.set(Preferences.WALLPAPER_OVERLAY_COLOR, newValue);
+            preferences.set(Preferences.WALLPAPER_DIM_COLOR, newValue);
         } else {
-            preferences.set(Preferences.WALLPAPER_OVERLAY_SHOW, false);
-            preferences.reset(Preferences.WALLPAPER_OVERLAY_COLOR);
+            preferences.reset(Preferences.WALLPAPER_DIM_COLOR);
         }
     }
 }

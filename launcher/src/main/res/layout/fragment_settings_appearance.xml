@@ -23,7 +23,7 @@
         android:layout_alignParentTop="true">
 
         <View
-            android:id="@+id/overlay"
+            android:id="@+id/wallpaper_dim"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:background="#8000" />

@@ -273,21 +273,16 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void setupRoot() {
-        Observable.combineLatest(
-                        preferences.observe(Preferences.WALLPAPER_OVERLAY_COLOR, true),
-                        preferences.observe(Preferences.WALLPAPER_OVERLAY_SHOW, true),
-                        (overlayColor, showOverlay) -> {
-                            return showOverlay ? overlayColor : Color.TRANSPARENT;
-                        })
+        preferences.observe(Preferences.WALLPAPER_DIM_COLOR, true)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new EventObserver<>() {
                     @Override
-                    public void onNext(Integer overlayColor) {
+                    public void onNext(Integer dimColor) {
                         if (editModeState.isActive() && editModeState.isPropertySet(EditModeProperties.WALLPAPER_DIM)) {
                             Integer wallpaperDim = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
-                            overlayColor = wallpaperDim != null ? wallpaperDim : Color.TRANSPARENT;
+                            dimColor = wallpaperDim != null ? wallpaperDim : Color.TRANSPARENT;
                         }
-                        root.setBackgroundColor(overlayColor);
+                        root.setBackgroundColor(dimColor);
                     }
                 });
     }
@@ -343,11 +338,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void resetFromUserPreferences() {
-        if (preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)) {
-            root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR));
-        } else {
-            root.setBackgroundColor(Color.TRANSPARENT);
-        }
+        root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR));
     }
 
     private static class HomeScreenState {

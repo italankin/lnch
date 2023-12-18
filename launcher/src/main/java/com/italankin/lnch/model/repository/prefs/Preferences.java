@@ -177,17 +177,10 @@ public interface Preferences {
             false);
 
     /**
-     * Show wallpaper color overlay
+     * Dim wallpaper color
      */
-    Pref<Boolean> WALLPAPER_OVERLAY_SHOW = Prefs.createBoolean(
-            "wallpaper_overlay_show",
-            false);
-
-    /**
-     * Color for a {@link #WALLPAPER_OVERLAY_SHOW}
-     */
-    Pref<Integer> WALLPAPER_OVERLAY_COLOR = Prefs.createInteger(
-            "wallpaper_overlay_color",
+    Pref<Integer> WALLPAPER_DIM_COLOR = Prefs.createInteger(
+            "wallpaper_dim_color",
             Color.TRANSPARENT);
 
     /**
@@ -563,8 +556,7 @@ public interface Preferences {
             CUSTOM_SEARCH_ENGINE_FORMAT,
             EXCLUDED_SEARCH_TARGETS,
             LARGE_SEARCH_BAR,
-            WALLPAPER_OVERLAY_SHOW,
-            WALLPAPER_OVERLAY_COLOR,
+            WALLPAPER_DIM_COLOR,
             HOME_LAYOUT,
             HOME_ALIGNMENT,
             SHOW_SCROLLBAR,

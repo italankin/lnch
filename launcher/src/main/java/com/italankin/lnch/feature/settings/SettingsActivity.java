@@ -32,7 +32,6 @@ import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.feature.settings.util.TargetPreference;
 import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
-import com.italankin.lnch.feature.settings.wallpaper.WallpaperOverlayFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -122,12 +121,6 @@ public class SettingsActivity extends AppCompatActivity {
                     fragmentManager.popBackStack();
                 })
                 .register(new AppearanceFragment.ShowFontSelectContract(), this::handleShowFontSelect)
-                .register(new WallpaperFragment.ShowWallpaperOverlay(), result -> {
-                    showFragment(WallpaperOverlayFragment.newInstance(REQUEST_KEY_SETTINGS));
-                })
-                .register(new WallpaperOverlayFragment.WallpaperOverlayFinishContract(), result -> {
-                    fragmentManager.popBackStack();
-                })
                 .register(new LookAndFeelFragment.ShowItemLookPreferencesContract(), result -> {
                     showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })

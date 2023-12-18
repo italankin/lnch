@@ -74,11 +74,14 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
     }
 
     private void setupWallpaperDim(@NonNull View view) {
-        Integer wallpaperDimColor = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
-        if (wallpaperDimColor == null && preferences.get(Preferences.WALLPAPER_OVERLAY_SHOW)) {
-            wallpaperDimColor = baseColor = preferences.get(Preferences.WALLPAPER_OVERLAY_COLOR);
-        } else if (wallpaperDimColor != null) {
-            baseColor = wallpaperDimColor & 0xffffff;
+        Integer wallpaperDimColor = null;
+        if (editModeState.isPropertySet(EditModeProperties.WALLPAPER_DIM)) {
+            wallpaperDimColor = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
+        } else {
+            int dimColor = preferences.get(Preferences.WALLPAPER_DIM_COLOR);
+            if (dimColor != Color.TRANSPARENT) {
+                wallpaperDimColor = baseColor = dimColor;
+            }
         }
 
         Slider dimSlider = view.findViewById(R.id.wallpaper_dim_slider);

@@ -112,9 +112,7 @@
     <string name="settings_category_home">Home</string>
     <string name="settings_home_wallpaper">Wallpaper</string>
     <string name="settings_home_wallpaper_change">Change wallpaper</string>
-    <string name="settings_home_wallpaper_overlay">Overlay</string>
-    <string name="settings_home_wallpaper_overlay_show">Show overlay</string>
-    <string name="settings_home_wallpaper_overlay_color">Overlay color</string>
+    <string name="settings_home_wallpaper_dim_color">Wallpaper dimming color</string>
 
     <string name="settings_home_misc">Miscellaneous</string>
     <string name="settings_home_misc_scrollbar">Show scroll indicator</string>

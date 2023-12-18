@@ -2,22 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <PreferenceCategory android:title="@string/settings_home_wallpaper">
-        <Preference
-            android:key="@string/pref_key_wallpaper_change"
-            android:title="@string/settings_home_wallpaper_change" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_home_wallpaper_overlay">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            app:singleLineTitle="false"
-            android:key="wallpaper_overlay_show"
-            android:title="@string/settings_home_wallpaper_overlay_show" />
-        <com.italankin.lnch.util.widget.ColorPreference
-            android:dependency="wallpaper_overlay_show"
-            android:key="wallpaper_overlay_color"
-            android:title="@string/settings_home_wallpaper_overlay_color"
-            app:colorpref_defaultColor="#0000"
-            tools:ignore="PrefsDetector" />
-    </PreferenceCategory>
+    <Preference
+        android:key="@string/pref_key_wallpaper_change"
+        android:title="@string/settings_home_wallpaper_change" />
+    <com.italankin.lnch.util.widget.ColorPreference
+        android:key="wallpaper_dim_color"
+        android:title="@string/settings_home_wallpaper_dim_color"
+        app:colorpref_colorModel="argb"
+        app:colorpref_defaultColor="#0000"
+        tools:ignore="PrefsDetector" />
 </PreferenceScreen>

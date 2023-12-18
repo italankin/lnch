@@ -17,7 +17,7 @@
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <LinearLayout
-        android:id="@+id/overlay"
+        android:id="@+id/wallpaper_dim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"

@@ -4,15 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
-import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
-import com.italankin.lnch.model.repository.prefs.Preferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.italankin.lnch.R;
+import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
+import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 
 public class WallpaperFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -44,21 +40,7 @@ public class WallpaperFragment extends BasePreferenceFragment implements Setting
             startActivity(chooser);
             return true;
         });
-        setupOverlayColor();
 
         scrollToTarget();
-    }
-
-    private void setupOverlayColor() {
-        findPreference(Preferences.WALLPAPER_OVERLAY_COLOR).setOnPreferenceClickListener(preference -> {
-            sendResult(new ShowWallpaperOverlay().result());
-            return true;
-        });
-    }
-
-    public static class ShowWallpaperOverlay extends SignalFragmentResultContract {
-        public ShowWallpaperOverlay() {
-            super("show_wallpaper_overlay");
-        }
     }
 }
