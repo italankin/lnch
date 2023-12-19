@@ -53,14 +53,13 @@ import com.italankin.lnch.feature.home.apps.popup.*;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
-import com.italankin.lnch.feature.home.model.ItemPrefsWrapper;
+import com.italankin.lnch.feature.home.model.EditModeItemPrefs;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
-import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
@@ -131,8 +130,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     private IntentClickDelegate intentClickDelegate;
     private SearchIntentStarterDelegate searchIntentStarterDelegate;
 
-    private EditModeItemPrefsOverrides editModeItemPrefsOverrides;
-
     private final ActivityResultLauncher<Void> createIntentLauncher = registerForActivityResult(
             new IntentFactoryActivity.CreateContract(),
             this::onNewIntentCreated);
@@ -150,7 +147,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, AppsViewModel.class, ViewModelComponent::apps);
         editModeState = LauncherApp.daggerService.main().editModeState();
-        editModeItemPrefsOverrides = new EditModeItemPrefsOverrides(editModeState);
         onBackPressedCallback = new OnBackPressedCallback(false) {
             @Override
             public void handleOnBackPressed() {
@@ -583,6 +579,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     @Override
     public void onEditModeActivate() {
         setEditMode(true);
+        adapter.setUserPrefsOverrides(itemPrefs -> new EditModeItemPrefs(editModeState, itemPrefs));
     }
 
     @Override
@@ -604,9 +601,8 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     @Override
     public <T> void onEditModePropertyChange(EditModeState.Property<T> property, T newValue) {
-        if (property == EditModeProperties.ITEM_TEXT_SIZE || property == EditModeProperties.ITEM_PADDING) {
-            editModeItemPrefsOverrides.update();
-            adapter.updateUserPrefsOverrides();
+        if (EditModeItemPrefs.ITEM_PREFS_PROPERTIES.contains(property)) {
+            adapter.forceUpdateItemPrefs();
         }
     }
 
@@ -639,8 +635,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                     })
                     .setHiddenItemsActionEnabled(hasHiddenItems());
             editModePanel = panel.show(coordinator);
-            editModeItemPrefsOverrides.update();
-            adapter.setUserPrefsOverrides(editModeItemPrefsOverrides);
         } else if (editModePanel != null) {
             editModePanel.dismiss();
             editModePanel = null;
@@ -1068,38 +1062,5 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             }
         }
         return false;
-    }
-
-    private static class EditModeItemPrefsOverrides implements HomeAdapter.ItemPrefsOverrides {
-        private final EditModeState editModeState;
-        private Float itemTextSize;
-        private Integer itemPadding;
-
-        private EditModeItemPrefsOverrides(EditModeState editModeState) {
-            this.editModeState = editModeState;
-        }
-
-        void update() {
-            if (!editModeState.isActive()) {
-                return;
-            }
-            itemTextSize = editModeState.getProperty(EditModeProperties.ITEM_TEXT_SIZE);
-            itemPadding = editModeState.getProperty(EditModeProperties.ITEM_PADDING);
-        }
-
-        @Override
-        public UserPrefs.ItemPrefs getItemPrefsOverrides(UserPrefs.ItemPrefs itemPrefs) {
-            return new ItemPrefsWrapper(itemPrefs) {
-                @Override
-                public float itemTextSize() {
-                    return itemTextSize != null ? itemTextSize : super.itemTextSize();
-                }
-
-                @Override
-                public int itemPadding() {
-                    return itemPadding != null ? itemPadding : super.itemPadding();
-                }
-            };
-        }
     }
 }

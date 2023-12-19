@@ -20,10 +20,10 @@ public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
 
     public void setUserPrefsOverrides(@Nullable ItemPrefsOverrides userPrefsOverrides) {
         this.itemPrefsOverrides = userPrefsOverrides;
-        updateUserPrefsOverrides();
+        forceUpdateItemPrefs();
     }
 
-    public void updateUserPrefsOverrides() {
+    public void forceUpdateItemPrefs() {
         updateItemPrefs(itemPrefs);
         notifyDataSetChanged();
     }
@@ -35,8 +35,10 @@ public final class HomeAdapter extends CompositeAdapter<DescriptorUi> {
     private boolean updateItemPrefs(UserPrefs.ItemPrefs itemPrefs) {
         boolean needsFullUpdate = isChanged(itemPrefs);
         this.itemPrefs = itemPrefs;
-        UserPrefs.ItemPrefs newItemPrefs = itemPrefsOverrides != null
-                ? itemPrefsOverrides.getItemPrefsOverrides(itemPrefs) : itemPrefs;
+        UserPrefs.ItemPrefs newItemPrefs = itemPrefs;
+        if (itemPrefs != null && itemPrefsOverrides != null) {
+            newItemPrefs = itemPrefsOverrides.getItemPrefsOverrides(itemPrefs);
+        }
         for (int i = 0, size = delegates.size(); i < size; i++) {
             HomeAdapterDelegate delegate = (HomeAdapterDelegate) delegates.valueAt(i);
             delegate.setItemPrefs(newItemPrefs);
