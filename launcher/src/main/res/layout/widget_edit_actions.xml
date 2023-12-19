@@ -20,7 +20,9 @@
             android:layout_gravity="start|top"
             android:foreground="?selectableItemBackgroundBorderless"
             android:padding="6dp"
-            android:src="@drawable/ic_widget_delete" />
+            android:src="@drawable/ic_widget_delete"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/widget_configure"
@@ -30,7 +32,7 @@
             android:foreground="?selectableItemBackgroundBorderless"
             android:padding="6dp"
             android:src="@drawable/ic_widget_configure"
-            android:visibility="invisible"
+            android:visibility="gone"
             tools:visibility="visible" />
 
     </LinearLayout>

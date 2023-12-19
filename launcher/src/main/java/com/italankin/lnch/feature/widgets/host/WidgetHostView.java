@@ -4,8 +4,6 @@ import android.view.View;
 
 public interface WidgetHostView {
 
-    int getAppWidgetId();
-
     View getView();
 
     int resizeMode();

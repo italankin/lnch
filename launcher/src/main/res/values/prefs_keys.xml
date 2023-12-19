@@ -24,4 +24,5 @@
     <string name="pref_key_shortcuts">shortcuts</string>
     <string name="pref_key_notifications">notifications</string>
     <string name="pref_key_widgets_remove">widgets_remove</string>
+    <string name="pref_key_widgets_grid">widgets_grid</string>
 </resources>

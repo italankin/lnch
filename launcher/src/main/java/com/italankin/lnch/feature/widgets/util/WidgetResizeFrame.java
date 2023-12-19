@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.*;
 import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
@@ -76,7 +77,11 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final List<Rect> exclusionRects = Collections.singletonList(exclusionRect);
 
     public WidgetResizeFrame(@NonNull Context context) {
-        super(context);
+        this(context, null);
+    }
+
+    public WidgetResizeFrame(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
         widgetSizeHelper = new WidgetSizeHelper(context);
         Resources res = context.getResources();
         frameColor = ContextCompat.getColor(context, R.color.widget_resize_frame);
@@ -127,6 +132,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     public void setDeleteAction(OnClickListener onClickListener) {
+        deleteAction.setVisibility(onClickListener != null ? View.VISIBLE : View.GONE);
         deleteAction.setOnClickListener(onClickListener);
     }
 
@@ -151,9 +157,14 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     public void bindAppWidget(AppWidget appWidget, WidgetHostView hostView) {
+        if (this.hostView != hostView) {
+            if (this.hostView != null) {
+                removeView(this.hostView.getView());
+            }
+            addView(hostView.getView(), 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
+        }
         this.appWidget = appWidget;
         this.hostView = hostView;
-        addView(hostView.getView(), 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
         updateMinMaxFrames();
         updateWidgetFlags();
         setHostViewSize(appWidget.options, appWidget.size.width, appWidget.size.height);
@@ -370,7 +381,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
                 appWidget.size.minWidth != appWidget.size.maxWidth;
         resizeVertically = forceResize || (hostView.resizeMode() & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0 &&
                 appWidget.size.minHeight != appWidget.size.maxHeight;
-        configureAction.setVisibility(hostView.isReconfigurable() ? VISIBLE : INVISIBLE);
+        configureAction.setVisibility(hostView.isReconfigurable() ? VISIBLE : GONE);
     }
 
     private void resetFrame(MotionEvent event) {
@@ -407,7 +418,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
             invalidate();
             frameView.invalidate();
 
-            widgetSizeHelper.resize(hostView.getAppWidgetId(), options, width, height, true);
+            widgetSizeHelper.resize(appWidget.appWidgetId, options, width, height, true);
             return true;
         }
         return false;

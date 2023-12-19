@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="enable_widgets"
@@ -16,6 +15,10 @@
         android:key="widgets_position"
         android:summary="%s"
         android:title="@string/settings_home_widgets_position" />
+    <Preference
+        android:dependency="enable_widgets"
+        android:key="@string/pref_key_widgets_grid"
+        android:title="@string/settings_home_widgets_grid" />
     <CheckBoxPreference
         android:defaultValue="false"
         android:dependency="enable_widgets"
@@ -23,19 +26,6 @@
         android:summary="@string/settings_home_widgets_force_resize_summary"
         android:title="@string/settings_home_widgets_force_resize"
         app:singleLineTitle="false" />
-    <SeekBarPreference
-        android:defaultValue="5"
-        android:dependency="enable_widgets"
-        android:key="widgets_horizontal_grid_size"
-        android:summary="@string/settings_home_widgets_grid_size_summary"
-        android:title="@string/settings_home_widgets_grid_size"
-        app:showSeekBarValue="true" />
-    <Preference
-        android:dependency="enable_widgets"
-        android:key="widgets_height_cell_ratio"
-        android:title="@string/settings_home_widgets_height_ratio"
-        tools:ignore="PrefsDetector"
-        tools:summary="1.5" />
     <Preference
         android:dependency="enable_widgets"
         android:key="@string/pref_key_widgets_remove"

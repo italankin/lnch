@@ -45,4 +45,9 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>
+
+    <style name="AppTheme.WidgetCellSettings">
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@drawable/window_background</item>
+    </style>
 </resources>

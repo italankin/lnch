@@ -48,6 +48,11 @@ public class AppWidget {
         public final int maxWidth;
         public final int maxHeight;
 
+        public Size(int width, int height) {
+            minWidth = maxWidth = this.width = width;
+            minHeight = maxHeight = this.height = height;
+        }
+
         public Size(int minWidth, int minHeight, int width, int height, int maxWidth, int maxHeight) {
             this.minWidth = minWidth;
             this.minHeight = minHeight;

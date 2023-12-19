@@ -3,6 +3,7 @@ package com.italankin.lnch.feature.widgets.util;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -23,6 +24,8 @@ import static android.appwidget.AppWidgetManager.*;
 
 public class WidgetSizeHelper {
 
+    private static final float MAX_HEIGHT_FACTOR = .75f;
+
     private final AppWidgetManager appWidgetManager;
     private final DisplayMetrics displayMetrics;
     private final int widgetPaddings;
@@ -31,6 +34,24 @@ public class WidgetSizeHelper {
         appWidgetManager = AppWidgetManager.getInstance(context);
         displayMetrics = context.getResources().getDisplayMetrics();
         widgetPaddings = context.getResources().getDimensionPixelSize(R.dimen.widget_padding) * 2;
+    }
+
+    public static Size calculateSizeForCell(Context context, int gridSize, float heightCellRatio) {
+        Resources res = context.getResources();
+        int margins = res.getDimensionPixelSize(R.dimen.widget_list_margin) * 2;
+        DisplayMetrics dm = res.getDisplayMetrics();
+        int size = Math.min(dm.widthPixels - margins, dm.heightPixels) / gridSize;
+        int maxCellSize = res.getDimensionPixelSize(R.dimen.widget_max_cell_size);
+        int cellWidth = Math.min(size, maxCellSize);
+        int cellHeight = (int) (cellWidth * heightCellRatio);
+        return new Size(cellWidth, cellHeight);
+    }
+
+
+    public static int calculateMaxHeightCells(Context context, int cellHeight) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int maxSize = (int) (dm.heightPixels * MAX_HEIGHT_FACTOR);
+        return maxSize / cellHeight;
     }
 
     /**

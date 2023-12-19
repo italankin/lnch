@@ -47,6 +47,7 @@
             android:exported="true"
             android:label="@string/settings_title"
             android:launchMode="singleInstance"
+            android:taskAffinity=".settings"
             android:theme="@style/AppTheme.Preferences"
             android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="@string/settings_title">
@@ -96,6 +97,14 @@
             android:label="@string/widgets_gallery_title"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.italankin.lnch.feature.settings.widgets.WidgetGridSettingsActivity"
+            android:label="@string/settings_home_widgets_grid"
+            android:screenOrientation="userPortrait"
+            android:taskAffinity=".settings"
+            android:theme="@style/AppTheme.WidgetCellSettings"
+            tools:ignore="LockedOrientationActivity" />
 
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"

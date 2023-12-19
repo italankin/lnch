@@ -9,10 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +61,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
-    private static final float MAX_HEIGHT_FACTOR = .75f;
 
     private IntentQueue intentQueue;
     private Preferences preferences;
@@ -456,8 +453,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private void updateCellSize() {
         int gridSize = preferences.get(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE);
-        Size size = calculateSizeForCell(gridSize);
-        int maxHeightCells = calculateMaxHeightCells(size.getHeight());
+        Size size = WidgetSizeHelper.calculateSizeForCell(requireContext(), gridSize,
+                preferences.get(Preferences.WIDGETS_HEIGHT_CELL_RATIO));
+        int maxHeightCells = WidgetSizeHelper.calculateMaxHeightCells(requireContext(), size.getHeight());
         cellSize = new CellSize(size.getWidth(), size.getHeight(), gridSize, maxHeightCells);
 
         ViewGroup.LayoutParams wlp = widgetsList.getLayoutParams();
@@ -472,23 +470,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
             }
         });
         widgetsList.setLayoutManager(layoutManager);
-    }
-
-    private Size calculateSizeForCell(int gridSize) {
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        int margins = res.getDimensionPixelSize(R.dimen.widget_list_margin) * 2;
-        int size = Math.min(dm.widthPixels - margins, dm.heightPixels) / gridSize;
-        int maxCellSize = res.getDimensionPixelSize(R.dimen.widget_max_cell_size);
-        int cellWidth = Math.min(size, maxCellSize);
-        int cellHeight = (int) (cellWidth * preferences.get(Preferences.WIDGETS_HEIGHT_CELL_RATIO));
-        return new Size(cellWidth, cellHeight);
-    }
-
-    private int calculateMaxHeightCells(int cellHeight) {
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        int maxSize = (int) (dm.heightPixels * MAX_HEIGHT_FACTOR);
-        return maxSize / cellHeight;
     }
 
     public interface Callback {

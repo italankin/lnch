@@ -309,18 +309,8 @@ final class SettingsEntries {
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
-                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
-                        .title(R.string.settings_home_widgets_grid_size)
-                        .summary(R.string.settings_home_widgets_grid_size_summary)
-                        .category(R.string.settings_home_widgets)
-                        .setAvailable(WidgetHelper.areWidgetsAvailable())
-                        .stackBuilder(requestKey -> {
-                            // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
-                        })
-                        .build(),
-                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HEIGHT_CELL_RATIO)
-                        .title(R.string.settings_home_widgets_height_ratio)
+                new SettingsEntryImpl.Builder(R.string.pref_key_widgets_grid)
+                        .title(R.string.settings_home_widgets_grid)
                         .category(R.string.settings_home_widgets)
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
@@ -331,6 +321,24 @@ final class SettingsEntries {
                 new SettingsEntryImpl.Builder(R.string.pref_key_widgets_remove)
                         .title(R.string.settings_home_widgets_remove)
                         .category(R.string.settings_home_widgets_remove_summary)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
+                        .stackBuilder(requestKey -> {
+                            // noinspection NewApi
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
+                        .title(R.string.settings_home_widgets_grid_size)
+                        .category(R.string.settings_home_widgets_grid)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
+                        .stackBuilder(requestKey -> {
+                            // noinspection NewApi
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HEIGHT_CELL_RATIO)
+                        .title(R.string.settings_home_widgets_height_ratio)
+                        .category(R.string.settings_home_widgets_grid)
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
