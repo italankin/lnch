@@ -28,6 +28,7 @@ import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
+import com.italankin.lnch.feature.home.util.AnimatedColorDrawable;
 import com.italankin.lnch.feature.home.util.FakeStatusBarDrawable;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
@@ -52,6 +53,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     private HomePagerAdapter homePagerAdapter;
 
     private final HomeScreenState homeScreenState = new HomeScreenState();
+    private final AnimatedColorDrawable rootBackground = new AnimatedColorDrawable();
     private boolean onRestartCalled = false;
 
     @Override
@@ -184,7 +186,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     public <T> void onEditModePropertyChange(EditModeState.Property<T> property, T newValue) {
         if (property == EditModeProperties.WALLPAPER_DIM) {
             int overlayColor = newValue != null ? (int) newValue : Color.TRANSPARENT;
-            root.setBackgroundColor(overlayColor);
+            rootBackground.setColor(overlayColor);
         }
     }
 
@@ -273,7 +275,10 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void setupRoot() {
-        preferences.observe(Preferences.WALLPAPER_DIM_COLOR, true)
+        rootBackground.setColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR), false);
+        root.setBackground(rootBackground);
+
+        preferences.observe(Preferences.WALLPAPER_DIM_COLOR, false)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new EventObserver<>() {
                     @Override
@@ -282,7 +287,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
                             Integer wallpaperDim = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
                             dimColor = wallpaperDim != null ? wallpaperDim : Color.TRANSPARENT;
                         }
-                        root.setBackgroundColor(dimColor);
+                        rootBackground.setColor(dimColor);
                     }
                 });
     }
@@ -338,7 +343,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void resetFromUserPreferences() {
-        root.setBackgroundColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR));
+        rootBackground.setColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR));
     }
 
     private static class HomeScreenState {
