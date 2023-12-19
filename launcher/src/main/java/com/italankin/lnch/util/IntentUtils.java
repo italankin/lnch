@@ -11,18 +11,21 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Process;
 import android.view.View;
-
 import androidx.annotation.Nullable;
-
 import com.italankin.lnch.BuildConfig;
+import timber.log.Timber;
 
 import java.net.URISyntaxException;
 
-import timber.log.Timber;
-
 public final class IntentUtils {
 
+    public static final DefaultErrorConsumer DEFAULT_ERROR_CONSUMER = new DefaultErrorConsumer();
+
     public static boolean safeStartActivity(Context context, Intent intent) {
+        return safeStartActivity(context, intent, null);
+    }
+
+    public static boolean safeStartActivity(Context context, Intent intent, @Nullable ErrorConsumer errorConsumer) {
         if (!canHandleIntent(context, intent)) {
             return false;
         }
@@ -30,6 +33,9 @@ public final class IntentUtils {
             context.startActivity(intent, null);
             return true;
         } catch (Exception e) {
+            if (errorConsumer != null) {
+                errorConsumer.onError(context, e);
+            }
             Timber.w(e, "safeStartActivity:");
             return false;
         }
@@ -121,6 +127,18 @@ public final class IntentUtils {
                 0, 0,
                 bounds.width(), bounds.height());
         return activityOptions.toBundle();
+    }
+
+    public interface ErrorConsumer {
+        void onError(Context context, Exception e);
+    }
+
+    public static class DefaultErrorConsumer implements ErrorConsumer {
+
+        @Override
+        public void onError(Context context, Exception e) {
+            ErrorUtils.showErrorDialogOrToast(context, e);
+        }
     }
 
     private IntentUtils() {

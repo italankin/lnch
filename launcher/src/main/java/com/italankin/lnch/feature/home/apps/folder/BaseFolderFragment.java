@@ -36,6 +36,7 @@ import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.util.ErrorUtils;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.List;
@@ -178,7 +179,7 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
                     @Override
                     public void onError(Throwable e) {
-                        errorDelegate.showError(e.getMessage());
+                        ErrorUtils.showErrorDialogOrToast(requireContext(), e, BaseFolderFragment.this);
                     }
                 });
 
@@ -192,7 +193,7 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
                     @Override
                     public void onError(Throwable e) {
-                        errorDelegate.showError(e.getMessage());
+                        ErrorUtils.showErrorDialogOrToast(requireContext(), e, BaseFolderFragment.this);
                     }
                 });
 

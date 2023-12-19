@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -156,9 +155,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         if (item.getItemId() == R.id.action_system_settings) {
             Context context = requireContext();
             Intent intent = PackageUtils.getPackageSystemSettings(context.getPackageName());
-            if (!IntentUtils.safeStartActivity(context, intent)) {
-                Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show();
-            }
+            IntentUtils.safeStartActivity(context, intent, IntentUtils.DEFAULT_ERROR_CONSUMER);
             return true;
         } else if (item.getItemId() == R.id.action_search) {
             sendResult(new ShowPreferenceSearch().result());

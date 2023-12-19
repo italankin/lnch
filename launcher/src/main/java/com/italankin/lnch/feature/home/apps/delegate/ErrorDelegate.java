@@ -7,4 +7,6 @@ public interface ErrorDelegate {
     void showError(@StringRes int message);
 
     void showError(CharSequence message);
+
+    void showError(Throwable e);
 }

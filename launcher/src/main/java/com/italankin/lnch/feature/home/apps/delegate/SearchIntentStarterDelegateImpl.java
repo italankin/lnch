@@ -3,8 +3,8 @@ package com.italankin.lnch.feature.home.apps.delegate;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-
-import com.italankin.lnch.R;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
+import androidx.browser.customtabs.CustomTabsIntent;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -13,9 +13,6 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ResUtils;
-
-import androidx.browser.customtabs.CustomTabColorSchemeParams;
-import androidx.browser.customtabs.CustomTabsIntent;
 
 public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDelegate {
 
@@ -67,9 +64,7 @@ public class SearchIntentStarterDelegateImpl implements SearchIntentStarterDeleg
             }
             return;
         }
-        if (!IntentUtils.safeStartActivity(context, intent)) {
-            errorDelegate.showError(R.string.error);
-        }
+        IntentUtils.safeStartActivity(context, intent, (unused, e) -> errorDelegate.showError(e));
     }
 
     @Override

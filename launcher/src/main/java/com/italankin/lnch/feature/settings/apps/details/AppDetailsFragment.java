@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -25,6 +24,7 @@ import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultCo
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ErrorUtils;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.icons.CircleDrawable;
@@ -108,7 +108,7 @@ public class AppDetailsFragment extends AppFragment implements SettingsToolbarTi
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        ErrorUtils.showErrorDialogOrToast(requireContext(), e);
                         sendResult(new AppDetailsErrorContract().result());
                     }
                 });

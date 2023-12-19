@@ -565,11 +565,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     //region Errors
 
     private void showError(Throwable e) {
-        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
-            errorDelegate.showError(e.getMessage());
-        } else {
-            errorDelegate.showError(getString(R.string.error));
-        }
+        ErrorUtils.showErrorDialogOrToast(requireContext(), e, this);
     }
 
     //endregion
@@ -757,10 +753,8 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             Uri icon = PackageIconLoader.uriFrom(searchActivity.getPackageName());
             searchOverlay.setupGlobalSearch(icon, v -> {
                 Intent intent = new Intent().setComponent(searchActivity);
-                if (IntentUtils.safeStartActivity(requireContext(), intent)) {
+                if (IntentUtils.safeStartActivity(requireContext(), intent, (context, e) -> errorDelegate.showError(e))) {
                     hideSearchOverlayWithDelay();
-                } else {
-                    errorDelegate.showError(R.string.error);
                 }
             }, v -> {
                 return IntentUtils.safeStartAppSettings(requireContext(), searchActivity.getPackageName(), v);

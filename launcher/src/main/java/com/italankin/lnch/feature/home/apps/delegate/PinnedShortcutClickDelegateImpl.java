@@ -3,13 +3,10 @@ package com.italankin.lnch.feature.home.apps.delegate;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-
-import com.italankin.lnch.R;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 import com.italankin.lnch.util.IntentUtils;
-
-import androidx.annotation.Nullable;
 
 public class PinnedShortcutClickDelegateImpl implements PinnedShortcutClickDelegate {
 
@@ -30,9 +27,7 @@ public class PinnedShortcutClickDelegateImpl implements PinnedShortcutClickDeleg
     public void onPinnedShortcutClick(PinnedShortcutDescriptorUi item) {
         Intent intent = IntentUtils.fromUri(item.uri);
         usageTracker.trackLaunch(item.getDescriptor());
-        if (!IntentUtils.safeStartActivity(context, intent)) {
-            errorDelegate.showError(R.string.error);
-        }
+        IntentUtils.safeStartActivity(context, intent, (unused, e) -> errorDelegate.showError(e));
     }
 
     @Override

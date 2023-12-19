@@ -3,12 +3,9 @@ package com.italankin.lnch.feature.intentfactory;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -16,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
@@ -26,10 +22,7 @@ import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.DialogUtils;
-import com.italankin.lnch.util.ViewUtils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -134,20 +127,8 @@ public class IntentFactoryActivity extends AppCompatActivity implements IntentEd
         try {
             startActivity(result);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            try (PrintWriter pw = new PrintWriter(sw)) {
-                e.printStackTrace(pw);
-            }
-            TextView tv = new TextView(this);
-            ViewUtils.setPaddingDp(tv, 8);
-            tv.setTextIsSelectable(true);
-            tv.setMovementMethod(ScrollingMovementMethod.getInstance());
-            tv.setTextSize(11);
-            tv.setTypeface(Typeface.MONOSPACE);
-            tv.setText(sw.toString());
-            AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+            AlertDialog alertDialog = DialogUtils.stacktraceDialog(this, e)
                     .setTitle(R.string.intent_factory_intent_error_test)
-                    .setView(tv)
                     .show();
             DialogUtils.dismissOnDestroy(this, alertDialog);
         }

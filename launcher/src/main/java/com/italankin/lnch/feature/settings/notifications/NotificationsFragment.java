@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -63,9 +62,7 @@ public class NotificationsFragment extends BasePreferenceFragment implements Set
                 .setMessage(R.string.settings_home_misc_notifications_permission_dialog_message)
                 .setPositiveButton(R.string.settings_home_misc_notifications_permissions_dialog_allow, (dialog, which) -> {
                     Intent notificationSettings = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-                    if (!IntentUtils.safeStartActivity(requireContext(), notificationSettings)) {
-                        Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT).show();
-                    }
+                    IntentUtils.safeStartActivity(requireContext(), notificationSettings, IntentUtils.DEFAULT_ERROR_CONSUMER);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();

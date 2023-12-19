@@ -31,6 +31,7 @@ import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.fonts.events.AddFontEvent;
 import com.italankin.lnch.feature.settings.fonts.events.DeleteFontEvent;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ErrorUtils;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
 import me.italankin.adapterdelegates.CompositeAdapter;
@@ -155,11 +156,7 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
     }
 
     private void showError(Throwable e) {
-        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
-            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_generic, Toast.LENGTH_LONG).show();
-        }
+        ErrorUtils.showErrorDialogOrToast(requireContext(), e, R.string.settings_home_laf_appearance_fonts_error_generic, this);
     }
 
     private void onFontDeleted(boolean reset) {

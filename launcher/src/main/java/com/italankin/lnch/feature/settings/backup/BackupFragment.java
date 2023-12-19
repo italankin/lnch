@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
@@ -20,7 +19,7 @@ import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.backup.events.BackupActionEvent;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
-import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ErrorUtils;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
 
 public class BackupFragment extends AppPreferenceFragment implements SimpleDialogFragment.Listener,
@@ -32,7 +31,6 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
     private static final String TAG_RESET_DIALOG_LNCH = "reset_dialog_lnch";
 
     private BackupViewModel viewModel;
-    private Preferences preferences;
 
     private final ActivityResultLauncher<Void> restoreLauncher = registerForActivityResult(
             new OpenDocumentContract(), result -> {
@@ -52,7 +50,6 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, BackupViewModel.class, ViewModelComponent::backup);
-        preferences = LauncherApp.daggerService.main().preferences();
     }
 
     @Override
@@ -133,15 +130,7 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
     }
 
     private void showError(Throwable e) {
-        if (preferences.get(Preferences.VERBOSE_ERRORS)) {
-            showError(e.toString());
-        } else {
-            showError(getString(R.string.error));
-        }
-    }
-
-    private void showError(String error) {
-        Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+        ErrorUtils.showErrorDialogOrToast(requireContext(), e, this);
     }
 
     private void restoreSettings() {
@@ -156,7 +145,7 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
         try {
             backupLauncher.launch(null);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_LONG).show();
+            showError(e);
         }
     }
 

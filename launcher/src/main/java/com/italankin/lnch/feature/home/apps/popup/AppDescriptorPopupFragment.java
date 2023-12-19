@@ -11,14 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
-import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationFactory;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
@@ -40,22 +39,17 @@ import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
 import com.italankin.lnch.util.PackageUtils;
-import me.italankin.adapterdelegates.CompositeAdapter;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.italankin.adapterdelegates.CompositeAdapter;
 import timber.log.Timber;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         AppNotificationUiAdapter.Listener,
@@ -260,10 +254,8 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
 
     private void startUninstall(AppDescriptorUi item) {
         Intent intent = PackageUtils.getUninstallIntent(item.packageName);
-        if (IntentUtils.safeStartActivity(requireContext(), intent)) {
+        if (IntentUtils.safeStartActivity(requireContext(), intent, (context, e) -> errorDelegate.showError(e))) {
             dismissWithResult();
-        } else {
-            errorDelegate.showError(R.string.error);
         }
     }
 
