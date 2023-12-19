@@ -132,7 +132,9 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         }));
         View reset = view.findViewById(R.id.text_size_reset);
         reset.setOnClickListener(v -> {
-            slider.setValue(Preferences.ITEM_TEXT_SIZE.defaultValue());
+            float defaultValue = Preferences.ITEM_TEXT_SIZE.defaultValue();
+            slider.setValue(defaultValue);
+            editModeState.setProperty(EditModeProperties.ITEM_TEXT_SIZE, defaultValue);
         });
     }
 
@@ -146,7 +148,9 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         }));
         View reset = view.findViewById(R.id.text_padding_reset);
         reset.setOnClickListener(v -> {
-            slider.setValue(Preferences.ITEM_PADDING.defaultValue());
+            int defaultValue = Preferences.ITEM_PADDING.defaultValue();
+            slider.setValue(defaultValue);
+            editModeState.setProperty(EditModeProperties.ITEM_PADDING, defaultValue);
         });
     }
 
@@ -179,10 +183,8 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
 
         @Override
         public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-            if (fromUser) {
-                this.value = value;
-                debouncer.send(this);
-            }
+            this.value = value;
+            debouncer.send(this);
         }
 
         @Override
