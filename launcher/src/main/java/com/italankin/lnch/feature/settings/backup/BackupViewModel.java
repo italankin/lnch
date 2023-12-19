@@ -2,9 +2,7 @@ package com.italankin.lnch.feature.settings.backup;
 
 import android.net.Uri;
 import com.italankin.lnch.feature.base.AppViewModel;
-import com.italankin.lnch.feature.settings.backup.events.BackupEvent;
-import com.italankin.lnch.feature.settings.backup.events.ResetEvent;
-import com.italankin.lnch.feature.settings.backup.events.RestoreEvent;
+import com.italankin.lnch.feature.settings.backup.events.BackupActionEvent;
 import com.italankin.lnch.model.backup.BackupReader;
 import com.italankin.lnch.model.backup.BackupWriter;
 import com.italankin.lnch.model.fonts.FontManager;
@@ -26,9 +24,9 @@ public class BackupViewModel extends AppViewModel {
     private final FontManager fontManager;
     private final Preferences preferences;
 
-    private final PublishSubject<RestoreEvent> restoreEventsSubject = PublishSubject.create();
-    private final PublishSubject<BackupEvent> backupEventsSubject = PublishSubject.create();
-    private final PublishSubject<ResetEvent> resetEventsSubject = PublishSubject.create();
+    private final PublishSubject<BackupActionEvent> restoreEventsSubject = PublishSubject.create();
+    private final PublishSubject<BackupActionEvent> backupEventsSubject = PublishSubject.create();
+    private final PublishSubject<BackupActionEvent> resetEventsSubject = PublishSubject.create();
 
     @Inject
     BackupViewModel(BackupReader backupReader,
@@ -43,15 +41,15 @@ public class BackupViewModel extends AppViewModel {
         this.preferences = preferences;
     }
 
-    Observable<ResetEvent> resetEvents() {
+    Observable<BackupActionEvent> resetEvents() {
         return resetEventsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
-    Observable<RestoreEvent> restoreEvents() {
+    Observable<BackupActionEvent> restoreEvents() {
         return restoreEventsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
-    Observable<BackupEvent> backupEvents() {
+    Observable<BackupActionEvent> backupEvents() {
         return backupEventsSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -62,13 +60,13 @@ public class BackupViewModel extends AppViewModel {
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
-                        restoreEventsSubject.onNext(RestoreEvent.SUCCESS);
+                        restoreEventsSubject.onNext(new BackupActionEvent(null));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        restoreEventsSubject.onNext(RestoreEvent.ERROR);
+                        restoreEventsSubject.onNext(new BackupActionEvent(e));
                     }
                 });
     }
@@ -79,13 +77,13 @@ public class BackupViewModel extends AppViewModel {
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
-                        backupEventsSubject.onNext(BackupEvent.SUCCESS);
+                        backupEventsSubject.onNext(new BackupActionEvent(null));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        backupEventsSubject.onNext(BackupEvent.ERROR);
+                        backupEventsSubject.onNext(new BackupActionEvent(e));
                     }
                 });
     }
@@ -97,13 +95,13 @@ public class BackupViewModel extends AppViewModel {
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
-                        resetEventsSubject.onNext(ResetEvent.SUCCESS);
+                        resetEventsSubject.onNext(new BackupActionEvent(null));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        resetEventsSubject.onNext(ResetEvent.ERROR);
+                        resetEventsSubject.onNext(new BackupActionEvent(e));
                     }
                 });
     }
@@ -120,13 +118,13 @@ public class BackupViewModel extends AppViewModel {
                 .subscribe(new CompletableState() {
                     @Override
                     public void onComplete() {
-                        resetEventsSubject.onNext(ResetEvent.SUCCESS);
+                        resetEventsSubject.onNext(new BackupActionEvent(null));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        resetEventsSubject.onNext(ResetEvent.ERROR);
+                        resetEventsSubject.onNext(new BackupActionEvent(e));
                     }
                 });
     }

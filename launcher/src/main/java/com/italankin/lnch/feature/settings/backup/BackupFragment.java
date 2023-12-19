@@ -17,9 +17,7 @@ import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.feature.settings.backup.events.BackupEvent;
-import com.italankin.lnch.feature.settings.backup.events.ResetEvent;
-import com.italankin.lnch.feature.settings.backup.events.RestoreEvent;
+import com.italankin.lnch.feature.settings.backup.events.BackupActionEvent;
 import com.italankin.lnch.feature.settings.base.AppPreferenceFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
@@ -91,28 +89,22 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
         viewModel.backupEvents()
                 .subscribe(new EventObserver<>() {
                     @Override
-                    public void onNext(BackupEvent backupEvent) {
-                        switch (backupEvent) {
-                            case SUCCESS:
-                                Toast.makeText(requireContext(), R.string.settings_other_bar_backup_success, Toast.LENGTH_LONG).show();
-                                break;
-                            case ERROR:
-                                showError(getString(R.string.error));
-                                break;
+                    public void onNext(BackupActionEvent event) {
+                        if (event.error == null) {
+                            Toast.makeText(requireContext(), R.string.settings_other_bar_backup_success, Toast.LENGTH_LONG).show();
+                        } else {
+                            showError(event.error);
                         }
                     }
                 });
         viewModel.resetEvents()
                 .subscribe(new EventObserver<>() {
                     @Override
-                    public void onNext(ResetEvent resetEvent) {
-                        switch (resetEvent) {
-                            case SUCCESS:
-                                Toast.makeText(requireContext(), R.string.settings_other_bar_reset_success, Toast.LENGTH_LONG).show();
-                                break;
-                            case ERROR:
-                                showError(getString(R.string.error));
-                                break;
+                    public void onNext(BackupActionEvent event) {
+                        if (event.error == null) {
+                            Toast.makeText(requireContext(), R.string.settings_other_bar_reset_success, Toast.LENGTH_LONG).show();
+                        } else {
+                            showError(event.error);
                         }
                     }
                 });
@@ -120,14 +112,11 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
         viewModel.restoreEvents()
                 .subscribe(new EventObserver<>() {
                     @Override
-                    public void onNext(RestoreEvent restoreEvent) {
-                        switch (restoreEvent) {
-                            case SUCCESS:
-                                Toast.makeText(requireContext(), R.string.settings_other_bar_restore_success, Toast.LENGTH_LONG).show();
-                                break;
-                            case ERROR:
-                                showError(getString(R.string.error));
-                                break;
+                    public void onNext(BackupActionEvent event) {
+                        if (event.error == null) {
+                            Toast.makeText(requireContext(), R.string.settings_other_bar_restore_success, Toast.LENGTH_LONG).show();
+                        } else {
+                            showError(event.error);
                         }
                     }
                 });
@@ -145,7 +134,7 @@ public class BackupFragment extends AppPreferenceFragment implements SimpleDialo
 
     private void showError(Throwable e) {
         if (preferences.get(Preferences.VERBOSE_ERRORS)) {
-            showError(e.getMessage());
+            showError(e.toString());
         } else {
             showError(getString(R.string.error));
         }
