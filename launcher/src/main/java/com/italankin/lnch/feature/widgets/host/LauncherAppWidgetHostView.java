@@ -19,6 +19,7 @@ package com.italankin.lnch.feature.widgets.host;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -27,7 +28,7 @@ import android.widget.RemoteViews;
 import com.italankin.lnch.R;
 import timber.log.Timber;
 
-public class LauncherAppWidgetHostView extends AppWidgetHostView {
+public class LauncherAppWidgetHostView extends AppWidgetHostView implements WidgetHostView {
 
     private static final int[] LOC = new int[2];
     private final int touchSlop;
@@ -46,6 +47,28 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
         super.setAppWidget(appWidgetId, info);
         int p = getResources().getDimensionPixelSize(R.dimen.widget_padding);
         setPadding(p, p, p, p);
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    @Override
+    public int resizeMode() {
+        return getAppWidgetInfo().resizeMode;
+    }
+
+    @Override
+    public boolean isReconfigurable() {
+        AppWidgetProviderInfo info = getAppWidgetInfo();
+        if (info.configure == null) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return (info.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE) != 0;
+        }
+        return true;
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {

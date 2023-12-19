@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
+import com.italankin.lnch.feature.widgets.host.WidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.model.CellSize;
 import com.italankin.lnch.util.ResUtils;
@@ -61,7 +61,7 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     private final View deleteAction;
     private final View configureAction;
     private final ViewGroup actionsContainer;
-    private LauncherAppWidgetHostView hostView;
+    private WidgetHostView hostView;
     private final FrameView frameView;
     private AppWidget appWidget;
 
@@ -150,10 +150,10 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
         }
     }
 
-    public void bindAppWidget(AppWidget appWidget, LauncherAppWidgetHostView hostView) {
+    public void bindAppWidget(AppWidget appWidget, WidgetHostView hostView) {
         this.appWidget = appWidget;
         this.hostView = hostView;
-        addView(hostView, 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
+        addView(hostView.getView(), 0, new LayoutParams(appWidget.size.width, appWidget.size.height));
         updateMinMaxFrames();
         updateWidgetFlags();
         setHostViewSize(appWidget.options, appWidget.size.width, appWidget.size.height);
@@ -366,23 +366,11 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     private void updateWidgetFlags() {
-        AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
-        resizeHorizontally = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0 &&
+        resizeHorizontally = forceResize || (hostView.resizeMode() & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0 &&
                 appWidget.size.minWidth != appWidget.size.maxWidth;
-        resizeVertically = forceResize || (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0 &&
+        resizeVertically = forceResize || (hostView.resizeMode() & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0 &&
                 appWidget.size.minHeight != appWidget.size.maxHeight;
-        configureAction.setVisibility(isReconfigurable() ? VISIBLE : INVISIBLE);
-    }
-
-    private boolean isReconfigurable() {
-        AppWidgetProviderInfo info = hostView.getAppWidgetInfo();
-        if (info.configure == null) {
-            return false;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return (info.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE) != 0;
-        }
-        return false;
+        configureAction.setVisibility(hostView.isReconfigurable() ? VISIBLE : INVISIBLE);
     }
 
     private void resetFrame(MotionEvent event) {
@@ -397,18 +385,18 @@ public class WidgetResizeFrame extends FrameLayout implements GestureDetector.On
     }
 
     private void updateFrame() {
-        ViewGroup.LayoutParams lp = hostView.getLayoutParams();
+        ViewGroup.LayoutParams lp = hostView.getView().getLayoutParams();
         frame.set(0, 0, lp.width, lp.height);
         visualFrame.set(frame);
         visualFrame.inset(drawFrameInset, drawFrameInset);
     }
 
     private boolean setHostViewSize(Bundle options, int width, int height) {
-        ViewGroup.LayoutParams lp = hostView.getLayoutParams();
+        ViewGroup.LayoutParams lp = hostView.getView().getLayoutParams();
         if (width != lp.width || height != lp.height) {
             lp.width = width;
             lp.height = height;
-            hostView.setLayoutParams(lp);
+            hostView.getView().setLayoutParams(lp);
 
             ViewGroup.LayoutParams plp = getLayoutParams();
             plp.width = width;
