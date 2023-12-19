@@ -179,8 +179,10 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
 
         @Override
         public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-            this.value = value;
-            debouncer.send(this);
+            if (fromUser) {
+                this.value = value;
+                debouncer.send(this);
+            }
         }
 
         @Override
