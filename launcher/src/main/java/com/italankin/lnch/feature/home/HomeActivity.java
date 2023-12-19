@@ -275,7 +275,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void setupRoot() {
-        rootBackground.setColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR), false);
+        setDimColor(preferences.get(Preferences.WALLPAPER_DIM_COLOR), false);
         root.setBackground(rootBackground);
 
         preferences.observe(Preferences.WALLPAPER_DIM_COLOR, false)
@@ -283,13 +283,17 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
                 .subscribe(new EventObserver<>() {
                     @Override
                     public void onNext(Integer dimColor) {
-                        if (editModeState.isActive() && editModeState.isPropertySet(EditModeProperties.WALLPAPER_DIM)) {
-                            Integer wallpaperDim = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
-                            dimColor = wallpaperDim != null ? wallpaperDim : Color.TRANSPARENT;
-                        }
-                        rootBackground.setColor(dimColor);
+                        setDimColor(dimColor, true);
                     }
                 });
+    }
+
+    private void setDimColor(Integer dimColor, boolean animated) {
+        if (editModeState.isActive() && editModeState.isPropertySet(EditModeProperties.WALLPAPER_DIM)) {
+            Integer wallpaperDim = editModeState.getProperty(EditModeProperties.WALLPAPER_DIM);
+            dimColor = wallpaperDim != null ? wallpaperDim : Color.TRANSPARENT;
+        }
+        rootBackground.setColor(dimColor, animated);
     }
 
     private void setStatusBarColor(Integer color) {
