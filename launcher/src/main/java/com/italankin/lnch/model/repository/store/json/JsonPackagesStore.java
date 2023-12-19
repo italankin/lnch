@@ -1,15 +1,11 @@
 package com.italankin.lnch.model.repository.store.json;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.italankin.lnch.model.repository.store.PackagesStore;
+import timber.log.Timber;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import timber.log.Timber;
 
 public class JsonPackagesStore implements PackagesStore {
 
@@ -22,28 +18,20 @@ public class JsonPackagesStore implements PackagesStore {
     }
 
     @Override
-    public InputStream input() {
-        try {
-            File file = getFile();
-            if (!file.exists()) {
-                Timber.w("file %s does not exist", file);
-                return null;
-            }
-            return new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            Timber.e(e, "input:");
+    @Nullable
+    public File input() {
+        File file = getFile();
+        if (!file.exists()) {
+            Timber.w("file %s does not exist", file);
             return null;
         }
+        return file;
     }
 
+    @NonNull
     @Override
-    public OutputStream output() {
-        try {
-            return new FileOutputStream(getFile());
-        } catch (FileNotFoundException e) {
-            Timber.e(e, "output:");
-            return null;
-        }
+    public File output() {
+        return getFile();
     }
 
     @Override

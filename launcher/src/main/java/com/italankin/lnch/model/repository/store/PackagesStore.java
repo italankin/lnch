@@ -1,13 +1,17 @@
 package com.italankin.lnch.model.repository.store;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.io.File;
 
 public interface PackagesStore {
 
-    InputStream input();
+    @Nullable
+    File input();
 
-    OutputStream output();
+    @NonNull
+    File output();
 
     void clear();
 }

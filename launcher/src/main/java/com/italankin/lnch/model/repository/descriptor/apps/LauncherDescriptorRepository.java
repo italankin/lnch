@@ -24,6 +24,9 @@ import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -195,8 +198,33 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
                 });
     }
 
-    private void writeToDisk(List<Descriptor> items) {
-        descriptorStore.write(packagesStore.output(), items);
+    private void writeToDisk(List<Descriptor> items) throws IOException {
+        File packagesFile = packagesStore.output();
+        File packagesFileTmp = new File(packagesFile.getParentFile(), packagesFile.getName() + ".tmp");
+        try (FileOutputStream fos = new FileOutputStream(packagesFileTmp)) {
+            descriptorStore.write(fos, items);
+        }
+        Timber.d("wrote '%s'", packagesFileTmp);
+        boolean rewrite = false;
+        if (packagesFile.exists()) {
+            if (packagesFile.delete()) {
+                Timber.d("deleted '%s'", packagesFile);
+            } else {
+                rewrite = true;
+                Timber.w("cannot delete '%s', trying rewrite", packagesFile);
+            }
+        }
+        if (!rewrite) {
+            if (packagesFileTmp.renameTo(packagesFile)) {
+                Timber.d("renamed '%s' to '%s'", packagesFileTmp, packagesFile);
+                return;
+            }
+            Timber.w("cannot rename '%s' to '%s'", packagesFileTmp, packagesFile);
+        }
+        try (FileOutputStream fos = new FileOutputStream(packagesFile)) {
+            descriptorStore.write(fos, items);
+        }
+        Timber.d("wrote '%s'", packagesFile);
     }
 
     final class Editor implements DescriptorRepository.Editor {

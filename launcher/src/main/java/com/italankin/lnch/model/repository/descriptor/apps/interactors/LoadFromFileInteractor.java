@@ -16,7 +16,8 @@ import com.italankin.lnch.util.IntentUtils;
 import io.reactivex.Maybe;
 import timber.log.Timber;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.*;
 
 import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
@@ -50,12 +51,15 @@ public class LoadFromFileInteractor {
         return Maybe
                 .create(emitter -> {
                     try {
-                        InputStream packagesInput = packagesStore.input();
-                        if (packagesInput == null) {
+                        File packagesFile = packagesStore.input();
+                        if (packagesFile == null) {
                             emitter.onComplete();
                             return;
                         }
-                        List<Descriptor> savedItems = descriptorStore.read(packagesInput);
+                        List<Descriptor> savedItems;
+                        try (FileInputStream fis = new FileInputStream(packagesFile)) {
+                            savedItems = descriptorStore.read(fis);
+                        }
                         if (savedItems == null) {
                             emitter.onComplete();
                             return;
