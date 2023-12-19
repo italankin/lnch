@@ -43,6 +43,9 @@ public class WidgetSizeHelper {
      * @param paddingIncluded whether default padding is included in {@param width} and {@param height}
      */
     public void resize(int appWidgetId, @NonNull Bundle options, @Px int width, @Px int height, boolean paddingIncluded) {
+        if (appWidgetId == INVALID_APPWIDGET_ID) {
+            return;
+        }
         float density = displayMetrics.density;
         int widthDp = (int) (width / density);
         int heightDp = (int) (height / density);
