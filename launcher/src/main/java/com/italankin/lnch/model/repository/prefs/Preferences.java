@@ -64,6 +64,11 @@ public interface Preferences {
         T defaultValue();
 
         /**
+         * @return type of the value which will be written to disk; might not match {@link T}
+         */
+        Class<?> valueType();
+
+        /**
          * Handler for preference reads
          *
          * @param <T> type of the preference
@@ -158,6 +163,7 @@ public interface Preferences {
      */
     Pref<EnumSet<SearchTarget>> EXCLUDED_SEARCH_TARGETS = Prefs.create(
             "excluded_search_targets",
+            Collection.class,
             EnumSet.noneOf(SearchTarget.class),
             (preferences, key) -> {
                 Set<String> set = preferences.getStringSet(key, null);
@@ -381,6 +387,7 @@ public interface Preferences {
      */
     Pref<List<Widget>> WIDGETS_DATA = Prefs.create(
             "widgets_data",
+            String.class,
             Collections.emptyList(),
             (preferences, key) -> {
                 String value = preferences.getString(key, null);

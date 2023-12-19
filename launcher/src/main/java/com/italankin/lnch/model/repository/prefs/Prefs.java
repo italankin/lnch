@@ -11,33 +11,35 @@ import java.util.Map;
 final class Prefs {
 
     static Preferences.Pref<Integer> createInteger(String key, Integer defaultValue) {
-        return new BasePref<>(key, defaultValue, new IntegerUpdater());
+        return new BasePref<>(key, Integer.class, defaultValue, new IntegerUpdater());
     }
 
     static Preferences.Pref<Boolean> createBoolean(String key, Boolean defaultValue) {
-        return new BasePref<>(key, defaultValue, new BooleanUpdater());
+        return new BasePref<>(key, Boolean.class, defaultValue, new BooleanUpdater());
     }
 
     static Preferences.Pref<String> createString(String key, String defaultValue) {
-        return new BasePref<>(key, defaultValue, new StringUpdater());
+        return new BasePref<>(key, String.class, defaultValue, new StringUpdater());
     }
 
     static Preferences.RangePref<Float> createFloatRange(String key, Float defaultValue, Float min, Float max) {
-        return new RangePref<>(key, defaultValue, min, max, new FloatRangeUpdater(min, max));
+        return new RangePref<>(key, Float.class, defaultValue, min, max, new FloatRangeUpdater(min, max));
     }
 
     static Preferences.RangePref<Integer> createIntegerRange(String key, Integer defaultValue, Integer min, Integer max) {
-        return new RangePref<>(key, defaultValue, min, max, new IntegerRangeUpdater(min, max));
+        return new RangePref<>(key, Integer.class, defaultValue, min, max, new IntegerRangeUpdater(min, max));
     }
 
     static <T> Preferences.Pref<T> create(
             String prefKey,
+            Class<?> type,
             T defaultValue,
             Preferences.Pref.Fetcher<T> fetcher,
             Preferences.Pref.Updater<T> updater
     ) {
         return new BasePref<T>(
                 prefKey,
+                type,
                 defaultValue,
                 (preferences, key) -> {
                     T value = fetcher.fetch(preferences, key);
@@ -50,6 +52,7 @@ final class Prefs {
     static <T> Preferences.Pref<T> create(String prefKey, T defaultValue, ValueConverter<T> valueConverter) {
         return new BasePref<T>(
                 prefKey,
+                String.class,
                 defaultValue,
                 (preferences, key) -> {
                     String value = preferences.getString(key, null);
@@ -72,13 +75,15 @@ final class Prefs {
         private final T defaultValue;
         private final Fetcher<T> fetcher;
         private final Updater<T> updater;
+        private final Class<?> type;
 
-        BasePref(String key, T defaultValue, Updater<T> updater) {
-            this(key, defaultValue, new ObjectFetcher<>(key, defaultValue), updater);
+        BasePref(String key, Class<T> type, T defaultValue, Updater<T> updater) {
+            this(key, type, defaultValue, new ObjectFetcher<>(key, defaultValue), updater);
         }
 
-        BasePref(String key, T defaultValue, Fetcher<T> fetcher, Updater<T> updater) {
+        BasePref(String key, Class<?> type, T defaultValue, Fetcher<T> fetcher, Updater<T> updater) {
             this.key = key;
+            this.type = type;
             this.defaultValue = defaultValue;
             this.fetcher = fetcher;
             this.updater = updater;
@@ -87,6 +92,11 @@ final class Prefs {
         @Override
         public String key() {
             return key;
+        }
+
+        @Override
+        public Class<?> valueType() {
+            return type;
         }
 
         @Override
@@ -122,8 +132,8 @@ final class Prefs {
         private final T min;
         private final T max;
 
-        RangePref(String key, T defaultValue, T min, T max, Updater<T> updater) {
-            super(key, defaultValue, updater);
+        RangePref(String key, Class<T> type, T defaultValue, T min, T max, Updater<T> updater) {
+            super(key, type, defaultValue, updater);
             this.min = min;
             this.max = max;
         }
