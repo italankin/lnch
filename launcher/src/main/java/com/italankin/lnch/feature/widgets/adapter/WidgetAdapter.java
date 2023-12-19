@@ -8,7 +8,6 @@ import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHostView;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.model.CellSize;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
-import timber.log.Timber;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +37,6 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.WidgetView
     @NonNull
     @Override
     public WidgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Timber.d("onCreateViewHolder: %d", viewType);
         AppWidget item = findItemById(viewType);
         WidgetResizeFrame resizeFrame = new WidgetResizeFrame(parent.getContext());
         resizeFrame.setLayoutParams(new RecyclerView.LayoutParams(item.size.width, item.size.height));
