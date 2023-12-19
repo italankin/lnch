@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
+import com.google.android.material.color.DynamicColors;
+import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.settings.ShortcutsFragment;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
@@ -15,9 +17,12 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import timber.log.Timber;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 final class SettingsEntries {
 
@@ -70,6 +75,14 @@ final class SettingsEntries {
                         .title(R.string.settings_home_laf_color_theme)
                         .category(R.string.settings_home_laf)
                         .addArraysSearchTokens(R.array.pref_desc_color_themes)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.DYNAMIC_COLORS)
+                        .title(R.string.settings_home_laf_dynamic_colors)
+                        .category(R.string.settings_home_laf)
+                        .setAvailable(DynamicColors.isDynamicColorAvailable())
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
@@ -306,6 +319,15 @@ final class SettingsEntries {
                             return Collections.singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.WIDGETS_HEIGHT_CELL_RATIO)
+                        .title(R.string.settings_home_widgets_height_ratio)
+                        .category(R.string.settings_home_widgets)
+                        .setAvailable(WidgetHelper.areWidgetsAvailable())
+                        .stackBuilder(requestKey -> {
+                            // noinspection NewApi
+                            return Collections.singletonList(new WidgetsSettingsFragment());
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_widgets_remove)
                         .title(R.string.settings_home_widgets_remove)
                         .category(R.string.settings_home_widgets_remove_summary)
@@ -374,6 +396,14 @@ final class SettingsEntries {
                 new SettingsEntryImpl.Builder(Preferences.DESTRUCTIVE_NON_EDIT)
                         .title(R.string.settings_home_misc_destructive_non_edit)
                         .summary(R.string.settings_home_misc_destructive_non_edit_summary)
+                        .category(R.string.settings_home_misc)
+                        .stackBuilder(requestKey -> {
+                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                        })
+                        .build(),
+                new SettingsEntryImpl.Builder(Preferences.VERBOSE_ERRORS)
+                        .title(R.string.settings_home_misc_verbose_errors)
+                        .summary(R.string.settings_home_misc_verbose_errors_summary)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(MiscFragment.newInstance(requestKey));
