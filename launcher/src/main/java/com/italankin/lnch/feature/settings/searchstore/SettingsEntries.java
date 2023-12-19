@@ -609,6 +609,20 @@ final class SettingsEntries {
         };
     }
 
+    static {
+        if (BuildConfig.DEBUG) {
+            Set<Preferences.Pref<?>> prefs = new HashSet<>(Preferences.ALL);
+            for (SettingsEntryImpl entry : entries()) {
+                if (entry.pref != null) {
+                    prefs.remove(entry.pref);
+                }
+            }
+            for (Preferences.Pref<?> pref : prefs) {
+                Timber.w("'%s' is not present in SettingsEntries", pref.key());
+            }
+        }
+    }
+
     private SettingsEntries() {
     }
 }
