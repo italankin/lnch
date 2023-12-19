@@ -42,10 +42,11 @@ import com.italankin.lnch.feature.base.AppViewModelProvider;
 import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.*;
+import com.italankin.lnch.feature.home.adapter.error.ErrorDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.shimmer.ShimmerDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.delegate.*;
 import com.italankin.lnch.feature.home.apps.events.SearchStateEvent;
 import com.italankin.lnch.feature.home.apps.events.ShortcutPinEvent;
-import com.italankin.lnch.feature.home.apps.events.UpdateEvent;
 import com.italankin.lnch.feature.home.apps.folder.EditFolderFragment;
 import com.italankin.lnch.feature.home.apps.folder.FolderFragment;
 import com.italankin.lnch.feature.home.apps.popup.*;
@@ -82,7 +83,6 @@ import com.italankin.lnch.model.ui.impl.*;
 import com.italankin.lnch.util.*;
 import com.italankin.lnch.util.imageloader.resourceloader.PackageIconLoader;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
-import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 
 import java.util.Collections;
@@ -109,7 +109,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     private IntentQueue intentQueue;
     private HomeBus homeBus;
 
-    private LceLayout lce;
     private HomeRecyclerView list;
     private HomeAdapter adapter;
     private EditModePanel editModePanel;
@@ -231,7 +230,6 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         HomeViewPagerDoNotClipChildren.apply(view);
-        lce = view.findViewById(R.id.lce_apps);
         searchOverlay = view.findViewById(R.id.search_bar);
         list = view.findViewById(R.id.list);
         coordinator = view.findViewById(R.id.coordinator);
@@ -243,6 +241,8 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .add(new PinnedShortcutDescriptorUiAdapter(this))
                 .add(new IntentDescriptorUiAdapter(this))
                 .add(new DeepShortcutDescriptorUiAdapter(this))
+                .add(new ShimmerDescriptorUiAdapter())
+                .add(new ErrorDescriptorUiAdapter(v -> viewModel.reloadApps()))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
@@ -273,12 +273,8 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         viewModel.updateEvents()
                 .subscribe(new EventObserver<>() {
                     @Override
-                    public void onNext(UpdateEvent event) {
-                        if (event instanceof UpdateEvent.Success) {
-                            onReceiveUpdate(((UpdateEvent.Success) event).update);
-                        } else if (event instanceof UpdateEvent.Error) {
-                            onReceiveUpdateError(((UpdateEvent.Error) event).error);
-                        }
+                    public void onNext(Update update) {
+                        onReceiveUpdate(update);
                     }
                 });
         viewModel.errorEvents()
@@ -549,35 +545,23 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     //region Update
 
     private void onReceiveUpdate(Update update) {
-        adapter.setDataset(update.items);
-        list.setVisibility(View.VISIBLE);
-
-        if (update.items.isEmpty()) {
-            lce.empty()
-                    .message(R.string.apps_list_empty)
-                    .button(R.string.open_settings, v -> {
-                        startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
-                    })
-                    .show();
+        if (update.isTransient()) {
+            if (list.isLayoutSuppressed()) {
+                // unsuppress to trigger layout update
+                list.suppressLayout(false);
+            }
+            list.suppressLayout(true);
         } else {
-            lce.showContent();
+            list.suppressLayout(false);
         }
-
+        adapter.setDataset(update.items);
         applyUserPrefs(update.userPrefs);
-
         boolean needsFullUpdate = adapter.updateUserPrefs(update.userPrefs);
         if (needsFullUpdate) {
             adapter.notifyDataSetChanged();
         } else {
             update.dispatchTo(adapter);
         }
-    }
-
-    private void onReceiveUpdateError(Throwable e) {
-        lce.error()
-                .button(v -> viewModel.reloadApps())
-                .message(e.getMessage())
-                .show();
     }
 
     //endregion

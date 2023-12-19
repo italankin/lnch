@@ -7,7 +7,6 @@
     <string name="retry">Retry</string>
     <string name="save">Save</string>
     <string name="preview">Preview</string>
-    <string name="open_settings">Open Settings</string>
 
     <string name="notification_service_name">Notification dots</string>
 
@@ -300,4 +299,5 @@
     <string name="error_manual_sorting_required">Reordering is only available for manual sorting</string>
     <string name="error_shortcut_not_found">Not found</string>
     <string name="error_shortcut_disabled">Shortcut is disabled</string>
+    <string name="error_apps_not_loaded">Apps were not loaded: %1$s</string>
 </resources>

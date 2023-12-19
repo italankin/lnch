@@ -31,4 +31,7 @@
     <dimen name="notification_dot_size_large">8dp</dimen>
     <dimen name="notification_dot_shadow">3dp</dimen>
     <dimen name="popup_min_width">224dp</dimen>
+    <dimen name="shimmer_stroke_width">4dp</dimen>
+    <dimen name="shimmer_round_radius">16dp</dimen>
+    <dimen name="shimmer_phase_advance">3dp</dimen>
 </resources>

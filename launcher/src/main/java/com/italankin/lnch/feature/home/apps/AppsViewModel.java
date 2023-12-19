@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import com.italankin.lnch.feature.base.AppViewModel;
+import com.italankin.lnch.feature.home.adapter.error.ErrorDescriptorUi;
 import com.italankin.lnch.feature.home.apps.events.ShortcutPinEvent;
-import com.italankin.lnch.feature.home.apps.events.UpdateEvent;
 import com.italankin.lnch.feature.home.model.Update;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.repository.EditModeState;
@@ -58,7 +58,7 @@ public class AppsViewModel extends AppViewModel {
     private final NameNormalizer nameNormalizer;
     private final FontManager fontManager;
 
-    private final BehaviorSubject<UpdateEvent> updatesSubject = BehaviorSubject.create();
+    private final BehaviorSubject<Update> updatesSubject = BehaviorSubject.create();
     private final PublishSubject<Throwable> errorsSubject = PublishSubject.create();
     private final PublishSubject<ShortcutPinEvent> shortcutPinSubject = PublishSubject.create();
 
@@ -83,7 +83,7 @@ public class AppsViewModel extends AppViewModel {
         reloadApps();
     }
 
-    Observable<UpdateEvent> updateEvents() {
+    Observable<Update> updateEvents() {
         return updatesSubject.observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -317,14 +317,19 @@ public class AppsViewModel extends AppViewModel {
                     @Override
                     public void onNext(Update update) {
                         Timber.d("Update: %s", update);
-                        homeDescriptorsState.setItems(update.items);
-                        updatesSubject.onNext(new UpdateEvent.Success(update));
+                        if (!update.isTransient()) {
+                            homeDescriptorsState.setItems(update.items);
+                        }
+                        updatesSubject.onNext(update);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        Timber.d(e, "Update error:");
                         if (homeDescriptorsState.isInitialState()) {
-                            updatesSubject.onNext(new UpdateEvent.Error(e));
+                            Update update = new Update(Collections.singletonList(new ErrorDescriptorUi(e)), true)
+                                    .with(new UserPrefs(preferences, fontManager));
+                            updatesSubject.onNext(update);
                         } else {
                             errorsSubject.onNext(e);
                         }
@@ -336,8 +341,7 @@ public class AppsViewModel extends AppViewModel {
         Observable<List<DescriptorUi>> observeApps = descriptorRepository.observe()
                 .map(DescriptorUiFactory::createItems);
         return Observable.combineLatest(observeApps, observeNotifications(), this::concatNotifications)
-                .scan(Update.EMPTY, this::calculateUpdates)
-                .skip(1); // skip empty update
+                .scan(Update.INITIAL, this::calculateUpdates);
     }
 
     private Observable<NotificationBagContainer> observeNotifications() {
