@@ -159,7 +159,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                     if (editModeState.hasSomethingToCommit()) {
                         onEditModeConfirmDiscardChanges();
                     } else {
-                        viewModel.discardChanges();
+                        viewModel.editModeDiscard();
                     }
                     return;
                 }
@@ -316,7 +316,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                         .show(getParentFragmentManager());
             }
         };
-        CustomizeDelegate customizeDelegate = viewModel::startCustomize;
+        CustomizeDelegate customizeDelegate = viewModel::editModeActivate;
         ShortcutStarterDelegate shortcutStarterDelegate = new ShortcutStarterDelegateImpl(context, errorDelegate,
                 customizeDelegate, usageTracker);
         pinnedShortcutClickDelegate = new PinnedShortcutClickDelegateImpl(context, errorDelegate, itemPopupDelegate,
@@ -356,7 +356,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 dismissPopups();
                 if (!editMode) {
                     animateOnResume = false;
-                    viewModel.startCustomize();
+                    viewModel.editModeActivate();
                 }
                 return true;
             }
@@ -367,10 +367,10 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     private void registerFragmentResultListeners() {
         new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_APPS)
                 .register(new FolderFragment.CustomizeContract(), ignored -> {
-                    viewModel.startCustomize();
+                    viewModel.editModeActivate();
                 })
                 .register(new AppDescriptorPopupFragment.CustomizeContract(), ignored -> {
-                    viewModel.startCustomize();
+                    viewModel.editModeActivate();
                 })
                 .register(new AppDescriptorPopupFragment.PinShortcutContract(), result -> {
                     viewModel.pinShortcut(result.packageName, result.shortcutId);
@@ -640,7 +640,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                     .setOnAddActionClickListener(this::showEditModeAddPopup)
                     .setOnSaveActionClickListener(v -> {
                         if (editModePanel != null && editModePanel.isShown()) {
-                            viewModel.stopCustomize();
+                            viewModel.editModeCommit();
                         }
                     })
                     .setOnHiddenItemsClickListener(v -> {
@@ -762,7 +762,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             hideSearchOverlayWithDelay();
             startAppActivity(SettingsActivity.getComponentName(requireContext()), v);
         }, v -> {
-            searchOverlayBehavior.hide(viewModel::startCustomize);
+            searchOverlayBehavior.hide(viewModel::editModeActivate);
             return true;
         });
 
@@ -856,7 +856,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     private void onEditModeConfirmDiscardChanges() {
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.customize_discard_message)
-                .setPositiveButton(R.string.customize_discard, (dialog, which) -> viewModel.discardChanges())
+                .setPositiveButton(R.string.customize_discard, (dialog, which) -> viewModel.editModeDiscard())
                 .setNegativeButton(R.string.cancel, null)
                 .show();
         DialogUtils.dismissOnDestroy(this, alertDialog);
@@ -1008,7 +1008,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
         if (userPrefs.searchBarShowCustomize) {
             searchOverlay.setupCustomizeButton(v -> {
-                searchOverlayBehavior.hide(viewModel::startCustomize);
+                searchOverlayBehavior.hide(viewModel::editModeActivate);
             });
         } else {
             searchOverlay.setupCustomizeButton(null);

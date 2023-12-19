@@ -100,23 +100,6 @@ public class AppsViewModel extends AppViewModel {
         update();
     }
 
-    void startCustomize() {
-        if (descriptorRepository.items().isEmpty()) {
-            descriptorRepository.update()
-                    .delay(1, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new CompletableState() {
-                        @Override
-                        public void onComplete() {
-                            startCustomize();
-                        }
-                    });
-            return;
-        }
-        editModeState.activate();
-    }
-
     void moveItem(int from, int to) {
         editModeState.addAction(new MoveAction(from, to));
         homeDescriptorsState.moveItem(from, to);
@@ -197,16 +180,39 @@ public class AppsViewModel extends AppViewModel {
         homeDescriptorsState.removeById(id);
     }
 
-    void discardChanges() {
+    void editModeActivate() {
+        if (descriptorRepository.items().isEmpty()) {
+            descriptorRepository.update()
+                    .delay(1, TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new CompletableState() {
+                        @Override
+                        public void onComplete() {
+                            editModeActivate();
+                        }
+                    });
+            return;
+        }
+        editModeState.activate();
+    }
+
+    void editModeDiscard() {
+        if (!editModeState.isActive()) {
+            return;
+        }
         editModeState.discard();
         update();
     }
 
-    void stopCustomize() {
+    void editModeCommit() {
+        if (!editModeState.isActive()) {
+            return;
+        }
         if (editModeState.hasSomethingToCommit()) {
             editModeState.commit();
         } else {
-            discardChanges();
+            editModeDiscard();
         }
     }
 
