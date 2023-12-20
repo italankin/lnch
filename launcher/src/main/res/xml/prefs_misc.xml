@@ -51,6 +51,7 @@
         app:singleLineTitle="false" />
     <Preference
         android:key="@string/pref_key_misc_experimental"
+        android:persistent="false"
         android:summary="@string/settings_home_misc_experimental_summary"
         android:title="@string/settings_home_misc_experimental" />
 </PreferenceScreen>

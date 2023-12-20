@@ -6,68 +6,82 @@
         <Preference
             android:icon="@drawable/ic_settings_set_home"
             android:key="@string/pref_key_home_set_default_launcher"
+            android:persistent="false"
             android:title="@string/settings_set_default_launcher"
             app:isPreferenceVisible="false" />
         <Preference
             android:icon="@drawable/ic_action_rename"
             android:key="@string/pref_key_home_customize"
+            android:persistent="false"
             android:title="@string/settings_customize" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_home">
         <Preference
             android:icon="@drawable/ic_settings_wallpaper"
             android:key="@string/pref_key_wallpaper"
+            android:persistent="false"
             android:title="@string/settings_home_wallpaper" />
         <Preference
             android:icon="@drawable/ic_action_color"
             android:key="@string/pref_key_look_and_feel"
+            android:persistent="false"
             android:title="@string/settings_home_laf" />
         <Preference
             android:icon="@drawable/ic_widgets"
             android:key="@string/pref_key_home_widgets"
+            android:persistent="false"
             android:title="@string/settings_home_widgets"
             app:isPreferenceVisible="false" />
         <Preference
             android:icon="@drawable/ic_action_hide"
             android:key="@string/pref_key_home_hidden_items"
+            android:persistent="false"
             android:title="@string/settings_home_hidden_items" />
         <Preference
             android:icon="@drawable/ic_settings_home_misc"
             android:key="@string/pref_key_home_misc"
+            android:persistent="false"
             android:title="@string/settings_home_misc" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_apps">
         <Preference
             android:icon="@drawable/ic_settings_apps"
             android:key="@string/pref_key_apps_settings"
+            android:persistent="false"
             android:title="@string/settings_apps_list" />
         <Preference
             android:icon="@drawable/ic_settings_shortcuts"
             android:key="@string/pref_key_shortcuts"
+            android:persistent="false"
             android:title="@string/settings_home_misc_shortcuts" />
         <Preference
             android:icon="@drawable/ic_settings_notifications"
             android:key="@string/pref_key_notifications"
+            android:persistent="false"
             android:title="@string/settings_home_misc_notifications" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_search">
         <Preference
             android:icon="@drawable/ic_action_search"
             android:key="@string/pref_key_search_settings"
+            android:persistent="false"
             android:title="@string/settings_search" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_other">
         <Preference
             android:icon="@drawable/ic_settings_backup_restore"
             android:key="@string/pref_key_backups"
+            android:persistent="false"
             android:title="@string/settings_other_bar" />
         <Preference
             android:icon="@drawable/ic_github"
             android:key="@string/pref_key_source_code"
+            android:persistent="false"
             android:title="@string/settings_source_code" />
         <Preference
             android:icon="@drawable/ic_app_info"
             android:key="@string/pref_key_version"
+            android:persistent="false"
             tools:title="@string/settings_version" />
     </PreferenceCategory>
 </PreferenceScreen>

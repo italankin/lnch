@@ -44,6 +44,7 @@
             app:singleLineTitle="false" />
         <Preference
             android:dependency="search_show_most_used"
+            android:persistent="false"
             android:key="@string/pref_key_search_most_used_reset"
             android:title="@string/settings_search_history_most_used_reset" />
     </PreferenceCategory>

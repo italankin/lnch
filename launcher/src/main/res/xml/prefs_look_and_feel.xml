@@ -18,6 +18,7 @@
     <PreferenceCategory android:title="@string/settings_home_laf_other_home">
         <Preference
             android:key="@string/pref_key_appearance"
+            android:persistent="false"
             android:summary="@string/settings_home_laf_appearance_summary"
             android:title="@string/settings_home_laf_appearance" />
         <ListPreference

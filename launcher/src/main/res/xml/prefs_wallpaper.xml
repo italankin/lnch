@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <Preference
         android:key="@string/pref_key_wallpaper_change"
+        android:persistent="false"
         android:title="@string/settings_home_wallpaper_change" />
     <com.italankin.lnch.util.widget.ColorPreference
         android:key="wallpaper_dim_color"

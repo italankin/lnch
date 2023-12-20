@@ -3,22 +3,26 @@
     <PreferenceCategory android:title="@string/settings_other_bar_backup">
         <Preference
             android:key="@string/pref_key_backup"
+            android:persistent="false"
             android:summary="@string/settings_other_bar_backup_summary"
             android:title="@string/settings_other_bar_backup" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_other_bar_restore">
         <Preference
             android:key="@string/pref_key_restore"
+            android:persistent="false"
             android:summary="@string/settings_other_bar_restore_summary"
             android:title="@string/settings_other_bar_restore" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_other_bar_reset">
         <Preference
             android:key="@string/pref_key_reset_apps"
+            android:persistent="false"
             android:summary="@string/settings_other_bar_reset_apps_summary"
             android:title="@string/settings_other_bar_reset_apps" />
         <Preference
             android:key="@string/pref_key_reset_lnch"
+            android:persistent="false"
             android:summary="@string/settings_other_bar_reset_lnch_summary"
             android:title="@string/settings_other_bar_reset_lnch" />
     </PreferenceCategory>

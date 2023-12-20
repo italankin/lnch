@@ -18,6 +18,7 @@
     <Preference
         android:dependency="enable_widgets"
         android:key="@string/pref_key_widgets_grid"
+        android:persistent="false"
         android:title="@string/settings_home_widgets_grid" />
     <CheckBoxPreference
         android:defaultValue="false"
@@ -29,6 +30,7 @@
     <Preference
         android:dependency="enable_widgets"
         android:key="@string/pref_key_widgets_remove"
+        android:persistent="false"
         android:summary="@string/settings_home_widgets_remove_summary"
         android:title="@string/settings_home_widgets_remove" />
 </PreferenceScreen>
