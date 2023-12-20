@@ -592,7 +592,10 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     @Override
     public void onEditModeChangesCommitted() {
-        adapter.setUserPrefsOverrides(null);
+        // delay clearing prefs overrides to let real prefs settle down
+        requireView().postDelayed(() -> {
+            adapter.setUserPrefsOverrides(null);
+        }, 100);
     }
 
     @Override
