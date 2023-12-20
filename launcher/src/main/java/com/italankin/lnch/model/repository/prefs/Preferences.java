@@ -499,13 +499,6 @@ public interface Preferences {
             false);
 
     /**
-     * Display home page indicator
-     */
-    Pref<Boolean> HOME_PAGER_INDICATOR = Prefs.createBoolean(
-            "home_pager_indicator",
-            false);
-
-    /**
      * Show folders in fullscreen mode instead of popup
      */
     Pref<Boolean> FULLSCREEN_FOLDERS = Prefs.createBoolean(
@@ -605,7 +598,6 @@ public interface Preferences {
             NOTIFICATION_DOT_ONGOING,
             NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
-            HOME_PAGER_INDICATOR,
             FULLSCREEN_FOLDERS,
             FOLDER_SHOW_OVERLAY,
             FOLDER_OVERLAY_COLOR,
@@ -613,6 +605,11 @@ public interface Preferences {
             HIDE_STATUS_BAR,
             DESTRUCTIVE_NON_EDIT,
             VERBOSE_ERRORS
+    );
+
+    List<Pref<?>> NO_BACKUP = Arrays.asList(
+            WIDGETS_DATA,
+            HOME_LAYOUT
     );
 
     ///////////////////////////////////////////////////////////////////////////

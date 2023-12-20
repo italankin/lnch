@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import timber.log.Timber;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class PreferencesBackupImpl implements PreferencesBackup {
@@ -21,7 +19,12 @@ public class PreferencesBackupImpl implements PreferencesBackup {
     @Override
     public Map<String, Object> read() {
         // cast to Object here so Gson will not convert values to Strings
-        return (Map<String, Object>) sharedPreferences.getAll();
+        Map<String, Object> prefs = new HashMap<>(sharedPreferences.getAll());
+        for (Preferences.Pref<?> pref : Preferences.NO_BACKUP) {
+            prefs.remove(pref.key());
+        }
+        Timber.d("backup preferences (%d): %s", prefs.size(), prefs);
+        return prefs;
     }
 
     @SuppressLint("ApplySharedPref")
@@ -29,7 +32,9 @@ public class PreferencesBackupImpl implements PreferencesBackup {
     public void write(Map<String, ?> map) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         int skipped = 0;
-        for (Preferences.Pref<?> pref : Preferences.ALL) {
+        ArrayList<Preferences.Pref<?>> all = new ArrayList<>(Preferences.ALL);
+        all.removeAll(Preferences.NO_BACKUP);
+        for (Preferences.Pref<?> pref : all) {
             String key = pref.key();
             Object value = map.get(key);
             if (value == null) {
