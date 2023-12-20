@@ -1,58 +1,42 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import com.google.android.material.slider.Slider;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
-import com.italankin.lnch.feature.settings.fonts.FontsFragment;
-import com.italankin.lnch.feature.settings.util.TargetPreference;
+import com.italankin.lnch.feature.settings.fonts.FontsActivity;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.dialogfragment.SimpleDialogFragment;
-import com.italankin.lnch.util.widget.colorpicker.BackdropDrawable;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialogFragment;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerView;
-import com.italankin.lnch.util.widget.pref.SliderPrefView;
 import com.italankin.lnch.util.widget.pref.ValuePrefView;
 
-public class AppearanceFragment extends AppFragment implements
+public class AppearanceActivity extends AppCompatActivity implements
         ColorPickerDialogFragment.Listener,
-        SimpleDialogFragment.Listener,
-        SettingsToolbarTitle {
-
-    public static AppearanceFragment newInstance(String requestKey) {
-        Bundle args = new Bundle();
-        args.putString(ARG_REQUEST_KEY, requestKey);
-        AppearanceFragment fragment = new AppearanceFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
+        SimpleDialogFragment.Listener {
 
     private static final String TAG_WALLPAPER_DIM_COLOR = "wallpaper_dim_color";
     private static final String TAG_SHADOW_COLOR = "shadow_color";
     private static final String TAG_PREVIEW_OVERLAY = "preview_overlay";
     private static final String TAG_DISCARD_CHANGES = "discard_changes";
-
-    private static final String REQUEST_KEY_APPEARANCE = "appearance";
 
     private Preferences preferences;
     private FontManager fontManager;
@@ -63,25 +47,40 @@ public class AppearanceFragment extends AppFragment implements
     private TextView preview;
     private View wallpaperDim;
 
-    private SliderPrefView itemTextSize;
+    private Slider itemTextSize;
     private ValuePrefView itemFont;
-    private SliderPrefView itemPadding;
-    private SliderPrefView itemShadowRadius;
+    private Slider itemPadding;
+    private Slider itemShadowRadius;
     private ValuePrefView itemShadowColor;
 
     private PreviewBackground previewBackground = PreviewBackground.WALLPAPER;
 
-    @Override
-    public CharSequence getToolbarTitle(Context context) {
-        return context.getString(R.string.settings_home_laf_appearance);
-    }
+    private final ActivityResultLauncher<Void> selectFontLauncher = registerForActivityResult(
+            new FontsActivity.Contract(),
+            result -> {
+                if (result == null) {
+                    return;
+                }
+                if (result.selected != null) {
+                    itemFont.setValue(result.selected);
+                    updatePreview();
+                    onBackPressedCallback.setEnabled(true);
+                } else if (result.selectedDeleted) {
+                    preferences.reset(Preferences.ITEM_FONT);
+                    itemFont.setValue(preferences.get(Preferences.ITEM_FONT));
+                    updatePreview();
+                    onBackPressedCallback.setEnabled(true);
+                }
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = LauncherApp.daggerService.main().preferences();
         fontManager = LauncherApp.daggerService.main().fontManager();
-        setHasOptionsMenu(true);
+
+        setContentView(R.layout.activity_settings_appearance);
+        initView();
 
         onBackPressedCallback = new OnBackPressedCallback(false) {
             @Override
@@ -91,77 +90,36 @@ public class AppearanceFragment extends AppFragment implements
                         .setPositiveButton(R.string.settings_home_laf_appearance_discard_button)
                         .setNegativeButton(R.string.cancel)
                         .build()
-                        .show(getChildFragmentManager(), TAG_DISCARD_CHANGES);
+                        .show(getSupportFragmentManager(), TAG_DISCARD_CHANGES);
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_APPEARANCE)
-                .register(new FontsFragment.OnFontSelected(), result -> {
-                    itemFont.setValue(result);
-                    updatePreview();
-                    onBackPressedCallback.setEnabled(true);
-                })
-                .register(new FontsFragment.OnFontDeleted(), result -> {
-                    itemFont.setValue(preferences.get(Preferences.ITEM_FONT));
-                    updatePreview();
-                    onBackPressedCallback.setEnabled(true);
-                })
-                .attach();
-    }
+    private void initView() {
+        wallpaper = findViewById(R.id.wallpaper);
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_appearance, container, false);
-    }
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        wallpaper = view.findViewById(R.id.wallpaper);
+        initOverlay();
+        initPreview();
 
-        initOverlay(view);
-        initPreview(view);
-
-        initTextSize(view);
-        initFont(view);
-        initPadding(view);
-        initShadowRadius(view);
-        initShadowColor(view);
+        initTextSize();
+        initFont();
+        initPadding();
+        initShadowRadius();
+        initShadowColor();
 
         updatePreview();
         updatePreviewBackground();
-
-        String target = TargetPreference.get(this);
-        if (target != null) {
-            if (Preferences.ITEM_TEXT_SIZE.key().equals(target)) {
-                highlightTarget(itemTextSize);
-            } else if (Preferences.ITEM_PADDING.key().equals(target)) {
-                highlightTarget(itemPadding);
-            } else if (Preferences.ITEM_SHADOW_RADIUS.key().equals(target)) {
-                highlightTarget(itemShadowRadius);
-            } else if (Preferences.ITEM_SHADOW_COLOR.key().equals(target)) {
-                highlightTarget(itemShadowColor);
-            } else if (Preferences.ITEM_FONT.key().equals(target)) {
-                highlightTarget(itemFont);
-            }
-        }
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        updatePreview();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_appearance, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings_appearance, menu);
+        return true;
     }
 
     @Override
@@ -169,31 +127,13 @@ public class AppearanceFragment extends AppFragment implements
         int itemId = item.getItemId();
         if (itemId == R.id.action_save) {
             save();
-            sendResult(new AppearanceFinishedContract().result());
+            finish();
             return true;
         } else if (itemId == R.id.action_reset) {
-            preferences.reset(
-                    Preferences.ITEM_TEXT_SIZE,
-                    Preferences.ITEM_PADDING,
-                    Preferences.ITEM_SHADOW_RADIUS,
-                    Preferences.ITEM_FONT,
-                    Preferences.ITEM_SHADOW_COLOR
-            );
-            sendResult(new AppearanceFinishedContract().result());
+            resetPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        preview = null;
-        itemTextSize = null;
-        itemFont = null;
-        itemPadding = null;
-        itemShadowRadius = null;
-        itemShadowColor = null;
     }
 
     @Override
@@ -222,7 +162,7 @@ public class AppearanceFragment extends AppFragment implements
     @Override
     public void onColorReset(@Nullable String tag) {
         if (TAG_SHADOW_COLOR.equals(tag)) {
-            int color = ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault);
+            int color = ResUtils.resolveColor(this, R.attr.colorItemShadowDefault);
             itemShadowColor.setValue(color);
             updatePreview();
             onBackPressedCallback.setEnabled(true);
@@ -232,13 +172,13 @@ public class AppearanceFragment extends AppFragment implements
     @Override
     public void onPositiveButtonClick(String tag) {
         if (TAG_DISCARD_CHANGES.equals(tag)) {
-            sendResult(new AppearanceFinishedContract().result());
+            finish();
         }
     }
 
-    private void initOverlay(View view) {
+    private void initOverlay() {
         int dimColor = preferences.get(Preferences.WALLPAPER_DIM_COLOR);
-        wallpaperDim = view.findViewById(R.id.wallpaper_dim);
+        wallpaperDim = findViewById(R.id.wallpaper_dim);
         wallpaperDim.setBackgroundColor(dimColor);
         wallpaperDim.setOnClickListener(v -> {
             Drawable background = v.getBackground();
@@ -252,25 +192,25 @@ public class AppearanceFragment extends AppFragment implements
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(selectedColor)
                     .build()
-                    .show(getChildFragmentManager(), TAG_WALLPAPER_DIM_COLOR);
+                    .show(getSupportFragmentManager(), TAG_WALLPAPER_DIM_COLOR);
         });
     }
 
-    private void initPreview(View view) {
-        preview = view.findViewById(R.id.item_preview).findViewById(R.id.label);
+    private void initPreview() {
+        preview = findViewById(R.id.item_preview).findViewById(R.id.label);
         preview.setBackgroundResource(R.drawable.selector_item_appearance);
         String previewText = LauncherApp.daggerService.main()
                 .nameNormalizer()
                 .normalize(getString(R.string.preview));
         preview.setText(previewText);
-        preview.setTextColor(ResUtils.resolveColor(requireContext(), android.R.attr.colorPrimary));
+        preview.setTextColor(ContextCompat.getColor(this, R.color.seed));
         preview.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setSelectedColor(preview.getCurrentTextColor())
                     .build()
-                    .show(getChildFragmentManager(), TAG_PREVIEW_OVERLAY);
+                    .show(getSupportFragmentManager(), TAG_PREVIEW_OVERLAY);
         });
-        View previewBackgroundSwitcher = view.findViewById(R.id.preview_background_switcher);
+        View previewBackgroundSwitcher = findViewById(R.id.preview_background_switcher);
         previewBackgroundSwitcher.setOnClickListener(v -> {
             previewBackground = PreviewBackground.values()[
                     (previewBackground.ordinal() + 1) % PreviewBackground.values().length];
@@ -281,7 +221,7 @@ public class AppearanceFragment extends AppFragment implements
     private void updatePreviewBackground() {
         switch (previewBackground) {
             case WALLPAPER:
-                wallpaper.setImageDrawable(new BackdropDrawable(requireContext()));
+                wallpaper.setImageDrawable(null);
                 wallpaperDim.setVisibility(View.VISIBLE);
                 break;
             case WHITE:
@@ -295,8 +235,25 @@ public class AppearanceFragment extends AppFragment implements
         }
     }
 
-    private void initTextSize(View view) {
-        itemTextSize = view.findViewById(R.id.item_text_size);
+    private void resetPreferences() {
+        preferences.reset(
+                Preferences.ITEM_TEXT_SIZE,
+                Preferences.ITEM_PADDING,
+                Preferences.ITEM_SHADOW_RADIUS,
+                Preferences.ITEM_FONT,
+                Preferences.ITEM_SHADOW_COLOR
+        );
+        itemTextSize.setValue(preferences.get(Preferences.ITEM_TEXT_SIZE));
+        itemPadding.setValue(preferences.get(Preferences.ITEM_PADDING));
+        itemShadowRadius.setValue(preferences.get(Preferences.ITEM_SHADOW_RADIUS));
+        itemFont.setValue(preferences.get(Preferences.ITEM_FONT));
+        itemShadowColor.setValue(ResUtils.resolveColor(this, R.attr.colorItemShadowDefault));
+        updatePreview();
+        onBackPressedCallback.setEnabled(false);
+    }
+
+    private void initTextSize() {
+        itemTextSize = findViewById(R.id.item_text_size);
         setParams(itemTextSize, Preferences.ITEM_TEXT_SIZE);
         Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
@@ -305,8 +262,8 @@ public class AppearanceFragment extends AppFragment implements
         itemTextSize.addOnChangeListener(listener);
     }
 
-    private void initFont(View view) {
-        itemFont = view.findViewById(R.id.item_font);
+    private void initFont() {
+        itemFont = findViewById(R.id.item_font);
         String font = preferences.get(Preferences.ITEM_FONT);
         itemFont.setValueHolder(new ValuePrefView.ValueHolder<String>() {
             private String value;
@@ -327,11 +284,11 @@ public class AppearanceFragment extends AppFragment implements
             }
         });
         itemFont.setValue(font);
-        itemFont.setOnClickListener(v -> sendResult(ShowFontSelectContract.result(REQUEST_KEY_APPEARANCE)));
+        itemFont.setOnClickListener(v -> selectFontLauncher.launch(null));
     }
 
-    private void initPadding(View view) {
-        itemPadding = view.findViewById(R.id.item_padding);
+    private void initPadding() {
+        itemPadding = findViewById(R.id.item_padding);
         setParams(itemPadding, Preferences.ITEM_PADDING);
         Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
@@ -340,8 +297,8 @@ public class AppearanceFragment extends AppFragment implements
         itemPadding.addOnChangeListener(listener);
     }
 
-    private void initShadowRadius(View view) {
-        itemShadowRadius = view.findViewById(R.id.item_shadow_radius);
+    private void initShadowRadius() {
+        itemShadowRadius = findViewById(R.id.item_shadow_radius);
         setParams(itemShadowRadius, Preferences.ITEM_SHADOW_RADIUS);
         Slider.OnChangeListener listener = (slider, value, fromUser) -> {
             updatePreview();
@@ -350,27 +307,27 @@ public class AppearanceFragment extends AppFragment implements
         itemShadowRadius.addOnChangeListener(listener);
     }
 
-    private void initShadowColor(View view) {
-        itemShadowColor = view.findViewById(R.id.item_shadow_color);
+    private void initShadowColor() {
+        itemShadowColor = findViewById(R.id.item_shadow_color);
         Integer shadowColor = preferences.get(Preferences.ITEM_SHADOW_COLOR);
         itemShadowColor.setValueHolder(new ValuePrefView.ColorValueHolder());
         itemShadowColor.setValue(shadowColor != null
                 ? shadowColor
-                : ResUtils.resolveColor(requireContext(), R.attr.colorItemShadowDefault));
+                : ResUtils.resolveColor(this, R.attr.colorItemShadowDefault));
         itemShadowColor.setOnClickListener(v -> {
             new ColorPickerDialogFragment.Builder()
                     .setColorModel(ColorPickerView.ColorModel.ARGB)
                     .setSelectedColor(preview.getShadowColor())
                     .showResetButton(true)
                     .build()
-                    .show(getChildFragmentManager(), TAG_SHADOW_COLOR);
+                    .show(getSupportFragmentManager(), TAG_SHADOW_COLOR);
         });
     }
 
     private void updatePreview() {
-        int textSize = (int) (Preferences.ITEM_TEXT_SIZE.min() + itemTextSize.getProgress());
-        int padding = Preferences.ITEM_PADDING.min() + itemPadding.getProgress();
-        int shadowRadius = itemShadowRadius.getProgress();
+        int textSize = (int) itemTextSize.getValue();
+        int padding = (int) itemPadding.getValue();
+        int shadowRadius = (int) itemShadowRadius.getValue();
         int shadowColor = itemShadowColor.getValue();
         String font = itemFont.getValue();
         preview.setTypeface(fontManager.getTypeface(font));
@@ -380,9 +337,9 @@ public class AppearanceFragment extends AppFragment implements
     }
 
     private void save() {
-        float textSize = itemTextSize.getProgress() + Preferences.ITEM_TEXT_SIZE.min();
-        int padding = itemPadding.getProgress() + Preferences.ITEM_PADDING.min();
-        float shadowRadius = itemShadowRadius.getProgress();
+        float textSize = itemTextSize.getValue();
+        int padding = (int) itemPadding.getValue();
+        float shadowRadius = itemShadowRadius.getValue();
         int shadowColor = itemShadowColor.getValue();
         String font = itemFont.getValue();
         preferences.set(Preferences.ITEM_TEXT_SIZE, textSize);
@@ -392,38 +349,11 @@ public class AppearanceFragment extends AppFragment implements
         preferences.set(Preferences.ITEM_FONT, font);
     }
 
-    private void setParams(SliderPrefView prefView, Preferences.RangePref<? extends Number> pref) {
-        int min = pref.min().intValue();
-        prefView.setProgress(preferences.get(pref).intValue() - min);
-        prefView.setMax(pref.max().intValue() - min);
-    }
-
-    private void highlightTarget(View view) {
-        new Handler(Looper.getMainLooper()).postDelayed(
-                () -> ViewUtils.setTemporaryPressedState(view, TargetPreference.HIGHLIGHT_DURATION),
-                TargetPreference.HIGHLIGHT_DELAY);
-    }
-
-    public static class ShowFontSelectContract implements FragmentResultContract<String> {
-        private static final String KEY = "show_font_select";
-        private static final String REQUEST_KEY = "request_key";
-
-        static Bundle result(String requestKey) {
-            Bundle bundle = new Bundle();
-            bundle.putString(RESULT_KEY, KEY);
-            bundle.putString(REQUEST_KEY, requestKey);
-            return bundle;
-        }
-
-        @Override
-        public String key() {
-            return KEY;
-        }
-
-        @Override
-        public String parseResult(Bundle result) {
-            return result.getString(REQUEST_KEY);
-        }
+    private void setParams(Slider prefView, Preferences.RangePref<? extends Number> pref) {
+        prefView.setValue(preferences.get(pref).intValue());
+        prefView.setValueFrom(pref.min().floatValue());
+        prefView.setValueTo(pref.max().floatValue());
+        prefView.setStepSize(1f);
     }
 
     public static class AppearanceFinishedContract extends SignalFragmentResultContract {

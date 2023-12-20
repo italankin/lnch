@@ -46,7 +46,7 @@
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>
 
-    <style name="AppTheme.WidgetCellSettings">
+    <style name="AppTheme.ShowWallpaper">
         <item name="android:windowShowWallpaper">true</item>
         <item name="android:windowBackground">@drawable/window_background</item>
     </style>

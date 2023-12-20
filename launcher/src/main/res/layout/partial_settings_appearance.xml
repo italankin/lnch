@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_home_laf_appearance_text_size"
+            android:textColor="?android:textColorPrimary" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/item_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:labelBehavior="gone"
+            app:tickVisible="false" />
+
+        <com.italankin.lnch.util.widget.pref.ValuePrefView
+            android:id="@+id/item_font"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tpv_title="@string/settings_home_laf_appearance_text_font" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_home_laf_appearance_padding"
+            android:textColor="?android:textColorPrimary" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:labelBehavior="gone"
+            app:tickVisible="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_home_laf_appearance_shadow_radius"
+            android:textColor="?android:textColorPrimary" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/item_shadow_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:labelBehavior="gone"
+            app:tickVisible="false" />
+
+        <com.italankin.lnch.util.widget.pref.ValuePrefView
+            android:id="@+id/item_shadow_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tpv_title="@string/settings_home_laf_appearance_shadow_color" />
+
+    </LinearLayout>
+
+</merge>

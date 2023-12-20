@@ -2,24 +2,19 @@ package com.italankin.lnch.util.widget.pref;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import com.italankin.lnch.R;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 
 import java.io.Serializable;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 @SuppressWarnings("unchecked")
 public class ValuePrefView extends RelativeLayout {
@@ -27,7 +22,6 @@ public class ValuePrefView extends RelativeLayout {
     private static final String STATE_VALUE = "value";
     private static final String STATE_SUPER = "super";
 
-    private final ImageView icon;
     private final TextView title;
     private final TextView value;
     private ValueHolder valueHolder = new ObjectValueHolder();
@@ -43,15 +37,12 @@ public class ValuePrefView extends RelativeLayout {
 
         ViewUtils.setPaddingDimen(this, R.dimen.pref_view_padding);
 
-        icon = findViewById(R.id.icon);
         title = findViewById(R.id.title);
         value = findViewById(R.id.value);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ValuePrefView);
         CharSequence text = a.getText(R.styleable.ValuePrefView_tpv_title);
         title.setText(text);
-        Drawable drawable = a.getDrawable(R.styleable.ValuePrefView_tpv_icon);
-        icon.setImageDrawable(drawable);
         a.recycle();
 
         TypedValue attribute = ResUtils.resolveAttribute(context, android.R.attr.selectableItemBackground);
@@ -62,10 +53,6 @@ public class ValuePrefView extends RelativeLayout {
 
     public void setValueHolder(ValueHolder<?> provider) {
         valueHolder = provider;
-    }
-
-    public void setIcon(@DrawableRes int drawable) {
-        icon.setImageResource(drawable);
     }
 
     public void setTitle(@StringRes int text) {

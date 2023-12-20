@@ -103,8 +103,20 @@
             android:label="@string/settings_home_widgets_grid"
             android:screenOrientation="userPortrait"
             android:taskAffinity=".settings"
-            android:theme="@style/AppTheme.WidgetCellSettings"
+            android:theme="@style/AppTheme.ShowWallpaper"
             tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.italankin.lnch.feature.settings.lookfeel.AppearanceActivity"
+            android:label="@string/settings_home_laf_appearance"
+            android:taskAffinity=".settings"
+            android:theme="@style/AppTheme.ShowWallpaper" />
+
+        <activity
+            android:name="com.italankin.lnch.feature.settings.fonts.FontsActivity"
+            android:label="@string/settings_home_laf_appearance_fonts_select"
+            android:taskAffinity=".settings"
+            android:theme="@style/AppTheme" />
 
         <receiver
             android:name=".feature.receiver.InstallShortcutReceiver"

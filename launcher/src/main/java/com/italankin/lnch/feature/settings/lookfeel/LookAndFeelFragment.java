@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.settings.lookfeel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,13 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
+import com.italankin.lnch.feature.settings.util.TargetPreference;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class LookAndFeelFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
@@ -58,7 +62,7 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findPreference(R.string.pref_key_appearance).setOnPreferenceClickListener(preference -> {
-            sendResult(new ShowItemLookPreferencesContract().result());
+            startActivity(new Intent(requireContext(), AppearanceActivity.class));
             return true;
         });
 
@@ -87,16 +91,28 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
             return true;
         });
         updateStatusBarColorDependency(preferences.get(Preferences.HIDE_STATUS_BAR));
-        scrollToTarget();
+
+        String target = TargetPreference.get(this);
+        if (target != null) {
+            if (appearancePreferences().contains(target)) {
+                startActivity(new Intent(requireContext(), AppearanceActivity.class));
+            } else {
+                scrollToTarget();
+            }
+        }
+    }
+
+    private Set<String> appearancePreferences() {
+        Set<String> prefs = new HashSet<>();
+        prefs.add(Preferences.ITEM_TEXT_SIZE.key());
+        prefs.add(Preferences.ITEM_PADDING.key());
+        prefs.add(Preferences.ITEM_FONT.key());
+        prefs.add(Preferences.ITEM_SHADOW_RADIUS.key());
+        prefs.add(Preferences.ITEM_SHADOW_COLOR.key());
+        return prefs;
     }
 
     private void updateStatusBarColorDependency(Boolean hideStatusBar) {
         findPreference(Preferences.STATUS_BAR_COLOR).setEnabled(!hideStatusBar);
-    }
-
-    public static class ShowItemLookPreferencesContract extends SignalFragmentResultContract {
-        public ShowItemLookPreferencesContract() {
-            super("show_item_look_preferences");
-        }
     }
 }

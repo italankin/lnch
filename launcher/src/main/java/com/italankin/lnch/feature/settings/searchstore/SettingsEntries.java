@@ -8,7 +8,6 @@ import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsFragment;
-import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
@@ -212,60 +211,42 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_appearance_summary)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_TEXT_SIZE)
                         .title(R.string.settings_home_laf_appearance_text_size)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_PADDING)
                         .title(R.string.settings_home_laf_appearance_padding)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_FONT)
                         .title(R.string.settings_home_laf_appearance_text_font)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_SHADOW_RADIUS)
                         .title(R.string.settings_home_laf_appearance_shadow_radius)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_SHADOW_COLOR)
                         .title(R.string.settings_home_laf_appearance_shadow_color)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Arrays.asList(
-                                    LookAndFeelFragment.newInstance(requestKey),
-                                    AppearanceFragment.newInstance(requestKey)
-                            );
+                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
 

@@ -18,7 +18,6 @@
 
     <declare-styleable name="ValuePrefView">
         <attr name="tpv_title" format="string" />
-        <attr name="tpv_icon" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="ArrowLayout">

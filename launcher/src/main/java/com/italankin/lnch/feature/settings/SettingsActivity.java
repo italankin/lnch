@@ -13,16 +13,14 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
 import com.italankin.lnch.feature.common.preferences.SupportsOrientationDelegate;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.apps.details.AppDetailsFragment;
 import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
-import com.italankin.lnch.feature.settings.fonts.FontsFragment;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsFragment;
-import com.italankin.lnch.feature.settings.lookfeel.AppearanceFragment;
+import com.italankin.lnch.feature.settings.lookfeel.AppearanceActivity;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
@@ -53,7 +51,6 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String EXTRA_SETTING_KEY = "setting_key";
 
     private static final String REQUEST_KEY_SETTINGS = "settings";
-    private static final String REQUEST_KEY_PROXY_PREFIX = "proxy:";
 
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
@@ -117,12 +114,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .register(new SettingsRootFragment.ShowBackupPreferences(), result -> {
                     showFragment(new BackupFragment());
                 })
-                .register(new AppearanceFragment.AppearanceFinishedContract(), result -> {
+                .register(new AppearanceActivity.AppearanceFinishedContract(), result -> {
                     fragmentManager.popBackStack();
-                })
-                .register(new AppearanceFragment.ShowFontSelectContract(), this::handleShowFontSelect)
-                .register(new LookAndFeelFragment.ShowItemLookPreferencesContract(), result -> {
-                    showFragment(AppearanceFragment.newInstance(REQUEST_KEY_SETTINGS));
                 })
                 .register(new AppsSettingsFragment.ShowAppDetailsContract(), descriptorId -> {
                     showFragment(AppDetailsFragment.newInstance(REQUEST_KEY_SETTINGS, descriptorId));
@@ -207,19 +200,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private void handleShowFontSelect(String targetRequestKey) {
-        String proxyRequestKey = REQUEST_KEY_PROXY_PREFIX + targetRequestKey;
-        fragmentManager.setFragmentResultListener(proxyRequestKey, this, (requestKey, result) -> {
-            String resultKey = result.getString(FragmentResultContract.RESULT_KEY);
-            String onFontSelectedKey = new FontsFragment.OnFontSelected().key();
-            if (onFontSelectedKey.equals(resultKey)) {
-                fragmentManager.popBackStack();
-            }
-            fragmentManager.setFragmentResult(targetRequestKey, result);
-        });
-        showFragment(FontsFragment.newInstance(proxyRequestKey));
     }
 
     private void handleShowPreferenceIntent(Intent intent) {

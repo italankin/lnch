@@ -10,7 +10,8 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,19 +19,15 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
-import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
-import com.italankin.lnch.feature.base.AppFragment;
+import com.italankin.lnch.feature.base.AppActivity;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
-import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
-import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
-import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.fonts.events.AddFontEvent;
 import com.italankin.lnch.feature.settings.fonts.events.DeleteFontEvent;
-import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ErrorUtils;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.LceLayout;
@@ -38,20 +35,14 @@ import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
 
-public class FontsFragment extends AppFragment implements FontItemAdapter.Listener, SettingsToolbarTitle {
+public class FontsActivity extends AppActivity implements FontItemAdapter.Listener {
 
-    public static FontsFragment newInstance(String requestKey) {
-        Bundle args = new Bundle();
-        args.putString(ARG_REQUEST_KEY, requestKey);
-        FontsFragment fragment = new FontsFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public static final String EXTRA_SELECTED_FONT = "selected_font";
+    public static final int RESULT_SELECTED_DELETED = RESULT_FIRST_USER;
 
     private static final String MIME_TYPE = "*/*";
 
     private FontsViewModel viewModel;
-    private Preferences preferences;
 
     private LceLayout lce;
     private CompositeAdapter<FontItem> adapter;
@@ -60,39 +51,27 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
             new OpenFileContract(), this::showAddDialog);
 
     @Override
-    public CharSequence getToolbarTitle(Context context) {
-        return context.getString(R.string.settings_home_laf_appearance_fonts_select);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, FontsViewModel.class, ViewModelComponent::fonts);
-        preferences = LauncherApp.daggerService.main().preferences();
-        setHasOptionsMenu(true);
-    }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings_items_list, container, false);
-    }
+        setContentView(R.layout.activity_fonts);
 
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        RecyclerView list = view.findViewById(R.id.list);
-        lce = view.findViewById(R.id.lce);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
 
-        Context context = requireContext();
-        adapter = new CompositeAdapter.Builder<FontItem>(context)
+        RecyclerView list = findViewById(R.id.list);
+        lce = findViewById(R.id.lce);
+
+        adapter = new CompositeAdapter.Builder<FontItem>(this)
                 .add(new FontItemAdapter(this))
                 .recyclerView(list)
                 .setHasStableIds(true)
                 .create();
 
-        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.settings_list_divider);
-        DividerItemDecoration decoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
+        Drawable drawable = AppCompatResources.getDrawable(this, R.drawable.settings_list_divider);
+        DividerItemDecoration decoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         decoration.setDrawable(drawable);
         list.addItemDecoration(decoration);
 
@@ -130,8 +109,9 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_fonts, menu);
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.settings_fonts, menu);
+        return true;
     }
 
     @Override
@@ -156,25 +136,28 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
     }
 
     private void showError(Throwable e) {
-        ErrorUtils.showErrorDialogOrToast(requireContext(), e, R.string.settings_home_laf_appearance_fonts_error_generic, this);
+        ErrorUtils.showErrorDialogOrToast(this, e, R.string.settings_home_laf_appearance_fonts_error_generic, this);
     }
 
     private void onFontDeleted(boolean reset) {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_deleted, Toast.LENGTH_SHORT).show();
-        sendResult(new OnFontDeleted().result());
+        Toast.makeText(this, R.string.settings_home_laf_appearance_fonts_deleted, Toast.LENGTH_SHORT).show();
+        if (reset) {
+            setResult(RESULT_SELECTED_DELETED);
+        }
     }
 
     private void onFontAdded() {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_added, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.settings_home_laf_appearance_fonts_added, Toast.LENGTH_SHORT).show();
     }
 
     private void showErrorInvalidFormat() {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_invalid_format, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.settings_home_laf_appearance_fonts_error_invalid_format, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onFontSelect(int position, FontItem item) {
-        sendResult(OnFontSelected.result(item.name));
+        setResult(RESULT_OK, new Intent().putExtra(EXTRA_SELECTED_FONT, item.name));
+        finish();
     }
 
     @Override
@@ -184,11 +167,11 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
 
     private void onAddFontExistsError(String name) {
         String message = getString(R.string.settings_home_laf_appearance_fonts_error_exists, name);
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     private void onAddFontEmptyNameError() {
-        Toast.makeText(requireContext(), R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.settings_home_laf_appearance_fonts_error_empty, Toast.LENGTH_LONG).show();
     }
 
     private void showAddDialog(@Nullable Uri result) {
@@ -197,7 +180,7 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
         }
         String defaultName = getFileName(result);
 
-        EditTextAlertDialog.builder(requireContext())
+        EditTextAlertDialog.builder(this)
                 .setTitle(R.string.settings_home_laf_appearance_fonts_dialog_title)
                 .customizeEditText(editText -> {
                     editText.setSingleLine(true);
@@ -216,7 +199,7 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
 
     @Nullable
     private String getFileName(Uri result) {
-        Cursor cursor = requireContext().getContentResolver().query(result, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
+        Cursor cursor = this.getContentResolver().query(result, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
         if (cursor != null) {
             try {
                 int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -246,31 +229,34 @@ public class FontsFragment extends AppFragment implements FontItemAdapter.Listen
         }
     }
 
-    public static class OnFontDeleted extends SignalFragmentResultContract {
-        public OnFontDeleted() {
-            super("on_font_deleted");
-        }
-    }
+    public static class Contract extends ActivityResultContract<Void, Contract.Result> {
 
-    public static class OnFontSelected implements FragmentResultContract<String> {
-        private static final String KEY = "on_font_selected";
-        private static final String FONT = "font";
-
-        static Bundle result(String font) {
-            Bundle result = new Bundle();
-            result.putString(RESULT_KEY, KEY);
-            result.putString(FONT, font);
-            return result;
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Void unused) {
+            return new Intent(context, FontsActivity.class);
         }
 
         @Override
-        public String key() {
-            return KEY;
+        public Result parseResult(int resultCode, @Nullable Intent intent) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    return new Result(intent.getStringExtra(EXTRA_SELECTED_FONT), false);
+                case RESULT_SELECTED_DELETED:
+                    return new Result(null, true);
+            }
+            return null;
         }
 
-        @Override
-        public String parseResult(Bundle result) {
-            return result.getString(FONT);
+        public static class Result {
+            @Nullable
+            public final String selected;
+            public final boolean selectedDeleted;
+
+            Result(@Nullable String selected, boolean selectedDeleted) {
+                this.selected = selected;
+                this.selectedDeleted = selectedDeleted;
+            }
         }
     }
 }
