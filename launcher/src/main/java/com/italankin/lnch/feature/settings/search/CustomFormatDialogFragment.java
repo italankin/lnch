@@ -11,17 +11,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.ResUtils;
-import com.italankin.lnch.util.dialogfragment.BaseDialogFragment;
 import com.italankin.lnch.util.widget.EditTextAlertDialog;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
 
 import java.util.regex.Matcher;
 
-public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatDialogFragment.Listener> {
-    private static final String ARG_CUSTOM_FORMAT = "custom_format";
+public class CustomFormatDialogFragment extends DialogFragment {
     private static final String KEY_STATE_CUSTOM_FORMAT = "custom_format";
+
+    private Preferences preferences;
 
     private Button positiveButton;
     private String customFormat;
@@ -29,10 +32,11 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = LauncherApp.daggerService.main().preferences();
         if (savedInstanceState != null) {
             customFormat = savedInstanceState.getString(KEY_STATE_CUSTOM_FORMAT);
         } else {
-            customFormat = getArgs().getString(ARG_CUSTOM_FORMAT);
+            customFormat = preferences.get(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
         }
     }
 
@@ -42,10 +46,8 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
         return EditTextAlertDialog.builder(requireContext())
                 .setTitle(R.string.settings_search_engine_custom_format_title)
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
-                    Listener listener = getListener(Listener.class);
-                    if (listener != null) {
-                        listener.onValueChanged(editText.getText().toString());
-                    }
+                    String url = editText.getText().toString();
+                    preferences.set(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT, url);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .customizeEditText(editText -> {
@@ -97,22 +99,5 @@ public class CustomFormatDialogFragment extends BaseDialogFragment<CustomFormatD
         String sanitized = input.replaceAll("%([sS])", "0");
         Matcher matcher = Patterns.WEB_URL.matcher(sanitized);
         return matcher.matches();
-    }
-
-    public static class Builder extends BaseBuilder<CustomFormatDialogFragment> {
-
-        Builder setCustomFormat(String format) {
-            getArguments().putString(ARG_CUSTOM_FORMAT, format);
-            return this;
-        }
-
-        @Override
-        protected CustomFormatDialogFragment createInstance() {
-            return new CustomFormatDialogFragment();
-        }
-    }
-
-    public interface Listener {
-        void onValueChanged(String newValue);
     }
 }

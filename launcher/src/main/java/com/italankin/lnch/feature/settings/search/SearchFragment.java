@@ -15,19 +15,10 @@ import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.PackageUtils;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
-public class SearchFragment extends BasePreferenceFragment implements CustomFormatDialogFragment.Listener,
-        SettingsToolbarTitle {
+public class SearchFragment extends BasePreferenceFragment implements SettingsToolbarTitle {
 
-    private static final String TAG_CUSTOM_SEARCH_ENGINE_FORMAT = "custom_search_engine_format";
-
-    private final CompositeDisposable disposables = new CompositeDisposable();
-    private Preferences preferences;
     private UsageTracker usageTracker;
-    private Preference formatPreference;
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -37,14 +28,7 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = LauncherApp.daggerService.main().preferences();
         usageTracker = LauncherApp.daggerService.main().usageTracker();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disposables.clear();
     }
 
     @Override
@@ -69,40 +53,11 @@ public class SearchFragment extends BasePreferenceFragment implements CustomForm
             return true;
         });
 
-        formatPreference = findPreference(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
-        formatPreference.setEnabled(
-                preferences.get(Preferences.SEARCH_ENGINE) == Preferences.SearchEngine.CUSTOM
-        );
-        formatPreference.setSummary(preferences.get(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT));
-        formatPreference.setOnPreferenceClickListener(preference -> {
-            onFormatPreferenceClick();
-            return true;
+        SearchEnginePreference searchEnginePreference = findPreference(Preferences.SEARCH_ENGINE);
+        searchEnginePreference.setOnCustomFormatClickListener(v -> {
+            new CustomFormatDialogFragment().show(getChildFragmentManager(), null);
         });
-        subscribeForUpdates();
+
         scrollToTarget();
-    }
-
-    @Override
-    public void onValueChanged(String newValue) {
-        formatPreference.setSummary(newValue);
-        preferences.set(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT, newValue);
-    }
-
-    private void onFormatPreferenceClick() {
-        String customSearchEngineFormat = preferences.get(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT);
-        new CustomFormatDialogFragment.Builder()
-                .setCustomFormat(customSearchEngineFormat)
-                .build()
-                .show(getChildFragmentManager(), TAG_CUSTOM_SEARCH_ENGINE_FORMAT);
-    }
-
-    private void subscribeForUpdates() {
-        Disposable disposable = preferences.observeValue(Preferences.SEARCH_ENGINE, false)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
-                    Preferences.SearchEngine engine = value.get();
-                    formatPreference.setEnabled(engine == Preferences.SearchEngine.CUSTOM);
-                });
-        disposables.add(disposable);
     }
 }

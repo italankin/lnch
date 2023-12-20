@@ -548,13 +548,7 @@ final class SettingsEntries {
                         .title(R.string.settings_search_engine)
                         .category(R.string.settings_search)
                         .addArraysSearchTokens(R.array.pref_desc_search_engines)
-                        .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
-                        })
-                        .build(),
-                new SettingsEntryImpl.Builder(Preferences.CUSTOM_SEARCH_ENGINE_FORMAT)
-                        .title(R.string.settings_search_engine_custom_format)
-                        .category(R.string.settings_search)
+                        .addResourcesSearchTokens(R.string.settings_search_engine_custom_format)
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(new SearchFragment());
                         })
