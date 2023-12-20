@@ -6,10 +6,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
-
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -33,7 +31,7 @@ public class ColorPreference extends Preference {
 
     public ColorPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.pref_color_preference);
+        setWidgetLayoutResource(R.layout.widget_color_preference);
         preferences = getPreferences();
         pref = preferences.find(getKey());
 
@@ -59,7 +57,7 @@ public class ColorPreference extends Preference {
         Integer color = preferences.get(pref);
         int currentColor = color != null ? color : defaultColor;
 
-        View colorPreview = holder.findViewById(R.id.pref_color_preview);
+        View colorPreview = holder.findViewById(R.id.color_preview);
         Drawable background = colorPreview.getBackground();
         if (background instanceof CircleDrawable) {
             ((CircleDrawable) background).setColor(currentColor);
