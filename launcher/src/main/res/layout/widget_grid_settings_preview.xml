@@ -65,6 +65,7 @@
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit"
             android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
