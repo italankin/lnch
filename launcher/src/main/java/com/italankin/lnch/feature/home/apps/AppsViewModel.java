@@ -263,7 +263,7 @@ public class AppsViewModel extends AppViewModel {
     void removeItemImmediate(RemovableDescriptorUi item) {
         DescriptorRepository.Editor editor = descriptorRepository.edit();
         String descriptorId = item.getDescriptor().getId();
-        editModeState.addAction(new RemoveAction(descriptorId));
+        editor.enqueue(new RemoveAction(descriptorId));
         editor.commit()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableState() {
