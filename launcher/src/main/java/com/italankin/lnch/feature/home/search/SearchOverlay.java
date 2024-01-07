@@ -106,6 +106,8 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
                 .create();
         int margin = context.getResources().getDimensionPixelSize(R.dimen.search_result_margin);
         searchResultsList.addItemDecoration(new MarginItemDecoration(margin));
+
+        setViewsEnabled(false);
     }
 
     @Override
@@ -135,6 +137,9 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     }
 
     public void focusEditText() {
+        if (!searchEditText.isEnabled()) {
+            return;
+        }
         searchEditText.requestFocus();
         inputMethodManager.showSoftInput(searchEditText, 0);
     }
@@ -151,6 +156,7 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
             searchResultsList.setAdapter(searchAdapter);
         }
         searchResultsList.setVisibility(VISIBLE);
+        setViewsEnabled(true);
         if (showMostUsed) {
             // fire initial search to show/hide recent items
             searchEditText.setText("");
@@ -170,13 +176,13 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         // remove adapter to hide previous search results in next onSearchShown
         searchResultsList.setAdapter(null);
         searchResultsList.setVisibility(GONE);
+        setViewsEnabled(false);
         searchEditText.setText("");
         hideSoftKeyboard();
         searchEditText.clearFocus();
     }
 
     public void setupGlobalSearch(Uri icon, OnClickListener onClickListener, OnLongClickListener onLongClickListener) {
-        buttonGlobalSearch.setEnabled(true);
         buttonGlobalSearch.setOnClickListener(onClickListener);
         buttonGlobalSearch.setOnLongClickListener(onLongClickListener);
         imageLoader.load(icon)
@@ -226,10 +232,6 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
         buttonGlobalSearch.setEnabled(false);
     }
 
-    public boolean isGlobalSearchVisible() {
-        return buttonGlobalSearch.getVisibility() == VISIBLE;
-    }
-
     public void hideSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
     }
@@ -257,6 +259,13 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
     public void onSearchResults(List<Match> results) {
         searchAdapter.setDataset(results);
         searchAdapter.notifyDataSetChanged();
+    }
+
+    private void setViewsEnabled(boolean enabled) {
+        buttonGlobalSearch.setEnabled(enabled);
+        buttonSettings.setEnabled(enabled);
+        buttonCustomize.setEnabled(enabled);
+        searchEditText.setEnabled(enabled);
     }
 
     private void setSettingsState(SettingsState state) {
