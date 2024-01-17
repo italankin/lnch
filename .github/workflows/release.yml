@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      OUTPUT_PATH: 'launcher/build/outputs/apk/release'
-      MAPPINGS_OUTPUT_PATH: 'launcher/build/outputs/mapping/release'
+      APK_OUTPUT_PATH: 'launcher/build/outputs/apk/release'
+      AAB_OUTPUT_PATH: 'launcher/build/outputs/bundle/release'
 
     steps:
       - uses: actions/checkout@v4.1.1
@@ -37,25 +37,25 @@ jobs:
         run: chmod +x gradlew
 
       - name: assemble
-        run: ./gradlew --no-daemon assembleRelease
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
 
       - name: current ref
         run: echo "CURRENT_REF=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
 
       - name: rename apk
-        run: mv "$OUTPUT_PATH/launcher-release.apk" "$OUTPUT_PATH/lnch-${{ env.CURRENT_REF }}.apk"
+        run: mv "$APK_OUTPUT_PATH/launcher-release.apk" "$APK_OUTPUT_PATH/lnch-${{ env.CURRENT_REF }}.apk"
 
       - name: release
         uses: ncipollo/release-action@v1.13.0
         with:
-          artifacts: "${{ env.OUTPUT_PATH }}/*.apk"
+          artifacts: "${{ env.APK_OUTPUT_PATH }}/*.apk"
           prerelease: true
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: save mapping.txt
-        uses: actions/upload-artifact@v3.1.3
+      - name: upload bundle
+        uses: italankin/google-play-aab-uploader@1.3
         with:
-          name: mapping.txt
-          path: ${{ env.MAPPINGS_OUTPUT_PATH }}/mapping.txt
-
+          package-name: 'com.italankin.lnch'
+          aab-path: "${{ env.AAB_OUTPUT_PATH }}/launcher-release.aab"
+          key-json: ${{ secrets.SERVICE_KEY_JSON }}
