@@ -20,10 +20,11 @@ public class WebSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (searchTargets.contains(Preferences.SearchTarget.WEB)) {
             WebSearchProvider provider = WebSearchProviderFactory.get(preferences);
-            WebSearchMatch match = provider.make(query, query);
+            String s = constraint.toString().trim();
+            WebSearchMatch match = provider.make(s, s);
             if (match != null) {
                 return Collections.singletonList(match);
             }

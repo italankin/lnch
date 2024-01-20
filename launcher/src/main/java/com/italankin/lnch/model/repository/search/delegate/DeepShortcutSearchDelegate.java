@@ -33,7 +33,7 @@ public class DeepShortcutSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1
                 || !searchTargets.contains(Preferences.SearchTarget.SHORTCUT)) {
             return Collections.emptyList();

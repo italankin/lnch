@@ -73,7 +73,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         searchTargets.removeAll(excludedSearchTargets);
         List<Match> matches = new ArrayList<>(8);
         for (SearchDelegate delegate : delegates) {
-            List<Match> list = delegate.search(query, searchTargets);
+            List<Match> list = delegate.search(constraint, query, searchTargets);
             matches.addAll(list);
         }
         if (matches.size() > 1) {
@@ -81,7 +81,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             matches = matches.subList(0, Math.min(MAX_RESULTS, matches.size()));
         }
         for (SearchDelegate delegate : additionalDelegates) {
-            List<Match> list = delegate.search(query, searchTargets);
+            List<Match> list = delegate.search(constraint, query, searchTargets);
             matches.addAll(list);
         }
         Timber.d("search: query='%s', results=%d, done in %.3fms",

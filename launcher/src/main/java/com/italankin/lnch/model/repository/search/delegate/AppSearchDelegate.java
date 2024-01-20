@@ -26,7 +26,7 @@ public class AppSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         boolean skipIgnored = !searchTargets.contains(Preferences.SearchTarget.IGNORED);
         List<Match> matches = new ArrayList<>(4);
         for (AppDescriptor descriptor : descriptorRepository.itemsOfType(AppDescriptor.class)) {

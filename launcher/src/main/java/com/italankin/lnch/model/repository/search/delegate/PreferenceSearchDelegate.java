@@ -29,7 +29,7 @@ public class PreferenceSearchDelegate implements SearchDelegate {
     }
 
     @Override
-    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (!searchTargets.contains(Preferences.SearchTarget.PREFERENCE)) {
             return Collections.emptyList();
         }

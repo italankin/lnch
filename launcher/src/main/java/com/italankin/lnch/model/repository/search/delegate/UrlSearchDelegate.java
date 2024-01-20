@@ -13,7 +13,7 @@ import static android.util.Patterns.WEB_URL;
 
 public class UrlSearchDelegate implements SearchDelegate {
     @Override
-    public List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets) {
+    public List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets) {
         if (searchTargets.contains(Preferences.SearchTarget.URL)) {
             if (WEB_URL.matcher(query).matches() || WEB_URL.matcher("http://" + query).matches()) {
                 return Collections.singletonList(new UrlMatch(query));

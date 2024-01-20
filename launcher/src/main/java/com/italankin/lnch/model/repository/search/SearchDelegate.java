@@ -10,9 +10,10 @@ import java.util.List;
 public interface SearchDelegate {
 
     /**
-     * @param query         search query text
+     * @param constraint    search query text
+     * @param query         normalized search query text
      * @param searchTargets a set of targets user interested in
      * @return list of found {@link PartialMatch}es
      */
-    List<Match> search(String query, EnumSet<Preferences.SearchTarget> searchTargets);
+    List<Match> search(CharSequence constraint, String query, EnumSet<Preferences.SearchTarget> searchTargets);
 }
