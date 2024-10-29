@@ -108,6 +108,9 @@ public final class DescriptorUtils {
         if (descriptor instanceof AliasDescriptor) {
             result.addAll(((AliasDescriptor) descriptor).getAliases());
         }
+        if (descriptor instanceof PackageDescriptor) {
+            result.add(((PackageDescriptor) descriptor).getPackageName());
+        }
         return result;
     }
 
