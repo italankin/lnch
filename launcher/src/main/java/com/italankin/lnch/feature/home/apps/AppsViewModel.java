@@ -177,7 +177,7 @@ public class AppsViewModel extends AppViewModel {
 
     void removeItem(String id) {
         editModeState.addAction(new RemoveAction(id));
-        homeDescriptorsState.removeById(id);
+        homeDescriptorsState.remove(id);
     }
 
     void editModeActivate() {

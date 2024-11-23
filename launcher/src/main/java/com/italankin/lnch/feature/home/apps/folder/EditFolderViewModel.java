@@ -90,7 +90,7 @@ public class EditFolderViewModel extends BaseFolderViewModel {
             return;
         }
         editModeState.addAction(new RemoveAction(descriptorId));
-        homeDescriptorsState.removeById(descriptorId);
+        homeDescriptorsState.remove(descriptorId);
         removeFromFolder(descriptorId);
         folderUpdateEvents.onNext(items);
     }

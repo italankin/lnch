@@ -177,7 +177,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     @Override
-    public void onEditModeCommit() {
+    public void onEditModeCommitStart() {
         homeScreenState.editMode = false;
         syncHomeState();
     }
@@ -343,7 +343,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
     }
 
     private void syncHomeState() {
-        viewPager.setUserInputEnabled(homeScreenState.pagerUserInoutEnabled());
+        viewPager.setUserInputEnabled(homeScreenState.pagerUserInputEnabled());
     }
 
     private void resetFromUserPreferences() {
@@ -355,7 +355,7 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
         boolean editMode;
         boolean widgetsEditMode;
 
-        boolean pagerUserInoutEnabled() {
+        boolean pagerUserInputEnabled() {
             return !(editMode || widgetsEditMode || searchVisible);
         }
     }

@@ -84,7 +84,7 @@ public class EditModeStateImpl implements EditModeState {
                     public void onComplete() {
                         Timber.d("changes saved");
                         for (Callback callback : callbacks) {
-                            callback.onEditModeChangesCommitted();
+                            callback.onEditModeCommitFinish();
                         }
                     }
 
@@ -96,7 +96,7 @@ public class EditModeStateImpl implements EditModeState {
         editor = EmptyEditor.INSTANCE;
         properties.clear();
         for (Callback callback : callbacks) {
-            callback.onEditModeCommit();
+            callback.onEditModeCommitStart();
         }
     }
 

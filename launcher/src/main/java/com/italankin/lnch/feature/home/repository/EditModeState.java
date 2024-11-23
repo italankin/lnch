@@ -38,10 +38,10 @@ public interface EditModeState {
         default void onEditModeDiscard() {
         }
 
-        default void onEditModeCommit() {
+        default void onEditModeCommitStart() {
         }
 
-        default void onEditModeChangesCommitted() {
+        default void onEditModeCommitFinish() {
         }
 
         default <T> void onEditModePropertyChange(Property<T> property, T newValue) {

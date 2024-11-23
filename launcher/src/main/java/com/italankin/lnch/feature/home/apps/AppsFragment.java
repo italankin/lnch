@@ -585,13 +585,13 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     }
 
     @Override
-    public void onEditModeCommit() {
+    public void onEditModeCommitStart() {
         setEditMode(false);
         Toast.makeText(requireContext(), R.string.customize_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onEditModeChangesCommitted() {
+    public void onEditModeCommitFinish() {
         // delay clearing prefs overrides to let real prefs settle down
         requireView().postDelayed(() -> {
             adapter.setUserPrefsOverrides(null);

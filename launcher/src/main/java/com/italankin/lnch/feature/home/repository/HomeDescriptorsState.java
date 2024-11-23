@@ -35,7 +35,7 @@ public interface HomeDescriptorsState {
     @Nullable
     HomeEntry<? extends DescriptorUi> find(String id);
 
-    void removeById(String id);
+    void remove(String id);
 
     /**
      * Find descriptor by id with a given type

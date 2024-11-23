@@ -52,7 +52,7 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
     }
 
     @Override
-    public void removeById(String id) {
+    public void remove(String id) {
         for (int i = 0, s = items.size(); i < s; i++) {
             DescriptorUi item = items.get(i);
             if (item.getDescriptor().getId().equals(id)) {
