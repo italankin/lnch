@@ -25,21 +25,20 @@
         <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false"
+            android:background="@drawable/popup_bg"
+            android:clipToOutline="true"
+            android:elevation="@dimen/popup_window_elevation"
+            android:outlineProvider="background"
             android:overScrollMode="ifContentScrolls"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:id="@+id/popup_item_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/popup_bg"
-                android:elevation="@dimen/popup_window_elevation"
                 android:minWidth="@dimen/popup_min_width"
                 android:orientation="vertical"
-                android:outlineProvider="background"
-                tools:ignore="UselessParent"
                 tools:minHeight="92dp" />
         </ScrollView>
 
