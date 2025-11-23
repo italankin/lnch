@@ -70,7 +70,8 @@
             android:exported="true"
             android:label="@string/pin_item_title"
             android:taskAffinity=".pinitem"
-            android:theme="@android:style/Theme.Translucent">
+            android:theme="@android:style/Theme.Translucent"
+            tools:targetApi="26">
             <intent-filter>
                 <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT" />
             </intent-filter>
@@ -96,7 +97,8 @@
             android:name=".feature.widgets.gallery.WidgetGalleryActivity"
             android:label="@string/widgets_gallery_title"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            tools:targetApi="26" />
 
         <activity
             android:name="com.italankin.lnch.feature.settings.widgets.WidgetGridSettingsActivity"
@@ -129,7 +131,8 @@
 
         <receiver
             android:name=".feature.receiver.StartShortcutReceiver"
-            android:exported="false">
+            android:exported="false"
+            tools:targetApi="25">
             <intent-filter>
                 <action android:name="com.italankin.lnch.action.START_SHORTCUT" />
             </intent-filter>
