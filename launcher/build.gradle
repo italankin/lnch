@@ -7,8 +7,8 @@ android {
         applicationId "com.italankin.lnch"
         minSdkVersion 23
         targetSdk 35
-        versionCode 25
-        versionName "2.1.3"
+        versionCode 26
+        versionName "2.1.4"
     }
     buildFeatures {
         buildConfig true
