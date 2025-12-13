@@ -29,7 +29,7 @@ class SearchResults {
 
     @SuppressWarnings("unchecked")
     void subscribe(Callback callback) {
-        events.debounce(200, TimeUnit.MILLISECONDS)
+        events.debounce(30, TimeUnit.MILLISECONDS)
                 .map(constraint -> {
                     if (constraint.length() == 0) {
                         return (List<Match>) searchRepository.recent();
