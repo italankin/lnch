@@ -5,9 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
@@ -15,9 +18,10 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
-import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 import java.util.List;
+
+import me.italankin.adapterdelegates.BaseAdapterDelegate;
 
 public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHolder<T>, T extends DescriptorUi>
         extends BaseAdapterDelegate<VH, T> {
@@ -109,10 +113,13 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
         View root = holder.getRoot();
         ViewGroup.LayoutParams rootLp = root.getLayoutParams();
-        if (params.itemWidthProvider.get(itemPrefs) == Preferences.ItemWidth.MATCH_PARENT) {
+        Preferences.ItemWidth itemWidth = params.itemWidthProvider.get(itemPrefs);
+        boolean rootLayoutParamsChanged = updateWrapBefore(rootLp,
+                itemWidth == Preferences.ItemWidth.FILL_ROW_WRAP_CONTENT);
+        if (itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
             if (rootLp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
                 rootLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                root.setLayoutParams(rootLp);
+                rootLayoutParamsChanged = true;
                 if (root != label) {
                     ViewGroup.LayoutParams labelLp = label.getLayoutParams();
                     labelLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -141,13 +148,28 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
             }
         } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
             rootLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            root.setLayoutParams(rootLp);
+            rootLayoutParamsChanged = true;
             if (root != label) {
                 ViewGroup.LayoutParams llp = label.getLayoutParams();
                 llp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 label.setLayoutParams(llp);
             }
         }
+        if (rootLayoutParamsChanged) {
+            root.setLayoutParams(rootLp);
+        }
+    }
+
+    private boolean updateWrapBefore(ViewGroup.LayoutParams layoutParams, boolean wrapBefore) {
+        if (!(layoutParams instanceof FlexboxLayoutManager.LayoutParams)) {
+            return false;
+        }
+        FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams) layoutParams;
+        if (flexboxLp.isWrapBefore() == wrapBefore) {
+            return false;
+        }
+        flexboxLp.setWrapBefore(wrapBefore);
+        return true;
     }
 
     public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {

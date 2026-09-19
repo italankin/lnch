@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,13 +21,19 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.animation.ArgbEvaluatorCompat;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppFragment;
-import com.italankin.lnch.feature.home.adapter.*;
+import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.HomeAdapter;
+import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
+import com.italankin.lnch.feature.home.adapter.IntentDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.PinnedShortcutDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
 import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
 import com.italankin.lnch.feature.home.apps.folder.empty.EmptyFolderDescriptorUiAdapter;
@@ -160,7 +167,7 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
                 .add(new EmptyFolderDescriptorUiAdapter())
                 .setHasStableIds(true)
                 .create();
-        if (folderItemWidth == Preferences.ItemWidth.WRAP) {
+        if (folderItemWidth != Preferences.ItemWidth.MATCH_PARENT) {
             list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
         } else {
             list.setLayoutManager(new LinearLayoutManager(requireContext()));

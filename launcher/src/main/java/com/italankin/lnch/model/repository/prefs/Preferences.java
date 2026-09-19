@@ -313,7 +313,7 @@ public interface Preferences {
             FontManager.DEFAULT_FONT);
 
     /**
-     * Whether item should occupy full width
+     * Home screen item width and row layout
      */
     Pref<ItemWidth> ITEM_WIDTH = Prefs.create(
             "item_width",
@@ -728,7 +728,8 @@ public interface Preferences {
      */
     enum ItemWidth {
         WRAP("wrap"),
-        MATCH_PARENT("match_parent");
+        MATCH_PARENT("match_parent"),
+        FILL_ROW_WRAP_CONTENT("fill_row_wrap_content");
 
         static ItemWidth from(String s, ItemWidth defaultValue) {
             for (ItemWidth value : values()) {

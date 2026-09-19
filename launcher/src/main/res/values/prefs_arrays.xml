@@ -139,10 +139,12 @@
     <string-array name="pref_values_item_width">
         <item>wrap</item>
         <item>match_parent</item>
+        <item>fill_row_wrap_content</item>
     </string-array>
     <string-array name="pref_desc_item_width">
-        <item>Default</item>
-        <item>Fill row</item>
+        <item>Fit in row</item>
+        <item>One item per row (full width)</item>
+        <item>One item per row (content width)</item>
     </string-array>
 
     <string-array name="pref_values_home_widgets_position">
