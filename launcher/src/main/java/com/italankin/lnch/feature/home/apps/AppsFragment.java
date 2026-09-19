@@ -135,6 +135,8 @@ import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 import java.util.Collections;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -297,6 +299,22 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
         touchHelper = new ItemTouchHelper(new MoveItemHelper(viewModel::moveItem));
         touchHelper.attachToRecyclerView(list);
+        list.addOnItemTouchListener(new EmptySpaceGestureHandler(requireContext(), new EmptySpaceGestureHandler.Listener() {
+            @Override
+            public void onTap(@NonNull MotionEvent event) {
+                Timber.d("empty onTap(%s)", event);
+            }
+
+            @Override
+            public void onLongTap(@NonNull MotionEvent event) {
+                Timber.d("empty onLongTap(%s)", event);
+            }
+
+            @Override
+            public void onDoubleTap(@NonNull MotionEvent event) {
+                Timber.d("empty onDoubleTap(%s)", event);
+            }
+        }));
         list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
