@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Size;
@@ -35,21 +36,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
+import com.italankin.lnch.feature.settings.SettingsActivity;
+import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
 import com.italankin.lnch.feature.widgets.events.WidgetEditModeChangeEvent;
 import com.italankin.lnch.feature.widgets.gallery.WidgetGalleryActivity;
 import com.italankin.lnch.feature.widgets.host.LauncherAppWidgetHost;
 import com.italankin.lnch.feature.widgets.model.AppWidget;
 import com.italankin.lnch.feature.widgets.model.CellSize;
+import com.italankin.lnch.feature.widgets.popup.EmptySpacePopupFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
+import com.italankin.lnch.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +72,8 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
     private static final String ACTION_PIN_APPWIDGET = "android.content.pm.action.CONFIRM_PIN_APPWIDGET";
     private static final int APP_WIDGET_HOST_ID = 101;
+
+    private static final String REQUEST_KEY_WIDGETS = "widgets";
 
     private IntentQueue intentQueue;
     private Preferences preferences;
@@ -129,6 +137,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         if (context instanceof Callback) {
             callback = (Callback) context;
         }
+        registerFragmentResultListeners();
     }
 
     @Override
@@ -194,7 +203,12 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
-                Timber.d("empty onLongTap(%s)", event);
+                Rect anchor = ViewUtils.getViewBounds(widgetsList);
+                int x = (int) event.getX() + anchor.left;
+                int y = (int) event.getY() + anchor.top;
+                anchor.set(x, y, x + 1, y + 1);
+                EmptySpacePopupFragment.newInstance(REQUEST_KEY_WIDGETS, anchor)
+                        .show(getParentFragmentManager());
             }
 
             @Override
@@ -236,6 +250,16 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         widgetsList.setAdapter(adapter);
         registerWindowInsets(view);
         bindWidgets();
+    }
+
+    private void registerFragmentResultListeners() {
+        new FragmentResultManager(getParentFragmentManager(), this, REQUEST_KEY_WIDGETS)
+                .register(new EmptySpacePopupFragment.ShowSettingsContract(), ignored -> {
+                    Intent intent = SettingsActivity.createIntent(requireContext(),
+                            SettingsEntry.resourceKey(R.string.pref_key_home_widgets));
+                    startActivity(intent);
+                })
+                .attach();
     }
 
     @Override

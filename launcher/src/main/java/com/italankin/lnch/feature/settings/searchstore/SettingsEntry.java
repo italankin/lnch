@@ -8,6 +8,10 @@ import java.io.Serializable;
 
 public interface SettingsEntry {
 
+    static Key resourceKey(@StringRes int value) {
+        return new ResourceKey(value);
+    }
+
     Key key();
 
     @Nullable

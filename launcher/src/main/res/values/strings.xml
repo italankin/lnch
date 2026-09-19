@@ -13,6 +13,7 @@
     <string name="widgets_gallery_title">Widget Gallery</string>
     <string name="widgets_gallery_hint_search">App or widget name</string>
     <string name="widgets_gallery_search_empty">Nothing found</string>
+    <string name="widgets_popup_settings">Widgets settings</string>
 
     <string name="hint_search">Search</string>
     <string name="hint_search_open_web">Go to</string>
