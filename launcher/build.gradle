@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk = 35
+    compileSdk = 37
     namespace = "com.italankin.lnch"
     defaultConfig {
         applicationId = "com.italankin.lnch"
         minSdk = 23
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 27
         versionName = "2.1.5"
     }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -19,6 +20,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.base.AppActivity;
@@ -36,10 +38,15 @@ import com.italankin.lnch.feature.widgets.WidgetsFragment;
 import com.italankin.lnch.feature.widgets.events.WidgetEditModeChangeEvent;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.prefs.Preferences.WidgetsPosition;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
-import java.util.*;
 
 public class HomeActivity extends AppActivity implements WidgetsFragment.Callback, HomeBus.EventListener,
         EditModeState.Callback {
@@ -79,6 +86,9 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (getSupportFragmentManager().popBackStackImmediate()) {
+                    return;
+                }
                 int appsPosition = homePagerAdapter.indexOfFragment(AppsFragment.class);
                 if (viewPager.getCurrentItem() != appsPosition) {
                     viewPager.setCurrentItem(appsPosition, true);
@@ -138,14 +148,6 @@ public class HomeActivity extends AppActivity implements WidgetsFragment.Callbac
             }
         }
         intentQueue.post(intent);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().popBackStackImmediate()) {
-            return;
-        }
-        super.onBackPressed();
     }
 
     @Override
