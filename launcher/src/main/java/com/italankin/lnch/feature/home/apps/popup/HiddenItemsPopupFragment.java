@@ -10,12 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
@@ -27,7 +29,6 @@ import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.Cache;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.popup.PopupFragment;
 
 import java.util.ArrayList;
@@ -49,8 +50,6 @@ public class HiddenItemsPopupFragment extends PopupFragment {
 
     private static final String BACKSTACK_NAME = "hidden_items_popup";
     private static final String TAG = "hidden_items_popup";
-
-    private final Cache imageLoaderCache = new LruCache(48);
 
     private HomeDescriptorsState homeDescriptorsState;
 
@@ -77,6 +76,7 @@ public class HiddenItemsPopupFragment extends PopupFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        Cache imageLoaderCache = LauncherApp.daggerService.main().imageLoaderCache();
         imageLoader = new ImageLoader.Builder(context)
                 .cache(imageLoaderCache)
                 .build();

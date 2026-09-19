@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -27,12 +29,13 @@ import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.imageloader.ImageLoader;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
+import com.italankin.lnch.util.imageloader.cache.Cache;
 import com.italankin.lnch.util.widget.TextWatcherAdapter;
-import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.Collections;
 import java.util.List;
+
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 public class SearchOverlay extends ConstraintLayout implements MatchAdapter.Listener, SearchResults.Callback {
 
@@ -64,8 +67,9 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
             imageLoader = null;
             searchRepository = null;
         } else {
+            Cache imageLoaderCache = LauncherApp.daggerService.main().imageLoaderCache();
             imageLoader = new ImageLoader.Builder(context)
-                    .cache(new LruCache(32))
+                    .cache(imageLoaderCache)
                     .build();
             searchRepository = LauncherApp.daggerService.main().searchRepository();
         }

@@ -10,15 +10,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.*;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.util.ResUtils;
 import com.italankin.lnch.util.ViewUtils;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.Cache;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +34,6 @@ public abstract class ActionPopupFragment extends PopupFragment {
 
     private static final float DISABLED_ALPHA = 0.33f;
 
-    private final Cache imageLoaderCache = new LruCache(16);
     protected ImageLoader imageLoader;
 
     protected ViewGroup actionsContainer;
@@ -39,6 +45,7 @@ public abstract class ActionPopupFragment extends PopupFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        Cache imageLoaderCache = LauncherApp.daggerService.main().imageLoaderCache();
         imageLoader = new ImageLoader.Builder(context)
                 .cache(imageLoaderCache)
                 .build();

@@ -4,9 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import com.google.gson.GsonBuilder;
 import com.italankin.lnch.BuildConfig;
-import com.italankin.lnch.feature.home.repository.*;
+import com.italankin.lnch.feature.home.repository.EditModeState;
+import com.italankin.lnch.feature.home.repository.EditModeStateImpl;
+import com.italankin.lnch.feature.home.repository.HomeBus;
+import com.italankin.lnch.feature.home.repository.HomeBusImpl;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
+import com.italankin.lnch.feature.home.repository.HomeDescriptorsStateImpl;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.settings.searchstore.SettingsStore;
 import com.italankin.lnch.model.descriptor.Descriptor;
@@ -21,7 +27,13 @@ import com.italankin.lnch.model.repository.prefs.UserPreferences;
 import com.italankin.lnch.model.repository.search.SearchDelegate;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.search.SearchRepositoryImpl;
-import com.italankin.lnch.model.repository.search.delegate.*;
+import com.italankin.lnch.model.repository.search.delegate.AppSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.DeepShortcutSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.IntentSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.PinnedShortcutSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.PreferenceSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.UrlSearchDelegate;
+import com.italankin.lnch.model.repository.search.delegate.WebSearchDelegate;
 import com.italankin.lnch.model.repository.shortcuts.AppShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.shortcuts.backport.BackportShortcutsRepository;
@@ -32,13 +44,17 @@ import com.italankin.lnch.model.repository.store.json.GsonDescriptorStore;
 import com.italankin.lnch.model.repository.store.json.JsonPackagesStore;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.repository.usage.UsageTrackerImpl;
+import com.italankin.lnch.util.imageloader.cache.Cache;
+import com.italankin.lnch.util.imageloader.cache.LruCache;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Singleton;
+
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
-
-import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.List;
 
 @Module
 public class MainModule {
@@ -177,5 +193,11 @@ public class MainModule {
     @Singleton
     SettingsStore provideSettingsStore(Context context) {
         return new SettingsStore(context);
+    }
+
+    @Provides
+    @Singleton
+    Cache shortcutsImageLoaderCache() {
+        return new LruCache(128);
     }
 }

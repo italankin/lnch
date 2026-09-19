@@ -1,6 +1,7 @@
 package com.italankin.lnch.di.component;
 
 import android.content.Context;
+
 import com.italankin.lnch.di.module.BackupModule;
 import com.italankin.lnch.di.module.MainModule;
 import com.italankin.lnch.feature.home.repository.EditModeState;
@@ -16,10 +17,12 @@ import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.SearchRepository;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
-import dagger.BindsInstance;
-import dagger.Component;
+import com.italankin.lnch.util.imageloader.cache.Cache;
 
 import javax.inject.Singleton;
+
+import dagger.BindsInstance;
+import dagger.Component;
 
 @Singleton
 @Component(modules = {MainModule.class, BackupModule.class})
@@ -50,6 +53,8 @@ public interface MainComponent extends ViewModelComponent.Dependencies {
     FontManager fontManager();
 
     SettingsStore settingsStore();
+
+    Cache imageLoaderCache();
 
     @Component.Builder
     interface Builder {

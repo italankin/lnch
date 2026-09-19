@@ -4,13 +4,21 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -25,13 +33,13 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.Cache;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.LceLayout;
-import me.italankin.adapterdelegates.CompositeAdapter;
-import timber.log.Timber;
 
 import java.util.EnumSet;
 import java.util.List;
+
+import me.italankin.adapterdelegates.CompositeAdapter;
+import timber.log.Timber;
 
 public class AppsSettingsFragment extends AppFragment implements AppsSettingsAdapter.Listener,
         FilterFlagsDialogFragment.Listener,
@@ -57,7 +65,6 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsAda
     private CompositeAdapter<AppDescriptorUi> adapter;
 
     private final AppsSettingsFilter filter = new AppsSettingsFilter(this);
-    private final Cache imageLoaderCache = new LruCache(48);
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -194,6 +201,7 @@ public class AppsSettingsFragment extends AppFragment implements AppsSettingsAda
 
     private void initAdapter() {
         Context context = requireContext();
+        Cache imageLoaderCache = LauncherApp.daggerService.main().imageLoaderCache();
         ImageLoader imageLoader = new ImageLoader.Builder(context)
                 .cache(imageLoaderCache)
                 .build();

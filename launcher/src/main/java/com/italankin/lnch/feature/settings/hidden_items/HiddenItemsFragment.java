@@ -3,13 +3,20 @@ package com.italankin.lnch.feature.settings.hidden_items;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -19,11 +26,11 @@ import com.italankin.lnch.util.filter.ListFilter;
 import com.italankin.lnch.util.filter.SimpleListFilter;
 import com.italankin.lnch.util.imageloader.ImageLoader;
 import com.italankin.lnch.util.imageloader.cache.Cache;
-import com.italankin.lnch.util.imageloader.cache.LruCache;
 import com.italankin.lnch.util.widget.LceLayout;
-import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
+
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 public class HiddenItemsFragment extends AppFragment implements SettingsToolbarTitle,
         ListFilter.OnFilterResult<HiddenItem> {
@@ -34,7 +41,6 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
     private CompositeAdapter<HiddenItem> adapter;
 
     private final SimpleListFilter<HiddenItem> filter = SimpleListFilter.createSearchable(this);
-    private final Cache imageLoaderCache = new LruCache(48);
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -50,7 +56,7 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_items_list, container, false);
     }
 
@@ -61,6 +67,7 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
         lce = view.findViewById(R.id.lce);
 
         Context context = requireContext();
+        Cache imageLoaderCache = LauncherApp.daggerService.main().imageLoaderCache();
         ImageLoader imageLoader = new ImageLoader.Builder(context)
                 .cache(imageLoaderCache)
                 .build();
