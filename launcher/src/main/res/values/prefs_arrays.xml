@@ -83,6 +83,15 @@
         <item>Landscape</item>
     </string-array>
 
+    <string-array name="pref_values_search_bar_pull_behavior">
+        <item>continuous</item>
+        <item>new_gesture</item>
+    </string-array>
+    <string-array name="pref_desc_search_bar_pull_behavior">
+        <item>Continuous gesture</item>
+        <item>New gesture at top</item>
+    </string-array>
+
     <string-array name="pref_values_notification_dot_size">
         <item>small</item>
         <item>normal</item>

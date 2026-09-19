@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
 
@@ -16,19 +17,23 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     private static final float SHOWN_SHOW_THRESHOLD = .25f;
     private static final float HIDDEN_SHOW_THRESHOLD = .6f;
     private static final float MIN_RESISTANCE_FACTOR = 0.05f;
+    private static final float LIST_TOP_TOLERANCE = .02f;
 
     private final View topView;
-    private final View bottomView;
+    private final RecyclerView bottomView;
     private int maxOffset;
 
     private boolean dragInProgress = false;
     private boolean shown = false;
     private boolean enabled = true;
+    private boolean requireNewGestureAtTop = false;
+    private boolean mainListGesture = false;
+    private boolean pullAllowedForGesture = true;
     private ScrollState topViewScrollState = ScrollState.UNKNOWN;
     private final Listener listener;
     private final Interpolator resistanceInterpolator = new DecelerateInterpolator(0.25f);
 
-    public SearchOverlayBehavior(View topView, View bottomView, @NonNull Listener listener) {
+    public SearchOverlayBehavior(View topView, RecyclerView bottomView, @NonNull Listener listener) {
         this.topView = topView;
         this.bottomView = bottomView;
         this.listener = listener;
@@ -49,13 +54,21 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View directTargetChild, @NonNull View target, int axes, int type) {
-        return type == ViewCompat.TYPE_TOUCH && (axes & ViewCompat.SCROLL_AXIS_VERTICAL) > 0;
+        boolean accept = type == ViewCompat.TYPE_TOUCH && (axes & ViewCompat.SCROLL_AXIS_VERTICAL) > 0;
+        if (accept) {
+            mainListGesture = target == bottomView;
+            pullAllowedForGesture = !requireNewGestureAtTop || shown || !mainListGesture || isMainListNearTop();
+        }
+        return accept;
     }
 
     @Override
     public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout,
             @NonNull View child, @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
         if (!enabled) {
+            return;
+        }
+        if (!pullAllowedForGesture) {
             return;
         }
         if (dragInProgress && topView.getTranslationY() > -maxOffset) {
@@ -69,6 +82,13 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             @NonNull View child, @NonNull View target,
             int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
         if (!enabled) {
+            return;
+        }
+        if (requireNewGestureAtTop && mainListGesture && !dragInProgress && !isMainListNearTop()) {
+            pullAllowedForGesture = false;
+        }
+        if (!pullAllowedForGesture) {
+            topViewScrollState = ScrollState.UNKNOWN;
             return;
         }
         if (!dragInProgress) {
@@ -89,6 +109,8 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             jumpToActualState();
         }
         dragInProgress = false;
+        mainListGesture = false;
+        pullAllowedForGesture = true;
         topViewScrollState = ScrollState.UNKNOWN;
     }
 
@@ -175,6 +197,10 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
         this.enabled = enabled;
     }
 
+    public void setRequireNewGestureAtTop(boolean requireNewGestureAtTop) {
+        this.requireNewGestureAtTop = requireNewGestureAtTop;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Private
     ///////////////////////////////////////////////////////////////////////////
@@ -192,6 +218,11 @@ public class SearchOverlayBehavior extends CoordinatorLayout.Behavior<View> {
             bottomView.setTranslationY(0);
             bottomView.setAlpha(1);
         }
+    }
+
+    private boolean isMainListNearTop() {
+        int tolerance = Math.round(bottomView.getHeight() * LIST_TOP_TOLERANCE);
+        return bottomView.computeVerticalScrollOffset() <= tolerance;
     }
 
     private void showInternal(@Nullable Runnable runnable) {

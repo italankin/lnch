@@ -3,12 +3,22 @@ package com.italankin.lnch.model.repository.prefs;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.italankin.lnch.model.fonts.FontManager;
-import io.reactivex.Observable;
 
-import java.util.*;
+import com.italankin.lnch.model.fonts.FontManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import io.reactivex.Observable;
 
 /**
  * A base interface for interacting with user preferences
@@ -243,6 +253,14 @@ public interface Preferences {
     Pref<Boolean> SMOOTH_SCROLL_TO_TOP = Prefs.createBoolean(
             "smooth_scroll_to_top",
             true);
+
+    /**
+     * Behavior of the search bar pull when apps list is scrolling
+     */
+    Pref<SearchBarPullBehavior> SEARCH_BAR_PULL_BEHAVIOR = Prefs.create(
+            "search_bar_pull_behavior",
+            SearchBarPullBehavior.CONTINUOUS,
+            SearchBarPullBehavior::from);
 
     /**
      * Color theme of the launcher
@@ -566,6 +584,7 @@ public interface Preferences {
             SCREEN_ORIENTATION,
             SCROLL_TO_TOP,
             SMOOTH_SCROLL_TO_TOP,
+            SEARCH_BAR_PULL_BEHAVIOR,
             COLOR_THEME,
             DYNAMIC_COLORS,
             ITEM_TEXT_SIZE,
@@ -837,6 +856,35 @@ public interface Preferences {
 
         public int value() {
             return value;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Gesture used to pull down the search bar from the apps list
+     */
+    enum SearchBarPullBehavior {
+        CONTINUOUS("continuous"),
+        NEW_GESTURE("new_gesture");
+
+        static SearchBarPullBehavior from(String s, SearchBarPullBehavior defaultValue) {
+            for (SearchBarPullBehavior item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        SearchBarPullBehavior(String key) {
+            this.key = key;
         }
 
         @NonNull

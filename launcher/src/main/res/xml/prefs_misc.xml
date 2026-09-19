@@ -31,6 +31,13 @@
         android:key="smooth_scroll_to_top"
         android:title="@string/settings_home_misc_smooth_scroll_top"
         app:singleLineTitle="false" />
+    <ListPreference
+        android:defaultValue="continuous"
+        android:entries="@array/pref_desc_search_bar_pull_behavior"
+        android:entryValues="@array/pref_values_search_bar_pull_behavior"
+        android:key="search_bar_pull_behavior"
+        android:summary="%s"
+        android:title="@string/settings_home_misc_search_bar_pull_behavior" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="expand_notifications"
