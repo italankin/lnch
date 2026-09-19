@@ -29,11 +29,12 @@ import timber.log.Timber;
 
 public class ImageLoader {
 
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(4);
+
     private final List<ResourceLoader> resourceLoaders;
     private final Handler callbackHandler;
     private final Cache cache;
 
-    private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<Object, LoadTask> tasks = new WeakHashMap<>(32);
 
     private final Object lock = new Object();
@@ -144,7 +145,7 @@ public class ImageLoader {
             synchronized (lock) {
                 tasks.put(target, task);
             }
-            executor.execute(task);
+            EXECUTOR.execute(task);
         }
     }
 
