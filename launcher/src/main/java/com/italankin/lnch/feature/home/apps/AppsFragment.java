@@ -93,6 +93,7 @@ import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
+import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;

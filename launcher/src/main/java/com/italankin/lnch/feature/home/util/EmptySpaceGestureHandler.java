@@ -1,4 +1,4 @@
-package com.italankin.lnch.feature.home.apps;
+package com.italankin.lnch.feature.home.util;
 
 import android.content.Context;
 import android.view.GestureDetector;
@@ -7,12 +7,12 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-final class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchListener {
+public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchListener {
 
     private final GestureDetector gestureDetector;
     private boolean startedOnEmptySpace;
 
-    EmptySpaceGestureHandler(Context context, Listener listener) {
+    public EmptySpaceGestureHandler(Context context, Listener listener) {
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDown(@NonNull MotionEvent event) {
@@ -53,7 +53,7 @@ final class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchListe
         return false;
     }
 
-    interface Listener {
+    public interface Listener {
 
         void onTap(@NonNull MotionEvent event);
 

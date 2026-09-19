@@ -1,5 +1,8 @@
 package com.italankin.lnch.feature.widgets;
 
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL;
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE;
+
 import android.app.Activity;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
@@ -13,10 +16,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.ImageView;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -27,9 +32,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.repository.HomeBus;
+import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
@@ -43,15 +50,13 @@ import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.feature.widgets.util.WidgetResizeFrame;
 import com.italankin.lnch.feature.widgets.util.WidgetSizeHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL;
-import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_RECONFIGURABLE;
+import timber.log.Timber;
 
 @RequiresApi(Build.VERSION_CODES.O)
 public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAction, WidgetAdapter.WidgetActionListener,
@@ -181,6 +186,22 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         });
 
         widgetsList = view.findViewById(R.id.widgets_list);
+        widgetsList.addOnItemTouchListener(new EmptySpaceGestureHandler(requireContext(), new EmptySpaceGestureHandler.Listener() {
+            @Override
+            public void onTap(@NonNull MotionEvent event) {
+                Timber.d("empty onTap(%s)", event);
+            }
+
+            @Override
+            public void onLongTap(@NonNull MotionEvent event) {
+                Timber.d("empty onLongTap(%s)", event);
+            }
+
+            @Override
+            public void onDoubleTap(@NonNull MotionEvent event) {
+                Timber.d("empty onDoubleTap(%s)", event);
+            }
+        }));
         int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
         itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(dragDirs, 0) {
             @Override
