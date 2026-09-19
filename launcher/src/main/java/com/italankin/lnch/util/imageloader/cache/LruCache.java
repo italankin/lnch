@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 public class LruCache implements Cache {
 
-    private final androidx.collection.LruCache<Uri, Drawable> cache;
+    private final androidx.collection.LruCache<Uri, Drawable.ConstantState> cache;
 
     public LruCache(int maxSize) {
         cache = new androidx.collection.LruCache<>(maxSize);
@@ -16,12 +16,16 @@ public class LruCache implements Cache {
 
     @Override
     public void put(Uri uri, @NonNull Drawable drawable) {
-        cache.put(uri, drawable);
+        Drawable.ConstantState constantState = drawable.getConstantState();
+        if (constantState != null) {
+            cache.put(uri, constantState);
+        }
     }
 
     @Nullable
     @Override
     public Drawable get(Uri uri) {
-        return cache.get(uri);
+        Drawable.ConstantState constantState = cache.get(uri);
+        return constantState != null ? constantState.newDrawable().mutate() : null;
     }
 }
