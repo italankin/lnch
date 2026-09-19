@@ -23,6 +23,7 @@
     <string name="pref_key_look_and_feel">look_and_feel</string>
     <string name="pref_key_shortcuts">shortcuts</string>
     <string name="pref_key_notifications">notifications</string>
+    <string name="pref_key_notification_dots_disabled">notification_dots_disabled</string>
     <string name="pref_key_widgets_remove">widgets_remove</string>
     <string name="pref_key_widgets_grid">widgets_grid</string>
 </resources>

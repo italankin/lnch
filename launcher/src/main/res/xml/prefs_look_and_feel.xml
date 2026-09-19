@@ -92,6 +92,12 @@
             android:title="@string/settings_home_laf_other_folder_item_width" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_notification">
+        <Preference
+            android:key="@string/pref_key_notification_dots_disabled"
+            android:persistent="false"
+            android:summary="@string/settings_home_laf_notification_disabled_summary"
+            android:title="@string/settings_home_laf_notification_disabled"
+            app:isPreferenceVisible="false" />
         <com.italankin.lnch.util.widget.ColorPreference
             android:key="notification_dot_color"
             android:title="@string/settings_home_laf_notification_dot_color"

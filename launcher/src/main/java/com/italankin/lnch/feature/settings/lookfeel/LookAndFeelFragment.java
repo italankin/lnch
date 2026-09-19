@@ -13,6 +13,7 @@ import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
+import com.italankin.lnch.feature.settings.SettingsRootFragment;
 import com.italankin.lnch.feature.settings.SettingsToolbarTitle;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.feature.settings.util.TargetPreference;
@@ -81,9 +82,10 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
             folderShowOverlay.setEnabled(!isEnabled);
             return true;
         });
-        boolean notificationDotEnabled = preferences.get(Preferences.NOTIFICATION_DOT);
-        findPreference(Preferences.NOTIFICATION_DOT_COLOR).setEnabled(notificationDotEnabled);
-        findPreference(Preferences.NOTIFICATION_DOT_SIZE).setEnabled(notificationDotEnabled);
+        findPreference(R.string.pref_key_notification_dots_disabled).setOnPreferenceClickListener(preference -> {
+            sendResult(new SettingsRootFragment.ShowNotificationsPreferences().result());
+            return true;
+        });
         findPreference(Preferences.APPS_LIST_ANIMATE)
                 .setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
         findPreference(Preferences.HIDE_STATUS_BAR).setOnPreferenceChangeListener((preference, newValue) -> {
@@ -102,6 +104,12 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateNotificationDotPreferences();
+    }
+
     private Set<String> appearancePreferences() {
         Set<String> prefs = new HashSet<>();
         prefs.add(Preferences.ITEM_TEXT_SIZE.key());
@@ -114,5 +122,12 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
 
     private void updateStatusBarColorDependency(Boolean hideStatusBar) {
         findPreference(Preferences.STATUS_BAR_COLOR).setEnabled(!hideStatusBar);
+    }
+
+    private void updateNotificationDotPreferences() {
+        boolean enabled = preferences.get(Preferences.NOTIFICATION_DOT);
+        findPreference(R.string.pref_key_notification_dots_disabled).setVisible(!enabled);
+        findPreference(Preferences.NOTIFICATION_DOT_COLOR).setEnabled(enabled);
+        findPreference(Preferences.NOTIFICATION_DOT_SIZE).setEnabled(enabled);
     }
 }
