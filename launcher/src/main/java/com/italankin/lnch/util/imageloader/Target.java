@@ -50,7 +50,7 @@ class ImageViewTarget implements Target {
     @Override
     public void onPrepareLoad(@Nullable Drawable placeholder) {
         ImageView target = targetRef.get();
-        if (target != null && placeholder != null) {
+        if (target != null) {
             target.setImageDrawable(placeholder);
         }
     }
