@@ -69,6 +69,14 @@ public class PopupFrameView extends ViewGroup {
         this.keepLocationOnShrink = keepLocationOnShrink;
     }
 
+    /**
+     * Sets the preferred locations of the popup relative to its {@link #anchor}.
+     * Locations are tried in list order until one fits within this view. For example, when
+     * {@link Location#TOP} is followed by {@link Location#BOTTOM} and there is not enough
+     * space above the anchor, the popup is placed below it.
+     *
+     * @param locations preferred popup locations, in the order in which they should be tried
+     */
     public void setLocations(List<Location> locations) {
         this.locations.clear();
         this.locations.addAll(locations);

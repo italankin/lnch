@@ -8,11 +8,11 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.italankin.lnch.R;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+
+import com.italankin.lnch.R;
 
 public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
 
@@ -23,6 +23,8 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
     private final int[] colors = new int[ArrowDrawable.Direction.values().length];
     private int anchorX;
     private int anchorY;
+
+    private boolean drawArrow = true;
 
     public ArrowLayout(Context context) {
         super(context);
@@ -50,6 +52,11 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
     public void setArrowSize(@Px int size) {
         arrowDrawable.setSize(size);
         update();
+    }
+
+    public void setDrawArrow(boolean drawArrow) {
+        this.drawArrow = drawArrow;
+        invalidate();
     }
 
     @Override
@@ -83,6 +90,9 @@ public class ArrowLayout extends FrameLayout implements PopupFrameView.Child {
     @Override
     public void onDrawForeground(Canvas canvas) {
         super.onDrawForeground(canvas);
+        if (!drawArrow) {
+            return;
+        }
         if (!viewBounds.intersects(arrowBounds.left, arrowBounds.top, arrowBounds.right, arrowBounds.bottom)) {
             arrowDrawable.draw(canvas);
         }

@@ -81,6 +81,7 @@ import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.CustomizeDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.EmptySpacePopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.HiddenItemsPopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
@@ -308,7 +309,12 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
-                Timber.d("empty onLongTap(%s)", event);
+                Rect listBounds = ViewUtils.getViewBounds(list);
+                int x = (int) event.getX() + listBounds.left;
+                int y = (int) event.getY() + listBounds.top;
+                Rect anchor = new Rect(x, y, x + 1, y + 1);
+                EmptySpacePopupFragment.newInstance(REQUEST_KEY_APPS, anchor)
+                        .show(getParentFragmentManager());
             }
 
             @Override
@@ -474,6 +480,12 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 })
                 .register(new ActionPopupFragment.ActionDoneContract(), ignored -> {
                     // empty
+                })
+                .register(new EmptySpacePopupFragment.StartCustomizeContract(), ignored -> {
+                    viewModel.editModeActivate();
+                })
+                .register(new EmptySpacePopupFragment.ShowSettingsContract(), ignored -> {
+                    startAppActivity(SettingsActivity.getComponentName(requireContext()), null);
                 })
                 .attach();
     }

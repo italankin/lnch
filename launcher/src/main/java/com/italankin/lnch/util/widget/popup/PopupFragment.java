@@ -8,13 +8,18 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultSender;
+import com.italankin.lnch.util.ViewUtils;
+
+import java.util.Arrays;
 
 public abstract class PopupFragment extends Fragment implements FragmentResultSender {
 
@@ -70,6 +75,22 @@ public abstract class PopupFragment extends Fragment implements FragmentResultSe
             getParentFragmentManager()
                     .popBackStack(backstackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             backstackId = -1;
+        }
+    }
+
+    public void setPopupLocations(PopupFrameView.Location... locations) {
+        root.setLocations(Arrays.asList(locations));
+    }
+
+    public void setDrawArrow(boolean drawArrow) {
+        containerRoot.setDrawArrow(drawArrow);
+        if (drawArrow) {
+            int padding = requireContext().getResources().getDimensionPixelSize(R.dimen.popup_window_arrow_size);
+            ViewUtils.setPaddingTop(containerRoot, padding);
+            ViewUtils.setPaddingBottom(containerRoot, padding);
+        } else {
+            ViewUtils.setPaddingTop(containerRoot, 0);
+            ViewUtils.setPaddingBottom(containerRoot, 0);
         }
     }
 
