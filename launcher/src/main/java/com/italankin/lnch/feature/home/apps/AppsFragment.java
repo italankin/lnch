@@ -137,8 +137,6 @@ import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
 import java.util.Collections;
 import java.util.List;
 
-import timber.log.Timber;
-
 public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
@@ -304,22 +302,21 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         list.addOnItemTouchListener(new EmptySpaceGestureHandler(requireContext(), new EmptySpaceGestureHandler.Listener() {
             @Override
             public void onTap(@NonNull MotionEvent event) {
-                Timber.d("empty onTap(%s)", event);
             }
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
-                Rect listBounds = ViewUtils.getViewBounds(list);
-                int x = (int) event.getX() + listBounds.left;
-                int y = (int) event.getY() + listBounds.top;
-                Rect anchor = new Rect(x, y, x + 1, y + 1);
+                Rect anchor = ViewUtils.getViewBounds(list);
+                int x = (int) event.getX() + anchor.left;
+                int y = (int) event.getY() + anchor.top;
+                anchor.set(x, y, x + 1, y + 1);
                 EmptySpacePopupFragment.newInstance(REQUEST_KEY_APPS, anchor)
                         .show(getParentFragmentManager());
             }
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                Timber.d("empty onDoubleTap(%s)", event);
+                // TODO: lock screen
             }
         }));
         list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {

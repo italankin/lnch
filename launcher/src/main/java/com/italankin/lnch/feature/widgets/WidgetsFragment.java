@@ -198,7 +198,6 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
         widgetsList.addOnItemTouchListener(new EmptySpaceGestureHandler(requireContext(), new EmptySpaceGestureHandler.Listener() {
             @Override
             public void onTap(@NonNull MotionEvent event) {
-                Timber.d("empty onTap(%s)", event);
             }
 
             @Override
@@ -213,7 +212,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                Timber.d("empty onDoubleTap(%s)", event);
+                // TODO: lock screen
             }
         }));
         int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
