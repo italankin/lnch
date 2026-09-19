@@ -1,52 +1,52 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 35
-    namespace "com.italankin.lnch"
+    compileSdk = 35
+    namespace = "com.italankin.lnch"
     defaultConfig {
-        applicationId "com.italankin.lnch"
-        minSdkVersion 23
-        targetSdk 35
-        versionCode 27
-        versionName "2.1.5"
+        applicationId = "com.italankin.lnch"
+        minSdk = 23
+        targetSdk = 35
+        versionCode = 27
+        versionName = "2.1.5"
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     signingConfigs {
         debug {
-            storeFile file("debug.keystore")
-            storePassword "android"
-            keyAlias "android"
-            keyPassword "android"
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "android"
+            keyPassword = "android"
         }
         release {
             def release = file('release.properties')
             if (release.exists()) {
                 Properties props = new Properties()
                 props.load(new FileInputStream(release))
-                storeFile file(props['keystore'])
-                storePassword props['keystore_password']
-                keyAlias props['alias']
-                keyPassword props['alias_password']
+                storeFile = file(props['keystore'])
+                storePassword = props['keystore_password']
+                keyAlias = props['alias']
+                keyPassword = props['alias_password']
             }
         }
     }
     buildTypes {
         debug {
-            minifyEnabled false
-            shrinkResources false
-            signingConfig signingConfigs.debug
+            minifyEnabled = false
+            shrinkResources = false
+            signingConfig = signingConfigs.debug
         }
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig = signingConfigs.release
         }
     }
 }
