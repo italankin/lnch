@@ -206,8 +206,7 @@ public class ImageLoader {
                 }
                 Drawable drawable = resourceLoader.load(request.uri);
                 if (drawable == null) {
-                    Timber.tag("ImageLoader").w("%s.load(%s) returned null", resourceLoader, request.uri);
-                    return;
+                    throw new IllegalStateException(resourceLoader + ".load(" + request.uri + ") returned null");
                 }
                 if (!request.noCache) {
                     cache.put(request.uri, drawable);
