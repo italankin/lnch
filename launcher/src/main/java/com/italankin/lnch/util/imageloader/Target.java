@@ -5,6 +5,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+
 public interface Target {
 
     default void onPrepareLoad(@Nullable Drawable placeholder) {
@@ -15,30 +17,46 @@ public interface Target {
 
     default void onImageFailed(Exception e, @Nullable Drawable placeholder) {
     }
+
+    default boolean isDead() {
+        return false;
+    }
 }
 
 class ImageViewTarget implements Target {
 
-    private final ImageView target;
+    private final WeakReference<ImageView> targetRef;
 
     ImageViewTarget(ImageView target) {
-        this.target = target;
+        targetRef = new WeakReference<>(target);
     }
 
     @Override
     public void onImageLoaded(Drawable drawable) {
-        target.setImageDrawable(drawable);
+        ImageView target = targetRef.get();
+        if (target != null) {
+            target.setImageDrawable(drawable);
+        }
     }
 
     @Override
     public void onImageFailed(Exception e, @Nullable Drawable placeholder) {
-        target.setImageDrawable(placeholder);
+        ImageView target = targetRef.get();
+        if (target != null) {
+            target.setImageDrawable(placeholder);
+        }
     }
 
     @Override
     public void onPrepareLoad(@Nullable Drawable placeholder) {
-        if (placeholder != null) {
+        ImageView target = targetRef.get();
+        if (target != null && placeholder != null) {
             target.setImageDrawable(placeholder);
         }
+    }
+
+    @Override
+    public boolean isDead() {
+        return targetRef.get() == null;
     }
 }
