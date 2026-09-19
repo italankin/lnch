@@ -161,6 +161,17 @@ public class ImageLoader {
         }
     }
 
+    private boolean isCurrentTask(LoadTask task) {
+        synchronized (lock) {
+            for (LoadTask currentTask : tasks.values()) {
+                if (currentTask == task) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     private class LoadTask implements Runnable {
         private final ResourceLoader resourceLoader;
         private final Request request;
@@ -175,6 +186,7 @@ public class ImageLoader {
 
         @Override
         public void run() {
+            boolean deliveryPosted = false;
             try {
                 if (isCancelled()) {
                     Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
@@ -183,7 +195,7 @@ public class ImageLoader {
                 if (!request.noCache) {
                     Drawable cached = cache.get(request.uri);
                     if (cached != null) {
-                        handler.post(() -> {
+                        deliveryPosted = postDelivery(() -> {
                             Timber.tag("ImageLoader").d("onImageLoaded: uri=%s cached=%b", request.uri, true);
                             request.target.onImageLoaded(cached);
                             request.callback.onSuccess();
@@ -203,7 +215,7 @@ public class ImageLoader {
                     Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
                     return;
                 }
-                handler.post(() -> {
+                deliveryPosted = postDelivery(() -> {
                     Timber.tag("ImageLoader").d("onImageLoaded: uri=%s cached=%b", request.uri, false);
                     request.target.onImageLoaded(drawable);
                     request.callback.onSuccess();
@@ -214,14 +226,30 @@ public class ImageLoader {
                     Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
                     return;
                 }
-                handler.post(() -> {
+                deliveryPosted = postDelivery(() -> {
                     Timber.tag("ImageLoader").d("onImageFailed: uri=%s placeholder=%b", request.uri, request.errorPlaceholder != null);
                     request.target.onImageFailed(e, request.errorPlaceholder);
                     request.callback.onError(e);
                 });
             } finally {
-                removeTask(this);
+                if (!deliveryPosted) {
+                    removeTask(this);
+                }
             }
+        }
+
+        private boolean postDelivery(Runnable delivery) {
+            return handler.post(() -> {
+                try {
+                    if (!isCurrentTask(this) || isCancelled()) {
+                        Timber.tag("ImageLoader").d("cancelled: uri=%s", request.uri);
+                        return;
+                    }
+                    delivery.run();
+                } finally {
+                    removeTask(this);
+                }
+            });
         }
 
         void cancel() {
