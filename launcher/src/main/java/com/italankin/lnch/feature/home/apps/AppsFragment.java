@@ -307,6 +307,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
+                if (editMode) {
+                    return;
+                }
                 Rect anchor = ViewUtils.getViewBounds(list);
                 int x = (int) event.getX() + anchor.left;
                 int y = (int) event.getY() + anchor.top;
@@ -317,7 +320,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                ScreenLock.lock(requireContext());
+                if (!editMode) {
+                    ScreenLock.lock(requireContext());
+                }
             }
         }));
         list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {

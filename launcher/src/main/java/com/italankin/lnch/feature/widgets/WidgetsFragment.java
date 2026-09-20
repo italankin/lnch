@@ -203,6 +203,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
+                if (widgetItemsState.isResizeMode()) {
+                    return;
+                }
                 Rect anchor = ViewUtils.getViewBounds(widgetsList);
                 int x = (int) event.getX() + anchor.left;
                 int y = (int) event.getY() + anchor.top;
@@ -213,7 +216,9 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                ScreenLock.lock(requireContext());
+                if (!widgetItemsState.isResizeMode()) {
+                    ScreenLock.lock(requireContext());
+                }
             }
         }));
         int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
