@@ -112,6 +112,13 @@
             android:title="@string/settings_home_laf_notification_dot_size" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_search_bar">
+        <ListPreference
+            android:defaultValue="continuous"
+            android:entries="@array/pref_desc_search_bar_pull_behavior"
+            android:entryValues="@array/pref_values_search_bar_pull_behavior"
+            android:key="search_bar_pull_behavior"
+            android:summary="%s"
+            android:title="@string/settings_home_laf_search_bar_pull_behavior" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="large_search_bar"

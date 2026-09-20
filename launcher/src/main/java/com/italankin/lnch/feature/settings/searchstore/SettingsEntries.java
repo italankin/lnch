@@ -163,6 +163,14 @@ final class SettingsEntries {
                             return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.SEARCH_BAR_PULL_BEHAVIOR)
+                        .title(R.string.settings_home_laf_search_bar_pull_behavior)
+                        .category(R.string.settings_home_laf)
+                        .addArraysSearchTokens(R.array.pref_desc_search_bar_pull_behavior)
+                        .stackBuilder(requestKey -> {
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(Preferences.LARGE_SEARCH_BAR)
                         .title(R.string.settings_home_laf_search_large_search_bar)
                         .summary(R.string.settings_home_laf_search_large_search_bar_summary)
@@ -374,14 +382,6 @@ final class SettingsEntries {
                 new SettingsEntryImpl.Builder(Preferences.SMOOTH_SCROLL_TO_TOP)
                         .title(R.string.settings_home_misc_smooth_scroll_top)
                         .category(R.string.settings_home_misc)
-                        .stackBuilder(requestKey -> {
-                            return singletonList(MiscFragment.newInstance(requestKey));
-                        })
-                        .build(),
-                new SettingsEntryImpl.Builder(Preferences.SEARCH_BAR_PULL_BEHAVIOR)
-                        .title(R.string.settings_home_misc_search_bar_pull_behavior)
-                        .category(R.string.settings_home_misc)
-                        .addArraysSearchTokens(R.array.pref_desc_search_bar_pull_behavior)
                         .stackBuilder(requestKey -> {
                             return singletonList(MiscFragment.newInstance(requestKey));
                         })

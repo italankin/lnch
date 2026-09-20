@@ -138,7 +138,6 @@
     <string name="settings_home_misc_scroll_top">Scroll to top</string>
     <string name="settings_home_misc_scroll_top_summary">Scroll apps list to top when launcher becomes visible</string>
     <string name="settings_home_misc_smooth_scroll_top">Smooth scroll to top</string>
-    <string name="settings_home_misc_search_bar_pull_behavior">Search bar pull behavior</string>
     <string name="settings_home_misc_long_action">App long click action</string>
     <string name="settings_home_misc_orientation">Screen orientation</string>
     <string name="settings_home_misc_expand_status_bar">Open notifications on swipe</string>
@@ -273,6 +272,7 @@
     <string name="settings_home_laf_other_status_bar_color">Status bar color</string>
 
     <string name="settings_home_laf_search_bar">Search bar</string>
+    <string name="settings_home_laf_search_bar_pull_behavior">Search bar pull behavior</string>
     <string name="settings_home_laf_search_large_search_bar">Large search bar</string>
     <string name="settings_home_laf_search_large_search_bar_summary">Increase height of the search bar</string>
 
