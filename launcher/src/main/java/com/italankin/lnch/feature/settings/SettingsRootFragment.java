@@ -12,13 +12,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
+
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.lock.ScreenLock;
 import com.italankin.lnch.feature.settings.base.BasePreferenceFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
@@ -47,6 +50,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_root);
+        findPreference(R.string.pref_key_screen_lock).setVisible(ScreenLock.isAvailable());
         findPreference(R.string.pref_key_home_widgets).setVisible(WidgetHelper.areWidgetsAvailable());
     }
 
@@ -84,6 +88,10 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         });
         findPreference(R.string.pref_key_look_and_feel).setOnPreferenceClickListener(preference -> {
             sendResult(new ShowLookAndFeelPreferences().result());
+            return true;
+        });
+        findPreference(R.string.pref_key_screen_lock).setOnPreferenceClickListener(preference -> {
+            sendResult(new ShowScreenLockPreferences().result());
             return true;
         });
         findPreference(R.string.pref_key_home_misc).setOnPreferenceClickListener(preference -> {
@@ -191,6 +199,13 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     public static class ShowShortcutsPreferences extends SignalFragmentResultContract {
         public ShowShortcutsPreferences() {
             super("show_shortcuts_preferences");
+        }
+    }
+
+
+    public static class ShowScreenLockPreferences extends SignalFragmentResultContract {
+        public ShowScreenLockPreferences() {
+            super("show_screen_lock_preferences");
         }
     }
 

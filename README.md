@@ -9,6 +9,7 @@ lnch is Android launcher, focused on effectiveness.
 * Shortcuts support
 * Notifications support (badges, popups)
 * Widgets support (Android 8 and later)
+* Screen lock with double-tap (Android 9 and later)
 * And many more
 
 ![lnch.jpg](/lnch.jpg)

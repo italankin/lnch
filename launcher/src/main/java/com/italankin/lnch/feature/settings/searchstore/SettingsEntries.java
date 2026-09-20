@@ -3,11 +3,13 @@ package com.italankin.lnch.feature.settings.searchstore;
 import com.google.android.material.color.DynamicColors;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.lock.ScreenLock;
 import com.italankin.lnch.feature.settings.ShortcutsFragment;
 import com.italankin.lnch.feature.settings.apps.AppsSettingsFragment;
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsFragment;
+import com.italankin.lnch.feature.settings.lock.ScreenLockSettingsFragment;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
 import com.italankin.lnch.feature.settings.notifications.NotificationsFragment;
@@ -406,6 +408,22 @@ final class SettingsEntries {
                         .stackBuilder(requestKey -> {
                             return Collections.singletonList(MiscFragment.newInstance(requestKey));
                         })
+                        .build(),
+
+                /* --- Screen lock --- */
+
+                new SettingsEntryImpl.Builder(Preferences.DOUBLE_TAP_TO_LOCK)
+                        .title(R.string.settings_home_screen_lock_double_tap)
+                        .summary(R.string.settings_home_screen_lock_double_tap_summary)
+                        .category(R.string.settings_home_screen_lock)
+                        .setAvailable(ScreenLock.isAvailable())
+                        .stackBuilder(requestKey -> Collections.singletonList(new ScreenLockSettingsFragment()))
+                        .build(),
+                new SettingsEntryImpl.Builder(R.string.pref_key_screen_lock_accessibility)
+                        .title(R.string.settings_home_screen_lock_accessibility)
+                        .category(R.string.settings_home_screen_lock)
+                        .setAvailable(ScreenLock.isAvailable())
+                        .stackBuilder(requestKey -> Collections.singletonList(new ScreenLockSettingsFragment()))
                         .build(),
 
                 /* --- Experimental --- */

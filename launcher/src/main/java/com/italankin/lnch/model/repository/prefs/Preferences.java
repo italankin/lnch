@@ -566,6 +566,13 @@ public interface Preferences {
             "verbose_errors",
             false);
 
+    /**
+     * Lock screen on tapping empty space
+     */
+    Pref<Boolean> DOUBLE_TAP_TO_LOCK = Prefs.createBoolean(
+            "double_tap_to_lock",
+            false);
+
     List<Pref<?>> ALL = Arrays.asList(
             SEARCH_SHOW_SOFT_KEYBOARD,
             SEARCH_SHOW_GLOBAL_SEARCH,
@@ -623,10 +630,12 @@ public interface Preferences {
             NAME_TRANSFORM,
             HIDE_STATUS_BAR,
             DESTRUCTIVE_NON_EDIT,
-            VERBOSE_ERRORS
+            VERBOSE_ERRORS,
+            DOUBLE_TAP_TO_LOCK
     );
 
     List<Pref<?>> NO_BACKUP = Arrays.asList(
+            DOUBLE_TAP_TO_LOCK,
             WIDGETS_DATA,
             HOME_LAYOUT
     );

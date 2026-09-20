@@ -42,6 +42,7 @@ import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MainActionHandler;
+import com.italankin.lnch.feature.lock.ScreenLock;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.feature.widgets.adapter.WidgetAdapter;
@@ -212,7 +213,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                // TODO: lock screen
+                ScreenLock.lock(requireContext());
             }
         }));
         int dragDirs = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;

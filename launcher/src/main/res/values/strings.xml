@@ -10,6 +10,10 @@
 
     <string name="notification_service_name">Notification dots</string>
 
+    <string name="screen_lock_accessibility_title">Double tap to lock (LNCH)</string>
+    <string name="screen_lock_accessibility_description">Locks the screen only when you enable Double tap to lock in lnch and double tap empty space on its apps or widgets page. This service does not read screen content or collect or share personal data. You can disable it here at any time.</string>
+    <string name="screen_lock_failed">Could not lock the screen. Try again.</string>
+
     <string name="widgets_gallery_title">Widget Gallery</string>
     <string name="widgets_gallery_hint_search">App or widget name</string>
     <string name="widgets_gallery_search_empty">Nothing found</string>
@@ -115,6 +119,19 @@
     <string name="settings_home_wallpaper">Wallpaper</string>
     <string name="settings_home_wallpaper_change">Change wallpaper</string>
     <string name="settings_home_wallpaper_dim_color">Wallpaper dimming color</string>
+
+    <string name="settings_home_screen_lock_double_tap">Double tap to lock</string>
+    <string name="settings_home_screen_lock">Screen lock</string>
+    <string name="settings_home_screen_lock_consent_title">Enable double tap to lock?</string>
+    <string name="settings_home_screen_lock_consent_accept">Agree and continue</string>
+    <string name="settings_home_screen_lock_consent_decline">Not now</string>
+    <string name="settings_home_screen_lock_double_tap_summary">Lock the screen by double tapping empty space on the apps or widgets page</string>
+    <string name="settings_home_screen_lock_access_required">Accessibility access is required. Open Screen lock accessibility access below to finish setup.</string>
+    <string name="settings_home_screen_lock_accessibility">Screen lock accessibility access</string>
+    <string name="settings_home_screen_lock_accessibility_enabled">Service enabled. Open Android Accessibility settings to disable “Double tap to lock” for lnch.</string>
+    <string name="settings_home_screen_lock_accessibility_disabled">Service disabled. Open Android Accessibility settings to enable “Double tap to lock” for lnch, then return and select the checkbox above.</string>
+    <string name="settings_home_screen_lock_settings_failed">Could not open Accessibility settings. Open them from Android Settings.</string>
+    <string name="settings_home_screen_lock_consent_message">lnch uses Android’s AccessibilityService API only to lock your screen when you double tap empty space on its apps or widgets page.\n\nThis service does not read screen content or collect or share personal data. Access is optional; you can continue using lnch without it and disable it anytime in Android Accessibility settings.\n\nThe gesture requires both accessibility access and the Double tap to lock checkbox. If access is needed, enable “Double tap to lock” for lnch in Android Accessibility settings, then return to select the checkbox.</string>
 
     <string name="settings_home_misc">Miscellaneous</string>
     <string name="settings_home_misc_scrollbar">Show scroll indicator</string>

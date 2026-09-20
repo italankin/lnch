@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="double_tap_to_lock"
+        android:persistent="false"
+        android:summary="@string/settings_home_screen_lock_double_tap_summary"
+        android:title="@string/settings_home_screen_lock_double_tap"
+        app:singleLineTitle="false" />
+    <Preference
+        android:key="@string/pref_key_screen_lock_accessibility"
+        android:persistent="false"
+        android:title="@string/settings_home_screen_lock_accessibility"
+        app:singleLineTitle="false" />
+</PreferenceScreen>

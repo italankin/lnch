@@ -1,6 +1,7 @@
 package com.italankin.lnch.feature.home.util;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -41,7 +42,11 @@ public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchList
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            startedOnEmptySpace = recyclerView.findChildViewUnder(event.getX(), event.getY()) == null;
+            startedOnEmptySpace = recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE &&
+                    recyclerView.findChildViewUnder(event.getX(), event.getY()) == null;
+            if (!startedOnEmptySpace) {
+                cancelGesture();
+            }
         }
         if (startedOnEmptySpace) {
             gestureDetector.onTouchEvent(event);
@@ -51,6 +56,21 @@ public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchList
             startedOnEmptySpace = false;
         }
         return false;
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        if (disallowIntercept) {
+            startedOnEmptySpace = false;
+            cancelGesture();
+        }
+    }
+
+    private void cancelGesture() {
+        long now = SystemClock.uptimeMillis();
+        MotionEvent cancel = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+        gestureDetector.onTouchEvent(cancel);
+        cancel.recycle();
     }
 
     public interface Listener {

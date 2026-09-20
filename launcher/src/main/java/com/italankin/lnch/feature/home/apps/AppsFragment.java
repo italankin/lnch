@@ -102,6 +102,7 @@ import com.italankin.lnch.feature.home.widget.EditModePanel;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
+import com.italankin.lnch.feature.lock.ScreenLock;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
@@ -316,7 +317,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onDoubleTap(@NonNull MotionEvent event) {
-                // TODO: lock screen
+                ScreenLock.lock(requireContext());
             }
         }));
         list.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {

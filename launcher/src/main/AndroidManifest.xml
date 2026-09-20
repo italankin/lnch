@@ -139,6 +139,21 @@
         </receiver>
 
         <service
+            android:name=".feature.lock.ScreenLockService"
+            android:enabled="@bool/screen_lock_accessibility_enabled"
+            android:exported="true"
+            android:label="@string/screen_lock_accessibility_title"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            tools:targetApi="28">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/screen_lock_accessibility" />
+        </service>
+
+        <service
             android:name=".NotificationListener"
             android:exported="true"
             android:label="@string/notification_service_name"

@@ -10,6 +10,8 @@
     <string name="pref_key_home_customize">customize</string>
     <string name="pref_key_home_misc">miscellaneous</string>
     <string name="pref_key_misc_experimental">misc_experimental</string>
+    <string name="pref_key_screen_lock_accessibility">screen_lock_accessibility</string>
+    <string name="pref_key_screen_lock">screen_lock</string>
     <string name="pref_key_home_widgets">widgets</string>
     <string name="pref_key_home_hidden_items">hidden_items</string>
     <string name="pref_key_appearance">appearance</string>

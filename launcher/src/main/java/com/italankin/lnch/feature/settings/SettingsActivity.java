@@ -4,11 +4,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherIntents;
@@ -20,6 +22,7 @@ import com.italankin.lnch.feature.settings.apps.details.aliases.AppAliasesFragme
 import com.italankin.lnch.feature.settings.backup.BackupFragment;
 import com.italankin.lnch.feature.settings.experimental.ExperimentalSettingsFragment;
 import com.italankin.lnch.feature.settings.hidden_items.HiddenItemsFragment;
+import com.italankin.lnch.feature.settings.lock.ScreenLockSettingsFragment;
 import com.italankin.lnch.feature.settings.lookfeel.AppearanceActivity;
 import com.italankin.lnch.feature.settings.lookfeel.LookAndFeelFragment;
 import com.italankin.lnch.feature.settings.misc.MiscFragment;
@@ -33,9 +36,10 @@ import com.italankin.lnch.feature.settings.wallpaper.WallpaperFragment;
 import com.italankin.lnch.feature.settings.widgets.WidgetsSettingsFragment;
 import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import timber.log.Timber;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -98,6 +102,9 @@ public class SettingsActivity extends AppCompatActivity {
                 })
                 .register(new SettingsRootFragment.ShowShortcutsPreferences(), result -> {
                     showFragment(new ShortcutsFragment());
+                })
+                .register(new SettingsRootFragment.ShowScreenLockPreferences(), result -> {
+                    showFragment(new ScreenLockSettingsFragment());
                 })
                 .register(new SettingsRootFragment.ShowNotificationsPreferences(), result -> {
                     showFragment(new NotificationsFragment());
