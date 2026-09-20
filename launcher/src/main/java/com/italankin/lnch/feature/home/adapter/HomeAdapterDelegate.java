@@ -86,7 +86,6 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
     }
 
-    @SuppressLint("RtlHardcoded")
     protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
         ViewUtils.setPaddingDp(label, itemPrefs.itemPadding());
         label.setTextSize(itemPrefs.itemTextSize());
@@ -97,35 +96,45 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         label.setShadowLayer(itemPrefs.itemShadowRadius(), label.getShadowDx(),
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface());
+        updateNotificationDot(holder, itemPrefs);
+        updateItemWidth(holder, label, itemPrefs);
+    }
+
+    @SuppressLint("RtlHardcoded")
+    private void updateNotificationDot(VH holder, UserPrefs.ItemPrefs itemPrefs) {
         NotificationDotDrawable notificationDot = holder.getNotificationDot();
-        if (notificationDot != null) {
-            switch (itemPrefs.notificationDotPosition()) {
-                case TOP_LEFT:
-                    notificationDot.setGravity(Gravity.TOP | Gravity.LEFT);
-                    break;
-                case TOP_RIGHT:
-                    notificationDot.setGravity(Gravity.TOP | Gravity.RIGHT);
-                    break;
-                case BOT_LEFT:
-                    notificationDot.setGravity(Gravity.BOTTOM | Gravity.LEFT);
-                    break;
-                case BOT_RIGHT:
-                    notificationDot.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
-                    break;
-            }
-            notificationDot.setColor(itemPrefs.notificationDotColor());
-            switch (itemPrefs.notificationDotSize()) {
-                case SMALL:
-                    notificationDot.setSize(NotificationDotDrawable.Size.SMALL);
-                    break;
-                case NORMAL:
-                    notificationDot.setSize(NotificationDotDrawable.Size.NORMAL);
-                    break;
-                case LARGE:
-                    notificationDot.setSize(NotificationDotDrawable.Size.LARGE);
-                    break;
-            }
+        if (notificationDot == null) {
+            return;
         }
+        switch (itemPrefs.notificationDotPosition()) {
+            case TOP_LEFT:
+                notificationDot.setGravity(Gravity.TOP | Gravity.LEFT);
+                break;
+            case TOP_RIGHT:
+                notificationDot.setGravity(Gravity.TOP | Gravity.RIGHT);
+                break;
+            case BOT_LEFT:
+                notificationDot.setGravity(Gravity.BOTTOM | Gravity.LEFT);
+                break;
+            case BOT_RIGHT:
+                notificationDot.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
+                break;
+        }
+        notificationDot.setColor(itemPrefs.notificationDotColor());
+        switch (itemPrefs.notificationDotSize()) {
+            case SMALL:
+                notificationDot.setSize(NotificationDotDrawable.Size.SMALL);
+                break;
+            case NORMAL:
+                notificationDot.setSize(NotificationDotDrawable.Size.NORMAL);
+                break;
+            case LARGE:
+                notificationDot.setSize(NotificationDotDrawable.Size.LARGE);
+                break;
+        }
+    }
+
+    private void updateItemWidth(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
         View root = holder.getRoot();
         ViewGroup.LayoutParams rootLp = root.getLayoutParams();
         Preferences.ItemWidth itemWidth = params.itemWidthProvider.get(itemPrefs);
