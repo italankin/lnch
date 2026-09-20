@@ -16,6 +16,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
 import com.italankin.lnch.BuildConfig;
@@ -42,12 +44,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     private static final String RELEASE_NOTES_FORMAT = "https://github.com/italankin/lnch/releases/tag/%s";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_root);
         findPreference(R.string.pref_key_screen_lock).setVisible(ScreenLock.isAvailable());
@@ -57,6 +53,7 @@ public class SettingsRootFragment extends BasePreferenceFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupMenu();
         findPreference(R.string.pref_key_home_set_default_launcher).setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
             startActivity(intent);
@@ -131,6 +128,29 @@ public class SettingsRootFragment extends BasePreferenceFragment {
         scrollToTarget();
     }
 
+    private void setupMenu() {
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+                inflater.inflate(R.menu.settings, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.action_system_settings) {
+                    Context context = requireContext();
+                    Intent intent = PackageUtils.getPackageSystemSettings(context.getPackageName());
+                    IntentUtils.safeStartActivity(context, intent, IntentUtils.DEFAULT_ERROR_CONSUMER);
+                    return true;
+                } else if (item.getItemId() == R.id.action_search) {
+                    sendResult(new ShowPreferenceSearch().result());
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -151,25 +171,6 @@ public class SettingsRootFragment extends BasePreferenceFragment {
             // better hide it to not annoy user
             setDefaultLauncherPref.setVisible(false);
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.settings, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_system_settings) {
-            Context context = requireContext();
-            Intent intent = PackageUtils.getPackageSystemSettings(context.getPackageName());
-            IntentUtils.safeStartActivity(context, intent, IntentUtils.DEFAULT_ERROR_CONSUMER);
-            return true;
-        } else if (item.getItemId() == R.id.action_search) {
-            sendResult(new ShowPreferenceSearch().result());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public static class ShowPreferenceSearch extends SignalFragmentResultContract {

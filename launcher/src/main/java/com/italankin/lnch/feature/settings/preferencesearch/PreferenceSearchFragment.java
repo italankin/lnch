@@ -2,11 +2,20 @@ package com.italankin.lnch.feature.settings.preferencesearch;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -16,9 +25,10 @@ import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContra
 import com.italankin.lnch.feature.settings.searchstore.SettingsEntry;
 import com.italankin.lnch.util.widget.LceLayout;
 import com.italankin.lnch.util.widget.SearchViewFixed;
-import me.italankin.adapterdelegates.CompositeAdapter;
 
 import java.util.List;
+
+import me.italankin.adapterdelegates.CompositeAdapter;
 
 public class PreferenceSearchFragment extends AppFragment {
 
@@ -39,7 +49,6 @@ public class PreferenceSearchFragment extends AppFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, PreferenceSearchViewModel.class, ViewModelComponent::preferenceSearch);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -50,6 +59,7 @@ public class PreferenceSearchFragment extends AppFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setupMenu();
         RecyclerView list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
 
@@ -72,41 +82,50 @@ public class PreferenceSearchFragment extends AppFragment {
                 });
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_preference_search, menu);
+    private void setupMenu() {
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+                inflater.inflate(R.menu.settings_preference_search, menu);
 
-        MenuItem actionSearchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = new SearchViewFixed(requireContext());
-        actionSearchItem.setActionView(searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                viewModel.search(query);
-                return true;
+                MenuItem actionSearchItem = menu.findItem(R.id.action_search);
+                SearchView searchView = new SearchViewFixed(requireContext());
+                actionSearchItem.setActionView(searchView);
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        viewModel.search(query);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        viewModel.search(newText);
+                        return true;
+                    }
+                });
+                actionSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        item.getActionView().requestFocus();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        sendResult(new ClosePreferenceSearchContract().result());
+                        return true;
+                    }
+                });
+                searchView.setQueryHint(getString(R.string.hint_search_preference));
+                actionSearchItem.expandActionView();
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                viewModel.search(newText);
-                return true;
+            public boolean onMenuItemSelected(@NonNull MenuItem item) {
+                return false;
             }
-        });
-        actionSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                item.getActionView().requestFocus();
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                sendResult(new ClosePreferenceSearchContract().result());
-                return true;
-            }
-        });
-        searchView.setQueryHint(getString(R.string.hint_search_preference));
-        actionSearchItem.expandActionView();
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     private void onSearchResults(List<PreferenceSearchItem> items) {

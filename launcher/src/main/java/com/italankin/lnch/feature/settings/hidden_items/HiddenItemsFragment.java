@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,7 +54,6 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, HiddenItemsViewModel.class, ViewModelComponent::hiddenItems);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -63,6 +65,7 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setupMenu();
         RecyclerView list = view.findViewById(R.id.list);
         lce = view.findViewById(R.id.lce);
 
@@ -99,24 +102,33 @@ public class HiddenItemsFragment extends AppFragment implements SettingsToolbarT
                 });
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_hidden, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint(getString(R.string.hint_search));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    private void setupMenu() {
+        requireActivity().addMenuProvider(new MenuProvider() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                filter.filter(query);
-                return false;
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+                inflater.inflate(R.menu.settings_hidden, menu);
+                SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+                searchView.setQueryHint(getString(R.string.hint_search));
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        filter.filter(query);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        filter.filter(newText);
+                        return false;
+                    }
+                });
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                filter.filter(newText);
+            public boolean onMenuItemSelected(@NonNull MenuItem item) {
                 return false;
             }
-        });
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override

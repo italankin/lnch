@@ -4,10 +4,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppFragment;
@@ -39,8 +48,7 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
 
     private AppAliasesAdapter adapter;
 
-    private boolean canAddMore;
-    private MenuItem itemAdd;
+    private AliasesMenuProvider menuProvider;
 
     @Override
     public CharSequence getToolbarTitle(Context context) {
@@ -51,7 +59,6 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = AppViewModelProvider.get(this, AppAliasesViewModel.class, ViewModelComponent::appAliases);
-        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -62,6 +69,7 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setupMenu();
         lce = view.findViewById(R.id.lce);
         list = view.findViewById(R.id.list);
 
@@ -83,36 +91,15 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.settings_app_aliases, menu);
-        itemAdd = menu.findItem(R.id.action_add);
-        updateItemAddState(canAddMore);
+    private void setupMenu() {
+        menuProvider = new AliasesMenuProvider();
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_add) {
-            EditTextAlertDialog.builder(requireContext())
-                    .setTitle(R.string.settings_app_aliases_title)
-                    .setCancellable(true)
-                    .customizeEditText(editText -> {
-                        editText.setMaxLines(1);
-                        editText.setSingleLine(true);
-                        editText.setHint(getString(R.string.settings_app_aliases_hint, MAX_ALIAS_LENGTH));
-                        editText.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-                        editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ALIAS_LENGTH)});
-                    })
-                    .setPositiveButton(R.string.settings_app_aliases_add, (dialog, editText) -> {
-                        String alias = editText.getText().toString();
-                        viewModel.addAlias(alias);
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show(this);
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        menuProvider = null;
     }
 
     private void onAliasesChanged(List<String> aliases) {
@@ -121,7 +108,7 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
             list.setAdapter(adapter);
         }
         adapter.setDataset(aliases);
-        updateItemAddState(aliases.size() < AliasDescriptor.MAX_ALIASES);
+        menuProvider.setItemAddEnabled(aliases.size() < AliasDescriptor.MAX_ALIASES);
         updateLceState(aliases.size());
     }
 
@@ -133,11 +120,49 @@ public class AppAliasesFragment extends AppFragment implements SettingsToolbarTi
         }
     }
 
-    private void updateItemAddState(boolean canAddMore) {
-        this.canAddMore = canAddMore;
-        if (itemAdd != null) {
-            itemAdd.setEnabled(canAddMore);
-            itemAdd.getIcon().setAlpha(canAddMore ? 255 : 32);
+    private class AliasesMenuProvider implements MenuProvider {
+
+        private boolean itemAddEnabled;
+        private MenuItem itemAdd;
+
+        @Override
+        public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+            inflater.inflate(R.menu.settings_app_aliases, menu);
+            itemAdd = menu.findItem(R.id.action_add);
+            setItemAddEnabled(itemAddEnabled);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull MenuItem item) {
+            if (item.getItemId() == R.id.action_add) {
+                EditTextAlertDialog.builder(requireContext())
+                        .setTitle(R.string.settings_app_aliases_title)
+                        .setCancellable(true)
+                        .customizeEditText(editText -> {
+                            editText.setMaxLines(1);
+                            editText.setSingleLine(true);
+                            editText.setHint(getString(R.string.settings_app_aliases_hint, MAX_ALIAS_LENGTH));
+                            editText.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+                            editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ALIAS_LENGTH)});
+                        })
+                        .setPositiveButton(R.string.settings_app_aliases_add, (dialog, editText) -> {
+                            String alias = editText.getText().toString();
+                            viewModel.addAlias(alias);
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show(AppAliasesFragment.this);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        void setItemAddEnabled(boolean enabled) {
+            itemAddEnabled = enabled;
+            if (itemAdd != null) {
+                itemAdd.setEnabled(enabled);
+                itemAdd.getIcon().setAlpha(enabled ? 255 : 32);
+            }
         }
     }
 }
