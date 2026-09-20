@@ -15,7 +15,7 @@ public final class AppViewModelProvider {
             @NonNull
             @Override
             public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) factory.get(LauncherApp.daggerService.presenters());
+                return (T) factory.get(LauncherApp.daggerService.viewModels());
             }
         }).get(modelClass);
     }

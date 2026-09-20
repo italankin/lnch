@@ -19,7 +19,7 @@ public class DaggerService {
                 .build();
     }
 
-    public ViewModelComponent presenters() {
+    public ViewModelComponent viewModels() {
         return viewModels;
     }
 
