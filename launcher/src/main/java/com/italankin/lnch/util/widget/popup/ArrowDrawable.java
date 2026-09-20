@@ -98,7 +98,7 @@ class ArrowDrawable extends Drawable {
         return direction;
     }
 
-    enum Direction {
+    public enum Direction {
         UP,
         DOWN
     }
