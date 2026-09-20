@@ -1,5 +1,7 @@
 package com.italankin.lnch.feature.settings.searchstore;
 
+import static java.util.Collections.singletonList;
+
 import com.google.android.material.color.DynamicColors;
 import com.italankin.lnch.BuildConfig;
 import com.italankin.lnch.R;
@@ -20,7 +22,6 @@ import com.italankin.lnch.feature.widgets.util.WidgetHelper;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_hidden_items)
                         .category(R.string.settings_category_home)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new HiddenItemsFragment());
+                            return singletonList(new HiddenItemsFragment());
                         })
                         .build(),
 
@@ -46,21 +47,21 @@ final class SettingsEntries {
                         .title(R.string.settings_home_wallpaper)
                         .category(R.string.settings_home_wallpaper)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(WallpaperFragment.newInstance(requestKey));
+                            return singletonList(WallpaperFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_wallpaper_change)
                         .title(R.string.settings_home_wallpaper_change)
                         .category(R.string.settings_home_wallpaper)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(WallpaperFragment.newInstance(requestKey));
+                            return singletonList(WallpaperFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WALLPAPER_DIM_COLOR)
                         .title(R.string.settings_home_wallpaper_dim_color)
                         .category(R.string.settings_home_wallpaper)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(WallpaperFragment.newInstance(requestKey));
+                            return singletonList(WallpaperFragment.newInstance(requestKey));
                         })
                         .build(),
 
@@ -70,7 +71,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_laf)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.COLOR_THEME)
@@ -78,7 +79,7 @@ final class SettingsEntries {
                         .category(R.string.settings_home_laf)
                         .addArraysSearchTokens(R.array.pref_desc_color_themes)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.DYNAMIC_COLORS)
@@ -86,21 +87,21 @@ final class SettingsEntries {
                         .category(R.string.settings_home_laf)
                         .setAvailable(DynamicColors.isDynamicColorAvailable())
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.HOME_ALIGNMENT)
                         .title(R.string.settings_home_laf_alignment)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.APPS_SORT_MODE)
                         .title(R.string.settings_apps_sorting)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NAME_TRANSFORM)
@@ -108,14 +109,14 @@ final class SettingsEntries {
                         .addArraysSearchTokens(R.array.pref_desc_apps_name_transform)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_WIDTH)
                         .title(R.string.settings_home_laf_other_item_width)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.HIDE_STATUS_BAR)
@@ -123,14 +124,14 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_other_hide_status_bar_summary)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.APPS_LIST_ANIMATE)
                         .title(R.string.settings_home_laf_other_apps_list_animate)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.APPS_COLOR_OVERLAY_SHOW)
@@ -138,28 +139,28 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_other_color_overlay_show_summary)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.APPS_COLOR_OVERLAY)
                         .title(R.string.settings_home_laf_other_color_overlay)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_COLOR)
                         .title(R.string.settings_home_laf_notification_dot_color)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_SIZE)
                         .title(R.string.settings_home_laf_notification_dot_size)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.LARGE_SEARCH_BAR)
@@ -167,14 +168,14 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_search_large_search_bar_summary)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.STATUS_BAR_COLOR)
                         .title(R.string.settings_home_laf_other_status_bar_color)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FULLSCREEN_FOLDERS)
@@ -182,28 +183,28 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_folders_fullscreen_folders_summary)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FOLDER_SHOW_OVERLAY)
                         .title(R.string.settings_home_laf_folders_show_overlay)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FOLDER_OVERLAY_COLOR)
                         .title(R.string.settings_home_laf_folders_overlay_color)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.FOLDER_ITEM_WIDTH)
                         .title(R.string.settings_home_laf_other_folder_item_width)
                         .category(R.string.settings_home_laf)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
 
@@ -214,42 +215,42 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_laf_appearance_summary)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_TEXT_SIZE)
                         .title(R.string.settings_home_laf_appearance_text_size)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_PADDING)
                         .title(R.string.settings_home_laf_appearance_padding)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_FONT)
                         .title(R.string.settings_home_laf_appearance_text_font)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_SHADOW_RADIUS)
                         .title(R.string.settings_home_laf_appearance_shadow_radius)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ITEM_SHADOW_COLOR)
                         .title(R.string.settings_home_laf_appearance_shadow_color)
                         .category(R.string.settings_home_laf_appearance)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(LookAndFeelFragment.newInstance(requestKey));
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
 
@@ -261,7 +262,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.ENABLE_WIDGETS)
@@ -271,7 +272,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_POSITION)
@@ -280,7 +281,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_FORCE_RESIZE)
@@ -290,7 +291,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_widgets_grid)
@@ -299,7 +300,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_widgets_remove)
@@ -308,7 +309,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_HORIZONTAL_GRID_SIZE)
@@ -317,7 +318,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.WIDGETS_HEIGHT_CELL_RATIO)
@@ -326,7 +327,7 @@ final class SettingsEntries {
                         .setAvailable(WidgetHelper.areWidgetsAvailable())
                         .stackBuilder(requestKey -> {
                             // noinspection NewApi
-                            return Collections.singletonList(new WidgetsSettingsFragment());
+                            return singletonList(new WidgetsSettingsFragment());
                         })
                         .build(),
 
@@ -336,7 +337,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_misc)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SCREEN_ORIENTATION)
@@ -344,7 +345,7 @@ final class SettingsEntries {
                         .category(R.string.settings_home_misc)
                         .addArraysSearchTokens(R.array.pref_desc_screen_orientation)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.APP_LONG_CLICK_ACTION)
@@ -352,14 +353,14 @@ final class SettingsEntries {
                         .category(R.string.settings_home_misc)
                         .addArraysSearchTokens(R.array.pref_desc_app_long_click_actions)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SHOW_SCROLLBAR)
                         .title(R.string.settings_home_misc_scrollbar)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SCROLL_TO_TOP)
@@ -367,14 +368,14 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_misc_scroll_top_summary)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SMOOTH_SCROLL_TO_TOP)
                         .title(R.string.settings_home_misc_smooth_scroll_top)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_BAR_PULL_BEHAVIOR)
@@ -382,7 +383,7 @@ final class SettingsEntries {
                         .category(R.string.settings_home_misc)
                         .addArraysSearchTokens(R.array.pref_desc_search_bar_pull_behavior)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.EXPAND_NOTIFICATIONS)
@@ -390,7 +391,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_misc_expand_status_bar_summary)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.DESTRUCTIVE_NON_EDIT)
@@ -398,7 +399,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_misc_destructive_non_edit_summary)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.VERBOSE_ERRORS)
@@ -406,7 +407,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_misc_verbose_errors_summary)
                         .category(R.string.settings_home_misc)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(MiscFragment.newInstance(requestKey));
+                            return singletonList(MiscFragment.newInstance(requestKey));
                         })
                         .build(),
 
@@ -417,13 +418,13 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_screen_lock_double_tap_summary)
                         .category(R.string.settings_home_screen_lock)
                         .setAvailable(ScreenLock.isAvailable())
-                        .stackBuilder(requestKey -> Collections.singletonList(new ScreenLockSettingsFragment()))
+                        .stackBuilder(requestKey -> singletonList(new ScreenLockSettingsFragment()))
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_screen_lock_accessibility)
                         .title(R.string.settings_home_screen_lock_accessibility)
                         .category(R.string.settings_home_screen_lock)
                         .setAvailable(ScreenLock.isAvailable())
-                        .stackBuilder(requestKey -> Collections.singletonList(new ScreenLockSettingsFragment()))
+                        .stackBuilder(requestKey -> singletonList(new ScreenLockSettingsFragment()))
                         .build(),
 
                 /* --- Experimental --- */
@@ -451,7 +452,7 @@ final class SettingsEntries {
                         .title(R.string.settings_apps_list)
                         .category(R.string.settings_apps_list)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(AppsSettingsFragment.newInstance(requestKey));
+                            return singletonList(AppsSettingsFragment.newInstance(requestKey));
                         })
                         .build(),
 
@@ -461,7 +462,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_misc_shortcuts)
                         .category(R.string.settings_home_misc_shortcuts)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new ShortcutsFragment());
+                            return singletonList(new ShortcutsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SHOW_SHORTCUTS)
@@ -472,21 +473,21 @@ final class SettingsEntries {
                                 R.string.settings_home_misc_shortcuts_show_summary_on
                         )
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new ShortcutsFragment());
+                            return singletonList(new ShortcutsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SHORTCUTS_SORT_MODE)
                         .title(R.string.settings_home_misc_shortcuts_sort_mode)
                         .category(R.string.settings_home_misc_shortcuts)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new ShortcutsFragment());
+                            return singletonList(new ShortcutsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.MAX_DYNAMIC_SHORTCUTS)
                         .title(R.string.settings_home_misc_shortcuts_max_dynamic)
                         .category(R.string.settings_home_misc_shortcuts)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new ShortcutsFragment());
+                            return singletonList(new ShortcutsFragment());
                         })
                         .build(),
 
@@ -496,7 +497,7 @@ final class SettingsEntries {
                         .title(R.string.settings_home_misc_notifications)
                         .category(R.string.settings_home_misc_notifications)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new NotificationsFragment());
+                            return singletonList(new NotificationsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT)
@@ -504,28 +505,28 @@ final class SettingsEntries {
                         .summary(R.string.settings_home_misc_notifications_dot_summary)
                         .category(R.string.settings_home_misc_notifications)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new NotificationsFragment());
+                            return singletonList(new NotificationsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_FOLDERS)
                         .title(R.string.settings_home_misc_notifications_dot_folders)
                         .category(R.string.settings_home_misc_notifications)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new NotificationsFragment());
+                            return singletonList(new NotificationsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_ONGOING)
                         .title(R.string.settings_home_misc_notifications_dot_ongoing)
                         .category(R.string.settings_home_misc_notifications)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new NotificationsFragment());
+                            return singletonList(new NotificationsFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_POPUP)
                         .title(R.string.settings_home_misc_notifications_popup_show)
                         .category(R.string.settings_home_misc_notifications)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new NotificationsFragment());
+                            return singletonList(new NotificationsFragment());
                         })
                         .build(),
 
@@ -535,7 +536,7 @@ final class SettingsEntries {
                         .title(R.string.settings_search)
                         .category(R.string.settings_search)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_SHOW_SOFT_KEYBOARD)
@@ -546,21 +547,21 @@ final class SettingsEntries {
                                 R.string.settings_search_auto_show_summary_on
                         )
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_SHOW_GLOBAL_SEARCH)
                         .title(R.string.settings_search_global)
                         .category(R.string.settings_search)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_SHOW_CUSTOMIZE)
                         .title(R.string.settings_search_customize)
                         .category(R.string.settings_search)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_USE_CUSTOM_TABS)
@@ -568,7 +569,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_search_custom_tabs_summary)
                         .category(R.string.settings_search)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_ENGINE)
@@ -577,7 +578,7 @@ final class SettingsEntries {
                         .addArraysSearchTokens(R.array.pref_desc_search_engines)
                         .addResourcesSearchTokens(R.string.settings_search_engine_custom_format)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.SEARCH_SHOW_MOST_USED)
@@ -585,14 +586,14 @@ final class SettingsEntries {
                         .summary(R.string.settings_search_history_most_used_summary)
                         .category(R.string.settings_search_history)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_search_most_used_reset)
                         .title(R.string.settings_search_history_most_used_reset)
                         .category(R.string.settings_search_history)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(Preferences.EXCLUDED_SEARCH_TARGETS)
@@ -601,7 +602,7 @@ final class SettingsEntries {
                         .category(R.string.settings_search)
                         .addArraysSearchTokens(R.array.pref_desc_excluded_search_targets)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new SearchFragment());
+                            return singletonList(new SearchFragment());
                         })
                         .build(),
 
@@ -611,7 +612,7 @@ final class SettingsEntries {
                         .title(R.string.settings_other_bar)
                         .category(R.string.settings_other_bar)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new BackupFragment());
+                            return singletonList(new BackupFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_backup)
@@ -619,7 +620,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_other_bar_backup_summary)
                         .category(R.string.settings_other_bar)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new BackupFragment());
+                            return singletonList(new BackupFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_restore)
@@ -627,7 +628,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_other_bar_restore_summary)
                         .category(R.string.settings_other_bar)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new BackupFragment());
+                            return singletonList(new BackupFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_reset_apps)
@@ -635,7 +636,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_other_bar_reset_apps_summary)
                         .category(R.string.settings_other_bar)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new BackupFragment());
+                            return singletonList(new BackupFragment());
                         })
                         .build(),
                 new SettingsEntryImpl.Builder(R.string.pref_key_reset_lnch)
@@ -643,7 +644,7 @@ final class SettingsEntries {
                         .summary(R.string.settings_other_bar_reset_lnch_summary)
                         .category(R.string.settings_other_bar)
                         .stackBuilder(requestKey -> {
-                            return Collections.singletonList(new BackupFragment());
+                            return singletonList(new BackupFragment());
                         })
                         .build(),
         };
