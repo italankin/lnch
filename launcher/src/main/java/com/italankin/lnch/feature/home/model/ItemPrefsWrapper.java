@@ -51,6 +51,11 @@ public class ItemPrefsWrapper implements UserPrefs.ItemPrefs {
     }
 
     @Override
+    public Preferences.NotificationDotPosition notificationDotPosition() {
+        return itemPrefs.notificationDotPosition();
+    }
+
+    @Override
     public Preferences.ItemWidth itemWidth() {
         return itemPrefs.itemWidth();
     }

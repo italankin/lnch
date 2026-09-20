@@ -92,6 +92,19 @@
         <item>New gesture at top</item>
     </string-array>
 
+    <string-array name="pref_values_notification_dot_position">
+        <item>top_left</item>
+        <item>top_right</item>
+        <item>bot_left</item>
+        <item>bot_right</item>
+    </string-array>
+    <string-array name="pref_desc_notification_dot_position">
+        <item>Top left</item>
+        <item>Top right</item>
+        <item>Bottom left</item>
+        <item>Bottom right</item>
+    </string-array>
+
     <string-array name="pref_values_notification_dot_size">
         <item>small</item>
         <item>normal</item>

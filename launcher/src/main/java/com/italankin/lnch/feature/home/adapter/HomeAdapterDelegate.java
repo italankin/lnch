@@ -1,5 +1,6 @@
 package com.italankin.lnch.feature.home.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
         ViewUtils.setPaddingDp(label, itemPrefs.itemPadding());
         label.setTextSize(itemPrefs.itemTextSize());
@@ -97,7 +99,20 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         label.setTypeface(itemPrefs.typeface());
         NotificationDotDrawable notificationDot = holder.getNotificationDot();
         if (notificationDot != null) {
-            notificationDot.setGravity(Gravity.TOP | Gravity.END);
+            switch (itemPrefs.notificationDotPosition()) {
+                case TOP_LEFT:
+                    notificationDot.setGravity(Gravity.TOP | Gravity.LEFT);
+                    break;
+                case TOP_RIGHT:
+                    notificationDot.setGravity(Gravity.TOP | Gravity.RIGHT);
+                    break;
+                case BOT_LEFT:
+                    notificationDot.setGravity(Gravity.BOTTOM | Gravity.LEFT);
+                    break;
+                case BOT_RIGHT:
+                    notificationDot.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
+                    break;
+            }
             notificationDot.setColor(itemPrefs.notificationDotColor());
             switch (itemPrefs.notificationDotSize()) {
                 case SMALL:
@@ -129,21 +144,12 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
             switch (params.itemAlignmentProvider.get(itemPrefs)) {
                 case START:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-                    if (notificationDot != null) {
-                        notificationDot.setGravity(Gravity.TOP | Gravity.START);
-                    }
                     break;
                 case CENTER:
                     label.setGravity(Gravity.CENTER);
-                    if (notificationDot != null) {
-                        notificationDot.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                    }
                     break;
                 case END:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
-                    if (notificationDot != null) {
-                        notificationDot.setGravity(Gravity.TOP | Gravity.END);
-                    }
                     break;
             }
         } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {

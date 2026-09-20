@@ -248,6 +248,7 @@
     <string name="settings_home_laf_notification_disabled">Notification dots are disabled</string>
     <string name="settings_home_laf_notification_disabled_summary">Enable them in Notifications settings to customize their appearance</string>
     <string name="settings_home_laf_notification_dot_color">Notification dot color</string>
+    <string name="settings_home_laf_notification_dot_position">Notification dot position</string>
     <string name="settings_home_laf_notification_dot_size">Notification dot size</string>
 
     <string name="settings_home_laf_folders">Folders</string>

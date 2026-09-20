@@ -129,5 +129,6 @@ public class LookAndFeelFragment extends BasePreferenceFragment implements Setti
         findPreference(R.string.pref_key_notification_dots_disabled).setVisible(!enabled);
         findPreference(Preferences.NOTIFICATION_DOT_COLOR).setEnabled(enabled);
         findPreference(Preferences.NOTIFICATION_DOT_SIZE).setEnabled(enabled);
+        findPreference(Preferences.NOTIFICATION_DOT_POSITION).setEnabled(enabled);
     }
 }

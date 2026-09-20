@@ -110,6 +110,13 @@
             android:key="notification_dot_size"
             android:summary="%s"
             android:title="@string/settings_home_laf_notification_dot_size" />
+        <ListPreference
+            android:defaultValue="top_right"
+            android:entries="@array/pref_desc_notification_dot_position"
+            android:entryValues="@array/pref_values_notification_dot_position"
+            android:key="notification_dot_position"
+            android:summary="%s"
+            android:title="@string/settings_home_laf_notification_dot_position" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_home_laf_search_bar">
         <ListPreference

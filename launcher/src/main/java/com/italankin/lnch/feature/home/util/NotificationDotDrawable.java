@@ -33,7 +33,7 @@ public class NotificationDotDrawable extends Drawable {
     private final Rect rect = new Rect();
     private int radius;
     private int margin;
-    private int gravity = Gravity.END | Gravity.TOP;
+    private int gravity = Gravity.RIGHT | Gravity.TOP;
     private Size size = Size.NORMAL;
 
     private boolean visible = false;

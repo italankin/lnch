@@ -31,6 +31,7 @@ public final class UserPrefs {
         PREFERENCES.add(Preferences.ITEM_WIDTH);
         PREFERENCES.add(Preferences.NOTIFICATION_DOT_COLOR);
         PREFERENCES.add(Preferences.NOTIFICATION_DOT_SIZE);
+        PREFERENCES.add(Preferences.NOTIFICATION_DOT_POSITION);
     }
 
     public final Preferences.HomeLayout homeLayout;
@@ -138,6 +139,8 @@ public final class UserPrefs {
 
         Preferences.NotificationDotSize notificationDotSize();
 
+        Preferences.NotificationDotPosition notificationDotPosition();
+
         Preferences.ItemWidth itemWidth();
 
         Preferences.HomeAlignment homeAlignment();
@@ -154,6 +157,7 @@ public final class UserPrefs {
         public final Typeface typeface;
         public final Integer notificationDotColor;
         public final Preferences.NotificationDotSize notificationDotSize;
+        public final Preferences.NotificationDotPosition notificationDotPosition;
         public final Preferences.ItemWidth itemWidth;
         public final Preferences.HomeAlignment alignment;
 
@@ -166,6 +170,7 @@ public final class UserPrefs {
             typeface = fontManager.getTypeface(itemFont);
             notificationDotColor = preferences.get(Preferences.NOTIFICATION_DOT_COLOR);
             notificationDotSize = preferences.get(Preferences.NOTIFICATION_DOT_SIZE);
+            notificationDotPosition = preferences.get(Preferences.NOTIFICATION_DOT_POSITION);
             itemWidth = preferences.get(Preferences.ITEM_WIDTH);
             alignment = preferences.get(Preferences.HOME_ALIGNMENT);
         }
@@ -209,6 +214,11 @@ public final class UserPrefs {
         }
 
         @Override
+        public Preferences.NotificationDotPosition notificationDotPosition() {
+            return notificationDotPosition;
+        }
+
+        @Override
         public Preferences.ItemWidth itemWidth() {
             return itemWidth;
         }
@@ -242,6 +252,9 @@ public final class UserPrefs {
             if (!Objects.equals(notificationDotColor, itemPrefs.notificationDotColor)) {
                 return false;
             }
+            if (notificationDotPosition != itemPrefs.notificationDotPosition) {
+                return false;
+            }
             if (notificationDotSize != itemPrefs.notificationDotSize) {
                 return false;
             }
@@ -266,6 +279,7 @@ public final class UserPrefs {
                 result = 31 * result + notificationDotColor;
             }
             result = 31 * result + notificationDotSize.hashCode();
+            result = 31 * result + notificationDotPosition.hashCode();
             if (itemShadowColor != null) {
                 result = 31 * result + itemShadowColor;
             }
@@ -286,6 +300,7 @@ public final class UserPrefs {
                     ", itemFont=" + itemFont +
                     ", notificationDotColor=" + notificationDotColor +
                     ", notificationDotSize=" + notificationDotSize +
+                    ", notificationDotPosition=" + notificationDotPosition +
                     '}';
         }
     }

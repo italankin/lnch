@@ -156,6 +156,14 @@ final class SettingsEntries {
                             return singletonList(LookAndFeelFragment.newInstance(requestKey));
                         })
                         .build(),
+                new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_POSITION)
+                        .title(R.string.settings_home_laf_notification_dot_position)
+                        .category(R.string.settings_home_laf)
+                        .addArraysSearchTokens(R.array.pref_desc_notification_dot_position)
+                        .stackBuilder(requestKey -> {
+                            return singletonList(LookAndFeelFragment.newInstance(requestKey));
+                        })
+                        .build(),
                 new SettingsEntryImpl.Builder(Preferences.NOTIFICATION_DOT_SIZE)
                         .title(R.string.settings_home_laf_notification_dot_size)
                         .category(R.string.settings_home_laf)

@@ -488,6 +488,14 @@ public interface Preferences {
             null);
 
     /**
+     * {@link #NOTIFICATION_DOT} position
+     */
+    Pref<NotificationDotPosition> NOTIFICATION_DOT_POSITION = Prefs.create(
+            "notification_dot_position",
+            NotificationDotPosition.TOP_RIGHT,
+            NotificationDotPosition::from);
+
+    /**
      * {@link #NOTIFICATION_DOT} size
      */
     Pref<NotificationDotSize> NOTIFICATION_DOT_SIZE = Prefs.create(
@@ -621,6 +629,7 @@ public interface Preferences {
             NOTIFICATION_DOT_FOLDERS,
             NOTIFICATION_DOT_COLOR,
             NOTIFICATION_DOT_SIZE,
+            NOTIFICATION_DOT_POSITION,
             NOTIFICATION_DOT_ONGOING,
             NOTIFICATION_POPUP,
             EXPERIMENTAL_INTENT_FACTORY,
@@ -1094,6 +1103,37 @@ public interface Preferences {
         private final String key;
 
         NotificationDotSize(String key) {
+            this.key = key;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return key;
+        }
+    }
+
+    /**
+     * Position of the notification dot
+     */
+    enum NotificationDotPosition {
+        TOP_LEFT("top_left"),
+        TOP_RIGHT("top_right"),
+        BOT_LEFT("bot_left"),
+        BOT_RIGHT("bot_right");
+
+        static NotificationDotPosition from(String s, NotificationDotPosition defaultValue) {
+            for (NotificationDotPosition item : values()) {
+                if (item.key.equals(s)) {
+                    return item;
+                }
+            }
+            return defaultValue;
+        }
+
+        private final String key;
+
+        NotificationDotPosition(String key) {
             this.key = key;
         }
 
