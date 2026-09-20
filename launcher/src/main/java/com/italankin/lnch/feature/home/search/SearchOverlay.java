@@ -3,6 +3,7 @@ package com.italankin.lnch.feature.home.search;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -122,7 +123,13 @@ public class SearchOverlay extends ConstraintLayout implements MatchAdapter.List
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        ViewUtils.setPaddingBottom(searchResultsList, insets.getSystemWindowInsetBottom());
+        int bottom;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            bottom = insets.getInsets(WindowInsets.Type.systemBars()).bottom;
+        } else {
+            bottom = insets.getSystemWindowInsetBottom();
+        }
+        ViewUtils.setPaddingBottom(searchResultsList, bottom);
         return super.onApplyWindowInsets(insets);
     }
 
