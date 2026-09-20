@@ -20,6 +20,9 @@ import androidx.core.content.ContextCompat;
 
 import com.italankin.lnch.R;
 
+/**
+ * Set as view foreground, it repositions itself within view's rect, according to {@link #gravity}.
+ */
 public class NotificationDotDrawable extends Drawable {
 
     private static final AccelerateDecelerateInterpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
