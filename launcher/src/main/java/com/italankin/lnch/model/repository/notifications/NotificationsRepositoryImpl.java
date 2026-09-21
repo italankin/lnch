@@ -150,7 +150,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         ArrayList<StatusBarNotification> sbns = new ArrayList<>(bag.sbns);
         boolean replaced = false;
         for (int i = 0, s = sbns.size(); i < s; i++) {
-            if (sbns.get(i).getId() == newSbn.getId()) {
+            if (sbns.get(i).getKey().equals(newSbn.getKey())) {
                 sbns.set(i, newSbn);
                 replaced = true;
                 break;
@@ -172,7 +172,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         }
         ArrayList<StatusBarNotification> sbns = new ArrayList<>(bag.sbns);
         for (int i = 0, s = sbns.size(); i < s; i++) {
-            if (sbns.get(i).getId() == sbn.getId()) {
+            if (sbns.get(i).getKey().equals(sbn.getKey())) {
                 sbns.remove(i);
                 break;
             }
@@ -187,7 +187,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private static boolean containsNotification(NotificationBag bag, StatusBarNotification sbn) {
         for (StatusBarNotification s : bag.sbns) {
-            if (s.getId() == sbn.getId()) {
+            if (s.getKey().equals(sbn.getKey())) {
                 return true;
             }
         }
