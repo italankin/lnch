@@ -144,9 +144,6 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
             state.put(app, new NotificationBag(app, newSbn));
             return true;
         }
-        if (containsNotification(bag, newSbn)) {
-            return false;
-        }
         ArrayList<StatusBarNotification> sbns = new ArrayList<>(bag.sbns);
         boolean replaced = false;
         for (int i = 0, s = sbns.size(); i < s; i++) {
