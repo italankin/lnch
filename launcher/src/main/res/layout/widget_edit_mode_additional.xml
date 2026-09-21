@@ -1,127 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:maxWidth="400dp"
     android:minWidth="320dp"
-    android:overScrollMode="never">
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="16dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingVertical="8dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="8dp">
+        android:text="@string/customize_wallpaper_dim"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_checkbox"
+        app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_checkbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/wallpaper_dim_checkbox" />
 
-        <TextView
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/wallpaper_dim_checkbox"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/wallpaper_dim_color"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:src="@drawable/ic_action_color"
+        app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_slider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/wallpaper_dim_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/wallpaper_dim_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:valueFrom="0"
+        android:valueTo="1"
+        app:labelBehavior="gone"
+        app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_checkbox" />
+
+    <TextView
+        android:id="@+id/text_size_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:text="@string/customize_text_size"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/text_size_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:stepSize="1"
+        app:labelBehavior="gone"
+        app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_size_title"
+        app:tickVisible="false" />
+
+    <ImageView
+        android:id="@+id/text_size_reset"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:src="@drawable/ic_settings_backup_restore"
+        app:layout_constraintBottom_toBottomOf="@id/text_size_slider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_size_slider" />
+
+    <TextView
+        android:id="@+id/text_padding_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:text="@string/customize_text_padding"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_size_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/text_padding_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:stepSize="1"
+        app:labelBehavior="gone"
+        app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_padding_title"
+        app:tickVisible="false" />
+
+    <ImageView
+        android:id="@+id/text_padding_reset"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:src="@drawable/ic_settings_backup_restore"
+        app:layout_constraintBottom_toBottomOf="@id/text_padding_slider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_padding_slider" />
+
+    <TextView
+        android:id="@+id/global_item_alignment_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@+id/global_item_alignment"
+        android:text="@string/customize_item_alignment"
+        android:textAppearance="?textAppearanceTitleSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_padding_reset" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@id/global_item_alignment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/global_item_alignment_title"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_alignment_start"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/customize_wallpaper_dim"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_checkbox"
-            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_checkbox"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/wallpaper_dim_checkbox" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_start"
+            android:textSize="12sp" />
 
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/wallpaper_dim_checkbox"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/wallpaper_dim_color"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_action_color"
-            app:layout_constraintBottom_toBottomOf="@id/wallpaper_dim_slider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/wallpaper_dim_slider" />
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/wallpaper_dim_slider"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_alignment_center"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:valueFrom="0"
-            android:valueTo="1"
-            app:labelBehavior="gone"
-            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_checkbox" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_center"
+            android:textSize="12sp" />
 
-        <TextView
-            android:id="@+id/text_size_title"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_alignment_end"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:minHeight="48dp"
-            android:text="@string/customize_text_size"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wallpaper_dim_slider" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_end"
+            android:textSize="12sp" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/text_size_slider"
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/global_item_width_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@+id/global_item_width"
+        android:text="@string/customize_item_width"
+        android:textAppearance="?textAppearanceTitleSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/global_item_alignment" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@id/global_item_width"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/global_item_width_title"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_width_content"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:stepSize="1"
-            app:labelBehavior="gone"
-            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_size_title"
-            app:tickVisible="false" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_content"
+            android:textSize="12sp" />
 
-        <ImageView
-            android:id="@+id/text_size_reset"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_settings_backup_restore"
-            app:layout_constraintBottom_toBottomOf="@id/text_size_slider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_size_slider" />
-
-        <TextView
-            android:id="@+id/text_padding_title"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_width_row"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:minHeight="48dp"
-            android:text="@string/customize_text_padding"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_size_slider" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_fill_row_content_width"
+            android:textSize="12sp" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/text_padding_slider"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/global_item_width_fill"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:stepSize="1"
-            app:labelBehavior="gone"
-            app:layout_constraintEnd_toStartOf="@id/wallpaper_dim_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_padding_title"
-            app:tickVisible="false" />
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/item_appearance_fill_row"
+            android:textSize="12sp" />
 
-        <ImageView
-            android:id="@+id/text_padding_reset"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_settings_backup_restore"
-            app:layout_constraintBottom_toBottomOf="@id/text_padding_slider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_padding_slider" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

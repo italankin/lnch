@@ -94,6 +94,7 @@ import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeBus;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
+import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
 import com.italankin.lnch.feature.home.util.HomeItemViewUtils;
@@ -669,6 +670,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     @Override
     public void onEditModeDiscard() {
         setEditMode(false);
+        setLayout(layout, preferences.get(Preferences.HOME_ALIGNMENT));
         adapter.setUserPrefsOverrides(null);
     }
 
@@ -688,6 +690,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     @Override
     public <T> void onEditModePropertyChange(EditModeState.Property<T> property, T newValue) {
+        if (property == EditModeProperties.HOME_ALIGNMENT) {
+            setLayout(layout, preferences.get(Preferences.HOME_ALIGNMENT));
+        }
         if (EditModeItemPrefs.ITEM_PREFS_PROPERTIES.contains(property)) {
             adapter.forceUpdateItemPrefs();
         }
@@ -1087,6 +1092,12 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     }
 
     private void setLayout(Preferences.HomeLayout layout, Preferences.HomeAlignment homeAlignment) {
+        if (editModeState.isActive()) {
+            Preferences.HomeAlignment override = editModeState.getProperty(EditModeProperties.HOME_ALIGNMENT);
+            if (override != null) {
+                homeAlignment = override;
+            }
+        }
         if (layout != this.layout) {
             this.layout = layout;
             list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));

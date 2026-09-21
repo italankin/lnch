@@ -7,8 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.slider.Slider;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
@@ -71,6 +75,8 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         setupWallpaperDim(view);
         setupTextSize(view);
         setupItemPadding(view);
+        setupItemWidth(view);
+        setupItemAlignment(view);
 
         showPopup();
     }
@@ -152,6 +158,78 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
             slider.setValue(defaultValue);
             editModeState.setProperty(EditModeProperties.ITEM_PADDING, defaultValue);
         });
+    }
+
+    private void setupItemWidth(View view) {
+        MaterialButtonToggleGroup group = view.findViewById(R.id.global_item_width);
+        group.check(getWidthButtonId(getCurrentValue(EditModeProperties.ITEM_WIDTH, Preferences.ITEM_WIDTH)));
+        group.addOnButtonCheckedListener((buttons, checkedId, isChecked) -> {
+            if (!isChecked) {
+                return;
+            }
+            Preferences.ItemWidth width = getWidth(checkedId);
+            if (width != getCurrentValue(EditModeProperties.ITEM_WIDTH, Preferences.ITEM_WIDTH)) {
+                editModeState.setProperty(EditModeProperties.ITEM_WIDTH, width);
+            }
+        });
+    }
+
+    private void setupItemAlignment(View view) {
+        MaterialButtonToggleGroup group = view.findViewById(R.id.global_item_alignment);
+        group.check(getAlignmentButtonId(getCurrentValue(EditModeProperties.HOME_ALIGNMENT, Preferences.HOME_ALIGNMENT)));
+        group.addOnButtonCheckedListener((buttons, checkedId, isChecked) -> {
+            if (!isChecked) {
+                return;
+            }
+            Preferences.HomeAlignment alignment = getAlignment(checkedId);
+            if (alignment != getCurrentValue(EditModeProperties.HOME_ALIGNMENT, Preferences.HOME_ALIGNMENT)) {
+                editModeState.setProperty(EditModeProperties.HOME_ALIGNMENT, alignment);
+            }
+        });
+    }
+
+    @IdRes
+    private static int getWidthButtonId(Preferences.ItemWidth width) {
+        switch (width) {
+            case MATCH_PARENT:
+                return R.id.global_item_width_fill;
+            case FILL_ROW_WRAP_CONTENT:
+                return R.id.global_item_width_row;
+            default:
+                return R.id.global_item_width_content;
+        }
+    }
+
+    private static Preferences.ItemWidth getWidth(@IdRes int buttonId) {
+        if (buttonId == R.id.global_item_width_fill) {
+            return Preferences.ItemWidth.MATCH_PARENT;
+        }
+        if (buttonId == R.id.global_item_width_row) {
+            return Preferences.ItemWidth.FILL_ROW_WRAP_CONTENT;
+        }
+        return Preferences.ItemWidth.WRAP;
+    }
+
+    @IdRes
+    private static int getAlignmentButtonId(Preferences.HomeAlignment alignment) {
+        switch (alignment) {
+            case CENTER:
+                return R.id.global_item_alignment_center;
+            case END:
+                return R.id.global_item_alignment_end;
+            default:
+                return R.id.global_item_alignment_start;
+        }
+    }
+
+    private static Preferences.HomeAlignment getAlignment(@IdRes int buttonId) {
+        if (buttonId == R.id.global_item_alignment_center) {
+            return Preferences.HomeAlignment.CENTER;
+        }
+        if (buttonId == R.id.global_item_alignment_end) {
+            return Preferences.HomeAlignment.END;
+        }
+        return Preferences.HomeAlignment.START;
     }
 
     private <T> T getCurrentValue(EditModeState.Property<T> prop, Preferences.Pref<T> pref) {
