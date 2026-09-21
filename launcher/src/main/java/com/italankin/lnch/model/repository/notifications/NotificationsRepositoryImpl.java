@@ -17,18 +17,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class NotificationsRepositoryImpl implements NotificationsRepository {
 
     private final DescriptorRepository descriptorRepository;
-    private final PublishSubject<Map<AppDescriptor, NotificationBag>> updates = PublishSubject.create();
+    private final Subject<Map<AppDescriptor, NotificationBag>> updates =
+            PublishSubject.<Map<AppDescriptor, NotificationBag>>create().toSerialized();
 
-    private final ConcurrentMap<AppDescriptor, NotificationBag> state = new ConcurrentHashMap<>();
+    private final Map<AppDescriptor, NotificationBag> state = new HashMap<>();
 
     private volatile Callback callback;
 
@@ -48,21 +48,21 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     @Override
-    public void postNotification(StatusBarNotification sbn) {
+    public synchronized void postNotification(StatusBarNotification sbn) {
         if (modifyState(sbn, Type.POSTED)) {
             updates.onNext(snapshot());
         }
     }
 
     @Override
-    public void removeNotification(StatusBarNotification sbn) {
+    public synchronized void removeNotification(StatusBarNotification sbn) {
         if (modifyState(sbn, Type.REMOVED)) {
             updates.onNext(snapshot());
         }
     }
 
     @Override
-    public void postNotifications(StatusBarNotification... sbns) {
+    public synchronized void postNotifications(StatusBarNotification... sbns) {
         boolean modified = false;
         for (StatusBarNotification sbn : sbns) {
             // always run modifyState function
@@ -74,14 +74,14 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     }
 
     @Override
-    public void clearNotifications() {
+    public synchronized void clearNotifications() {
         state.clear();
         updates.onNext(snapshot());
     }
 
     @Nullable
     @Override
-    public NotificationBag getByApp(AppDescriptor descriptor) {
+    public synchronized NotificationBag getByApp(AppDescriptor descriptor) {
         return state.get(descriptor);
     }
 
@@ -93,7 +93,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .mergeWith(updates);
     }
 
-    private Map<AppDescriptor, NotificationBag> snapshot() {
+    private synchronized Map<AppDescriptor, NotificationBag> snapshot() {
         return Collections.unmodifiableMap(new HashMap<>(state));
     }
 
@@ -111,7 +111,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 .distinctUntilChanged();
     }
 
-    private Map<AppDescriptor, NotificationBag> updateState(List<AppDescriptor> appDescriptors) {
+    private synchronized Map<AppDescriptor, NotificationBag> updateState(List<AppDescriptor> appDescriptors) {
         // remove any notifications, which belong to non-existent apps
         Set<AppDescriptor> apps = new HashSet<>(appDescriptors);
         for (Iterator<AppDescriptor> i = state.keySet().iterator(); i.hasNext(); ) {
@@ -180,7 +180,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
         if (sbns.isEmpty()) {
             state.remove(app);
         } else {
-            state.replace(app, new NotificationBag(app, sbns));
+            state.put(app, new NotificationBag(app, sbns));
         }
         return true;
     }
