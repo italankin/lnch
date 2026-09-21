@@ -1,23 +1,31 @@
 package com.italankin.lnch.feature.home.apps.popup;
 
 import android.animation.LayoutTransition;
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
-import com.italankin.lnch.feature.home.apps.delegate.*;
+import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ErrorDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationFactory;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUi;
 import com.italankin.lnch.feature.home.apps.popup.notifications.AppNotificationUiAdapter;
@@ -40,16 +48,17 @@ import com.italankin.lnch.util.ListUtils;
 import com.italankin.lnch.util.NumberUtils;
 import com.italankin.lnch.util.PackageUtils;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.italankin.adapterdelegates.CompositeAdapter;
 import timber.log.Timber;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class AppDescriptorPopupFragment extends ActionPopupFragment implements
         AppNotificationUiAdapter.Listener,
@@ -297,8 +306,25 @@ public class AppDescriptorPopupFragment extends ActionPopupFragment implements
     @Override
     public void onNotificationClick(AppNotificationUi item) {
         Notification notification = item.sbn.getNotification();
+        PendingIntent contentIntent = notification.contentIntent;
+        if (contentIntent == null) {
+            return;
+        }
         try {
-            notification.contentIntent.send();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ActivityOptions options = ActivityOptions.makeBasic();
+                // Grant the visible launcher's activity launch privileges for this user click.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                    options.setPendingIntentBackgroundActivityStartMode(
+                            ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_IF_VISIBLE);
+                } else {
+                    options.setPendingIntentBackgroundActivityStartMode(
+                            ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
+                }
+                contentIntent.send(requireContext(), 0, null, null, null, null, options.toBundle());
+            } else {
+                contentIntent.send();
+            }
             if (((notification.flags & Notification.FLAG_AUTO_CANCEL)) == Notification.FLAG_AUTO_CANCEL) {
                 cancelNotification(item);
             }
