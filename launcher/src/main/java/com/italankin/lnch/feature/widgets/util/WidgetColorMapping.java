@@ -47,7 +47,7 @@ public class WidgetColorMapping {
 
     private static SparseIntArray colorToAttrMappingLight() {
         SparseIntArray cm = new SparseIntArray();
-        cm.put(android.R.color.system_accent1_600, com.google.android.material.R.attr.colorPrimary);
+        cm.put(android.R.color.system_accent1_600, androidx.appcompat.R.attr.colorPrimary);
         cm.put(android.R.color.system_accent1_0, com.google.android.material.R.attr.colorOnPrimary);
         cm.put(android.R.color.system_accent1_100, com.google.android.material.R.attr.colorPrimaryContainer);
         cm.put(android.R.color.system_accent1_900, com.google.android.material.R.attr.colorOnPrimaryContainer);
@@ -87,7 +87,7 @@ public class WidgetColorMapping {
 
     private static SparseIntArray colorToAttrMappingDark() {
         SparseIntArray cm = new SparseIntArray();
-        cm.put(android.R.color.system_accent1_200, com.google.android.material.R.attr.colorPrimary);
+        cm.put(android.R.color.system_accent1_200, androidx.appcompat.R.attr.colorPrimary);
         cm.put(android.R.color.system_accent1_800, com.google.android.material.R.attr.colorOnPrimary);
         cm.put(android.R.color.system_accent1_700, com.google.android.material.R.attr.colorPrimaryContainer);
         cm.put(android.R.color.system_accent1_100, com.google.android.material.R.attr.colorOnPrimaryContainer);
@@ -123,5 +123,4 @@ public class WidgetColorMapping {
         cm.put(android.R.color.system_neutral2_900, com.google.android.material.R.attr.colorSurfaceContainerLow);
         return cm;
     }
-
 }
