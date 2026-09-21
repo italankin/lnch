@@ -31,13 +31,13 @@ public class FolderDescriptorUiAdapter
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.label.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onFolderClick(pos, getItem(pos));
             }
         });
-        itemView.setOnLongClickListener(v -> {
+        holder.label.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onFolderLongClick(pos, getItem(pos));
@@ -64,7 +64,7 @@ public class FolderDescriptorUiAdapter
 
         ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
             notificationDot = new NotificationDotDrawable(
                     itemView.getContext(),
                     ResUtils.resolveColor(itemView.getContext(), R.attr.colorItemShadowDefault));
@@ -89,11 +89,6 @@ public class FolderDescriptorUiAdapter
             Integer badgeColor = item.getCustomBadgeColor();
             notificationDot.setColor(badgeColor != null ? badgeColor : itemPrefs.notificationDotColor());
             notificationDot.setMargin(itemPrefs.itemPadding() * 2);
-        }
-
-        @Override
-        protected View getRoot() {
-            return label;
         }
 
         @Nullable

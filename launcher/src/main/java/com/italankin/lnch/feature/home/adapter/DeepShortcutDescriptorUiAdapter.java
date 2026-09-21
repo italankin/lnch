@@ -35,13 +35,13 @@ public class DeepShortcutDescriptorUiAdapter
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.label.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onDeepShortcutClick(pos, getItem(pos));
             }
         });
-        itemView.setOnLongClickListener(v -> {
+        holder.label.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onDeepShortcutLongClick(pos, getItem(pos));
@@ -68,7 +68,7 @@ public class DeepShortcutDescriptorUiAdapter
 
         ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
         }
 
         @Override
@@ -76,11 +76,6 @@ public class DeepShortcutDescriptorUiAdapter
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
             label.setAlpha(item.enabled ? 1 : DISABLED_ALPHA);
-        }
-
-        @Override
-        protected View getRoot() {
-            return label;
         }
 
         @Nullable

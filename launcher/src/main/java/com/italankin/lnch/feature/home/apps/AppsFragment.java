@@ -96,6 +96,7 @@ import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.feature.home.search.SearchOverlay;
 import com.italankin.lnch.feature.home.util.EmptySpaceGestureHandler;
+import com.italankin.lnch.feature.home.util.HomeItemViewUtils;
 import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
@@ -379,7 +380,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
         errorDelegate = new ErrorDelegateImpl(context);
         itemPopupDelegate = (item, anchor) -> {
-            Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
+            Rect bounds = HomeItemViewUtils.getPopupAnchorBounds(anchor);
             if (item instanceof AppDescriptorUi) {
                 AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, REQUEST_KEY_APPS, bounds)
                         .show(getParentFragmentManager());
@@ -870,14 +871,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     }
 
     private void showFolder(int position, FolderDescriptor descriptor) {
-        Point point = null;
-        View view = list.findViewForAdapterPosition(position);
-        if (view != null) {
-            int[] loc = new int[2];
-            view.getLocationInWindow(loc);
-            point = new Point(loc[0] + view.getWidth() / 2, loc[1]);
-        }
-
+        View itemView = list.findViewForAdapterPosition(position);
+        Rect bounds = HomeItemViewUtils.getItemBoundsInWindow(itemView);
+        Point point = bounds != null ? new Point(bounds.centerX(), bounds.top) : null;
         if (editMode) {
             EditFolderFragment.newInstance(descriptor, REQUEST_KEY_APPS, point)
                     .show(getParentFragmentManager(), android.R.id.content);
@@ -889,7 +885,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     private void showCustomizePopup(int position, DescriptorUi item) {
         View view = list.findViewForAdapterPosition(position);
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        Rect bounds = HomeItemViewUtils.getPopupAnchorBounds(view);
         CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_APPS, bounds)
                 .show(getParentFragmentManager());
     }
@@ -967,7 +963,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         }
         List<FolderDescriptorUi> folders = homeDescriptorsState.allByType(FolderDescriptorUi.class);
         View view = list.findViewForAdapterPosition(entry.position);
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        Rect bounds = HomeItemViewUtils.getPopupAnchorBounds(view);
         SelectFolderFragment.newInstance(REQUEST_KEY_APPS, entry.item, folders, move, bounds)
                 .show(getParentFragmentManager());
     }
@@ -998,7 +994,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             return;
         }
         View view = list.findViewForAdapterPosition(entry.position);
-        Rect anchor = ViewUtils.getViewBoundsInsetPadding(view);
+        Rect anchor = HomeItemViewUtils.getPopupAnchorBounds(view);
         ItemAppearancePopupFragment.newInstance(entry.item, REQUEST_KEY_APPS, anchor)
                 .show(getParentFragmentManager());
     }

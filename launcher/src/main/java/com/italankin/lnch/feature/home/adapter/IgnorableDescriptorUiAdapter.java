@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.italankin.lnch.R;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.util.widget.StubView;
 
@@ -21,7 +22,9 @@ public class IgnorableDescriptorUiAdapter
     @NonNull
     @Override
     public ViewHolder onCreate(LayoutInflater inflater, ViewGroup parent) {
-        return new ViewHolder(new StubView(inflater.getContext()));
+        View view = new StubView(inflater.getContext());
+        view.setId(R.id.itemRootContainer);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -53,11 +56,6 @@ public class IgnorableDescriptorUiAdapter
         @Override
         protected void bind(IgnorableDescriptorUi item) {
             // empty
-        }
-
-        @Override
-        protected View getRoot() {
-            return null;
         }
 
         @Nullable

@@ -60,10 +60,5 @@ public class ErrorDescriptorUiAdapter extends HomeAdapterDelegate<ErrorDescripto
         protected TextView getLabel() {
             return null;
         }
-
-        @Override
-        protected View getRoot() {
-            return itemView;
-        }
     }
 }

@@ -37,7 +37,7 @@ public class ShimmerDescriptorUiAdapter extends HomeAdapterDelegate<ShimmerDescr
 
         ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
             shimmer = new ShimmerDrawable(itemView.getContext());
             label.setBackground(shimmer);
         }
@@ -46,11 +46,6 @@ public class ShimmerDescriptorUiAdapter extends HomeAdapterDelegate<ShimmerDescr
         protected void bind(ShimmerDescriptorUi item) {
             label.setMinimumWidth(ResUtils.px2dp(label.getContext(), item.widthDp));
             shimmer.setPadding(label.getPaddingTop());
-        }
-
-        @Override
-        protected View getRoot() {
-            return label;
         }
 
         @Nullable

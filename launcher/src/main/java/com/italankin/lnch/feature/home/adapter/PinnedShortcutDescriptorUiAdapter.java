@@ -33,13 +33,13 @@ public class PinnedShortcutDescriptorUiAdapter
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.label.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onPinnedShortcutClick(pos, getItem(pos));
             }
         });
-        itemView.setOnLongClickListener(v -> {
+        holder.label.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onPinnedShortcutLongClick(pos, getItem(pos));
@@ -66,18 +66,13 @@ public class PinnedShortcutDescriptorUiAdapter
 
         ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
         }
 
         @Override
         protected void bind(PinnedShortcutDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
-        }
-
-        @Override
-        protected View getRoot() {
-            return label;
         }
 
         @Nullable

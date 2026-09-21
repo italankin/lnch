@@ -1,16 +1,21 @@
 package com.italankin.lnch.feature.home.util;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.italankin.lnch.R;
+
 public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchListener {
 
     private final GestureDetector gestureDetector;
+    private final Rect labelBounds = new Rect();
     private boolean startedOnEmptySpace;
 
     public EmptySpaceGestureHandler(Context context, Listener listener) {
@@ -43,7 +48,7 @@ public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchList
     public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             startedOnEmptySpace = recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE &&
-                    recyclerView.findChildViewUnder(event.getX(), event.getY()) == null;
+                    isEmptySpace(recyclerView, event);
             if (!startedOnEmptySpace) {
                 cancelGesture();
             }
@@ -56,6 +61,21 @@ public class EmptySpaceGestureHandler extends RecyclerView.SimpleOnItemTouchList
             startedOnEmptySpace = false;
         }
         return false;
+    }
+
+    private boolean isEmptySpace(RecyclerView recyclerView, MotionEvent event) {
+        View child = recyclerView.findChildViewUnder(event.getX(), event.getY());
+        if (child == null) {
+            return true;
+        }
+        View label = child.findViewById(R.id.itemLabel);
+        if (child.getId() != R.id.itemRootContainer || label == null) {
+            return false;
+        }
+        label.getHitRect(labelBounds);
+        float x = event.getX() - child.getX() + child.getScrollX();
+        float y = event.getY() - child.getY() + child.getScrollY();
+        return !labelBounds.contains((int) x, (int) y);
     }
 
     @Override

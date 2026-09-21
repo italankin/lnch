@@ -5,19 +5,18 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.model.Appearance;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
 import com.italankin.lnch.model.descriptor.props.ItemWidth;
-import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -102,7 +101,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface());
         updateNotificationDot(holder, itemPrefs);
-        updateItemWidth(holder, label, itemPrefs, appearance);
+        updateItemLayout(holder, label, itemPrefs, appearance);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -139,83 +138,78 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
     }
 
-    private void updateItemWidth(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs, Appearance appearance) {
-        View root = holder.getRoot();
-        ViewGroup.LayoutParams rootLp = root.getLayoutParams();
-        Preferences.ItemWidth itemWidth = appearance.width == null ? params.itemWidthProvider.get(itemPrefs)
-                : appearance.width == ItemWidth.FILL_ROW ? Preferences.ItemWidth.MATCH_PARENT
-                : Preferences.ItemWidth.WRAP;
-        boolean rootLayoutParamsChanged = updateWrapBefore(rootLp,
-                itemWidth == Preferences.ItemWidth.FILL_ROW_WRAP_CONTENT);
-        if (itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
-            if (rootLp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
-                rootLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                rootLayoutParamsChanged = true;
-                if (root != label) {
-                    ViewGroup.LayoutParams labelLp = label.getLayoutParams();
-                    labelLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    label.setLayoutParams(labelLp);
-                }
-            }
-        } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            rootLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            rootLayoutParamsChanged = true;
-            if (root != label) {
-                ViewGroup.LayoutParams llp = label.getLayoutParams();
-                llp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                label.setLayoutParams(llp);
-            }
-        }
-        TextAlign textAlign = appearance.textAlign;
-        if (textAlign == null) {
-            switch (params.itemAlignmentProvider.get(itemPrefs)) {
-                case START:
-                    textAlign = TextAlign.START;
+    private void updateItemLayout(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs, Appearance appearance) {
+        ItemWidth width = appearance.width;
+        if (width == null) {
+            switch (params.itemWidthProvider.get(itemPrefs)) {
+                case MATCH_PARENT:
+                    width = ItemWidth.FILL_ROW;
                     break;
-                case CENTER:
-                    textAlign = TextAlign.CENTER;
+                case FILL_ROW_WRAP_CONTENT:
+                    width = ItemWidth.FILL_ROW_CONTENT_WIDTH;
                     break;
-                case END:
-                    textAlign = TextAlign.END;
+                case WRAP:
+                default:
+                    width = ItemWidth.WRAP_CONTENT;
                     break;
             }
         }
-        if (textAlign != null) {
-            switch (textAlign) {
-                case START:
-                    label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-                    break;
-                case CENTER:
-                    label.setGravity(Gravity.CENTER);
-                    break;
-                case END:
-                    label.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
-                    break;
-            }
-        }
-        if (rootLayoutParamsChanged) {
-            root.setLayoutParams(rootLp);
-        }
-    }
+        int containerWidth = width == ItemWidth.WRAP_CONTENT
+                ? ViewGroup.LayoutParams.WRAP_CONTENT
+                : ViewGroup.LayoutParams.MATCH_PARENT;
+        int labelWidth = width == ItemWidth.FILL_ROW
+                ? ViewGroup.LayoutParams.MATCH_PARENT
+                : ViewGroup.LayoutParams.WRAP_CONTENT;
 
-    private boolean updateWrapBefore(ViewGroup.LayoutParams layoutParams, boolean wrapBefore) {
-        if (!(layoutParams instanceof FlexboxLayoutManager.LayoutParams)) {
-            return false;
+        int gravity;
+        if (appearance.textAlign != null) {
+            switch (appearance.textAlign) {
+                case CENTER:
+                    gravity = Gravity.CENTER;
+                    break;
+                case END:
+                    gravity = Gravity.CENTER_VERTICAL | Gravity.END;
+                    break;
+                case START:
+                default:
+                    gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+                    break;
+            }
+        } else {
+            switch (params.itemAlignmentProvider.get(itemPrefs)) {
+                case CENTER:
+                    gravity = Gravity.CENTER;
+                    break;
+                case END:
+                    gravity = Gravity.CENTER_VERTICAL | Gravity.END;
+                    break;
+                default:
+                    gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+                    break;
+            }
         }
-        FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams) layoutParams;
-        if (flexboxLp.isWrapBefore() == wrapBefore) {
-            return false;
+        ViewGroup.LayoutParams containerLp = holder.itemRootContainer.getLayoutParams();
+        if (containerLp.width != containerWidth) {
+            containerLp.width = containerWidth;
+            holder.itemRootContainer.setLayoutParams(containerLp);
         }
-        flexboxLp.setWrapBefore(wrapBefore);
-        return true;
+        FrameLayout.LayoutParams labelLp = (FrameLayout.LayoutParams) label.getLayoutParams();
+        if (labelLp.width != labelWidth || labelLp.gravity != gravity) {
+            labelLp.width = labelWidth;
+            labelLp.gravity = gravity;
+            label.setLayoutParams(labelLp);
+        }
+        label.setGravity(gravity);
     }
 
     public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
+        final View itemRootContainer;
         UserPrefs.ItemPrefs itemPrefs;
         Appearance appearance;
 
         protected ViewHolder(View itemView) {
             super(itemView);
+            itemRootContainer = itemView.findViewById(R.id.itemRootContainer);
         }
 
         protected abstract void bind(T item);
@@ -223,8 +217,6 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         protected void bind(T item, List<?> payloads) {
             bind(item);
         }
-
-        protected abstract View getRoot();
 
         @Nullable
         protected abstract TextView getLabel();

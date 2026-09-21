@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -62,13 +63,8 @@ public class ItemAppearancePopupFragment extends PopupFragment {
         MaterialButtonToggleGroup alignGroup = content.findViewById(R.id.item_appearance_align);
         HomeEntry<CustomLayoutDescriptorUi> entry = homeDescriptorsState.find(CustomLayoutDescriptorUi.class, descriptorId);
         if (entry != null) {
-            ItemWidth width = entry.item.getCustomWidth();
-            widthGroup.check(width == null ? R.id.item_width_default
-                    : width == ItemWidth.WRAP_CONTENT ? R.id.item_width_content : R.id.item_width_fill);
-            TextAlign align = entry.item.getCustomTextAlign();
-            alignGroup.check(align == null ? R.id.item_align_default
-                    : align == TextAlign.START ? R.id.item_align_start
-                      : align == TextAlign.CENTER ? R.id.item_align_center : R.id.item_align_end);
+            widthGroup.check(getWidthButtonId(entry.item.getCustomWidth()));
+            alignGroup.check(getTextAlignButtonId(entry.item.getCustomTextAlign()));
         }
         widthGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) {
@@ -76,8 +72,7 @@ public class ItemAppearancePopupFragment extends PopupFragment {
             }
             HomeEntry<CustomLayoutDescriptorUi> current = homeDescriptorsState.find(CustomLayoutDescriptorUi.class, descriptorId);
             if (current != null) {
-                ItemWidth width = checkedId == R.id.item_width_content ? ItemWidth.WRAP_CONTENT
-                        : checkedId == R.id.item_width_fill ? ItemWidth.FILL_ROW : null;
+                ItemWidth width = getWidth(checkedId);
                 if (current.item.getCustomWidth() != width) {
                     current.item.setCustomWidth(width);
                     updateAppearance(current.item);
@@ -90,9 +85,7 @@ public class ItemAppearancePopupFragment extends PopupFragment {
             }
             HomeEntry<CustomLayoutDescriptorUi> current = homeDescriptorsState.find(CustomLayoutDescriptorUi.class, descriptorId);
             if (current != null) {
-                TextAlign align = checkedId == R.id.item_align_start ? TextAlign.START
-                        : checkedId == R.id.item_align_center ? TextAlign.CENTER
-                          : checkedId == R.id.item_align_end ? TextAlign.END : null;
+                TextAlign align = getTextAlign(checkedId);
                 if (current.item.getCustomTextAlign() != align) {
                     current.item.setCustomTextAlign(align);
                     updateAppearance(current.item);
@@ -124,5 +117,64 @@ public class ItemAppearancePopupFragment extends PopupFragment {
     @Override
     protected String getPopupTag() {
         return TAG;
+    }
+
+    @IdRes
+    private static int getWidthButtonId(@Nullable ItemWidth width) {
+        if (width == ItemWidth.WRAP_CONTENT) {
+            return R.id.item_width_content;
+        }
+        if (width == ItemWidth.FILL_ROW) {
+            return R.id.item_width_fill;
+        }
+        if (width == ItemWidth.FILL_ROW_CONTENT_WIDTH) {
+            return R.id.item_width_fill_content;
+        }
+        return R.id.item_width_default;
+    }
+
+    @Nullable
+    private static ItemWidth getWidth(@IdRes int buttonId) {
+        if (buttonId == R.id.item_width_content) {
+            return ItemWidth.WRAP_CONTENT;
+        }
+        if (buttonId == R.id.item_width_fill) {
+            return ItemWidth.FILL_ROW;
+        }
+        if (buttonId == R.id.item_width_fill_content) {
+            return ItemWidth.FILL_ROW_CONTENT_WIDTH;
+        }
+        return null;
+    }
+
+    @IdRes
+    private static int getTextAlignButtonId(@Nullable TextAlign textAlign) {
+        if (textAlign == null) {
+            return R.id.item_align_default;
+        }
+        switch (textAlign) {
+            case START:
+                return R.id.item_align_start;
+            case CENTER:
+                return R.id.item_align_center;
+            case END:
+                return R.id.item_align_end;
+            default:
+                return R.id.item_align_default;
+        }
+    }
+
+    @Nullable
+    private static TextAlign getTextAlign(@IdRes int buttonId) {
+        if (buttonId == R.id.item_align_start) {
+            return TextAlign.START;
+        }
+        if (buttonId == R.id.item_align_center) {
+            return TextAlign.CENTER;
+        }
+        if (buttonId == R.id.item_align_end) {
+            return TextAlign.END;
+        }
+        return null;
     }
 }

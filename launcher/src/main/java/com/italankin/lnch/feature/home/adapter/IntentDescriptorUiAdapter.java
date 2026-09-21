@@ -33,13 +33,13 @@ public class IntentDescriptorUiAdapter
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.label.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onIntentClick(pos, getItem(pos));
             }
         });
-        itemView.setOnLongClickListener(v -> {
+        holder.label.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onIntentLongClick(pos, getItem(pos));
@@ -66,18 +66,13 @@ public class IntentDescriptorUiAdapter
 
         ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
         }
 
         @Override
         protected void bind(IntentDescriptorUi item) {
             label.setText(item.getVisibleLabel());
             label.setTextColor(item.getVisibleColor());
-        }
-
-        @Override
-        protected View getRoot() {
-            return label;
         }
 
         @Nullable

@@ -197,7 +197,7 @@ public class AppearanceActivity extends AppCompatActivity implements
     }
 
     private void initPreview() {
-        preview = findViewById(R.id.item_preview).findViewById(R.id.label);
+        preview = findViewById(R.id.item_preview).findViewById(R.id.itemLabel);
         preview.setBackgroundResource(R.drawable.selector_item_appearance);
         String previewText = LauncherApp.daggerService.main()
                 .nameNormalizer()

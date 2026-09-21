@@ -2,8 +2,10 @@ package com.italankin.lnch.feature.home.apps.folder.empty;
 
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.adapter.HomeAdapterDelegate;
 
@@ -39,11 +41,6 @@ public class EmptyFolderDescriptorUiAdapter extends
         @Override
         protected void bind(EmptyFolderDescriptorUi item) {
             // empty
-        }
-
-        @Override
-        protected View getRoot() {
-            return null;
         }
 
         @Nullable

@@ -4,11 +4,13 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.di.component.ViewModelComponent;
@@ -20,6 +22,7 @@ import com.italankin.lnch.feature.home.model.EditModeItemPrefs;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
+import com.italankin.lnch.feature.home.util.HomeItemViewUtils;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
@@ -32,7 +35,6 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
-import com.italankin.lnch.util.ViewUtils;
 
 public class EditFolderFragment extends BaseFolderFragment {
 
@@ -190,7 +192,7 @@ public class EditFolderFragment extends BaseFolderFragment {
     private void showCustomizePopup(int position, DescriptorUi item) {
         RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
         View view = holder != null ? holder.itemView : null;
-        Rect bounds = ViewUtils.getViewBoundsInsetPadding(view);
+        Rect bounds = HomeItemViewUtils.getPopupAnchorBounds(view);
         CustomizeDescriptorPopupFragment.newInstance(item, REQUEST_KEY_FOLDER, bounds)
                 .setFolderId(folderId)
                 .show(getParentFragmentManager());

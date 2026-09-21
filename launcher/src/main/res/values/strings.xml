@@ -330,6 +330,7 @@
     <string name="item_appearance_default">Default</string>
     <string name="item_appearance_content">Content</string>
     <string name="item_appearance_fill_row">Fill row</string>
+    <string name="item_appearance_fill_row_content_width">Row</string>
     <string name="item_appearance_start">Start</string>
     <string name="item_appearance_center">Center</string>
     <string name="item_appearance_end">End</string>

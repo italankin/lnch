@@ -5,15 +5,31 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.di.component.ViewModelComponent;
 import com.italankin.lnch.feature.base.AppViewModelProvider;
-import com.italankin.lnch.feature.home.apps.delegate.*;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.AppClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.CustomizeDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.DeepShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.IntentClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ItemPopupDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.PinnedShortcutClickDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.SearchIntentStarterDelegateImpl;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegate;
+import com.italankin.lnch.feature.home.apps.delegate.ShortcutStarterDelegateImpl;
 import com.italankin.lnch.feature.home.apps.popup.AppDescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
+import com.italankin.lnch.feature.home.util.HomeItemViewUtils;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
@@ -22,7 +38,6 @@ import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
-import com.italankin.lnch.util.ViewUtils;
 
 public class FolderFragment extends BaseFolderFragment {
 
@@ -70,7 +85,7 @@ public class FolderFragment extends BaseFolderFragment {
         Preferences preferences = LauncherApp.daggerService.main().preferences();
 
         ItemPopupDelegate itemPopupDelegate = (item, anchor) -> {
-            Rect bounds = ViewUtils.getViewBoundsInsetPadding(anchor);
+            Rect bounds = HomeItemViewUtils.getPopupAnchorBounds(anchor);
             if (item instanceof AppDescriptorUi) {
                 AppDescriptorPopupFragment.newInstance((AppDescriptorUi) item, REQUEST_KEY_FOLDER, bounds)
                         .setFolderId(folderId)

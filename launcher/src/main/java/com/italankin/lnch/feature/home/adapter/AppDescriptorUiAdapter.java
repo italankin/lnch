@@ -1,7 +1,6 @@
 package com.italankin.lnch.feature.home.adapter;
 
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,13 +34,13 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     @Override
     protected ViewHolder createViewHolder(View itemView) {
         ViewHolder holder = new ViewHolder(itemView);
-        itemView.setOnClickListener(v -> {
+        holder.label.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onAppClick(pos, getItem(pos));
             }
         });
-        itemView.setOnLongClickListener(v -> {
+        holder.label.setOnLongClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 listener.onAppLongClick(pos, getItem(pos));
@@ -71,19 +70,17 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
     }
 
     static class ViewHolder extends HomeAdapterDelegate.ViewHolder<AppDescriptorUi> {
-        final FrameLayout root;
         final TextView label;
         final NotificationDotDrawable notificationDot;
 
         ViewHolder(View itemView) {
             super(itemView);
-            root = (FrameLayout) itemView;
-            label = itemView.findViewById(R.id.label);
+            label = itemView.findViewById(R.id.itemLabel);
 
             notificationDot = new NotificationDotDrawable(
                     itemView.getContext(),
                     ResUtils.resolveColor(itemView.getContext(), R.attr.colorItemShadowDefault));
-            root.setForeground(notificationDot);
+            label.setForeground(notificationDot);
         }
 
         @Override
@@ -96,11 +93,6 @@ public class AppDescriptorUiAdapter extends HomeAdapterDelegate<AppDescriptorUiA
         protected void bind(AppDescriptorUi item, List<?> payloads) {
             bindItem(item);
             notificationDot.setBadgeVisible(item.isBadgeVisible(), payloads.contains(AppDescriptorUi.PAYLOAD_BADGE));
-        }
-
-        @Override
-        protected View getRoot() {
-            return root;
         }
 
         @Nullable

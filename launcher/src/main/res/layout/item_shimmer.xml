@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/label"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/itemRootContainer"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:textSize="22sp" />
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@id/itemLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textSize="22sp" />
+</FrameLayout>

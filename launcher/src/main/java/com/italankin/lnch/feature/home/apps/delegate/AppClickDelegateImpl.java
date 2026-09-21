@@ -4,14 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.util.DescriptorUtils;
 import com.italankin.lnch.util.IntentUtils;
-
-import androidx.annotation.Nullable;
 
 public class AppClickDelegateImpl implements AppClickDelegate {
 
@@ -38,7 +38,8 @@ public class AppClickDelegateImpl implements AppClickDelegate {
         ComponentName componentName = DescriptorUtils.getLauncherComponentName(context, item.getDescriptor());
         if (componentName != null) {
             usageTracker.trackLaunch(item.getDescriptor());
-            if (IntentUtils.safeStartMainActivity(context, componentName, itemView)) {
+            View boundsView = itemView != null ? itemView.findViewById(R.id.itemLabel) : null;
+            if (IntentUtils.safeStartMainActivity(context, componentName, boundsView)) {
                 return;
             }
         }

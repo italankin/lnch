@@ -4,7 +4,8 @@ import androidx.annotation.Nullable;
 
 public enum ItemWidth {
     WRAP_CONTENT("wrap_content"),
-    FILL_ROW("fill_row");
+    FILL_ROW("fill_row"),
+    FILL_ROW_CONTENT_WIDTH("fill_row_content_width");
 
     private final String key;
 

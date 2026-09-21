@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.R;
 import com.italankin.lnch.api.LauncherShortcuts;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.util.IntentUtils;
 import com.italankin.lnch.util.ViewUtils;
-
-import androidx.annotation.Nullable;
 
 public class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
 
@@ -44,8 +44,12 @@ public class ShortcutStarterDelegateImpl implements ShortcutStarterDelegate {
             return;
         }
         usageTracker.trackShortcut(shortcut);
-        Rect bounds = ViewUtils.getViewBounds(view);
-        Bundle opts = IntentUtils.getActivityLaunchOptions(view, bounds);
+        View boundsView = view != null ? view.findViewById(R.id.itemLabel) : null;
+        if (boundsView == null) {
+            boundsView = view;
+        }
+        Rect bounds = ViewUtils.getViewBounds(boundsView);
+        Bundle opts = IntentUtils.getActivityLaunchOptions(boundsView, bounds);
         if (!shortcut.start(bounds, opts)) {
             errorDelegate.showError(R.string.error);
         }
