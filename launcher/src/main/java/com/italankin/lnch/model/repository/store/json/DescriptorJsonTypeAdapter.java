@@ -1,14 +1,29 @@
 package com.italankin.lnch.model.repository.store.json;
 
 import androidx.annotation.Keep;
-import com.google.gson.*;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.repository.store.json.model.*;
-import timber.log.Timber;
+import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DeepShortcutDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DividerDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import timber.log.Timber;
 
 @Keep
 public class DescriptorJsonTypeAdapter implements JsonDeserializer<Descriptor>, JsonSerializer<Descriptor> {
@@ -22,6 +37,7 @@ public class DescriptorJsonTypeAdapter implements JsonDeserializer<Descriptor>, 
         MAPPING.put(PinnedShortcutDescriptorJson.TYPE, PinnedShortcutDescriptorJson.class);
         MAPPING.put(DeepShortcutDescriptorJson.TYPE, DeepShortcutDescriptorJson.class);
         MAPPING.put(IntentDescriptorJson.TYPE, IntentDescriptorJson.class);
+        MAPPING.put(DividerDescriptorJson.TYPE, DividerDescriptorJson.class);
     }
 
     private final DescriptorJsonConverter converter = new DescriptorJsonConverter();

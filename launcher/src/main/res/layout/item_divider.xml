@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/itemRootContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.italankin.lnch.feature.home.util.DividerLabel
+        android:id="@id/itemLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minHeight="24dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="22sp" />
+
+</FrameLayout>

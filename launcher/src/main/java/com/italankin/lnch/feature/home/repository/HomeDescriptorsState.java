@@ -61,6 +61,11 @@ public interface HomeDescriptorsState {
     void insertItem(DescriptorUi item);
 
     /**
+     * Insert item to the list at {@code position}
+     */
+    void insertItem(int position, DescriptorUi item);
+
+    /**
      * Notify listeners that item is updated
      */
     void updateItem(DescriptorUi item);

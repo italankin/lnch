@@ -3,12 +3,14 @@ package com.italankin.lnch.model.repository.store.json;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DividerDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.DeepShortcutDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.DescriptorJson;
+import com.italankin.lnch.model.repository.store.json.model.DividerDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
 import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
@@ -28,6 +30,9 @@ class DescriptorJsonConverter {
         }
         if (descriptor instanceof DeepShortcutDescriptor) {
             return new DeepShortcutDescriptorJson((DeepShortcutDescriptor) descriptor);
+        }
+        if (descriptor instanceof DividerDescriptor) {
+            return new DividerDescriptorJson((DividerDescriptor) descriptor);
         }
         if (descriptor instanceof PinnedShortcutDescriptor) {
             return new PinnedShortcutDescriptorJson((PinnedShortcutDescriptor) descriptor);

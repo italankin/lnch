@@ -3,12 +3,14 @@ package com.italankin.lnch.model.ui.util;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DividerDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
+import com.italankin.lnch.model.ui.impl.DividerDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
@@ -27,6 +29,9 @@ public final class DescriptorUiFactory {
     }
 
     public static DescriptorUi createItem(Descriptor descriptor) {
+        if (descriptor instanceof DividerDescriptor) {
+            return new DividerDescriptorUi((DividerDescriptor) descriptor);
+        }
         if (descriptor instanceof AppDescriptor) {
             return new AppDescriptorUi((AppDescriptor) descriptor);
         }

@@ -49,6 +49,7 @@ import com.italankin.lnch.feature.common.dialog.RenameDescriptorDialog;
 import com.italankin.lnch.feature.common.dialog.SetColorDescriptorDialog;
 import com.italankin.lnch.feature.home.adapter.AppDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.DeepShortcutDescriptorUiAdapter;
+import com.italankin.lnch.feature.home.adapter.DividerDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.FolderDescriptorUiAdapter;
 import com.italankin.lnch.feature.home.adapter.HomeAdapter;
 import com.italankin.lnch.feature.home.adapter.IgnorableDescriptorUiAdapter;
@@ -125,6 +126,7 @@ import com.italankin.lnch.model.ui.LabelDescriptorUi;
 import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 import com.italankin.lnch.model.ui.impl.DeepShortcutDescriptorUi;
+import com.italankin.lnch.model.ui.impl.DividerDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
@@ -145,6 +147,7 @@ import java.util.List;
 public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAction,
         DeepShortcutDescriptorUiAdapter.Listener,
         IntentDescriptorUiAdapter.Listener,
+        DividerDescriptorUiAdapter.Listener,
         AppDescriptorUiAdapter.Listener,
         FolderDescriptorUiAdapter.Listener,
         PinnedShortcutDescriptorUiAdapter.Listener,
@@ -293,6 +296,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .add(new FolderDescriptorUiAdapter(this))
                 .add(new PinnedShortcutDescriptorUiAdapter(this))
                 .add(new IntentDescriptorUiAdapter(this))
+                .add(new DividerDescriptorUiAdapter(this))
                 .add(new DeepShortcutDescriptorUiAdapter(this))
                 .add(new ShimmerDescriptorUiAdapter())
                 .add(new ErrorDescriptorUiAdapter(v -> viewModel.reloadApps()))
@@ -311,15 +315,18 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
-                if (editMode) {
-                    return;
-                }
                 Rect anchor = ViewUtils.getViewBounds(list);
                 int x = (int) event.getX() + anchor.left;
                 int y = (int) event.getY() + anchor.top;
                 anchor.set(x, y, x + 1, y + 1);
-                EmptySpacePopupFragment.newInstance(REQUEST_KEY_APPS, anchor)
-                        .show(getParentFragmentManager());
+                if (editMode) {
+                    EditModePopupFragment.newInstance(REQUEST_KEY_APPS, anchor,
+                                    findItemInsertionPosition(event.getX(), event.getY()))
+                            .show(getParentFragmentManager());
+                } else {
+                    EmptySpacePopupFragment.newInstance(REQUEST_KEY_APPS, anchor)
+                            .show(getParentFragmentManager());
+                }
             }
 
             @Override
@@ -463,8 +470,12 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                         showCreateFolderDialog(Collections.singletonList(result.descriptorId), result.move);
                     }
                 })
-                .register(new EditModePopupFragment.AddFolderContract(), result -> {
-                    showCreateFolderDialog(Collections.emptyList(), false);
+                .register(new EditModePopupFragment.AddDividerContract(), position -> {
+                    int color = MaterialColors.getColor(requireContext(), android.R.attr.textColorPrimary, "addDivider");
+                    viewModel.addDivider(position, color);
+                })
+                .register(new EditModePopupFragment.AddFolderContract(), position -> {
+                    showCreateFolderDialog(Collections.emptyList(), false, position);
                 })
                 .register(new EditModePopupFragment.CreateIntentContract(), ignored -> {
                     createIntentLauncher.launch(null);
@@ -703,6 +714,11 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             return;
         }
         editMode = value;
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            if (adapter.getItem(i) instanceof DividerDescriptorUi) {
+                adapter.notifyItemChanged(i);
+            }
+        }
         searchOverlayBehavior.hide();
         searchOverlayBehavior.setEnabled(!value);
         if (value) {
@@ -1017,6 +1033,50 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         IntentUtils.safeStartMainActivity(requireContext(), componentName, bounds, opts);
     }
 
+    private int findItemInsertionPosition(float x, float y) {
+        double closestDistance = Double.MAX_VALUE;
+        int insertionPosition = -1;
+        Rect bounds = new Rect();
+        for (int i = 0; i < list.getChildCount(); i++) {
+            View child = list.getChildAt(i);
+            int position = list.getChildAdapterPosition(child);
+            View label = child.findViewById(R.id.itemLabel);
+            if (position == RecyclerView.NO_POSITION || label == null || label.getWidth() == 0
+                    || label.getHeight() == 0 || !label.isShown()) {
+                continue;
+            }
+            label.getDrawingRect(bounds);
+            list.offsetDescendantRectToMyCoords(label, bounds);
+            float dx = Math.max(bounds.left - x, Math.max(0, x - bounds.right));
+            float dy = Math.max(bounds.top - y, Math.max(0, y - bounds.bottom));
+            double distance = dx * dx + dy * dy;
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                insertionPosition = position + (y >= bounds.exactCenterY() ? 1 : 0);
+            }
+        }
+        return insertionPosition;
+    }
+
+    @Override
+    public boolean isDividerEditingEnabled() {
+        return editMode;
+    }
+
+    @Override
+    public void onDividerClick(int position, DividerDescriptorUi item) {
+        if (editMode) {
+            showCustomizePopup(position, item);
+        }
+    }
+
+    @Override
+    public void onDividerLongClick(int position, DividerDescriptorUi item) {
+        if (editMode) {
+            startDrag(position);
+        }
+    }
+
     private void startDrag(int position) {
         if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {
             errorDelegate.showError(R.string.error_manual_sorting_required);
@@ -1139,6 +1199,10 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     }
 
     private void showCreateFolderDialog(List<String> descriptors, boolean move) {
+        showCreateFolderDialog(descriptors, move, -1);
+    }
+
+    private void showCreateFolderDialog(List<String> descriptors, boolean move, int position) {
         EditTextAlertDialog.builder(requireContext())
                 .setTitle(R.string.folder_new_title)
                 .customizeEditText(editText -> {
@@ -1151,7 +1215,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 .setPositiveButton(R.string.ok, (dialog, editText) -> {
                     String folderName = editText.getText().toString().trim();
                     int color = MaterialColors.getColor(requireContext(), android.R.attr.textColorPrimary, "showCreateFolderDialog");
-                    viewModel.addFolder(folderName, color, descriptors, move);
+                    viewModel.addFolder(folderName, color, descriptors, move, position);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show(this);

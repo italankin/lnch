@@ -4,28 +4,35 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.SignalFragmentResultContract;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class EditModePopupFragment extends ActionPopupFragment {
 
     public static EditModePopupFragment newInstance(
             String requestKey,
             @Nullable Rect anchor) {
+        return newInstance(requestKey, anchor, -1);
+    }
+
+    public static EditModePopupFragment newInstance(String requestKey, @Nullable Rect anchor, int position) {
         EditModePopupFragment fragment = new EditModePopupFragment();
         Bundle args = new Bundle();
+        args.putInt(ARG_POSITION, position);
         args.putParcelable(ARG_ANCHOR, anchor);
         args.putString(ARG_REQUEST_KEY, requestKey);
         fragment.setArguments(args);
         return fragment;
     }
 
+    private static final String ARG_POSITION = "position";
     private static final String BACKSTACK_NAME = "edit_mode_popup";
     private static final String TAG = "edit_mode_popup";
 
@@ -56,9 +63,18 @@ public class EditModePopupFragment extends ActionPopupFragment {
                 .setLabel(R.string.edit_add_folder)
                 .setOnClickListener(v -> {
                     dismiss();
-                    Bundle result = new AddFolderContract().result();
+                    Bundle result = new AddFolderContract().result(requireArguments().getInt(ARG_POSITION, -1));
                     sendResult(result);
                 }));
+        if (preferences.get(Preferences.APPS_SORT_MODE) == Preferences.AppsSortMode.MANUAL) {
+            addShortcut(new ItemBuilder()
+                    .setIcon(R.drawable.ic_action_add_divider)
+                    .setLabel(R.string.edit_add_divider)
+                    .setOnClickListener(v -> {
+                        dismiss();
+                        sendResult(new AddDividerContract().result(requireArguments().getInt(ARG_POSITION, -1)));
+                    }));
+        }
         if (preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
             addShortcut(new ItemBuilder()
                     .setIcon(R.drawable.ic_action_intent_edit)
@@ -74,9 +90,41 @@ public class EditModePopupFragment extends ActionPopupFragment {
         showPopup();
     }
 
-    public static class AddFolderContract extends SignalFragmentResultContract {
-        public AddFolderContract() {
-            super("edit_add_folder");
+    public static class AddDividerContract implements FragmentResultContract<Integer> {
+        @Override
+        public String key() {
+            return "edit_add_divider";
+        }
+
+        @Override
+        public Integer parseResult(Bundle result) {
+            return result.getInt(ARG_POSITION, -1);
+        }
+
+        public Bundle result(int position) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, key());
+            result.putInt(ARG_POSITION, position);
+            return result;
+        }
+    }
+
+    public static class AddFolderContract implements FragmentResultContract<Integer> {
+        @Override
+        public String key() {
+            return "edit_add_folder";
+        }
+
+        @Override
+        public Integer parseResult(Bundle result) {
+            return result.getInt(ARG_POSITION, -1);
+        }
+
+        public Bundle result(int position) {
+            Bundle result = new Bundle();
+            result.putString(RESULT_KEY, key());
+            result.putInt(ARG_POSITION, position);
+            return result;
         }
     }
 

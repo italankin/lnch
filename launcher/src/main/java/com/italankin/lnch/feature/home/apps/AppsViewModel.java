@@ -1,10 +1,14 @@
 package com.italankin.lnch.feature.home.apps;
 
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
+
 import android.content.Intent;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
+
 import com.italankin.lnch.feature.base.AppViewModel;
 import com.italankin.lnch.feature.home.adapter.error.ErrorDescriptorUi;
 import com.italankin.lnch.feature.home.apps.events.ShortcutPinEvent;
@@ -14,6 +18,7 @@ import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.HomeDescriptorsState;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DividerDescriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
@@ -21,18 +26,42 @@ import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.fonts.FontManager;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
-import com.italankin.lnch.model.repository.descriptor.actions.*;
+import com.italankin.lnch.model.repository.descriptor.actions.AddAction;
+import com.italankin.lnch.model.repository.descriptor.actions.BaseAction;
+import com.italankin.lnch.model.repository.descriptor.actions.EditIntentAction;
+import com.italankin.lnch.model.repository.descriptor.actions.MoveAction;
+import com.italankin.lnch.model.repository.descriptor.actions.RemoveAction;
+import com.italankin.lnch.model.repository.descriptor.actions.RemoveFromFolderAction;
+import com.italankin.lnch.model.repository.descriptor.actions.RenameAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetColorAction;
+import com.italankin.lnch.model.repository.descriptor.actions.SetIgnoreAction;
 import com.italankin.lnch.model.repository.notifications.NotificationBag;
 import com.italankin.lnch.model.repository.notifications.NotificationsRepository;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.Shortcut;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
-import com.italankin.lnch.model.ui.*;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
+import com.italankin.lnch.model.ui.impl.DividerDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.model.ui.util.DescriptorUiDiffCallback;
 import com.italankin.lnch.model.ui.util.DescriptorUiFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,12 +69,6 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
-
-import javax.inject.Inject;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
 public class AppsViewModel extends AppViewModel {
 
@@ -141,14 +164,15 @@ public class AppsViewModel extends AppViewModel {
         moveItem(entry.position, homeDescriptorsState.items().size() - 1);
     }
 
-    void addFolder(String label, @ColorInt int color, List<String> descriptorIds, boolean move) {
+    void addFolder(String label, @ColorInt int color, List<String> descriptorIds, boolean move, int position) {
+        int insertionPosition = resolveInsertionPosition(position);
         FolderDescriptor.Mutable mutable = new FolderDescriptor.Mutable(label);
         mutable.setLabel(nameNormalizer.normalize(label));
         mutable.setColor(color);
-        editModeState.addAction(new AddAction(mutable));
+        editModeState.addAction(new AddAction(insertionPosition, mutable));
         FolderDescriptor folder = mutable.toDescriptor();
         FolderDescriptorUi folderUi = new FolderDescriptorUi(folder);
-        homeDescriptorsState.insertItem(folderUi);
+        homeDescriptorsState.insertItem(insertionPosition, folderUi);
         addToFolder(folderUi, descriptorIds, move);
     }
 
@@ -157,6 +181,22 @@ public class AppsViewModel extends AppViewModel {
         if (entry != null) {
             addToFolder(entry.item, descriptorIds, move);
         }
+    }
+
+    void addDivider(int position, @ColorInt int color) {
+        if (preferences.get(Preferences.APPS_SORT_MODE) != Preferences.AppsSortMode.MANUAL) {
+            return;
+        }
+        int insertionPosition = resolveInsertionPosition(position);
+        DividerDescriptor.Mutable divider = new DividerDescriptor.Mutable();
+        divider.setColor(color);
+        editModeState.addAction(new AddAction(insertionPosition, divider));
+        homeDescriptorsState.insertItem(insertionPosition, new DividerDescriptorUi(divider.toDescriptor()));
+    }
+
+    private int resolveInsertionPosition(int position) {
+        int size = homeDescriptorsState.items().size();
+        return position < 0 ? size : Math.min(position, size);
     }
 
     void addIntent(Intent intent, String label) {

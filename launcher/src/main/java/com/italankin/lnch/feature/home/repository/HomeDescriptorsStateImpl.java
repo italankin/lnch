@@ -2,12 +2,17 @@ package com.italankin.lnch.feature.home.repository;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.LifecycleUtils;
 import com.italankin.lnch.util.ListUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
@@ -109,8 +114,12 @@ public class HomeDescriptorsStateImpl implements HomeDescriptorsState {
 
     @Override
     public void insertItem(DescriptorUi item) {
-        int position = items.size();
-        items.add(item);
+        insertItem(items.size(), item);
+    }
+
+    @Override
+    public void insertItem(int position, DescriptorUi item) {
+        items.add(position, item);
         for (Callback callback : callbacks) {
             callback.onItemInserted(position, item);
         }

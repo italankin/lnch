@@ -1,10 +1,19 @@
 package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
+
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
+
 import com.italankin.lnch.model.descriptor.Descriptor;
-import com.italankin.lnch.model.descriptor.impl.*;
+import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.impl.DividerDescriptor;
+import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+import com.italankin.lnch.model.descriptor.impl.PinnedShortcutDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.descriptor.apps.AppsData;
@@ -13,15 +22,18 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
 import com.italankin.lnch.util.IntentUtils;
-import io.reactivex.Maybe;
-import timber.log.Timber;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
+import io.reactivex.Maybe;
+import timber.log.Timber;
 
 public class LoadFromFileInteractor {
 
@@ -79,7 +91,9 @@ public class LoadFromFileInteractor {
 
     private void processSavedItems(ProcessingEnv env, List<Descriptor> savedItems) {
         for (Descriptor item : savedItems) {
-            if (item instanceof PinnedShortcutDescriptor) {
+            if (item instanceof DividerDescriptor) {
+                env.addDivider(((DividerDescriptor) item).toMutable());
+            } else if (item instanceof PinnedShortcutDescriptor) {
                 visitPinnedShortcut(env, ((PinnedShortcutDescriptor) item).toMutable());
             } else if (item instanceof DeepShortcutDescriptor) {
                 visitDeepShortcut(env, ((DeepShortcutDescriptor) item).toMutable());
@@ -240,6 +254,10 @@ class ProcessingEnv {
     }
 
     void addPinnedShortcut(PinnedShortcutDescriptor.Mutable item) {
+        addItem(item);
+    }
+
+    void addDivider(DividerDescriptor.Mutable item) {
         addItem(item);
     }
 

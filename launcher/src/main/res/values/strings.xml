@@ -75,7 +75,9 @@
     <string name="popup_app_uninstall">Uninstall</string>
     <string name="popup_empty">No actions available</string>
 
-    <string name="edit_add_folder">Folder</string>
+    <string name="edit_divider_label">Divider</string>
+    <string name="edit_add_divider">Add divider</string>
+    <string name="edit_add_folder">Add Folder</string>
     <string name="edit_add_intent">Custom Intent</string>
 
     <string name="intent_factory_title">Intent editor</string>
