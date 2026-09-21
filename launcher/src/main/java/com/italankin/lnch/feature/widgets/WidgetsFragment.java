@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Size;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -206,6 +207,7 @@ public class WidgetsFragment extends Fragment implements IntentQueue.OnIntentAct
                 if (widgetItemsState.isResizeMode()) {
                     return;
                 }
+                widgetsList.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 Rect anchor = ViewUtils.getViewBounds(widgetsList);
                 int x = (int) event.getX() + anchor.left;
                 int y = (int) event.getY() + anchor.top;

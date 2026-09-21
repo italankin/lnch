@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -315,6 +316,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
             @Override
             public void onLongTap(@NonNull MotionEvent event) {
+                list.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 Rect anchor = ViewUtils.getViewBounds(list);
                 int x = (int) event.getX() + anchor.left;
                 int y = (int) event.getY() + anchor.top;
