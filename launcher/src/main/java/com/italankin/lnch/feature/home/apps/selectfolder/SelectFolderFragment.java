@@ -89,6 +89,10 @@ public class SelectFolderFragment extends PopupFragment {
         addFolderView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_action_add_new_folder, 0, 0, 0);
         itemsContainer.addView(addFolderView);
 
+        if (!folders.isEmpty()) {
+            inflater.inflate(R.layout.item_folder_select_divider, itemsContainer, true);
+        }
+
         for (Folder folder : folders) {
             TextView folderView = (TextView) inflater.inflate(R.layout.item_folder_select, itemsContainer, false);
             folderView.setText(folder.label);

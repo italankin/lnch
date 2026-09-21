@@ -60,7 +60,7 @@
     <string name="customize_item_remove_from_folder">Remove from folder</string>
     <string name="customize_item_move_to_desktop">Move to desktop</string>
     <string name="customize_item_edit_folder">Edit folder</string>
-    <string name="customize_item_new_folder">New folder</string>
+    <string name="customize_item_new_folder">Create new folder</string>
     <string name="customize_action_reset">Reset</string>
     <string name="customize_wallpaper_dim">Dim wallpaper</string>
     <string name="customize_text_size">Text size</string>
