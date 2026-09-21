@@ -177,6 +177,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     private ItemTouchHelper touchHelper;
     private Preferences.HomeLayout layout;
+    private Preferences.ItemWidth itemWidth;
 
     private boolean animateOnResume;
     private boolean editMode;
@@ -703,7 +704,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     @Override
     public <T> void onEditModePropertyChange(EditModeState.Property<T> property, T newValue) {
-        if (property == EditModeProperties.HOME_ALIGNMENT) {
+        if (property == EditModeProperties.HOME_ALIGNMENT || property == EditModeProperties.ITEM_WIDTH) {
             setLayout(layout, preferences.get(Preferences.HOME_ALIGNMENT));
         }
         if (EditModeItemPrefs.ITEM_PREFS_PROPERTIES.contains(property)) {
@@ -1154,14 +1155,21 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     }
 
     private void setLayout(Preferences.HomeLayout layout, Preferences.HomeAlignment homeAlignment) {
+        Preferences.ItemWidth itemWidth = preferences.get(Preferences.ITEM_WIDTH);
         if (editModeState.isActive()) {
             Preferences.HomeAlignment override = editModeState.getProperty(EditModeProperties.HOME_ALIGNMENT);
             if (override != null) {
                 homeAlignment = override;
             }
+            Preferences.ItemWidth widthOverride = editModeState.getProperty(EditModeProperties.ITEM_WIDTH);
+            if (widthOverride != null) {
+                itemWidth = widthOverride;
+            }
         }
-        if (layout != this.layout) {
+        if (layout != this.layout || itemWidth != this.itemWidth || list.getLayoutManager() == null) {
             this.layout = layout;
+            this.itemWidth = itemWidth;
+            list.stopScroll();
             list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
         }
         if (list.getLayoutManager() instanceof FlexboxLayoutManager) {
