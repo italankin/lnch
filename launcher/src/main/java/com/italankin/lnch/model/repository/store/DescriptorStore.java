@@ -10,5 +10,6 @@ public interface DescriptorStore {
 
     List<Descriptor> read(InputStream in);
 
+    /** Writes and flushes descriptors without closing the caller-owned output stream. */
     void write(OutputStream out, List<Descriptor> items);
 }

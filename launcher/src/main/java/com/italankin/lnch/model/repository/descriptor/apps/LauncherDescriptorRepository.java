@@ -5,6 +5,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.os.Process;
+
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -16,19 +17,27 @@ import com.italankin.lnch.model.repository.descriptor.apps.interactors.transform
 import com.italankin.lnch.model.repository.descriptor.apps.interactors.transforms.SortTransform;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
+import com.italankin.lnch.model.repository.store.AtomicFileWriter;
 import com.italankin.lnch.model.repository.store.DescriptorStore;
 import com.italankin.lnch.model.repository.store.PackagesStore;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class LauncherDescriptorRepository implements DescriptorRepository {
 
@@ -200,30 +209,7 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     private void writeToDisk(List<Descriptor> items) throws IOException {
         File packagesFile = packagesStore.output();
-        File packagesFileTmp = new File(packagesFile.getParentFile(), packagesFile.getName() + ".tmp");
-        try (FileOutputStream fos = new FileOutputStream(packagesFileTmp)) {
-            descriptorStore.write(fos, items);
-        }
-        Timber.d("wrote '%s'", packagesFileTmp);
-        boolean rewrite = false;
-        if (packagesFile.exists()) {
-            if (packagesFile.delete()) {
-                Timber.d("deleted '%s'", packagesFile);
-            } else {
-                rewrite = true;
-                Timber.w("cannot delete '%s', trying rewrite", packagesFile);
-            }
-        }
-        if (!rewrite) {
-            if (packagesFileTmp.renameTo(packagesFile)) {
-                Timber.d("renamed '%s' to '%s'", packagesFileTmp, packagesFile);
-                return;
-            }
-            Timber.w("cannot rename '%s' to '%s'", packagesFileTmp, packagesFile);
-        }
-        try (FileOutputStream fos = new FileOutputStream(packagesFile)) {
-            descriptorStore.write(fos, items);
-        }
+        AtomicFileWriter.write(packagesFile, output -> descriptorStore.write(output, items));
         Timber.d("wrote '%s'", packagesFile);
     }
 
