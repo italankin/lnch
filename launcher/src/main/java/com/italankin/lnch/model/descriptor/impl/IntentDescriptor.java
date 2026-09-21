@@ -2,19 +2,30 @@ package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.Intent;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
-import com.italankin.lnch.model.descriptor.*;
+import androidx.annotation.Nullable;
+
+import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLayoutDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLayoutMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.store.json.model.IntentDescriptorJson;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 
 import java.util.UUID;
 
 /**
- * Custom intent descriptor (e.g., search intent)
+ * Custom intent descriptor (e.g. search intent)
  */
 @DescriptorModels(
         json = IntentDescriptorJson.class,
@@ -22,7 +33,7 @@ import java.util.UUID;
         mutable = IntentDescriptor.Mutable.class
 )
 public final class IntentDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
-        IgnorableDescriptor {
+        IgnorableDescriptor, CustomLayoutDescriptor {
 
     public static final String EXTRA_CUSTOM_INTENT = "com.italankin.lnch.extra.CUSTOM_INTENT";
 
@@ -33,6 +44,10 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public final String customLabel;
     public final int color;
     public final Integer customColor;
+    @Nullable
+    public final ItemWidth customWidth;
+    @Nullable
+    public final TextAlign customTextAlign;
     public final boolean ignored;
 
     public IntentDescriptor(Mutable mutable) {
@@ -43,7 +58,21 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         customLabel = mutable.customLabel;
         color = mutable.color;
         customColor = mutable.customColor;
+        customWidth = mutable.customWidth;
+        customTextAlign = mutable.customTextAlign;
         ignored = mutable.ignored;
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -112,7 +141,8 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
     public static class Mutable implements MutableDescriptor<IntentDescriptor>,
             CustomColorMutableDescriptor<IntentDescriptor>,
             CustomLabelMutableDescriptor<IntentDescriptor>,
-            IgnorableMutableDescriptor<IntentDescriptor> {
+            IgnorableMutableDescriptor<IntentDescriptor>,
+            CustomLayoutMutableDescriptor<IntentDescriptor> {
 
         private final String id;
         private String intentUri;
@@ -121,6 +151,8 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
         private String customLabel;
         private int color = Color.WHITE;
         private Integer customColor;
+        private ItemWidth customWidth;
+        private TextAlign customTextAlign;
         private boolean ignored;
 
         public Mutable(Intent intent, String originalLabel) {
@@ -143,7 +175,31 @@ public final class IntentDescriptor implements Descriptor, CustomColorDescriptor
             customLabel = descriptor.customLabel;
             color = descriptor.color;
             customColor = descriptor.customColor;
+            customWidth = descriptor.customWidth;
+            customTextAlign = descriptor.customTextAlign;
             ignored = descriptor.ignored;
+        }
+
+        @Nullable
+        @Override
+        public ItemWidth getCustomWidth() {
+            return customWidth;
+        }
+
+        @Override
+        public void setCustomWidth(@Nullable ItemWidth width) {
+            customWidth = width;
+        }
+
+        @Nullable
+        @Override
+        public TextAlign getCustomTextAlign() {
+            return customTextAlign;
+        }
+
+        @Override
+        public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+            customTextAlign = textAlign;
         }
 
         @Override

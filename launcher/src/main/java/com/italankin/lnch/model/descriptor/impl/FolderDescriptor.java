@@ -1,14 +1,21 @@
 package com.italankin.lnch.model.descriptor.impl;
 
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
 import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLayoutDescriptor;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.DescriptorModels;
 import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLayoutMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.store.json.model.FolderDescriptorJson;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.util.ListUtils;
@@ -25,7 +32,8 @@ import java.util.UUID;
         ui = FolderDescriptorUi.class,
         mutable = FolderDescriptor.Mutable.class
 )
-public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor {
+public final class FolderDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
+        CustomLayoutDescriptor {
 
     public final String id;
     public final String originalLabel;
@@ -33,6 +41,10 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
     public final String customLabel;
     public final int color;
     public final Integer customColor;
+    @Nullable
+    public final ItemWidth customWidth;
+    @Nullable
+    public final TextAlign customTextAlign;
     public final List<String> items;
 
     public FolderDescriptor(Mutable mutable) {
@@ -42,7 +54,21 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
         customLabel = mutable.customLabel;
         color = mutable.color;
         customColor = mutable.customColor;
+        customWidth = mutable.customWidth;
+        customTextAlign = mutable.customTextAlign;
         items = mutable.items;
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -105,7 +131,8 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
 
     public static class Mutable implements MutableDescriptor<FolderDescriptor>,
             CustomColorMutableDescriptor<FolderDescriptor>,
-            CustomLabelMutableDescriptor<FolderDescriptor> {
+            CustomLabelMutableDescriptor<FolderDescriptor>,
+            CustomLayoutMutableDescriptor<FolderDescriptor> {
 
         private final String id;
         private String originalLabel;
@@ -113,6 +140,8 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
         private String customLabel;
         private int color = Color.WHITE;
         private Integer customColor;
+        private ItemWidth customWidth;
+        private TextAlign customTextAlign;
         private List<String> items = new ArrayList<>(1);
 
         public Mutable(String originalLabel) {
@@ -131,7 +160,31 @@ public final class FolderDescriptor implements Descriptor, CustomColorDescriptor
             customLabel = descriptor.customLabel;
             color = descriptor.color;
             customColor = descriptor.customColor;
+            customWidth = descriptor.customWidth;
+            customTextAlign = descriptor.customTextAlign;
             items.addAll(descriptor.items);
+        }
+
+        @Nullable
+        @Override
+        public ItemWidth getCustomWidth() {
+            return customWidth;
+        }
+
+        @Override
+        public void setCustomWidth(@Nullable ItemWidth width) {
+            customWidth = width;
+        }
+
+        @Nullable
+        @Override
+        public TextAlign getCustomTextAlign() {
+            return customTextAlign;
+        }
+
+        @Override
+        public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+            customTextAlign = textAlign;
         }
 
         @Override

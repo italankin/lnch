@@ -3,10 +3,14 @@ package com.italankin.lnch.model.ui.impl;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.italankin.lnch.model.descriptor.impl.IntentDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLayoutDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
@@ -20,7 +24,8 @@ public final class IntentDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         RemovableDescriptorUi,
         InFolderDescriptorUi,
-        IgnorableDescriptorUi {
+        IgnorableDescriptorUi,
+        CustomLayoutDescriptorUi {
 
     public Intent intent;
     private final IntentDescriptor descriptor;
@@ -28,6 +33,8 @@ public final class IntentDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
+    private ItemWidth customWidth;
+    private TextAlign customTextAlign;
     private boolean ignored;
 
     public IntentDescriptorUi(IntentDescriptor descriptor) {
@@ -37,7 +44,31 @@ public final class IntentDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customWidth = descriptor.customWidth;
+        this.customTextAlign = descriptor.customTextAlign;
         this.ignored = descriptor.ignored;
+    }
+
+    @Override
+    public void setCustomWidth(@Nullable ItemWidth width) {
+        customWidth = width;
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Override
+    public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+        customTextAlign = textAlign;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -116,6 +147,8 @@ public final class IntentDescriptorUi implements DescriptorUi,
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
                 && Objects.equals(this.customColor, that.customColor)
+                && this.customWidth == that.customWidth
+                && this.customTextAlign == that.customTextAlign
                 && this.ignored == that.ignored;
     }
 }

@@ -11,7 +11,7 @@ public class EmptyFolderDescriptorUiAdapter extends
         HomeAdapterDelegate<EmptyFolderDescriptorUiAdapter.ViewHolder, EmptyFolderDescriptorUi> {
 
     public EmptyFolderDescriptorUiAdapter() {
-        super(new Params(false, Params.ITEM_WIDTH_WRAP, Params.ALIGNMENT_FROM_PREFS));
+        super(Params.DEFAULT);
     }
 
     @Override

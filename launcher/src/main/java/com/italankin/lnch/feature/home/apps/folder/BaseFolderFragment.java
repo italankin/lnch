@@ -157,6 +157,7 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
         Preferences.ItemWidth folderItemWidth = preferences.get(Preferences.FOLDER_ITEM_WIDTH);
         HomeAdapterDelegate.Params params = new HomeAdapterDelegate.Params(true,
+                false,
                 itemPrefs -> folderItemWidth,
                 itemPrefs -> Preferences.HomeAlignment.START);
         adapter = new HomeAdapter.Builder(requireContext())
@@ -211,7 +212,8 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
     ///////////////////////////////////////////////////////////////////////////
     // View state
-    ///////////////////////////////////////////////////////////////////////////
+
+    /// ////////////////////////////////////////////////////////////////////////
 
     protected void onShowFolder(String folderTitle, List<DescriptorUi> items, UserPrefs userPrefs, boolean animated) {
         title.setText(folderTitle);
@@ -242,7 +244,8 @@ abstract class BaseFolderFragment extends AppFragment implements AppDescriptorUi
 
     ///////////////////////////////////////////////////////////////////////////
     // Other
-    ///////////////////////////////////////////////////////////////////////////
+
+    /// ////////////////////////////////////////////////////////////////////////
 
     public void show(FragmentManager fragmentManager, @IdRes int containerId) {
         backstackId = fragmentManager.beginTransaction()

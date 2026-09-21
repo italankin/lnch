@@ -2,9 +2,26 @@ package com.italankin.lnch.model.descriptor.impl;
 
 import android.content.ComponentName;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
-import com.italankin.lnch.model.descriptor.*;
-import com.italankin.lnch.model.descriptor.mutable.*;
+import androidx.annotation.Nullable;
+
+import com.italankin.lnch.model.descriptor.AliasDescriptor;
+import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLayoutDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
+import com.italankin.lnch.model.descriptor.PackageDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.AliasMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLayoutMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.store.json.model.AppDescriptorJson;
 import com.italankin.lnch.model.ui.impl.AppDescriptorUi;
 
@@ -22,7 +39,7 @@ import java.util.Objects;
         mutable = AppDescriptor.Mutable.class
 )
 public final class AppDescriptor implements Descriptor, PackageDescriptor, CustomColorDescriptor,
-        CustomLabelDescriptor, IgnorableDescriptor, AliasDescriptor {
+        CustomLabelDescriptor, IgnorableDescriptor, AliasDescriptor, CustomLayoutDescriptor {
 
     public static final int FLAG_SEARCH_VISIBLE = 0x1;
     public static final int FLAG_SEARCH_SHORTCUTS_VISIBLE = 0x2;
@@ -41,6 +58,10 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
     public final String customLabel;
     public final int color;
     public final Integer customColor;
+    @Nullable
+    public final ItemWidth customWidth;
+    @Nullable
+    public final TextAlign customTextAlign;
     public final Integer customBadgeColor;
     public final boolean ignored;
     public final int searchFlags;
@@ -58,11 +79,25 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         customLabel = mutable.customLabel;
         color = mutable.color;
         customColor = mutable.customColor;
+        customWidth = mutable.customWidth;
+        customTextAlign = mutable.customTextAlign;
         customBadgeColor = mutable.customBadgeColor;
         ignored = mutable.ignored;
         searchFlags = mutable.searchFlags;
         showShortcuts = mutable.showShortcuts;
         aliases = Collections.unmodifiableList(mutable.aliases);
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -156,7 +191,8 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
             CustomColorMutableDescriptor<AppDescriptor>,
             CustomLabelMutableDescriptor<AppDescriptor>,
             IgnorableMutableDescriptor<AppDescriptor>,
-            AliasMutableDescriptor<AppDescriptor> {
+            AliasMutableDescriptor<AppDescriptor>,
+            CustomLayoutMutableDescriptor<AppDescriptor> {
 
         private final String packageName;
         private String componentName;
@@ -166,6 +202,8 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
         private String customLabel;
         private int color = Color.WHITE;
         private Integer customColor;
+        private ItemWidth customWidth;
+        private TextAlign customTextAlign;
         private Integer customBadgeColor;
         private boolean ignored;
         private int searchFlags = SEARCH_DEFAULT_FLAGS;
@@ -188,11 +226,35 @@ public final class AppDescriptor implements Descriptor, PackageDescriptor, Custo
             customLabel = descriptor.customLabel;
             color = descriptor.color;
             customColor = descriptor.customColor;
+            customWidth = descriptor.customWidth;
+            customTextAlign = descriptor.customTextAlign;
             customBadgeColor = descriptor.customBadgeColor;
             ignored = descriptor.ignored;
             searchFlags = descriptor.searchFlags;
             showShortcuts = descriptor.showShortcuts;
             aliases = new ArrayList<>(descriptor.aliases);
+        }
+
+        @Nullable
+        @Override
+        public ItemWidth getCustomWidth() {
+            return customWidth;
+        }
+
+        @Override
+        public void setCustomWidth(@Nullable ItemWidth width) {
+            customWidth = width;
+        }
+
+        @Nullable
+        @Override
+        public TextAlign getCustomTextAlign() {
+            return customTextAlign;
+        }
+
+        @Override
+        public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+            customTextAlign = textAlign;
         }
 
         @Override

@@ -3,15 +3,23 @@ package com.italankin.lnch.feature.home.apps.popup;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.fragmentresult.DescriptorFragmentResultContract;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultContract;
 import com.italankin.lnch.feature.home.repository.HomeEntry;
 import com.italankin.lnch.model.repository.prefs.Preferences;
-import com.italankin.lnch.model.ui.*;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLayoutDescriptorUi;
+import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
+import com.italankin.lnch.model.ui.InFolderDescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 import com.italankin.lnch.model.ui.impl.FolderDescriptorUi;
 import com.italankin.lnch.model.ui.impl.IntentDescriptorUi;
 import com.italankin.lnch.util.widget.popup.ActionPopupFragment;
@@ -111,6 +119,14 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
                     .setOnClickListener(v -> setColorResult((CustomColorDescriptorUi) item))
             );
         }
+        if (item instanceof CustomLayoutDescriptorUi && folderId == null) {
+            addShortcut(new ItemBuilder()
+                    .setLabel(R.string.customize_item_change_appearance)
+                    .setIcon(R.drawable.ic_action_change_appearance)
+                    .setIconDrawableTintAttr(android.R.attr.colorAccent)
+                    .setOnClickListener(v -> changeAppearanceResult((CustomLayoutDescriptorUi) item))
+            );
+        }
         if (item instanceof IntentDescriptorUi && preferences.get(Preferences.EXPERIMENTAL_INTENT_FACTORY)) {
             addShortcut(new ItemBuilder()
                     .setLabel(R.string.customize_item_edit_intent)
@@ -193,6 +209,12 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     private void setColorResult(CustomColorDescriptorUi item) {
         dismiss();
         Bundle result = new SetColorContract().result(item.getDescriptor().getId());
+        sendResult(result);
+    }
+
+    private void changeAppearanceResult(CustomLayoutDescriptorUi item) {
+        dismiss();
+        Bundle result = new ChangeAppearanceContract().result(item.getDescriptor().getId());
         sendResult(result);
     }
 
@@ -295,6 +317,12 @@ public class CustomizeDescriptorPopupFragment extends ActionPopupFragment {
     public static class SetColorContract extends DescriptorFragmentResultContract {
         public SetColorContract() {
             super("customize_set_color");
+        }
+    }
+
+    public static class ChangeAppearanceContract extends DescriptorFragmentResultContract {
+        public ChangeAppearanceContract() {
+            super("customize_change_appearance");
         }
     }
 

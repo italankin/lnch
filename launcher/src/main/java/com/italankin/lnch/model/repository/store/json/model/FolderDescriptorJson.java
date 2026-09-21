@@ -1,9 +1,12 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 
 import java.util.List;
 
@@ -34,6 +37,12 @@ public final class FolderDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("custom_width")
+    public String customWidth;
+
+    @SerializedName("custom_text_align")
+    public String customTextAlign;
+
     @SerializedName("items")
     public List<String> items;
 
@@ -48,6 +57,8 @@ public final class FolderDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customWidth = descriptor.customWidth != null ? descriptor.customWidth.key() : null;
+        this.customTextAlign = descriptor.customTextAlign != null ? descriptor.customTextAlign.key() : null;
         this.items = descriptor.items;
     }
 
@@ -58,6 +69,8 @@ public final class FolderDescriptorJson implements DescriptorJson {
         mutable.setCustomLabel(customLabel);
         mutable.setColor(color);
         mutable.setCustomColor(customColor);
+        mutable.setCustomWidth(ItemWidth.fromKey(customWidth));
+        mutable.setCustomTextAlign(TextAlign.fromKey(customTextAlign));
         if (items != null) {
             mutable.setItems(items);
         }

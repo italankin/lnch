@@ -1,12 +1,23 @@
 package com.italankin.lnch.model.descriptor.impl;
 
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
-import com.italankin.lnch.model.descriptor.*;
+import androidx.annotation.Nullable;
+
+import com.italankin.lnch.model.descriptor.CustomColorDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLabelDescriptor;
+import com.italankin.lnch.model.descriptor.CustomLayoutDescriptor;
+import com.italankin.lnch.model.descriptor.Descriptor;
+import com.italankin.lnch.model.descriptor.DescriptorModels;
+import com.italankin.lnch.model.descriptor.IgnorableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomColorMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.CustomLabelMutableDescriptor;
+import com.italankin.lnch.model.descriptor.mutable.CustomLayoutMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.IgnorableMutableDescriptor;
 import com.italankin.lnch.model.descriptor.mutable.MutableDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.store.json.model.PinnedShortcutDescriptorJson;
 import com.italankin.lnch.model.ui.impl.PinnedShortcutDescriptorUi;
 
@@ -21,7 +32,7 @@ import java.util.UUID;
         mutable = PinnedShortcutDescriptor.Mutable.class
 )
 public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDescriptor, CustomLabelDescriptor,
-        IgnorableDescriptor {
+        IgnorableDescriptor, CustomLayoutDescriptor {
 
     public final String id;
     public final String uri;
@@ -30,6 +41,10 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     public final int color;
     public final String customLabel;
     public final Integer customColor;
+    @Nullable
+    public final ItemWidth customWidth;
+    @Nullable
+    public final TextAlign customTextAlign;
     public final boolean ignored;
 
     public PinnedShortcutDescriptor(Mutable mutable) {
@@ -40,7 +55,21 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         color = mutable.color;
         customLabel = mutable.customLabel;
         customColor = mutable.customColor;
+        customWidth = mutable.customWidth;
+        customTextAlign = mutable.customTextAlign;
         ignored = mutable.ignored;
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -109,7 +138,8 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
     public static class Mutable implements MutableDescriptor<PinnedShortcutDescriptor>,
             CustomColorMutableDescriptor<PinnedShortcutDescriptor>,
             CustomLabelMutableDescriptor<PinnedShortcutDescriptor>,
-            IgnorableMutableDescriptor<PinnedShortcutDescriptor> {
+            IgnorableMutableDescriptor<PinnedShortcutDescriptor>,
+            CustomLayoutMutableDescriptor<PinnedShortcutDescriptor> {
 
         private final String id;
         private final String uri;
@@ -118,6 +148,8 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
         private int color = Color.WHITE;
         private String customLabel;
         private Integer customColor;
+        private ItemWidth customWidth;
+        private TextAlign customTextAlign;
         private boolean ignored;
 
         public Mutable(String uri, String originalLabel) {
@@ -138,7 +170,31 @@ public final class PinnedShortcutDescriptor implements Descriptor, CustomColorDe
             color = descriptor.color;
             customLabel = descriptor.customLabel;
             customColor = descriptor.customColor;
+            customWidth = descriptor.customWidth;
+            customTextAlign = descriptor.customTextAlign;
             ignored = descriptor.ignored;
+        }
+
+        @Nullable
+        @Override
+        public ItemWidth getCustomWidth() {
+            return customWidth;
+        }
+
+        @Override
+        public void setCustomWidth(@Nullable ItemWidth width) {
+            customWidth = width;
+        }
+
+        @Nullable
+        @Override
+        public TextAlign getCustomTextAlign() {
+            return customTextAlign;
+        }
+
+        @Override
+        public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+            customTextAlign = textAlign;
         }
 
         @Override

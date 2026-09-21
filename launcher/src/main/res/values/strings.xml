@@ -52,6 +52,7 @@
     <string name="customize_discard">Discard</string>
     <string name="customize_item_rename">Rename</string>
     <string name="customize_item_change_color">Change color</string>
+    <string name="customize_item_change_appearance">Appearance</string>
     <string name="customize_item_add_to_folder">Add to folder</string>
     <string name="customize_item_move_to_folder">Move to folder</string>
     <string name="customize_item_edit_intent">Edit Intent</string>
@@ -323,4 +324,13 @@
     <string name="error_shortcut_not_found">Not found</string>
     <string name="error_shortcut_disabled">Shortcut is disabled</string>
     <string name="error_apps_not_loaded">Apps were not loaded: %1$s</string>
+
+    <string name="item_appearance_width">Width</string>
+    <string name="item_appearance_text_align">Text alignment</string>
+    <string name="item_appearance_default">Default</string>
+    <string name="item_appearance_content">Content</string>
+    <string name="item_appearance_fill_row">Fill row</string>
+    <string name="item_appearance_start">Start</string>
+    <string name="item_appearance_center">Center</string>
+    <string name="item_appearance_end">End</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.DeepShortcutDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 
 public final class DeepShortcutDescriptorJson implements DescriptorJson {
 
@@ -34,6 +37,12 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("custom_width")
+    public String customWidth;
+
+    @SerializedName("custom_text_align")
+    public String customTextAlign;
+
     @SerializedName("enabled")
     public Boolean enabled;
 
@@ -52,6 +61,8 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         color = descriptor.color;
         customLabel = descriptor.customLabel;
         customColor = descriptor.customColor;
+        customWidth = descriptor.customWidth != null ? descriptor.customWidth.key() : null;
+        customTextAlign = descriptor.customTextAlign != null ? descriptor.customTextAlign.key() : null;
         enabled = descriptor.enabled ? null : false;
         ignored = descriptor.ignored ? true : null;
     }
@@ -64,6 +75,8 @@ public final class DeepShortcutDescriptorJson implements DescriptorJson {
         mutable.setColor(color);
         mutable.setCustomLabel(customLabel);
         mutable.setCustomColor(customColor);
+        mutable.setCustomWidth(ItemWidth.fromKey(customWidth));
+        mutable.setCustomTextAlign(TextAlign.fromKey(customTextAlign));
         mutable.setEnabled(enabled == null || enabled);
         mutable.setIgnored(ignored != null && ignored);
         return mutable.toDescriptor();

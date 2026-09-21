@@ -83,6 +83,7 @@ import com.italankin.lnch.feature.home.apps.popup.DescriptorPopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.EditModePopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.EmptySpacePopupFragment;
 import com.italankin.lnch.feature.home.apps.popup.HiddenItemsPopupFragment;
+import com.italankin.lnch.feature.home.apps.popup.ItemAppearancePopupFragment;
 import com.italankin.lnch.feature.home.apps.selectfolder.SelectFolderFragment;
 import com.italankin.lnch.feature.home.behavior.SearchOverlayBehavior;
 import com.italankin.lnch.feature.home.fragmentresult.FragmentResultManager;
@@ -114,6 +115,7 @@ import com.italankin.lnch.model.repository.shortcuts.ShortcutsRepository;
 import com.italankin.lnch.model.repository.usage.UsageTracker;
 import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
 import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLayoutDescriptorUi;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.model.ui.IgnorableDescriptorUi;
 import com.italankin.lnch.model.ui.InFolderDescriptorUi;
@@ -473,6 +475,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
                 })
                 .register(new CustomizeDescriptorPopupFragment.RenameContract(), this::showItemRenameDialog)
                 .register(new CustomizeDescriptorPopupFragment.SetColorContract(), this::showSetItemColorDialog)
+                .register(new CustomizeDescriptorPopupFragment.ChangeAppearanceContract(), this::showChangeItemAppearancePopup)
                 .register(new CustomizeDescriptorPopupFragment.RemoveContract(), descriptorId -> {
                     viewModel.removeItem(descriptorId);
                 })
@@ -987,6 +990,17 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
         new SetColorDescriptorDialog(requireContext(), entry.item.getVisibleColor(),
                 newColor -> viewModel.changeItemCustomColor(entry.item, newColor))
                 .show(this);
+    }
+
+    private void showChangeItemAppearancePopup(String descriptorId) {
+        HomeEntry<CustomLayoutDescriptorUi> entry = homeDescriptorsState.find(CustomLayoutDescriptorUi.class, descriptorId);
+        if (entry == null) {
+            return;
+        }
+        View view = list.findViewForAdapterPosition(entry.position);
+        Rect anchor = ViewUtils.getViewBoundsInsetPadding(view);
+        ItemAppearancePopupFragment.newInstance(entry.item, REQUEST_KEY_APPS, anchor)
+                .show(getParentFragmentManager());
     }
 
     private void showIntentEditor(String descriptorId) {

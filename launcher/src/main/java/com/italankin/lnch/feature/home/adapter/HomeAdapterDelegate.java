@@ -13,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.italankin.lnch.R;
+import com.italankin.lnch.feature.home.model.Appearance;
 import com.italankin.lnch.feature.home.model.UserPrefs;
 import com.italankin.lnch.feature.home.util.NotificationDotDrawable;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.ui.DescriptorUi;
 import com.italankin.lnch.util.ResUtils;
@@ -40,13 +43,13 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
     @Override
     public final void onBind(VH holder, int position, T item) {
-        updateHolderView(holder);
+        updateHolderView(holder, item);
         holder.bind(item);
     }
 
     @Override
     public void onBind(@NonNull VH holder, int position, T item, @NonNull List<?> payloads) {
-        updateHolderView(holder);
+        updateHolderView(holder, item);
         holder.bind(item, payloads);
     }
 
@@ -54,7 +57,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
     @Override
     public VH onCreate(LayoutInflater inflater, ViewGroup parent) {
         VH holder = super.onCreate(inflater, parent);
-        updateHolderView(holder);
+        updateHolderView(holder, null);
         return holder;
     }
 
@@ -74,19 +77,21 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         this.itemPrefs = itemPrefs;
     }
 
-    private void updateHolderView(VH holder) {
-        try {
-            TextView label = holder.getLabel();
-            if (label == null || itemPrefs == null || itemPrefs.equals(holder.itemPrefs)) {
-                return;
-            }
-            update(holder, label, itemPrefs);
-        } finally {
-            holder.itemPrefs = itemPrefs;
+    private void updateHolderView(VH holder, @Nullable T item) {
+        TextView label = holder.getLabel();
+        if (label == null || itemPrefs == null) {
+            return;
         }
+        Appearance appearance = params.applyAppearance ? Appearance.from(item) : Appearance.DEFAULT;
+        if (itemPrefs.equals(holder.itemPrefs) && appearance.equals(holder.appearance)) {
+            return;
+        }
+        update(holder, label, itemPrefs, appearance);
+        holder.itemPrefs = itemPrefs;
+        holder.appearance = appearance;
     }
 
-    protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
+    protected void update(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs, Appearance appearance) {
         ViewUtils.setPaddingDp(label, itemPrefs.itemPadding());
         label.setTextSize(itemPrefs.itemTextSize());
         Integer itemShadowColor = itemPrefs.itemShadowColor();
@@ -97,7 +102,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                 label.getShadowDy(), shadowColor);
         label.setTypeface(itemPrefs.typeface());
         updateNotificationDot(holder, itemPrefs);
-        updateItemWidth(holder, label, itemPrefs);
+        updateItemWidth(holder, label, itemPrefs, appearance);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -134,10 +139,12 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         }
     }
 
-    private void updateItemWidth(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs) {
+    private void updateItemWidth(VH holder, TextView label, UserPrefs.ItemPrefs itemPrefs, Appearance appearance) {
         View root = holder.getRoot();
         ViewGroup.LayoutParams rootLp = root.getLayoutParams();
-        Preferences.ItemWidth itemWidth = params.itemWidthProvider.get(itemPrefs);
+        Preferences.ItemWidth itemWidth = appearance.width == null ? params.itemWidthProvider.get(itemPrefs)
+                : appearance.width == ItemWidth.FILL_ROW ? Preferences.ItemWidth.MATCH_PARENT
+                : Preferences.ItemWidth.WRAP;
         boolean rootLayoutParamsChanged = updateWrapBefore(rootLp,
                 itemWidth == Preferences.ItemWidth.FILL_ROW_WRAP_CONTENT);
         if (itemWidth == Preferences.ItemWidth.MATCH_PARENT) {
@@ -150,7 +157,31 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                     label.setLayoutParams(labelLp);
                 }
             }
+        } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            rootLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rootLayoutParamsChanged = true;
+            if (root != label) {
+                ViewGroup.LayoutParams llp = label.getLayoutParams();
+                llp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                label.setLayoutParams(llp);
+            }
+        }
+        TextAlign textAlign = appearance.textAlign;
+        if (textAlign == null) {
             switch (params.itemAlignmentProvider.get(itemPrefs)) {
+                case START:
+                    textAlign = TextAlign.START;
+                    break;
+                case CENTER:
+                    textAlign = TextAlign.CENTER;
+                    break;
+                case END:
+                    textAlign = TextAlign.END;
+                    break;
+            }
+        }
+        if (textAlign != null) {
+            switch (textAlign) {
                 case START:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
                     break;
@@ -160,14 +191,6 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
                 case END:
                     label.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
                     break;
-            }
-        } else if (rootLp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            rootLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            rootLayoutParamsChanged = true;
-            if (root != label) {
-                ViewGroup.LayoutParams llp = label.getLayoutParams();
-                llp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                label.setLayoutParams(llp);
             }
         }
         if (rootLayoutParamsChanged) {
@@ -189,6 +212,7 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
 
     public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
         UserPrefs.ItemPrefs itemPrefs;
+        Appearance appearance;
 
         protected ViewHolder(View itemView) {
             super(itemView);
@@ -220,13 +244,22 @@ public abstract class HomeAdapterDelegate<VH extends HomeAdapterDelegate.ViewHol
         public static final Provider<Preferences.HomeAlignment> ALIGNMENT_FROM_PREFS = itemPrefs -> itemPrefs.homeAlignment();
 
         final boolean ignoreVisibility;
+        final boolean applyAppearance;
         final Provider<Preferences.ItemWidth> itemWidthProvider;
         final Provider<Preferences.HomeAlignment> itemAlignmentProvider;
 
         public Params(boolean ignoreVisibility,
                 Provider<Preferences.ItemWidth> itemWidthProvider,
                 Provider<Preferences.HomeAlignment> itemAlignmentProvider) {
+            this(ignoreVisibility, true, itemWidthProvider, itemAlignmentProvider);
+        }
+
+        public Params(boolean ignoreVisibility,
+                boolean applyAppearance,
+                Provider<Preferences.ItemWidth> itemWidthProvider,
+                Provider<Preferences.HomeAlignment> itemAlignmentProvider) {
             this.ignoreVisibility = ignoreVisibility;
+            this.applyAppearance = applyAppearance;
             this.itemWidthProvider = itemWidthProvider;
             this.itemAlignmentProvider = itemAlignmentProvider;
         }

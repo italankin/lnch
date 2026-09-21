@@ -1,8 +1,17 @@
 package com.italankin.lnch.model.ui.impl;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
-import com.italankin.lnch.model.ui.*;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
+import com.italankin.lnch.model.ui.BadgeDescriptorUi;
+import com.italankin.lnch.model.ui.CustomColorDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLabelDescriptorUi;
+import com.italankin.lnch.model.ui.CustomLayoutDescriptorUi;
+import com.italankin.lnch.model.ui.DescriptorUi;
+import com.italankin.lnch.model.ui.RemovableDescriptorUi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +21,8 @@ public final class FolderDescriptorUi implements DescriptorUi,
         CustomColorDescriptorUi,
         CustomLabelDescriptorUi,
         RemovableDescriptorUi,
-        BadgeDescriptorUi {
+        BadgeDescriptorUi,
+        CustomLayoutDescriptorUi {
 
     public static final Object PAYLOAD_BADGE = new Object();
 
@@ -21,6 +31,8 @@ public final class FolderDescriptorUi implements DescriptorUi,
     private final int color;
     private String customLabel;
     private Integer customColor;
+    private ItemWidth customWidth;
+    private TextAlign customTextAlign;
     public Integer customBadgeColor;
     public final List<String> items;
     private boolean badgeVisible;
@@ -31,6 +43,8 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customWidth = descriptor.customWidth;
+        this.customTextAlign = descriptor.customTextAlign;
         this.items = new ArrayList<>(descriptor.items);
     }
 
@@ -40,9 +54,33 @@ public final class FolderDescriptorUi implements DescriptorUi,
         this.customLabel = item.customLabel;
         this.color = item.color;
         this.customColor = item.customColor;
+        this.customWidth = item.customWidth;
+        this.customTextAlign = item.customTextAlign;
         this.customBadgeColor = item.customBadgeColor;
         this.items = new ArrayList<>(item.items);
         this.badgeVisible = item.badgeVisible;
+    }
+
+    @Override
+    public void setCustomWidth(@Nullable ItemWidth width) {
+        customWidth = width;
+    }
+
+    @Nullable
+    @Override
+    public ItemWidth getCustomWidth() {
+        return customWidth;
+    }
+
+    @Override
+    public void setCustomTextAlign(@Nullable TextAlign textAlign) {
+        customTextAlign = textAlign;
+    }
+
+    @Nullable
+    @Override
+    public TextAlign getCustomTextAlign() {
+        return customTextAlign;
     }
 
     @Override
@@ -125,11 +163,17 @@ public final class FolderDescriptorUi implements DescriptorUi,
         return this.descriptor.equals(that.descriptor)
                 && Objects.equals(this.customLabel, that.customLabel)
                 && Objects.equals(this.customColor, that.customColor)
+                && this.customWidth == that.customWidth
+                && this.customTextAlign == that.customTextAlign
                 && this.badgeVisible == that.badgeVisible;
     }
 
     @Override
     public Object getChangePayload(DescriptorUi oldItem) {
+        CustomLayoutDescriptorUi oldLayout = (CustomLayoutDescriptorUi) oldItem;
+        if (customWidth != oldLayout.getCustomWidth() || customTextAlign != oldLayout.getCustomTextAlign()) {
+            return null;
+        }
         if (this.badgeVisible != ((FolderDescriptorUi) oldItem).badgeVisible) {
             return PAYLOAD_BADGE;
         }

@@ -1,9 +1,12 @@
 package com.italankin.lnch.model.repository.store.json.model;
 
 import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
+import com.italankin.lnch.model.descriptor.props.ItemWidth;
+import com.italankin.lnch.model.descriptor.props.TextAlign;
 
 import java.util.List;
 
@@ -39,6 +42,12 @@ public final class AppDescriptorJson implements DescriptorJson {
     @SerializedName("custom_color")
     public Integer customColor;
 
+    @SerializedName("custom_width")
+    public String customWidth;
+
+    @SerializedName("custom_text_align")
+    public String customTextAlign;
+
     @SerializedName("custom_badge_color")
     public Integer customBadgeColor;
 
@@ -67,6 +76,8 @@ public final class AppDescriptorJson implements DescriptorJson {
         this.customLabel = descriptor.customLabel;
         this.color = descriptor.color;
         this.customColor = descriptor.customColor;
+        this.customWidth = descriptor.customWidth != null ? descriptor.customWidth.key() : null;
+        this.customTextAlign = descriptor.customTextAlign != null ? descriptor.customTextAlign.key() : null;
         this.customBadgeColor = descriptor.customBadgeColor;
         this.ignored = descriptor.ignored ? true : null;
         this.searchFlags = descriptor.searchFlags != AppDescriptor.SEARCH_DEFAULT_FLAGS ? descriptor.searchFlags : null;
@@ -79,6 +90,8 @@ public final class AppDescriptorJson implements DescriptorJson {
         AppDescriptor.Mutable mutable = new AppDescriptor.Mutable(packageName, componentName, versionCode, originalLabel);
         mutable.setColor(color);
         mutable.setCustomColor(customColor);
+        mutable.setCustomWidth(ItemWidth.fromKey(customWidth));
+        mutable.setCustomTextAlign(TextAlign.fromKey(customTextAlign));
         mutable.setLabel(label);
         mutable.setCustomLabel(customLabel);
         mutable.setCustomBadgeColor(customBadgeColor);
