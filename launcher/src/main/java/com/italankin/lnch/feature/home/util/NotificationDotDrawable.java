@@ -11,6 +11,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.DimenRes;
@@ -131,7 +132,17 @@ public class NotificationDotDrawable extends Drawable {
         if (rad == 0 || !isVisible()) {
             return;
         }
-        canvas.drawCircle(rect.centerX(), rect.centerY(), rad, paint);
+        int scrollX = 0;
+        int scrollY = 0;
+        Callback callback = getCallback();
+        if (callback instanceof View) {
+            View view = (View) callback;
+            // Single-line TextViews scroll their canvas to align text. Keep the dot
+            // anchored to the visible view bounds instead of the scrolled content.
+            scrollX = view.getScrollX();
+            scrollY = view.getScrollY();
+        }
+        canvas.drawCircle(rect.centerX() + scrollX, rect.centerY() + scrollY, rad, paint);
     }
 
     @Override
