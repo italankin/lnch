@@ -2,6 +2,8 @@ package com.italankin.lnch.model.repository.notifications;
 
 import android.service.notification.StatusBarNotification;
 
+import androidx.annotation.Nullable;
+
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.DescriptorRepository;
@@ -9,6 +11,7 @@ import com.italankin.lnch.util.DescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
@@ -48,14 +50,14 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     @Override
     public void postNotification(StatusBarNotification sbn) {
         if (modifyState(sbn, Type.POSTED)) {
-            updates.onNext(state);
+            updates.onNext(snapshot());
         }
     }
 
     @Override
     public void removeNotification(StatusBarNotification sbn) {
         if (modifyState(sbn, Type.REMOVED)) {
-            updates.onNext(state);
+            updates.onNext(snapshot());
         }
     }
 
@@ -67,14 +69,14 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
             modified = modifyState(sbn, Type.POSTED) | modified;
         }
         if (modified) {
-            updates.onNext(state);
+            updates.onNext(snapshot());
         }
     }
 
     @Override
     public void clearNotifications() {
         state.clear();
-        updates.onNext(state);
+        updates.onNext(snapshot());
     }
 
     @Nullable
@@ -87,9 +89,12 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
     public Observable<Map<AppDescriptor, NotificationBag>> observe() {
         return observeApps()
                 .map(this::updateState)
-                .startWith(state)
-                .mergeWith(updates)
-                .map(Collections::unmodifiableMap);
+                .startWith(Observable.fromCallable(this::snapshot))
+                .mergeWith(updates);
+    }
+
+    private Map<AppDescriptor, NotificationBag> snapshot() {
+        return Collections.unmodifiableMap(new HashMap<>(state));
     }
 
     private Observable<List<AppDescriptor>> observeApps() {
@@ -114,7 +119,7 @@ public class NotificationsRepositoryImpl implements NotificationsRepository {
                 i.remove();
             }
         }
-        return state;
+        return snapshot();
     }
 
     private boolean modifyState(StatusBarNotification sbn, Type type) {
