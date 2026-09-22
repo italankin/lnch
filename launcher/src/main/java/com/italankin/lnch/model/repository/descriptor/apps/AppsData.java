@@ -8,7 +8,7 @@ import java.util.List;
 
 public class AppsData {
 
-    public static AppsData create(List<MutableDescriptor<?>> items, boolean changed) {
+    public static AppsData create(List<? extends MutableDescriptor<?>> items, boolean changed) {
         List<Descriptor> descriptors = new ArrayList<>(items.size());
         for (MutableDescriptor<?> item : items) {
             descriptors.add(item.toDescriptor());

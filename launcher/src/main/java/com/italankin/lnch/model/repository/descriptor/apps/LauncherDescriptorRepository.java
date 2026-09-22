@@ -138,7 +138,8 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
 
     ///////////////////////////////////////////////////////////////////////////
     // Private
-    ///////////////////////////////////////////////////////////////////////////
+
+    /// ////////////////////////////////////////////////////////////////////////
 
     private void subscribeForUpdates() {
         new LauncherAppsObservable(launcherApps)
@@ -197,14 +198,9 @@ public class LauncherDescriptorRepository implements DescriptorRepository {
     }
 
     private Single<AppsData> loadFromList(List<LauncherActivityInfo> infoList) {
-        return Single
-                .fromCallable(() -> {
-                    List<MutableDescriptor<?>> items = new ArrayList<>(64);
-                    for (LauncherActivityInfo info : infoList) {
-                        items.add(appDescriptorInteractor.createItem(info));
-                    }
-                    return AppsData.create(items, true);
-                });
+        return Single.fromCallable(() -> {
+            return AppsData.create(appDescriptorInteractor.createItems(infoList), true);
+        });
     }
 
     private void writeToDisk(List<Descriptor> items) throws IOException {

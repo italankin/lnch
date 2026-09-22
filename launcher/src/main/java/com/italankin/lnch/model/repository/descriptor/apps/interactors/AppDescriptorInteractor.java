@@ -1,12 +1,20 @@
 package com.italankin.lnch.model.repository.descriptor.apps.interactors;
 
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getComponentName;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getDominantIconColor;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.getVersionCode;
+import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.groupByPackage;
+
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
+
 import com.italankin.lnch.model.descriptor.impl.AppDescriptor;
 import com.italankin.lnch.model.repository.descriptor.NameNormalizer;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
-import static com.italankin.lnch.model.repository.descriptor.apps.interactors.LauncherActivityInfoUtils.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AppDescriptorInteractor {
 
@@ -21,11 +29,18 @@ public class AppDescriptorInteractor {
         this.nameNormalizer = nameNormalizer;
     }
 
-    public AppDescriptor.Mutable createItem(LauncherActivityInfo info) {
-        return createItem(info, false);
+    public List<AppDescriptor.Mutable> createItems(List<LauncherActivityInfo> infos) {
+        Map<String, List<LauncherActivityInfo>> byPackage = groupByPackage(infos);
+        List<AppDescriptor.Mutable> items = new ArrayList<>(infos.size());
+        for (LauncherActivityInfo info : infos) {
+            List<LauncherActivityInfo> activityInfos = byPackage.get(info.getApplicationInfo().packageName);
+            boolean withComponentName = activityInfos != null && activityInfos.size() > 1;
+            items.add(createItem(info, withComponentName));
+        }
+        return items;
     }
 
-    AppDescriptor.Mutable createItem(LauncherActivityInfo info, boolean withComponentName) {
+    private AppDescriptor.Mutable createItem(LauncherActivityInfo info, boolean withComponentName) {
         String packageName = info.getApplicationInfo().packageName;
         CharSequence label = info.getLabel();
         AppDescriptor.Mutable app = new AppDescriptor.Mutable(

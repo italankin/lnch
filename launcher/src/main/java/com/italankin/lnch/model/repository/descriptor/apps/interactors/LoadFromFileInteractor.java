@@ -111,14 +111,8 @@ public class LoadFromFileInteractor {
 
     private void processNewApps(ProcessingEnv env) {
         for (List<LauncherActivityInfo> infos : env.packages()) {
-            if (infos.size() == 1) {
-                AppDescriptor.Mutable item = appDescriptorInteractor.createItem(infos.get(0));
+            for (AppDescriptor.Mutable item : appDescriptorInteractor.createItems(infos)) {
                 env.addApp(item);
-            } else {
-                for (LauncherActivityInfo info : infos) {
-                    AppDescriptor.Mutable item = appDescriptorInteractor.createItem(info, true);
-                    env.addApp(item);
-                }
             }
         }
     }
