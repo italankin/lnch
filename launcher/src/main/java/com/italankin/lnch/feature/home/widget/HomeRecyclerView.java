@@ -7,10 +7,13 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.italankin.lnch.model.repository.prefs.HomeTrim;
+
 public class HomeRecyclerView extends RecyclerView {
 
     private int bottomInset;
     private int selfPaddingBottom;
+    private HomeTrim homeTrim = HomeTrim.NONE;
 
     public HomeRecyclerView(Context context) {
         super(context);
@@ -39,6 +42,23 @@ public class HomeRecyclerView extends RecyclerView {
     public void setBottomInset(int value) {
         bottomInset = value;
         super.setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), bottomInset + selfPaddingBottom);
+    }
+
+    public boolean setHomeTrim(HomeTrim trim) {
+        if (homeTrim.equals(trim)) {
+            return false;
+        }
+        homeTrim = trim;
+        requestLayout();
+        return true;
+    }
+
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec) {
+        int width = MeasureSpec.getSize(widthSpec);
+        super.setPadding(Math.round(width * homeTrim.left / 100f), getPaddingTop(),
+                Math.round(width * homeTrim.right / 100f), bottomInset + selfPaddingBottom);
+        super.onMeasure(widthSpec, heightSpec);
     }
 
     @Nullable

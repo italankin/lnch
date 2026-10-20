@@ -118,6 +118,45 @@
         app:layout_constraintTop_toTopOf="@id/text_padding_slider" />
 
     <TextView
+        android:id="@+id/home_trim_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:labelFor="@+id/home_trim_slider"
+        android:minHeight="48dp"
+        android:text="@string/customize_home_trim"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_padding_reset" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@id/home_trim_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:stepSize="1"
+        android:valueFrom="0"
+        android:valueTo="100"
+        app:labelBehavior="gone"
+        app:layout_constraintEnd_toStartOf="@+id/home_trim_reset"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_trim_title"
+        app:tickVisible="false" />
+
+    <ImageView
+        android:id="@id/home_trim_reset"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/customize_action_reset"
+        android:focusable="true"
+        android:padding="12dp"
+        android:src="@drawable/ic_settings_backup_restore"
+        app:layout_constraintBottom_toBottomOf="@id/home_trim_slider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/home_trim_slider" />
+
+    <TextView
         android:id="@+id/global_item_alignment_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -127,7 +166,7 @@
         android:textAppearance="?textAppearanceTitleSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_padding_reset" />
+        app:layout_constraintTop_toBottomOf="@id/home_trim_reset" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@id/global_item_alignment"

@@ -5,6 +5,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.italankin.lnch.model.fonts.FontManager;
+import com.italankin.lnch.model.repository.prefs.HomeTrim;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public final class UserPrefs {
     static {
         PREFERENCES.add(Preferences.HOME_LAYOUT);
         PREFERENCES.add(Preferences.HOME_ALIGNMENT);
+        PREFERENCES.add(Preferences.HOME_TRIM);
         PREFERENCES.add(Preferences.SHOW_SCROLLBAR);
         PREFERENCES.add(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         PREFERENCES.add(Preferences.SEARCH_SHOW_CUSTOMIZE);
@@ -36,6 +38,7 @@ public final class UserPrefs {
 
     public final Preferences.HomeLayout homeLayout;
     public final Preferences.HomeAlignment homeAlignment;
+    public final HomeTrim homeTrim;
     public final boolean showScrollbar;
     @ColorInt
     public final Integer statusBarColor;
@@ -47,6 +50,7 @@ public final class UserPrefs {
     public UserPrefs(Preferences preferences, FontManager fontManager) {
         homeLayout = preferences.get(Preferences.HOME_LAYOUT);
         homeAlignment = preferences.get(Preferences.HOME_ALIGNMENT);
+        homeTrim = preferences.get(Preferences.HOME_TRIM);
         showScrollbar = preferences.get(Preferences.SHOW_SCROLLBAR);
         globalSearch = preferences.get(Preferences.SEARCH_SHOW_GLOBAL_SEARCH);
         largeSearchBar = preferences.get(Preferences.LARGE_SEARCH_BAR);
@@ -79,6 +83,9 @@ public final class UserPrefs {
         if (homeAlignment != userPrefs.homeAlignment) {
             return false;
         }
+        if (!homeTrim.equals(userPrefs.homeTrim)) {
+            return false;
+        }
         if (searchBarShowCustomize != userPrefs.searchBarShowCustomize) {
             return false;
         }
@@ -92,6 +99,7 @@ public final class UserPrefs {
     public int hashCode() {
         int result = homeLayout.hashCode();
         result = 31 * result + homeAlignment.hashCode();
+        result = 31 * result + homeTrim.hashCode();
         result = 31 * result + (showScrollbar ? 1 : 0);
         result = 31 * result + (searchBarShowCustomize ? 1 : 0);
         result = 31 * result + itemPrefs.hashCode();
@@ -109,6 +117,7 @@ public final class UserPrefs {
         return "{" +
                 "homeLayout=" + homeLayout +
                 ", homeAlignment=" + homeAlignment +
+                ", homeTrim=" + homeTrim +
                 ", showScrollbar=" + showScrollbar +
                 ", globalSearch=" + globalSearch +
                 ", globalSearch=" + searchBarShowCustomize +

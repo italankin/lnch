@@ -65,6 +65,7 @@
     <string name="customize_wallpaper_dim">Dim wallpaper</string>
     <string name="customize_text_size">Text size</string>
     <string name="customize_text_padding">Text padding</string>
+    <string name="customize_home_trim">Side trim</string>
     <string name="customize_item_width">Item width</string>
     <string name="customize_item_alignment">Alignment</string>
 

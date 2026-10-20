@@ -111,6 +111,7 @@ import com.italankin.lnch.feature.lock.ScreenLock;
 import com.italankin.lnch.feature.settings.SettingsActivity;
 import com.italankin.lnch.model.descriptor.Descriptor;
 import com.italankin.lnch.model.descriptor.impl.FolderDescriptor;
+import com.italankin.lnch.model.repository.prefs.HomeTrim;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.model.repository.search.match.DescriptorMatch;
 import com.italankin.lnch.model.repository.search.match.Match;
@@ -685,6 +686,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
     public void onEditModeDiscard() {
         setEditMode(false);
         setLayout(layout, preferences.get(Preferences.HOME_ALIGNMENT));
+        applyHomeTrim(preferences.get(Preferences.HOME_TRIM));
         adapter.setUserPrefsOverrides(null);
     }
 
@@ -704,6 +706,9 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
 
     @Override
     public <T> void onEditModePropertyChange(EditModeState.Property<T> property, T newValue) {
+        if (property == EditModeProperties.HOME_TRIM) {
+            applyHomeTrim(preferences.get(Preferences.HOME_TRIM));
+        }
         if (property == EditModeProperties.HOME_ALIGNMENT || property == EditModeProperties.ITEM_WIDTH) {
             setLayout(layout, preferences.get(Preferences.HOME_ALIGNMENT));
         }
@@ -1151,7 +1156,20 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             searchOverlay.setupCustomizeButton(null);
         }
         setLayout(userPrefs.homeLayout, userPrefs.homeAlignment);
+        applyHomeTrim(userPrefs.homeTrim);
         list.setVerticalScrollBarEnabled(userPrefs.showScrollbar);
+    }
+
+    private void applyHomeTrim(HomeTrim trim) {
+        if (editModeState.isActive()) {
+            HomeTrim override = editModeState.getProperty(EditModeProperties.HOME_TRIM);
+            if (override != null) {
+                trim = override;
+            }
+        }
+        if (list.setHomeTrim(trim)) {
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+        }
     }
 
     private void setLayout(Preferences.HomeLayout layout, Preferences.HomeAlignment homeAlignment) {

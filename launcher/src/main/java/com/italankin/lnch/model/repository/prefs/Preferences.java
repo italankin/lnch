@@ -217,6 +217,11 @@ public interface Preferences {
             HomeAlignment.START,
             HomeAlignment::from);
 
+    Pref<HomeTrim> HOME_TRIM = Prefs.create(
+            "home_trim",
+            HomeTrim.NONE,
+            HomeTrim::from);
+
     /**
      * Show scrollbar on the home screen
      */
@@ -594,6 +599,7 @@ public interface Preferences {
             WALLPAPER_DIM_COLOR,
             HOME_LAYOUT,
             HOME_ALIGNMENT,
+            HOME_TRIM,
             SHOW_SCROLLBAR,
             APP_LONG_CLICK_ACTION,
             SCREEN_ORIENTATION,

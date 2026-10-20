@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
 import com.italankin.lnch.LauncherApp;
 import com.italankin.lnch.R;
 import com.italankin.lnch.feature.home.repository.EditModeState;
 import com.italankin.lnch.feature.home.repository.editmode.EditModeProperties;
+import com.italankin.lnch.model.repository.prefs.HomeTrim;
 import com.italankin.lnch.model.repository.prefs.Preferences;
 import com.italankin.lnch.util.Debouncer;
 import com.italankin.lnch.util.widget.colorpicker.ColorPickerDialog;
@@ -42,6 +44,7 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
     private EditModeState editModeState;
 
     private int baseColor = Color.BLACK;
+    private final Debouncer homeTrimDebouncer = new Debouncer(300);
 
     @Override
     protected String getPopupBackstackName() {
@@ -75,6 +78,7 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
         setupWallpaperDim(view);
         setupTextSize(view);
         setupItemPadding(view);
+        setupHomeTrim(view);
         setupItemWidth(view);
         setupItemAlignment(view);
 
@@ -172,6 +176,47 @@ public class AdditionalSettingsPopupFragment extends PopupFragment {
                 editModeState.setProperty(EditModeProperties.ITEM_WIDTH, width);
             }
         });
+    }
+
+    private void setupHomeTrim(View view) {
+        RangeSlider slider = view.findViewById(R.id.home_trim_slider);
+        HomeTrim trim = getCurrentValue(EditModeProperties.HOME_TRIM, Preferences.HOME_TRIM);
+        slider.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        slider.setValues((float) trim.left, (float) (100 - trim.right));
+        slider.setMinSeparationValue(HomeTrim.MIN_CONTENT_PERCENT);
+        slider.addOnChangeListener((rangeSlider, value, fromUser) -> {
+            if (!fromUser || !editModeState.isActive()) {
+                return;
+            }
+            int left = Math.round(rangeSlider.getValues().get(0));
+            int right = 100 - Math.round(rangeSlider.getValues().get(1));
+            homeTrimDebouncer.send(() -> applyHomeTrim(new HomeTrim(left, right)));
+        });
+        view.findViewById(R.id.home_trim_reset).setOnClickListener(v -> {
+            HomeTrim defaultValue = Preferences.HOME_TRIM.defaultValue();
+            slider.setValues((float) defaultValue.left, (float) (100 - defaultValue.right));
+            homeTrimDebouncer.cancel();
+            applyHomeTrim(defaultValue);
+        });
+    }
+
+    private void applyHomeTrim(HomeTrim trim) {
+        if (editModeState.isActive()
+                && !trim.equals(getCurrentValue(EditModeProperties.HOME_TRIM, Preferences.HOME_TRIM))) {
+            editModeState.setProperty(EditModeProperties.HOME_TRIM, trim);
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        homeTrimDebouncer.cancel();
+        super.dismiss();
+    }
+
+    @Override
+    public void onStop() {
+        homeTrimDebouncer.cancel();
+        super.onStop();
     }
 
     private void setupItemAlignment(View view) {

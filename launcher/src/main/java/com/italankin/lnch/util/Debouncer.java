@@ -23,8 +23,12 @@ public class Debouncer {
     }
 
     public void send(Runnable r) {
-        handler.removeMessages(MSG_TRIGGER);
+        cancel();
         Message msg = handler.obtainMessage(MSG_TRIGGER, r);
         handler.sendMessageDelayed(msg, delayMillis);
+    }
+
+    public void cancel() {
+        handler.removeMessages(MSG_TRIGGER);
     }
 }
