@@ -35,7 +35,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.color.MaterialColors;
@@ -104,6 +103,7 @@ import com.italankin.lnch.feature.home.util.HomeViewPagerDoNotClipChildren;
 import com.italankin.lnch.feature.home.util.IntentQueue;
 import com.italankin.lnch.feature.home.util.MoveItemHelper;
 import com.italankin.lnch.feature.home.widget.EditModePanel;
+import com.italankin.lnch.feature.home.widget.HomeFlexboxLayoutManager;
 import com.italankin.lnch.feature.home.widget.HomeRecyclerView;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryActivity;
 import com.italankin.lnch.feature.intentfactory.IntentFactoryResult;
@@ -1188,7 +1188,7 @@ public class AppsFragment extends AppFragment implements IntentQueue.OnIntentAct
             this.layout = layout;
             this.itemWidth = itemWidth;
             list.stopScroll();
-            list.setLayoutManager(new FlexboxLayoutManager(requireContext(), FlexDirection.ROW));
+            list.setLayoutManager(new HomeFlexboxLayoutManager(requireContext()));
         }
         if (list.getLayoutManager() instanceof FlexboxLayoutManager) {
             FlexboxLayoutManager lm = (FlexboxLayoutManager) list.getLayoutManager();

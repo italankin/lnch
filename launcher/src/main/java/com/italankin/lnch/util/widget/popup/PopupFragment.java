@@ -9,6 +9,7 @@ import android.view.WindowInsets;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,12 +25,13 @@ import java.util.Arrays;
 public abstract class PopupFragment extends Fragment implements FragmentResultSender {
 
     protected static final String ARG_ANCHOR = "anchor";
+    private static final String STATE_BACKSTACK_ID = "popup_backstack_id";
 
     protected PopupFrameView root;
     protected ArrowLayout containerRoot;
     protected LinearLayout itemsContainer;
 
-    private int backstackId;
+    private int backstackId = -1;
 
     private boolean showAfterInsetsApplied = false;
     private boolean insetsApplied = false;
@@ -37,6 +39,20 @@ public abstract class PopupFragment extends Fragment implements FragmentResultSe
     protected abstract String getPopupBackstackName();
 
     protected abstract String getPopupTag();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            backstackId = savedInstanceState.getInt(STATE_BACKSTACK_ID, -1);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_BACKSTACK_ID, backstackId);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,6 +66,13 @@ public abstract class PopupFragment extends Fragment implements FragmentResultSe
     @CallSuper
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        dismiss();
+                    }
+                });
         itemsContainer.setClipToOutline(true);
 
         Rect anchor = requireArguments().getParcelable(ARG_ANCHOR);
