@@ -40,6 +40,7 @@
 
     <com.google.android.material.slider.Slider
         android:id="@+id/wallpaper_dim_slider"
+        style="@style/EditMode.Slider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:valueFrom="0"
@@ -53,8 +54,9 @@
         android:id="@+id/text_size_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-8dp"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="32dp"
         android:text="@string/customize_text_size"
         android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +65,7 @@
 
     <com.google.android.material.slider.Slider
         android:id="@+id/text_size_slider"
+        style="@style/EditMode.Slider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:stepSize="1"
@@ -87,8 +90,9 @@
         android:id="@+id/text_padding_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-8dp"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="32dp"
         android:text="@string/customize_text_padding"
         android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +101,7 @@
 
     <com.google.android.material.slider.Slider
         android:id="@+id/text_padding_slider"
+        style="@style/EditMode.Slider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:stepSize="1"
@@ -121,9 +126,10 @@
         android:id="@+id/home_trim_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-8dp"
         android:gravity="center_vertical"
         android:labelFor="@+id/home_trim_slider"
-        android:minHeight="48dp"
+        android:minHeight="32dp"
         android:text="@string/customize_home_trim"
         android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -132,6 +138,7 @@
 
     <com.google.android.material.slider.RangeSlider
         android:id="@id/home_trim_slider"
+        style="@style/EditMode.Slider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:stepSize="1"
@@ -160,7 +167,7 @@
         android:id="@+id/global_item_alignment_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:labelFor="@+id/global_item_alignment"
         android:text="@string/customize_item_alignment"
         android:textAppearance="?textAppearanceTitleSmall"
